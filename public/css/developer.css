@@ -1,0 +1,13 @@
+#toast-container{
+    background-color: rgb(52, 194, 149);
+}
+
+.toast{
+    background-color: rgb(143, 232, 204);
+}
+.toast-message{color:#000}
+.toast-progress{background:#34c295; opacity:0.5}
+
+.help-block{
+    color: red;
+}

@@ -1,0 +1,17 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class {{MODEL_NAME}} extends Model
+{
+    {{SOFT_DELETES_PLACEHOLDER}}
+     protected $table = '{{TABLE_PLACEHOLDER}}';
+    protected $fillable = [
+        {{FILLABLE_COLUMNS_PLACEHOLDER}}
+    ];
+
+
+}
