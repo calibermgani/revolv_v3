@@ -124,11 +124,11 @@ Route::group(['prefix' => 'qa_production'], function () {
         Route::any('side_menu_list', 'MenuPermissionController@SideMenuList');
     });
   
-Route::get('/test_url', function (){
+
+Auth::routes();
+Route::any('/test_url', function (){
     return
       'Laravel Playground';
    
   });
-Auth::routes();
-
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
