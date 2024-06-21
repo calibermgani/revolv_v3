@@ -123,6 +123,12 @@ Route::group(['prefix' => 'qa_production'], function () {
         Route::any('user_grand_page_permission', 'MenuPermissionController@page_permission_store');
         Route::any('side_menu_list', 'MenuPermissionController@SideMenuList');
     });
+  
+Route::get('/test_url', function (){
+    return
+      'Laravel Playground';
+   
+  });
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
