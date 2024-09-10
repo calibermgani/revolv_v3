@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
-
+use App\Http\Helper\Admin\Helpers as Helpers;
 class DashboardController extends Controller
 {
     public function dashboard(Request $request)
@@ -376,49 +376,49 @@ class DashboardController extends Controller
             $subProjectsWithCount = [];
             if (count($subprojects) > 0) {
                 foreach ($subprojects as $key => $data) {
-                    $projectName = $clientDetails['client_name'];
+                    $projectName = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
                     $table_name = Str::slug((Str::lower($projectName) . '_' . Str::lower($data['name'])), '_');
                     $modelName = Str::studly($table_name);
                     $modelClass = "App\\Models\\" . $modelName;
                     $calendarId = $request->CalendarId;
                     if ($calendarId == "year") {
-                        $startDate = Carbon::now()->startOfYear()->toDateTimeString();
-                        $endDate = Carbon::now()->endOfYear()->toDateTimeString();
+                        $startDate = Carbon::now()->startOfYear()->toDateString();
+                        $endDate = Carbon::now()->endOfYear()->toDateString();
                         $days = Carbon::now()->daysInYear;
                     } else if ($calendarId == "month") {
                         $days =  Carbon::now()->daysInMonth;
-                        $startDate = Carbon::now()->startOfMonth()->toDateTimeString();
-                        $endDate = Carbon::now()->endOfMonth()->toDateTimeString();
+                        $startDate = Carbon::now()->startOfMonth()->toDateString();
+                        $endDate = Carbon::now()->endOfMonth()->toDateString();
                     } else {
-                        $startDate = Carbon::now()->startOfDay()->toDateTimeString();
-                        $endDate = Carbon::now()->endOfDay()->toDateTimeString();
+                        $startDate = Carbon::now()->startOfDay()->toDateString();
+                        $endDate = Carbon::now()->endOfDay()->toDateString();
                         $days = 0;
                     }
-                    // $startDate = Carbon::now()->subDays($days)->startOfDay()->toDateTimeString();
-                    // $endDate = Carbon::now()->endOfDay()->toDateTimeString();
+                    // $startDate = Carbon::now()->subDays($days)->startOfDay()->toDateString();
+                    // $endDate = Carbon::now()->endOfDay()->toDateString();
                     if (class_exists($modelClass)) {
                         $resourceData = $modelClass::whereIn('CE_emp_id', $resourceList)->select('CE_emp_id')->groupBy('CE_emp_id')->get()->toArray();
                         foreach ($resourceData as $resourceKey => $resourceDataVal) {
                             $subProjectsWithCount[$key][$resourceKey]['client_id'] = $clientDetails['id'];
-                            $subProjectsWithCount[$key][$resourceKey]['client_name'] = $clientDetails['client_name'];
+                            $subProjectsWithCount[$key][$resourceKey]['client_name'] = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
                             $subProjectsWithCount[$key][$resourceKey]['sub_project_id'] = $data['id'];
                             $subProjectsWithCount[$key][$resourceKey]['sub_project_name'] = $data['name'];
                             $subProjectsWithCount[$key][$resourceKey]['resource_emp_id'] = $resourceDataVal["CE_emp_id"];
-                            $subProjectsWithCount[$key][$resourceKey]['assignedCount'] = $modelClass::where('chart_status', 'CE_Assigned')->whereNotNull('CE_emp_id')->where('CE_emp_id', $resourceDataVal["CE_emp_id"])->whereBetween('updated_at', [$startDate, $endDate])->count();
-                            $subProjectsWithCount[$key][$resourceKey]['CompletedCount'] = $modelClass::where('chart_status', 'CE_Completed')->where('qa_work_status', 'Sampling')->where('CE_emp_id', $resourceDataVal["CE_emp_id"])->whereBetween('updated_at', [$startDate, $endDate])->count();
-                            $subProjectsWithCount[$key][$resourceKey]['PendingCount'] = $modelClass::where('chart_status', 'CE_Pending')->where('CE_emp_id', $resourceDataVal["CE_emp_id"])->whereBetween('updated_at', [$startDate, $endDate])->count();
+                            $subProjectsWithCount[$key][$resourceKey]['assignedCount'] = $modelClass::where('chart_status', 'CE_Assigned')->whereNotNull('CE_emp_id')->where('CE_emp_id', $resourceDataVal["CE_emp_id"])->whereBetween('invoke_date', [$startDate, $endDate])->count();
+                            $subProjectsWithCount[$key][$resourceKey]['CompletedCount'] = $modelClass::where('chart_status', 'CE_Completed')->where('CE_emp_id', $resourceDataVal["CE_emp_id"])->whereBetween('invoke_date', [$startDate, $endDate])->count();
+                            $subProjectsWithCount[$key][$resourceKey]['PendingCount'] = $modelClass::where('chart_status', 'CE_Pending')->where('CE_emp_id', $resourceDataVal["CE_emp_id"])->whereBetween('invoke_date', [$startDate, $endDate])->count();
                             $subProjectsWithCount[$key][$resourceKey]['holdCount'] = $modelClass::where('chart_status', 'CE_Hold')->where('CE_emp_id', $resourceDataVal["CE_emp_id"])
                                 ->where(function ($query) use ($startDate, $endDate, $days) {
                                     if ($days == 0) {
                                         $query;
                                     } else {
-                                        $query->whereBetween('updated_at', [$startDate, $endDate]);
+                                        $query->whereBetween('invoke_date', [$startDate, $endDate]);
                                     }
                                 })->count();
                         }
                     } else {
                         $subProjectsWithCount[$key][0]['client_id'] = $clientDetails['id'];
-                        $subProjectsWithCount[$key][0]['client_name'] = $clientDetails['client_name'];
+                        $subProjectsWithCount[$key][0]['client_name'] = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
                         $subProjectsWithCount[$key][0]['sub_project_id'] = $data['id'];
                         $subProjectsWithCount[$key][0]['sub_project_name'] = $data['name'];
                         $subProjectsWithCount[$key][0]['assignedCount'] = '--';
@@ -429,51 +429,51 @@ class DashboardController extends Controller
                     }
                 }
             } else {
-                $projectName = $clientDetails['client_name'];
+                $projectName = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
                 $table_name = Str::slug((Str::lower($projectName) . '_' . 'project'), '_');
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName;
                 $calendarId = $request->CalendarId;
                 if ($calendarId == "year") {
-                    $startDate = Carbon::now()->startOfYear()->toDateTimeString();
-                    $endDate = Carbon::now()->endOfYear()->toDateTimeString();
+                    $startDate = Carbon::now()->startOfYear()->toDateString();
+                    $endDate = Carbon::now()->endOfYear()->toDateString();
                     $days = Carbon::now()->daysInYear;
                 } else if ($calendarId == "month") {
                     $days =  Carbon::now()->daysInMonth;
-                    $startDate = Carbon::now()->startOfMonth()->toDateTimeString();
-                    $endDate = Carbon::now()->endOfMonth()->toDateTimeString();
+                    $startDate = Carbon::now()->startOfMonth()->toDateString();
+                    $endDate = Carbon::now()->endOfMonth()->toDateString();
                 } else {
                     $days = 0;
-                    $startDate = Carbon::now()->startOfDay()->toDateTimeString();
-                    $endDate = Carbon::now()->endOfDay()->toDateTimeString();
+                    $startDate = Carbon::now()->startOfDay()->toDateString();
+                    $endDate = Carbon::now()->endOfDay()->toDateString();
                 }
-                // $startDate = Carbon::now()->subDays($days)->startOfDay()->toDateTimeString();
-                // $endDate = Carbon::now()->endOfDay()->toDateTimeString();
+                // $startDate = Carbon::now()->subDays($days)->startOfDay()->toDateString();
+                // $endDate = Carbon::now()->endOfDay()->toDateString();
                 if (class_exists($modelClass)) {
                     $key = 0;
                     $resourceData = $modelClass::whereIn('CE_emp_id', $resourceList)->select('CE_emp_id')->groupBy('CE_emp_id')->get()->toArray();
                     foreach ($resourceData as $resourceKey => $resourceDataVal) {
                         $subProjectsWithCount[$key][$resourceKey]['client_id'] = $clientDetails['id'];
-                        $subProjectsWithCount[$key][$resourceKey]['client_name'] = $clientDetails['client_name'];
+                        $subProjectsWithCount[$key][$resourceKey]['client_name'] = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
                         $subProjectsWithCount[$key][$resourceKey]['sub_project_id'] = '--';
                         $subProjectsWithCount[$key][$resourceKey]['sub_project_name'] = '--';
                         $subProjectsWithCount[$key][$resourceKey]['resource_emp_id'] = $resourceDataVal["CE_emp_id"];
-                        $subProjectsWithCount[$key][$resourceKey]['assignedCount'] = $modelClass::where('chart_status', 'CE_Assigned')->whereNotNull('CE_emp_id')->where('CE_emp_id', $resourceDataVal["CE_emp_id"])->whereBetween('updated_at', [$startDate, $endDate])->count();
-                        $subProjectsWithCount[$key][$resourceKey]['CompletedCount'] = $modelClass::where('chart_status', 'CE_Completed')->where('qa_work_status', 'Sampling')->where('CE_emp_id', $resourceDataVal["CE_emp_id"])->whereBetween('updated_at', [$startDate, $endDate])->count();
-                        $subProjectsWithCount[$key][$resourceKey]['PendingCount'] = $modelClass::where('chart_status', 'CE_Pending')->where('CE_emp_id', $resourceDataVal["CE_emp_id"])->whereBetween('updated_at', [$startDate, $endDate])->count();
+                        $subProjectsWithCount[$key][$resourceKey]['assignedCount'] = $modelClass::where('chart_status', 'CE_Assigned')->whereNotNull('CE_emp_id')->where('CE_emp_id', $resourceDataVal["CE_emp_id"])->whereBetween('invoke_date', [$startDate, $endDate])->count();
+                        $subProjectsWithCount[$key][$resourceKey]['CompletedCount'] = $modelClass::where('chart_status', 'CE_Completed')->where('CE_emp_id', $resourceDataVal["CE_emp_id"])->whereBetween('invoke_date', [$startDate, $endDate])->count();
+                        $subProjectsWithCount[$key][$resourceKey]['PendingCount'] = $modelClass::where('chart_status', 'CE_Pending')->where('CE_emp_id', $resourceDataVal["CE_emp_id"])->whereBetween('invoke_date', [$startDate, $endDate])->count();
                         $subProjectsWithCount[$key][$resourceKey]['holdCount'] = $modelClass::where('chart_status', 'CE_Hold')->where('CE_emp_id', $resourceDataVal["CE_emp_id"])
                             ->where(function ($query) use ($startDate, $endDate, $days) {
                                 if ($days == 0) {
                                     $query;
                                 } else {
-                                    $query->whereBetween('updated_at', [$startDate, $endDate]);
+                                    $query->whereBetween('invoke_date', [$startDate, $endDate]);
                                 }
                             })->count();
                     }
                 } else {
                     $key = 0;
                     $subProjectsWithCount[$key][0]['client_id'] = $clientDetails['id'];
-                    $subProjectsWithCount[$key][0]['client_name'] = $clientDetails['client_name'];
+                    $subProjectsWithCount[$key][0]['client_name'] = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
                     $subProjectsWithCount[$key][0]['sub_project_id'] = '--';
                     $subProjectsWithCount[$key][0]['sub_project_name'] = '--';
                     $subProjectsWithCount[$key][0]['assignedCount'] = '--';
