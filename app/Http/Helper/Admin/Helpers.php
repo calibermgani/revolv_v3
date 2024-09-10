@@ -507,7 +507,7 @@ class Helpers
 	public static function projectList()
 	{
 		// $data = project::where('status', 'Active')->pluck('project_name', 'id')->prepend(trans('Select Project'), '')->toArray();
-		$data = project::where('status', 'Active')->pluck('project_name', 'project_id')->prepend(trans('Select Project'), '')->toArray();
+		$data = project::where('status', 'Active')->pluck('aims_project_name', 'project_id')->prepend(trans('Select Project'), '')->toArray();
 		return $data;
 	}
 
