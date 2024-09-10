@@ -242,7 +242,7 @@
                                                         $modelTFlag += $modelFlag;
                                                     }
                                                 @endphp
-                                                      @php dd($projects,$modelTFlag,$modelFlag,$assignedCount); @endphp
+                                                      @php dd($projects,$modelTFlag,$modelFlag,$assignedCount,$loginEmpId); @endphp
                                                 @if ($modelTFlag > 0)
                                                     <tr class="clickable-client cursor_hand">
                                                         <td class="details-control"></td>
