@@ -22,7 +22,7 @@ class ProjectController extends Controller
                 'token' => '1a32e71a46317b9cc6feb7388238c95d',
             ];
             $client = new Client();
-            $response = $client->request('POST',  config("constants.PRO_CODE_URL") . '/api/v1_users/get_project_list', [
+            $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_project_list', [
                 'json' => $payload
             ]);
             if ($response->getStatusCode() == 200) {
@@ -35,17 +35,21 @@ class ProjectController extends Controller
             $prjData = [];
             $subPrjData = [];
             foreach ($projects as $data) {
+                $shortcut = $this->getProjectShortcut($data['client_name']);
                 $prjData['project_id'] = $data['id'];
-                $prjData['project_name'] = $data['client_name'];
+                $prjData['aims_project_name'] = $data['client_name'];
+                $prjData['project_name'] = $shortcut;
                 $prjData['added_by'] = 1;
                 $prjData['status'] = $data['status'];
                 $prjDetails = project::where('project_id', $data['id'])->first();
                 if ($prjDetails) {
+                    $prjData['project_name'] = $prjDetails['project_name']; //not updating project name shortcut
                     $prjDetails->update($prjData);
                 } else {
                     project::create($prjData);
                 }
             }
+            subproject::truncate();
             foreach ($subProjects as $data) {
                 $subPrjData['project_id'] = $data['project_id'];
                 $subPrjData['sub_project_id'] = $data['sub_project_id'];

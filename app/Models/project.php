@@ -11,5 +11,5 @@ class project extends Model
     use SoftDeletes;
 
     protected $table ='projects';
-    protected $fillable = ['project_id','project_name','added_by','status'];
+    protected $fillable = ['project_id','aims_project_name','project_name','added_by','status'];
 }
