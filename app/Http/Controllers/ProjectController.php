@@ -67,6 +67,30 @@ class ProjectController extends Controller
         }
     }
 
+    public function getProjectShortcut($projectName)
+    {
+        // Remove special characters and text within parentheses
+        $projectName = preg_replace('/\s+/', ' ', $projectName); // Replace multiple spaces with a single space
+        $projectName = preg_replace('/\s*[\(\)]\s*/', ' ', $projectName); // Remove parentheses and text within them
+        $projectName = preg_replace('/[^\w\s]/', '', $projectName); // Remove non-alphanumeric characters except whitespace
+
+        // Split the project name into words
+        $words = explode(' ', $projectName);
+
+        // Get the first character of each word
+        $shortcut = '';
+        foreach ($words as $word) {
+            if (!empty($word)) {
+                if (count($words) > 1) {
+                    $shortcut .= strtoupper($word[0]);
+                } else {
+                    $shortcut = $word;
+                }
+            }
+        }
+
+        return $shortcut;
+    }
     public function projectWorkMail()
     {
         try {
