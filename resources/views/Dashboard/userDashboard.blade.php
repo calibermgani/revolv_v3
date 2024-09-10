@@ -135,7 +135,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @php dd($projects); @endphp
+                                  
                                         @if (isset($projects) && count($projects) > 0)
                                             @foreach ($projects as $data)
                                                 @php
@@ -242,6 +242,7 @@
                                                         $modelTFlag += $modelFlag;
                                                     }
                                                 @endphp
+                                                      @php dd($projects,$modelTFlag,$modelFlag); @endphp
                                                 @if ($modelTFlag > 0)
                                                     <tr class="clickable-client cursor_hand">
                                                         <td class="details-control"></td>
