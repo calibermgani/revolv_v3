@@ -51,7 +51,7 @@
                             <div class="col-md-3">
                                 <label class="required">TimeZone</label>
                                 <div class="form-group mb-1">
-                                    {!! Form::select('time_zone', $timezones, null, [
+                                    {!! Form::select('time_zone', $timezones, 247, [
                                         'class' => 'form-control white-smoke time_zone select2',
                                         'id' => 'time_zone',
                                         'autocomplete' => 'nope',

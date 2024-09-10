@@ -55,7 +55,7 @@
                                     @if ($projectName !== null && $subProjectName !== null)
                                         <tr style="cursor:pointer !important">
                                             <td><input type="hidden"
-                                                    value="{{ $data->project_id }}">{{ $projectName->project_name }}</td>
+                                                    value="{{ $data->project_id }}">{{ $projectName->aims_project_name }}</td>
                                             <td><input type="hidden"
                                                     value="{{ $data->sub_project_id }}">{{ $subProjectName == '--' ? '--' : $subProjectName->sub_project_name }}
                                             </td>

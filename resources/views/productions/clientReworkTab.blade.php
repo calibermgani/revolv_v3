@@ -155,12 +155,20 @@
                                         @foreach ($columnsHeader as $columnName => $columnValue)
                                             @if ($columnValue != 'id')
                                                 <th><input type="hidden" value={{ $columnValue }}>
-                                                    {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                    @if ($columnValue == 'chart_status')
+                                                      Charge Status
+                                                    @else
+                                                      {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                    @endif
                                                 </th>
                                             @else
                                                 <th style="display:none" class='notexport'><input type="hidden"
                                                         value={{ $columnValue }}>
-                                                    {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                     @if ($columnValue == 'chart_status')
+                                                        Charge Status
+                                                      @else
+                                                       {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                     @endif
                                                 </th>
                                             @endif
                                         @endforeach
@@ -210,6 +218,7 @@
                                                         'CE_status_code',
                                                         'CE_sub_status_code',
                                                         'CE_followup_date',
+                                                        'coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                                                         'created_at',
                                                         'updated_at',
                                                         'deleted_at',
@@ -309,7 +318,7 @@
                                          </div>&nbsp;&nbsp;
                                          <div>
                                              <h6 class="modal-title mb-0" id="myModalLabel" style="color: #ffffff;">
-                                                 {{ ucfirst($clientName->project_name) }}
+                                                 {{ ucfirst($clientName->aims_project_name) }}
                                              </h6>
                                              @if($practiceName != '')
                                              <h6 style="color: #ffffff;font-size:1rem;">{{ ucfirst($practiceName->sub_project_name) }}</h6>
@@ -417,6 +426,7 @@
                                                                                 'rows' => 3,
                                                                                 'id' => $columnName,
                                                                                 $data->field_type_2 == 'mandatory' ? 'required' : '',
+                                                                                ($data->input_type_editable == 1 || $data->input_type_editable == 3) ? '' : 'readonly'
                                                                             ]) !!}
                                                                         @else
                                                                             {!! Form::text($columnName . '[]', null, [
@@ -425,6 +435,7 @@
                                                                                 'style' => 'cursor:pointer',
                                                                                 'id' => $columnName,
                                                                                 $data->field_type_2 == 'mandatory' ? 'required' : '',
+                                                                                ($data->input_type_editable == 1 || $data->input_type_editable == 3) ? '' : 'readonly'
                                                                             ]) !!}
                                                                         @endif
                                                                     @else
@@ -432,7 +443,7 @@
                                                                             {!! Form::$inputType($columnName . '[]', ['' => '-- Select --'] + $associativeOptions, null, [
                                                                                 'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val',
                                                                                 'autocomplete' => 'none',
-                                                                                'style' => 'cursor:pointer',
+                                                                                'style' => 'cursor:pointer;' . (($data->input_type_editable == 1 || $data->input_type_editable == 3) ? '' : 'pointer-events: none;'),
                                                                                 'id' => $columnName,
                                                                                 $data->field_type_2 == 'mandatory' ? 'required' : '',
                                                                             ]) !!}
@@ -449,6 +460,7 @@
                                                                                                 {!! Form::$inputType($columnName . '[]', $options[$i], false, [
                                                                                                     'class' => $columnName,
                                                                                                     'id' => $columnName,
+                                                                                                    'onclick' => $data->input_type_editable != 1 && $data->input_type_editable != 3 ? 'return false;' : '',
                                                                                                 ]) !!}{{ $options[$i] }}
                                                                                                 <span></span>
                                                                                             </label>
@@ -469,6 +481,7 @@
                                                                                                 {!! Form::$inputType($columnName, $options[$i], false, [
                                                                                                     'class' => $columnName,
                                                                                                     'id' => $columnName,
+                                                                                                    'disabled' => $data->input_type_editable != 1 && $data->input_type_editable != 3,
                                                                                                 ]) !!}{{ $options[$i] }}
                                                                                                 <span></span>
                                                                                             </label>
@@ -547,7 +560,7 @@
                                              <input type="hidden" name="CE_emp_id">
                                              <div class="form-group row">
                                                  <label class="col-md-12 required">
-                                                     Chart Status
+                                                     Charge Status
                                                  </label>
                                                  <div class="col-md-10">
                                                      {!! Form::Select(
@@ -718,7 +731,7 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group row">
                                                         <label class="col-md-12 required">
-                                                            QA Status
+                                                            Error Category
                                                         </label>
                                                         @php $qaStatusList = App\Http\Helper\Admin\Helpers::qaStatusList(); @endphp
                                                         <div class="col-md-10">
@@ -741,7 +754,7 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group row">
                                                         <label class="col-md-12 required">
-                                                            QA Sub Status
+                                                            Sub Category
                                                         </label>
                                                         @php $qaSubStatusList = []; @endphp
                                                         <div class="col-md-10">
@@ -857,7 +870,7 @@
                                              </div>&nbsp;&nbsp;
                                              <div>
                                                  <h6 class="modal-title mb-0" id="myModalLabel" style="color: #ffffff;">
-                                                     {{ ucfirst($clientName->project_name) }}
+                                                     {{ ucfirst($clientName->aims_project_name) }}
                                                  </h6>
                                                  @if($practiceName != '')
                                                  <h6 style="color: #ffffff;font-size:1rem;">{{ ucfirst($practiceName->sub_project_name) }}</h6>
@@ -956,7 +969,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group row">
                                                 <label class="col-md-12">
-                                                    Chart Status
+                                                    Charge Status
                                                 </label>
                                                 <label class="col-md-12 pop-non-edt-val"
                                                 id="chart_status">
@@ -970,7 +983,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group row">
                                                 <label class="col-md-12" id="qa_status_label">
-                                                    QA Status
+                                                    Error Category
                                                 </label>
                                                 <label class="col-md-12 pop-non-edt-val" id="qa_status_view">
                                                 </label>
@@ -979,7 +992,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group row">
                                                 <label class="col-md-12" id="qa_sub_status_label">
-                                                    QA Sub Status
+                                                    Sub Category
                                                 </label>
                                                 <label class="col-md-12 pop-non-edt-val" id="qa_sub_status_view">
                                                 </label>
@@ -1790,14 +1803,14 @@
                         labelName = input.name;
                         if(labelName.substring(0, 3).toLowerCase() == "cpt") {
                             var textValue = input.value;
-                            if(textValue.length < 4) {
-                                js_notification('error',"The CPT value must be at least 4 characters long" );
+                            if(textValue.length < 5) {
+                                js_notification('error',"The CPT value must be at least 5 characters long" );
                             }
                         }
                         if(labelName.substring(0, 3).toLowerCase() == "icd") {
                             var textValue = input.value;
-                            if(textValue.length < 3 || textValue.length > 7) {
-                                js_notification('error', "The ICD value must be between 3 and 7 characters long" );
+                            if(textValue.length < 3) {
+                                js_notification('error', "The ICD value must be at least 3 characters long" );
                             }
                         }
                         return labelName;
@@ -1992,7 +2005,14 @@
                             if (result.value == true) {
                                 $('#qa_status').prop('disabled', false);
                                 $('#qa_sub_status').prop('disabled', false);
+                                KTApp.block('#myModal_status', {
+                                    overlayColor: '#000000',
+                                    state: 'danger',
+                                    opacity: 0.1,
+                                    message: 'Fetching...',
+                                });
                             document.querySelector('#revokeFormConfiguration').submit();
+                                KTApp.unblock('#myModal_status');
 
                             } else {
                                 //   location.reload();

@@ -305,6 +305,25 @@
                                                                 ) !!}
                                                             </div>
                                                         </div>
+                                                        <div class="col-md-2">
+                                                            <label>Input Type Editable</label>
+                                                            <div class="form-group mb-1">
+                                                                {!! Form::select(
+                                                                    'input_type_editable[]',
+                                                                    [
+                                                                        3 => 'Both',
+                                                                        1 => 'Coder',
+                                                                        2 => 'QA',
+                
+                                                                    ],
+                                                                    $data->input_type_editable ?? '',
+                                                                    [
+                                                                        'class' => 'white-smoke form-control input_type_editable',
+                                                                        'id' => 'input_type_editable_'. $key,
+                                                                    ],
+                                                                ) !!}
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-1 pt-2 text-lg-right">
@@ -486,6 +505,25 @@
                                                                 ) !!}
                                                             </div>
                                                         </div>
+                                                        <div class="col-md-2">
+                                                            <label>Input Type Editable</label>
+                                                            <div class="form-group mb-1">
+                                                                {!! Form::select(
+                                                                    'input_type_editable[]',
+                                                                    [
+                                                                        3 => 'Both',
+                                                                        1 => 'Coder',
+                                                                        2 => 'QA',
+                
+                                                                    ],
+                                                                    $data->input_type_editable ?? '',
+                                                                    [
+                                                                        'class' => 'white-smoke form-control input_type_editable',
+                                                                        'id' => 'input_type_editable_'. $key,
+                                                                    ],
+                                                                ) !!}
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 @if ($key == 0)
@@ -576,7 +614,11 @@
                     j +
                     ']" id="user_type_id_' +
                     j +
-                    '"><option value="3">Both</option><option value="2">Coder</option><option value="10">QA</option></select></div></div></div></div><div class="col-md-1 text-lg-right pt-2"><i class="fa fas fa-minus icon-circle-remove ml-1 remove_more" id="' +
+                    '"><option value="3">Both</option><option value="2">Coder</option><option value="10">QA</option></select></div></div><div class="col-md-2"><label>Input Type Editable</label><div class="form-group mb-1"><select  class="white-smoke form-control input_type_editable" name="input_type_editable[' +
+                    j +
+                    ']" id="input_type_editable_' +
+                    j +
+                    '"><option value="3">Both</option><option value="1">Coder</option><option value="2">QA</option></select></div></div></div></div><div class="col-md-1 text-lg-right pt-2"><i class="fa fas fa-minus icon-circle-remove ml-1 remove_more" id="' +
                     j + '"></i></div></div></div></div></div>'
                 );
             });
@@ -628,6 +670,19 @@
                     $('#options_name_' + lastElement).css('display', 'none');
                 }
             });
+            $(document).on('change', '.input_type_editable', function() {
+                var splittedValues = $(this).attr('id').split('_');
+                var lastElement = splittedValues[splittedValues.length - 1];
+                var input_type_editable = $(this).val();
+                var select_id = $(this).attr('id');
+                if(input_type_editable != 3) {
+                    console.log($(this).val(),'lastElement',lastElement,"field_type2[' + lastElement + ']");
+                    $('input[name="field_type2[' + lastElement + ']"][value="single"]').prop('checked', true);
+                    $('input[name="field_type2_' + lastElement + '"][value="single"]').prop('checked', true);
+                   
+                } 
+            });
+
             $(document).on('click', '#formCreation_save', function(e) {
                 var project_id = $('#project_list');
                 var sub_project_id = $('#sub_project_list');

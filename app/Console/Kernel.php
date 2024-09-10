@@ -10,6 +10,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
               Commands\ProjectandPracticeTable::class,
               Commands\ProjectWorkMailCommand::class,
+              Commands\procodeProjectOnHoldMail::class,
     ];
     /**
      * Define the application's command schedule.
@@ -21,7 +22,9 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('project:practice')->hourly();
-        $schedule->command('project:workmail')->hourly();
+        $schedule->command('project:workmail')->everyFiveMinutes();
+        $schedule->command('project:holdrecords')->dailyAt('10:00');
+        $schedule->command('project:inventory')->everyFiveMinutes();
     }
 
     /**

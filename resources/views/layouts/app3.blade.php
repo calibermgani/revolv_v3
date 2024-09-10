@@ -35,9 +35,9 @@
             <div class="d-flex flex-column flex-row-fluid wrapper wrapper-back" id="kt_wrapper">
                 @yield('subheader')
                 @include('layouts/header_v1')
-                <div class="content d-flex flex-column flex-column-fluid" id="kt_content" style="margin-top: -4rem;">
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content" style="margin-top: -3rem;">
                     <div class="d-flex flex-column-fluid">
-                        <div class="container-fluid  mx-4 my-4 px-4 py-4">
+                        <div class="container-fluid  my-4">
                             @yield('content')
                         </div>
                     </div>

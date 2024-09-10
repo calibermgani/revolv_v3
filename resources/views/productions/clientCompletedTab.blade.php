@@ -193,12 +193,20 @@
                                                         @if ($columnValue != 'id')
                                                             <th><input type="hidden"
                                                                     value={{ $columnValue }}>
-                                                                {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                                  @if ($columnValue == 'chart_status')
+                                                                    Charge Status
+                                                                  @else
+                                                                   {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                                  @endif
                                                             </th>
                                                         @else
                                                             <th style="display:none" class='notexport'><input type="hidden"
                                                                     value={{ $columnValue }}>
-                                                                {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                                  @if ($columnValue == 'chart_status')
+                                                                    Charge Status
+                                                                  @else
+                                                                   {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                                  @endif
                                                             </th>
                                                         @endif
                                                     @endforeach
@@ -216,7 +224,9 @@
                                                             class="fa far fa-eye text-eye icon-circle1 mt-0"></i></button></td>
                                                         @foreach ($data->getAttributes() as $columnName => $columnValue)
                                                             @php
-                                                                $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date', 'created_at', 'updated_at', 'deleted_at'];
+                                                                $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date', 
+                                                                'coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                                                                'created_at', 'updated_at', 'deleted_at'];
                                                             @endphp
                                                             @if (!in_array($columnName, $columnsToExclude))
                                                                 {{-- <td style="max-width: 300px;white-space: normal;">
@@ -306,7 +316,7 @@
                                                     <div>
                                                         <!-- Project name -->
                                                         <h4 class="modal-title mb-0" id="myModalLabel" style="color: #ffffff;">
-                                                            {{ ucfirst($clientName->project_name) }}
+                                                            {{ ucfirst($clientName->aims_project_name) }}
                                                         </h4>
                                                         @if($practiceName != '')
                                                          <h6 style="color: #ffffff;font-size:1rem;">{{ ucfirst($practiceName->sub_project_name) }}</h6>
@@ -404,7 +414,7 @@
                                                     <div class="col-md-6">
                                                         <div class="form-group row" style="margin-left: -2rem">
                                                             <label class="col-md-12">
-                                                                Chart Status
+                                                                Charge Status
                                                             </label>
                                                             <label class="col-md-12 pop-non-edt-val"
                                                             id="chart_status">

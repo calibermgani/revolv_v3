@@ -33,7 +33,7 @@
                                     strpos($empDesignation, 'Team Lead') !== false ||
                                     strpos($empDesignation, 'CEO') !== false ||
                                     strpos($empDesignation, 'Vice') !== false) --}}
-                                <div class="col-lg-3 mb-lg-0 mb-6">
+                                <div class="col-lg-3 mb-lg-0 mb-6" id="assign_div">
 
                                     <fieldset class="form-group mb-0 white-smoke-disabled">
 
@@ -79,13 +79,34 @@
                             <div class="wizard-wrapper py-2">
                                 <div class="wizard-label p-2 mt-2">
                                     <div class="wizard-title" style="display: flex; align-items: center;">
-                                        <h6 style="margin-right: 5px;">Total Inventory</h6>
+                                        <h6 style="margin-right: 5px;">Assigned</h6>
                                         @include('CountVar.countRectangle', ['count' => $assignedCount])
                                     </div>
 
                                 </div>
                             </div>
                         </div>
+                        @if (
+                            $loginEmpId == 'Admin' ||
+                                strpos($empDesignation, 'Manager') !== false ||
+                                strpos($empDesignation, 'VP') !== false ||
+                                strpos($empDesignation, 'Leader') !== false ||
+                                strpos($empDesignation, 'Team Lead') !== false ||
+                                strpos($empDesignation, 'CEO') !== false ||
+                                strpos($empDesignation, 'Vice') !== false)
+                            <div class="wizard-step mb-0 five" data-wizard-type="done">
+                                <div class="wizard-wrapper py-2">
+                                    <div class="wizard-label p-2 mt-2">
+                                        <div class="wizard-title" style="display: flex; align-items: center;">
+                                            <h6 style="margin-right: 5px;">UnAssigned</h6>
+                                            @include('CountVar.countRectangle', [
+                                                'count' => $unAssignedCount,
+                                            ])
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                         <div class="wizard-step mb-0 two" data-wizard-type="done">
                             <div class="wizard-wrapper py-2">
                                 <div class="wizard-label p-2 mt-2">
@@ -136,7 +157,7 @@
                                 </div>
                             </div>
                         </div> --}}
-                        @if (
+                        {{-- @if (
                             $loginEmpId == 'Admin' ||
                                 strpos($empDesignation, 'Manager') !== false ||
                                 strpos($empDesignation, 'VP') !== false ||
@@ -156,7 +177,7 @@
                                     </div>
                                 </div>
                             </div>
-                        @endif
+                        @endif --}}
                     </div>
                 </div>
             </div>
@@ -187,12 +208,20 @@
                                         @foreach ($columnsHeader as $columnName => $columnValue)
                                             @if ($columnValue != 'id')
                                                 <th><input type="hidden" value={{ $columnValue }}>
+                                                    @if ($columnValue == 'chart_status')
+                                                        Charge Status
+                                                    @else
                                                     {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                    @endif
                                                 </th>
                                             @else
                                                 <th style="display:none" class='notexport'><input type="hidden"
                                                         value={{ $columnValue }}>
-                                                    {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                        @if ($columnValue == 'chart_status')
+                                                            Charge Status
+                                                        @else
+                                                            {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                        @endif
                                                 </th>
                                             @endif
                                         @endforeach
@@ -250,6 +279,7 @@
                                                         'coder_rework_status',
                                                         'QA_status_code',
                                                         'QA_sub_status_code',
+                                                        'coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                                                         'created_at',
                                                         'updated_at',
                                                         'deleted_at',
@@ -264,16 +294,12 @@
                                                         <td
                                                             style="max-width: 300px;
                                                                         white-space: normal;">
-                                                            @if ($columnName == 'chart_status' && is_null($data->QA_emp_id))
-                                                                <b>
-                                                                    <p style="color: red;">UnAssigned</p>
-                                                                </b>
-                                                            @else
+                                                          
                                                                 @if (str_contains($columnValue, '-') && strtotime($columnValue))
                                                                     {{ date('m/d/Y', strtotime($columnValue)) }}
-                                                                @elseif ($columnName == 'chart_status' && str_contains($columnValue, 'CE_'))
+                                                                @elseif ($columnName == 'chart_status' && str_contains($columnValue, 'CE_') && $data->qa_work_status !== null)
                                                                     {{-- {{ str_replace('CE_', '', $columnValue) }} --}}
-                                                                Assigned
+                                                                {{-- Assigned --}} {{ str_replace('_', ' ', $data->qa_work_status) }}
                                                                 @elseif ($columnName == 'chart_status' && str_contains($columnValue, 'QA_'))
                                                                 {{-- {{ str_replace('CE_', '', $columnValue) }} --}}
                                                                 In process
@@ -299,7 +325,7 @@
                                                                 @else
                                                                     {{ $columnValue }}
                                                                 @endif
-                                                            @endif
+                                                            
                                                         </td>
                                                     @else
                                                         <td style="display:none;max-width: 300px;
@@ -360,7 +386,7 @@
                                                 <div>
                                                     <h6 class="modal-title mb-0" id="myModalLabel"
                                                         style="color: #ffffff;">
-                                                        {{ ucfirst($clientName->project_name) }}
+                                                        {{ ucfirst($clientName->aims_project_name) }}
                                                     </h6>
                                                     @if ($practiceName != '')
                                                         <h6 style="color: #ffffff;font-size:1rem;">
@@ -419,7 +445,7 @@
                                         </div>
                                         <div class="col-md-9" style="border-left: 1px solid #ccc;" data-scroll="true"
                                             data-height="400">
-                                                <h6 class="title-h6">Coder
+                                                {{-- <h6 class="title-h6">Coder
                                                     <span type = "button" id="expandButton" class="float-right">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                             fill="currentColor" class="bi bi-arrow-counterclockwise"
@@ -430,7 +456,7 @@
                                                                 d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466" />
                                                         </svg></span>
 
-                                                </h6>&nbsp;&nbsp;
+                                                </h6>&nbsp;&nbsp; --}}
                                                 @if (count($popupEditableFields) > 0)
                                                         @php $count = 0; @endphp
                                                         @foreach ($popupEditableFields as $key => $data)
@@ -470,6 +496,7 @@
                                                                                         'rows' => 3,
                                                                                         'id' => $columnName,
                                                                                         $data->field_type_2 == 'mandatory' ? 'required' : '',
+                                                                                        ($data->input_type_editable == 2 || $data->input_type_editable == 3) ? '' : 'readonly'
                                                                                     ]) !!}
                                                                                 @else
                                                                                     {!! Form::text($columnName . '[]', null, [
@@ -478,6 +505,7 @@
                                                                                         'style' => 'cursor:pointer',
                                                                                         'id' => 'date_range',
                                                                                         $data->field_type_2 == 'mandatory' ? 'required' : '',
+                                                                                        ($data->input_type_editable == 2 || $data->input_type_editable == 3) ? '' : 'readonly'
                                                                                     ]) !!}
                                                                                 @endif
                                                                             @else
@@ -485,7 +513,7 @@
                                                                                     {!! Form::$inputType($columnName . '[]', ['' => '-- Select --'] + $associativeOptions, null, [
                                                                                         'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val',
                                                                                         'autocomplete' => 'none',
-                                                                                        'style' => 'cursor:pointer',
+                                                                                        'style' => 'cursor:pointer;' . (($data->input_type_editable == 2 || $data->input_type_editable == 3) ? '' : 'pointer-events: none;'),
                                                                                         'id' => $columnName,
                                                                                         $data->field_type_2 == 'mandatory' ? 'required' : '',
                                                                                     ]) !!}
@@ -504,6 +532,7 @@
                                                                                                         {!! Form::$inputType($columnName . '[]', $options[$i], false, [
                                                                                                             'class' => $columnName,
                                                                                                             'id' => $columnName,
+                                                                                                            'onclick' => $data->input_type_editable != 2 && $data->input_type_editable != 3 ? 'return false;' : '',
                                                                                                         ]) !!}{{ $options[$i] }}
                                                                                                         <span></span>
                                                                                                     </label>
@@ -525,6 +554,7 @@
                                                                                                         style="word-break: break-all;">
                                                                                                         {!! Form::$inputType($columnName, $options[$i], false, [
                                                                                                             'class' => $columnName,
+                                                                                                            'disabled' => $data->input_type_editable != 2 && $data->input_type_editable != 3
                                                                                                         ]) !!}{{ $options[$i] }}
                                                                                                         <span></span>
                                                                                                     </label>
@@ -707,7 +737,7 @@
                                                 <input type="hidden" name="QA_emp_id">
                                                 <div class="form-group row">
                                                     <label class="col-md-12 required">
-                                                        Chart Status
+                                                        Charge Status
                                                     </label>
                                                     <div class="col-md-10">
                                                         {!! Form::Select(
@@ -754,7 +784,7 @@
                                                 <input type="hidden" name="QA_emp_id">
                                                 <div class="form-group row">
                                                     <label class="col-md-12 required">
-                                                        QA Status
+                                                        Error Category
                                                     </label>
                                                     @php $qaStatusList = App\Http\Helper\Admin\Helpers::qaStatusList(); @endphp
 
@@ -916,7 +946,7 @@
                                     </div>&nbsp;&nbsp;
                                     <div>
                                         <h6 class="modal-title mb-0" id="myModalLabel" style="color: #ffffff;">
-                                            {{ ucfirst($clientName->project_name) }}
+                                            {{ ucfirst($clientName->aims_project_name) }}
                                         </h6>
                                         @if ($practiceName != '')
                                             <h6 style="color: #ffffff;font-size:1rem;">
@@ -1030,7 +1060,7 @@
                                             <div class="col-md-6">
                                                 <div class="form-group row">
                                                     <label class="col-md-12 required">
-                                                        Chart Status
+                                                        Charge Status
                                                     </label>
                                                     <label class="col-md-12 pop-non-edt-val" id="chart_status">
                                                     </label>
@@ -1808,7 +1838,15 @@
                 }
                 $(document).on('change', '#qa_status', function() {
                     var status_code_id = $(this).val();
+                    var status_code_id = $(this).val();
+                        KTApp.block('#myModal_status', {
+                            overlayColor: '#000000',
+                            state: 'danger',
+                            opacity: 0.1,
+                            message: 'Fetching...',
+                        });
                     subStatus(status_code_id,'');
+                    KTApp.unblock('#myModal_status');
                 });
 
             $(document).on('click', '.clickable-view', function(e) {
@@ -2008,18 +2046,18 @@
                     labelName = input.name;
                         if(labelName.substring(0, 3).toLowerCase() == "cpt") {
                             var textValue = input.value;
-                            if(textValue.length < 4) {
+                            if(textValue.length < 5) {
                                 inputTypeValue = 1;
-                                js_notification('error',"The CPT value must be at least 4 characters long" );
+                                js_notification('error',"The CPT value must be at least 5 characters long" );
                             } else {
                                 inputTypeValue = 0;
                             }
                         }
                         if(labelName.substring(0, 3).toLowerCase() == "icd") {
                             var textValue = input.value;
-                            if(textValue.length < 3 || textValue.length > 7) {
+                            if(textValue.length < 3) {
                                 inputTypeValue = 1;
-                                js_notification('error', "The ICD value must be between 3 and 7 characters long" );
+                                js_notification('error', "The ICD value must be at least 3 characters long" );
                             } else {
                                 inputTypeValue = 0;
                             }
@@ -2164,7 +2202,14 @@
 
                     }).then(function(result) {
                         if (result.value == true) {
+                            KTApp.block('#myModal_status', {
+                                overlayColor: '#000000',
+                                state: 'danger',
+                                opacity: 0.1,
+                                message: 'Fetching...',
+                            });
                             document.querySelector('#formConfiguration').submit();
+                            KTApp.unblock('#myModal_status');
 
                         } else {
                             //   location.reload();
@@ -2185,23 +2230,68 @@
                 }
                 if ($(this).prop('checked') == true && $('.checkBoxClass:checked').length > 0) {
                     $('#assigneeDropdown').prop('disabled', false);
+                    // assigneeDropdown();
                 } else {
                     $('#assigneeDropdown').prop('disabled', true);
 
                 }
             });
-            $('.checkBoxClass').change(function() {
-                var anyCheckboxChecked = $('.checkBoxClass:checked').length > 0;
-                var allCheckboxesChecked = $('.checkBoxClass:checked').length === $('.checkBoxClass')
-                    .length;
-                if (allCheckboxesChecked) {
-                    $("#ckbCheckAll").prop('checked', $(this).prop('checked'));
-                } else {
-                    $("#ckbCheckAll").prop('checked', false);
-                }
-                $('#assigneeDropdown').prop('disabled', !(anyCheckboxChecked || allCheckboxesChecked));
-            });
+            function handleCheckboxChange() {
+                // $('.checkBoxClass').change(function() {
+                    var anyCheckboxChecked = $('.checkBoxClass:checked').length > 0;
+                    var allCheckboxesChecked = $('.checkBoxClass:checked').length === $('.checkBoxClass')
+                        .length;
+                    if (allCheckboxesChecked) {
+                        $("#ckbCheckAll").prop('checked', $(this).prop('checked'));
+                    } else {
+                        $("#ckbCheckAll").prop('checked', false);
+                    }
+                    $('#assigneeDropdown').prop('disabled', !(anyCheckboxChecked || allCheckboxesChecked));
+                    // if ($(this).prop('checked') == true) {
+                    //   assigneeDropdown();
+                    // }
+                // });
+            }
 
+            function attachCheckboxHandlers() {
+                $('.checkBoxClass').off('change').on('change', handleCheckboxChange);
+            }
+                attachCheckboxHandlers();
+                table.on('draw', function() {
+                    attachCheckboxHandlers();
+                });
+            // function assigneeDropdown() {
+            //    KTApp.block('#assign_div', {
+            //         overlayColor: '#000000',
+            //         state: 'danger',
+            //         opacity: 0.1,
+            //         message: 'Fetching...',
+            //     });
+            //     $.ajaxSetup({
+            //         headers: {
+            //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+            //                 'content')
+            //         }
+            //     });
+                  
+            //     $.ajax({
+            //         url: "{{ url('qa_production/assignee_drop_down') }}",
+            //         method: 'POST',
+            //         data: {
+            //             clientName: clientName,
+            //         },
+            //         success: function(response) {
+            //             console.log(response, 'response');
+            //            var sla_options = '<option value="">-- Select --</option>';
+            //             $.each(response.assignedDropDown, function(key, value) {
+            //                 sla_options += '<option value="' + key + '">' + value +
+            //                     '</option>';
+            //             });
+            //             $('select[name="assignee_name"]').html(sla_options);
+            //             KTApp.unblock('#assign_div');
+            //         },
+            //     });
+            // }
 
             $('#assigneeDropdown').change(function() {
                 assigneeId = $(this).val();
@@ -2290,7 +2380,7 @@
                         "parent"] + "&child=" + getUrlVars()["child"];
             })
             $(document).on('click', '.five', function() {
-                window.location.href = baseUrl + 'qa_production/qa_projects_Revoke/' + clientName + '/' +
+                window.location.href = baseUrl + 'qa_production/qa_projects_unAssigned/' + clientName + '/' +
                     subProjectName +
                     "?parent=" +
                     getUrlVars()[
@@ -2326,7 +2416,7 @@
             var excludedFields = ['QA_rework_comments', 'chart_status','coder_rework_status','coder_rework_reason','QA_status_code','QA_sub_status_code','qa_hold_reason','	ce_hold_reason'];
                  var previousValue;
                 $('#formConfiguration').on('focus', 'input, select, textarea', function() {
-                    previousValue = $(this).val();
+                    previousValue = $(this).val().trim();
                 }).on('focusout', 'input, select, textarea', function() {
                 //   var currentValue = $(this).val();
                         var fieldName = $(this).attr('name');
@@ -2341,9 +2431,9 @@
                         } else if ($(this).is('input[type="radio"]')) {
                             currentValue = $(`input[name="${fieldName}"]:checked`).val();
                         } else if ($(this).is('input[type="date"]')) {
-                            currentValue = $(this).val();
+                            currentValue = $(this).val().trim();
                         } else {
-                            currentValue = $(this).val();
+                            currentValue = $(this).val().trim();
                         }
                         var newLine = previousValue != '' ? formattedValue1 + ' '+previousValue + ' Changed to ' + currentValue : formattedValue1 + '  added ' + currentValue;
                         var textAreaValue = $('#QA_rework_comments').val();

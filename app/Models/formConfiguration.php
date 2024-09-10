@@ -10,7 +10,7 @@ class formConfiguration extends Model
 {
     use SoftDeletes;
     protected $table ='form_configurations';
-   protected $fillable = ['project_id','sub_project_id','label_name','input_type','options_name','field_type','field_type_1','field_type_2','field_type_3','added_by','user_type'];
+   protected $fillable = ['project_id','sub_project_id','label_name','input_type','options_name','field_type','field_type_1','field_type_2','field_type_3','added_by','user_type','input_type_editable'];
 //    protected $casts = [
 //     'label_name' => 'array',
 //     'input_type' => 'array',

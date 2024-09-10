@@ -37,13 +37,15 @@
             <p>Dear Team, </p>
         </h4>
 
-        <p>Please find below the daily update for the production inventory : {{Carbon\Carbon::yesterday()->format('m/d/Y')}}</p>
+        <p>Please find below the daily update for the production inventory : {{$yesterday->format('m/d/Y')}}</p>
+        {{-- <p>Please find below the daily update for the production inventory : 06/07/2024</p> --}}
        
         <table class="table" border="1" style="border-collapse: collapse">
             <thead>
                 <tr>
                     <th style="text-align: left;padding: 5px;">Project</th>
-                    <th style="text-align: left;padding: 5px;">Chats</th>
+                    {{-- <th style="text-align: left;padding: 5px;">Chats</th> --}}
+                    <th style="text-align: left;padding: 5px;">Inventory Uploaded</th>
                     <th style="text-align: left;padding: 5px;">Coder</th>
                     <th style="text-align: left;padding: 5px;">QA</th>
                     {{-- <th style="text-align: left;padding: 5px;">Balance</th> --}}
@@ -55,12 +57,16 @@
                     @foreach ($mailBody as $data)
                         <tr>
                             <td style="text-align: left;padding: 5px;">{{ $data['project'] }}</td>
-                            <td style="text-align: left;padding: 5px;">{{ $data['Chats'] }}</td>
-                            <td style="text-align: left;padding: 5px;">{{ $data['Coder'] }}</td>
-                            <td style="text-align: left;padding: 5px;">{{ $data['QA'] }}</td>
+                            <td style="text-align: left;padding: 5px;">{{ $data['Chats'] == 0 ? 'No' : 'Yes' }}</td>
+                            <td style="text-align: left;padding: 5px;">{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder']}}</td>
+                            <td style="text-align: left;padding: 5px;">{{ $data['QA'] == 0 ? 'No Activity' : $data['QA']}}</td>
                             {{-- <td style="text-align: left;padding: 5px;">{{ $data['Balance'] }}</td> --}}
                         </tr>
                     @endforeach
+                @else
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 5px;">--No Records--</td>
+                </tr>
                 @endif
 
             </tbody>

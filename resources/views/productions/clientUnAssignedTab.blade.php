@@ -15,7 +15,7 @@
                                 <div class="col-md-6">
                                     <div class="row" style="justify-content: flex-end;margin-right:1.4rem">
                                      @if ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)
-                                        <div class="col-lg-3 mb-lg-0 mb-6">
+                                        <div class="col-lg-3 mb-lg-0 mb-6" id="assign_div">
                                             <fieldset class="form-group mb-0 white-smoke-disabled">
                                                 {!! Form::select('assignee_name', ['' => '--Assignee--'] + $assignedDropDown, null, [
                                                     'class' => 'form-control kt_select2_assignee',
@@ -162,12 +162,20 @@
                                                             @if ($columnValue != 'id')
                                                                 <th><input type="hidden"
                                                                         value={{ $columnValue }}>
-                                                                    {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                                      @if ($columnValue == 'chart_status')
+                                                                        Charge Status
+                                                                      @else
+                                                                        {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                                      @endif
                                                                 </th>
                                                             @else
                                                                 <th style="display:none" class='notexport'><input type="hidden"
                                                                         value={{ $columnValue }}>
-                                                                    {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                                      @if ($columnValue == 'chart_status')
+                                                                        Charge Status
+                                                                      @else
+                                                                        {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                                      @endif
                                                                 </th>
                                                             @endif
                                                         @endforeach
@@ -206,6 +214,7 @@
                                                                     $columnsToExclude = [
                                                                         'QA_emp_id',
                                                                         'ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
+                                                                        'coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                                                                         'created_at',
                                                                         'updated_at',
                                                                         'deleted_at',
@@ -351,14 +360,14 @@
                                                                     @endif
                                                                 </div>
                                                                 <div class="col-md-9" style="border-left: 1px solid #ccc;" data-scroll="true" data-height="400">
-                                                                    <h6 class="title-h6">Coder
+                                                                    {{-- <h6 class="title-h6">Coder
                                                                         <span type = "button" id="expandButton"  class="float-right">
                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
                                                                         <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z"/>
                                                                         <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466"/>
                                                                       </svg></span>
 
-                                                                    </h6>&nbsp;&nbsp;
+                                                                    </h6>&nbsp;&nbsp; --}}
                                                                     @if (count($popupEditableFields) > 0)
                                                                         @php $count = 0; @endphp
                                                                         @foreach ($popupEditableFields as $key => $data)
@@ -499,7 +508,7 @@
                                                                             <input type="hidden" name="CE_emp_id">
                                                                             <div class="form-group row">
                                                                                 <label class="col-md-12 required">
-                                                                                    Chart Status
+                                                                                    Charge Status
                                                                                 </label>
                                                                                 <div class="col-md-10">
                                                                                     {!! Form::Select(
@@ -691,7 +700,7 @@
                                                                 <div class="col-md-6">
                                                                     <div class="form-group row" style="margin-left: -2rem">
                                                                         <label class="col-md-12 required">
-                                                                            Chart Status
+                                                                            Charge Status
                                                                         </label>
                                                                         <label class="col-md-12 pop-non-edt-val"
                                                                         id="chart_status">
@@ -1143,14 +1152,14 @@
                     labelName = input.name;
                         if(labelName.substring(0, 3).toLowerCase() == "cpt") {
                             var textValue = input.value;
-                            if(textValue.length < 4) {
-                                js_notification('error',"The CPT value must be at least 4 characters long" );
+                            if(textValue.length < 5) {
+                                js_notification('error',"The CPT value must be at least 5 characters long" );
                             }
                         }
                         if(labelName.substring(0, 3).toLowerCase() == "icd") {
                             var textValue = input.value;
-                            if(textValue.length < 3 || textValue.length > 7) {
-                                js_notification('error', "The ICD value must be between 3 and 7 characters long" );
+                            if(textValue.length < 3) {
+                                js_notification('error', "The ICD value must be at least 3 characters long" );
                             }
                         }
                         return labelName;
@@ -1316,7 +1325,14 @@
 
                     }).then(function(result) {
                         if (result.value == true) {
+                            KTApp.block('#myModal_status', {
+                                overlayColor: '#000000',
+                                state: 'danger',
+                                opacity: 0.1,
+                                message: 'Fetching...',
+                            });
                             document.querySelector('#formConfiguration').submit();
+                            KTApp.unblock('#myModal_status');
 
                         } else {
 
@@ -1338,26 +1354,71 @@
                     $(".checkBoxClass").prop('checked', isChecked); // Select checkboxes on the current page
                 }
                 if ($(this).prop('checked') == true && $('.checkBoxClass:checked').length > 0) {
-                    $('#assigneeDropdown').prop('disabled', false);
+                    $('#assigneeDropdown').prop('disabled', false); 
+                    assigneeDropdown();
                 } else {
                     $('#assigneeDropdown').prop('disabled', true);
 
                 }
             });
+            function handleCheckboxChange() {
+                // $('.checkBoxClass').change(function() {
+                        var anyCheckboxChecked = $('.checkBoxClass:checked').length > 0;
+                        var allCheckboxesChecked = $('.checkBoxClass:checked').length === $('.checkBoxClass')
+                            .length;
+                        if (allCheckboxesChecked) {
+                            $("#ckbCheckAll").prop('checked', $(this).prop('checked'));
+                        } else {
+                            $("#ckbCheckAll").prop('checked', false);
+                        }
+                        console.log(allCheckboxesChecked, 'allCheckboxesChecked', anyCheckboxChecked);
+                        $('#assigneeDropdown').prop('disabled', !(anyCheckboxChecked || allCheckboxesChecked));
+                        if ($(this).prop('checked') == true) {
+                            assigneeDropdown();
+                        }
+                // });
+            }
 
-            $('.checkBoxClass').change(function() {
-                var anyCheckboxChecked = $('.checkBoxClass:checked').length > 0;
-                var allCheckboxesChecked = $('.checkBoxClass:checked').length === $('.checkBoxClass')
-                    .length;
-                if (allCheckboxesChecked) {
-                    $("#ckbCheckAll").prop('checked', $(this).prop('checked'));
-                } else {
-                    $("#ckbCheckAll").prop('checked', false);
-                }
-                console.log(allCheckboxesChecked, 'allCheckboxesChecked', anyCheckboxChecked);
-                $('#assigneeDropdown').prop('disabled', !(anyCheckboxChecked || allCheckboxesChecked));
-            });
+            function attachCheckboxHandlers() {
+                $('.checkBoxClass').off('change').on('change', handleCheckboxChange);
+            }
+               attachCheckboxHandlers();
+                table.on('draw', function() {
+                    attachCheckboxHandlers();
+                });
 
+            function assigneeDropdown() {
+               KTApp.block('#assign_div', {
+                    overlayColor: '#000000',
+                    state: 'danger',
+                    opacity: 0.1,
+                    message: 'Fetching...',
+                });
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                            'content')
+                    }
+                });
+                  
+                $.ajax({
+                    url: "{{ url('assignee_drop_down') }}",
+                    method: 'POST',
+                    data: {
+                        clientName: clientName,
+                    },
+                    success: function(response) {
+                        console.log(response, 'response');
+                       var sla_options = '<option value="">-- Select --</option>';
+                        $.each(response.assignedDropDown, function(key, value) {
+                            sla_options += '<option value="' + key + '">' + value +
+                                '</option>';
+                        });
+                        $('select[name="assignee_name"]').html(sla_options);
+                        KTApp.unblock('#assign_div');
+                    },
+                });
+            }
 
             $('#assigneeDropdown').change(function() {
                 assigneeId = $(this).val();
@@ -1377,7 +1438,7 @@
                     }
                 });
                 swal.fire({
-                    text: "Do you want to assign the charts ?",
+                    text: "Do you want to assign?",
                     icon: "success",
                     buttonsStyling: false,
                     showCancelButton: true,

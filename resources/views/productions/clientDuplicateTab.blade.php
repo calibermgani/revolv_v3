@@ -164,12 +164,19 @@
                                                 @if ($duplicateProjectDetails->contains('key', 'value'))
                                                     @foreach ($duplicateProjectDetails[0]->getAttributes() as $columnName => $columnValue)
                                                         @php
-                                                            $columnsToExclude =  ['id','QA_emp_id','duplicate_status','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date','updated_at','created_at', 'deleted_at'];
+                                                            $columnsToExclude =  ['id','QA_emp_id','duplicate_status','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
+                                                            'coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                                                            'updated_at','created_at', 'deleted_at'];
                                                         @endphp
                                                           <th class='notexport' style="color:white !important"><input type="checkbox" id="ckbCheckAll"></th>
                                                         @if (!in_array($columnName, $columnsToExclude))
                                                             <th><input type="hideen"
-                                                                    value={{ $columnValue }}>{{ str_replace(['_', '_or_'], [' ', '/'], ucwords(str_replace('_', ' ', $columnValue))) }}
+                                                                    value={{ $columnValue }}>
+                                                                    @if ($columnValue == 'chart_status')
+                                                                          Charge Status
+                                                                    @else
+                                                                        {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                                    @endif
                                                             </th>
                                                         @endif
                                                     @endforeach
@@ -178,7 +185,11 @@
                                                     @foreach ($columnsHeader as $columnName => $columnValue)
                                                         <th><input type="hidden"
                                                                 value={{ $columnValue }}>
-                                                            {{ ucwords(str_replace(['_or_', '_'], ['/', ' '], $columnValue)) }}
+                                                            @if ($columnValue == 'chart_status')
+                                                                Charge Status
+                                                              @else
+                                                               {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                             @endif
                                                         </th>
                                                     @endforeach
                                                 @endif

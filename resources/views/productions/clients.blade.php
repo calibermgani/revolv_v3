@@ -11,7 +11,7 @@
                             d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
                     </svg>
                 </span> --}}
-                <span class="project_header" style="margin-left: 4px !important">Client List</span>
+                <span class="project_header" style="margin-left: 4px !important">Project List</span>
             </div>
 
             <div class="table-responsive pb-4">
@@ -19,7 +19,7 @@
                     <thead>
                         <tr>
                             <th width="15px"></th>
-                            <th>Client Name</th>
+                            <th>Project</th>
                             <th>Assigned</th>
                             <th>Completed</th>
                             <th>Pending</th>
@@ -36,7 +36,7 @@
                             @php
                                 $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
                                 $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
-                                    $projectName = $data["client_name"];
+                                    $projectName = App\Http\Helper\Admin\Helpers::projectName($data["id"])->project_name;//$data["client_name"];
                                   //   $subproject_name = App\Models\subproject::where('project_id',$data['id'])->pluck('sub_project_name')->toArray();
                                             if (isset($data["subprject_name"]) && !empty($data["subprject_name"])) {
                                                 $subproject_name = $data["subprject_name"];
@@ -64,7 +64,7 @@
                                                 if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
                                                             if (class_exists($modelClass)) {
                                                                 $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->whereNotNull('CE_emp_id')->count();
-                                                                $completedCount = $modelClass::where('chart_status','CE_Completed')->where('qa_work_status', 'Sampling')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                                                                $completedCount = $modelClass::where('chart_status','CE_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
                                                                 $pendingCount = $modelClass::where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate])->count();
                                                                 $holdCount = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
                                                             } else {
@@ -76,7 +76,7 @@
                                                 } else if($loginEmpId) {
                                                     if (class_exists($modelClass)) {
                                                         $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->count();
-                                                        $completedCount = $modelClass::where('chart_status','CE_Completed')->where('qa_work_status', 'Sampling')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                                                        $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                                                         $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                                                         $holdCount = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                                                     } else {
@@ -185,6 +185,12 @@
                     row.child.hide();
                     tr.removeClass('shown');
                 } else {
+                    KTApp.block('#clients_list', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Fetching...',
+                    });
                     $.ajaxSetup({
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -211,6 +217,7 @@
                                 }
                             }
                             tr.addClass('shown');
+                            KTApp.unblock('#clients_list');
                         },
                         error: function(jqXHR, exception) {}
                     });
@@ -258,9 +265,17 @@
 
                 // window.location.href = baseUrl + 'projects/' + encodedId + '/' + clientName + "?parent=" +
                 //     getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
+                KTApp.block('#clients_list', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Fetching...',
+                    });
                 window.location.href = baseUrl + 'projects_assigned/' + btoa(clientName) + '/' + btoa(
                         subProjectName) + "?parent=" +
                     getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
+                    KTApp.unblock('#clients_list');
+
 
             })
 

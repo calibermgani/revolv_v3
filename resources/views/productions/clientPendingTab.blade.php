@@ -152,12 +152,20 @@
                                                         @if ($columnValue != 'id')
                                                             <th><input type="hidden"
                                                                     value={{ $columnValue }}>
-                                                                {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                                  @if ($columnValue == 'chart_status')
+                                                                    Charge Status
+                                                                  @else
+                                                                   {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                                  @endif
                                                             </th>
                                                         @else
                                                             <th style="display:none" class='notexport'><input type="hidden"
                                                                     value={{ $columnValue }}>
-                                                                {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                                  @if ($columnValue == 'chart_status')
+                                                                    Charge Status
+                                                                  @else
+                                                                    {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                                  @endif
                                                             </th>
                                                         @endif
                                                     @endforeach
@@ -188,7 +196,9 @@
                                                         </td>
                                                         @foreach ($data->getAttributes() as $columnName => $columnValue)
                                                             @php
-                                                                $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date','created_at', 'updated_at', 'deleted_at'];
+                                                                $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
+                                                                'coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                                                                'created_at', 'updated_at', 'deleted_at'];
                                                             @endphp
                                                             @if (!in_array($columnName, $columnsToExclude))
                                                                 @if ($columnName != 'id')
@@ -264,7 +274,7 @@
                                                         </div>&nbsp;&nbsp;
                                                         <div>
                                                             <h6 class="modal-title mb-0" id="myModalLabel" style="color: #ffffff;">
-                                                                {{ ucfirst($clientName->project_name) }}
+                                                                {{ ucfirst($clientName->aims_project_name) }}
                                                             </h6>
                                                             @if($practiceName != '')
                                                             <h6 style="color: #ffffff;font-size:1rem;">{{ ucfirst($practiceName->sub_project_name) }}</h6>
@@ -372,6 +382,7 @@
                                                                                 'rows' => 3,
                                                                                 'id' => $columnName,
                                                                                 $data->field_type_2 == 'mandatory' ? 'required' : '',
+                                                                                ($data->input_type_editable == 1 || $data->input_type_editable == 3) ? '' : 'readonly'
                                                                             ]) !!}
                                                                         @else
                                                                             {!! Form::text($columnName . '[]', null, [
@@ -380,6 +391,7 @@
                                                                                 'style' => 'cursor:pointer',
                                                                                 'id' => $columnName,
                                                                                 $data->field_type_2 == 'mandatory' ? 'required' : '',
+                                                                                ($data->input_type_editable == 1 || $data->input_type_editable == 3) ? '' : 'readonly'
                                                                             ]) !!}
                                                                         @endif
                                                                     @else
@@ -387,7 +399,7 @@
                                                                             {!! Form::$inputType($columnName . '[]', ['' => '-- Select --'] + $associativeOptions, null, [
                                                                                 'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val',
                                                                                 'autocomplete' => 'none',
-                                                                                'style' => 'cursor:pointer',
+                                                                                'style' => 'cursor:pointer;' . (($data->input_type_editable == 1 || $data->input_type_editable == 3) ? '' : 'pointer-events: none;'),
                                                                                 'id' => $columnName,
                                                                                 $data->field_type_2 == 'mandatory' ? 'required' : '',
                                                                             ]) !!}
@@ -405,6 +417,7 @@
                                                                                                     'class' => $columnName,
                                                                                                     'id' => $columnName,
                                                                                                     $data->field_type_2 == 'mandatory' ? 'required' : '',
+                                                                                                    'onclick' => $data->input_type_editable != 1 && $data->input_type_editable != 3 ? 'return false;' : '',
                                                                                                 ]) !!}{{ $options[$i] }}
                                                                                                 <span></span>
                                                                                             </label>
@@ -426,6 +439,7 @@
                                                                                                     'class' => $columnName,
                                                                                                     'id' => $columnName,
                                                                                                     $data->field_type_2 == 'mandatory' ? 'required' : '',
+                                                                                                    'disabled' => $data->input_type_editable != 1 && $data->input_type_editable != 3,
                                                                                                 ]) !!}{{ $options[$i] }}
                                                                                                 <span></span>
                                                                                             </label>
@@ -472,13 +486,27 @@
                                                     @endif
                                                         @endforeach
                                                     @endif
+                                                                                        
+                                                    {{-- <div class="row mt-4 trends_div">
+                                                        <div class="col-md-12">
+                                                            <div class="form-group row">
+                                                                <label class="col-md-12">
+                                                                    Coder Trends
+                                                                </label>
+                                                                <div class="col-md-11">
+                                                                    {!!Form::textarea('annex_coder_trends',  null, ['class' => 'text-black form-control white-smoke annex_coder_trends','rows' => 6,'readonly']) !!}
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div> --}}
                                                     <div class="row mt-4">
                                                         <div class="col-md-6">
                                                             <input type="hidden" name="invoke_date">
                                                             <input type="hidden" name="CE_emp_id">
                                                             <div class="form-group row">
                                                                 <label class="col-md-12 required">
-                                                                    Chart Status
+                                                                    Charge Status
                                                                 </label>
                                                                 <div class="col-md-10">
                                                                     {!! Form::Select(
@@ -582,7 +610,7 @@
                                                             <div>
                                                                 <!-- Project name -->
                                                                 <h6 class="modal-title mb-0" id="myModalLabel" style="color: #ffffff;">
-                                                                    {{ ucfirst($clientName->project_name) }}
+                                                                    {{ ucfirst($clientName->aims_project_name) }}
                                                                 </h6>
                                                                 <!-- Sub project name -->
                                                                 @if($practiceName != '')
@@ -679,7 +707,7 @@
                                                     <div class="col-md-6">
                                                         <div class="form-group row" style="margin-left: -2rem">
                                                             <label class="col-md-12">
-                                                                Chart Status
+                                                                Charge Status
                                                             </label>
                                                             <label class="col-md-12 pop-non-edt-val"
                                                             id="chart_status">
@@ -1054,6 +1082,15 @@
 
                         $.each(headers, function(index, header) {
                             value = clientData[header];
+                        //     if (header == 'annex_coder_trends') {
+                        //         if (/_el_/.test(value)) {
+                        //             var commentsValues = value.split('_el_');
+                        //             var commentsText = commentsValues.join('\n');
+                        //             $('textarea[name="annex_coder_trends"]').val(commentsText);
+                        //         } else {
+                        //             $('textarea[name="annex_coder_trends"]').val(value);
+                        //         }
+                        //    }
                             $('label[id="' + header + '"]').html("");
                             $('input[name="' + header + '[]"]').html("");
                             if (/_el_/.test(value)) {
@@ -1369,14 +1406,14 @@
                         labelName = input.name;
                         if(labelName.substring(0, 3).toLowerCase() == "cpt") {
                             var textValue = input.value;
-                            if(textValue.length < 4) {
-                                js_notification('error',"The CPT value must be at least 4 characters long" );
+                            if(textValue.length < 5) {
+                                js_notification('error',"The CPT value must be at least 5 characters long" );
                             }
                         }
                         if(labelName.substring(0, 3).toLowerCase() == "icd") {
                             var textValue = input.value;
-                            if(textValue.length < 3 || textValue.length > 7) {
-                                js_notification('error', "The ICD value must be between 3 and 7 characters long" );
+                            if(textValue.length < 3) {
+                                js_notification('error', "The ICD value must be at least 3 characters long" );
                             }
                         }
                         return labelName;
@@ -1541,8 +1578,14 @@
 
                         }).then(function(result) {
                             if (result.value == true) {
+                                KTApp.block('#myModal_status', {
+                                    overlayColor: '#000000',
+                                    state: 'danger',
+                                    opacity: 0.1,
+                                    message: 'Fetching...',
+                                });
                                 document.querySelector('#pendingFormConfiguration').submit();
-
+                                KTApp.unblock('#myModal_status');
                             } else {
                                 //   location.reload();
                             }
@@ -1594,7 +1637,7 @@
                         "parent"] + "&child=" + getUrlVars()["child"];
             })
 
-            $(document).on('change', '#chart_status', function() {
+                $(document).on('change', '#chart_status', function() {
                     var claimStatus = $(this).val();
                     if(claimStatus == "CE_Hold") {
                         $('#ce_hold_reason').css('display', 'block');
@@ -1603,10 +1646,202 @@
                         $('#ce_hold_reason').css('display', 'none');
                         $('#ce_hold_reason_label').css('display', 'none');
                         $('#ce_hold_reason').css('border-color', '');
-                       $('#ce_hold_reason').val('');
+                        $('#ce_hold_reason').val('');
                     }
-            })
+                })
+
+                // function handleBlurEvent(clientClass, annexClass) {
+                //     var clientInf = $(clientClass).val().split(',').map(value => value.trim()); // Trimming spaces
+                //     var annexInf = $(annexClass).val().split(',').map(value => value.trim()); // Trimming spaces
+                //     let notesMap = {};
+                //     var previousValue = [];
+                //     var processedText = clientClass.replace('.', '').toUpperCase();
+                //     var annexInfMap = {};
+                //     var notes = $('.annex_coder_trends').val().trim();
+
+                //     annexInf.forEach(function (value, index) {
+                //         annexInfMap[value] = (annexInfMap[value] || 0)+1 ;
+                //     });
+                
+                //     for (var i = 0; i < clientInf.length; i++) {
+                //         if (annexInf[i] !== undefined && annexInf[i] !== '') {console.log(clientInf,'clientInf');
+                //             if (clientInf[0] !== '' && clientInf[i] !== annexInf[i]) {
+                //                 if (clientInf[i].includes('-') && annexInf[i].includes('-')) {
+                //                     var clientParts = clientInf[i].split('-');
+                //                     var annexParts = annexInf[i].split('-');
+                //                     const clientPart0 = clientParts[0].trim(); 
+                //                     const annexPart0 = annexParts[0].trim(); 
+                //                     const part1 = clientParts[1].trim(); 
+                //                     const part2 = annexParts[1].trim(); console.log(part1, part2,'changed to',clientInf[0]);
+                //                     if(part1 != part2) {
+                //                         notesMap[part1] = processedText + ' - modifier ' +  part1 + ' changed to ' +  part2 + ' belongs to ' +  clientPart0;
+                //                     } else {
+                //                         var noteLines =  notes.split('\n');
+                //                         for (var j = 0; j < noteLines.length; j++) {
+                //                                 if(noteLines[j].includes(processedText)){
+                //                                     if(noteLines[j].includes(processedText + ' - ' + part1)) {
+                //                                     } else {
+                //                                         noteLines = noteLines.filter((item, index) => index !== j).join('\n');
+                //                                         notes = noteLines;                                         
+                //                                     }                                   
+                //                                 }
+                //                         }
+                //                     }
+                //                     if(clientPart0 != annexPart0) {
+                //                         notesMap[clientInf[i]] = processedText + ' - ' + clientPart0 + ' changed to ' + annexPart0;
+                //                     }
+                //                 } else  if (clientInf[i].includes('-') && !annexInf[i].includes('-')) {
+                //                     var clientParts = clientInf[i].split('-');
+                //                     const client1 = clientParts[0].trim(); 
+                //                     const annex1 =annexInf[i].trim(); 
+                //                     const cpart1 = clientParts[1].trim(); 
+                //                     notesMap[cpart1] = processedText + ' - modifier ' +  cpart1 + ' removed belongs to ' + client1;
+                //                     if(client1 != annex1) {
+                //                         notesMap[clientInf[i]] = processedText + ' - ' + client1 + ' changed to ' + annex1;
+                //                     }
+                //                 } else if (!clientInf[i].includes('-') && annexInf[i].includes('-')) {
+                //                     var parts = annexInf[i].split('-');
+                //                     const client2 = clientInf[i].trim(); 
+                //                     const annex2 = parts[0].trim();
+                //                     const apart1 = parts[0].trim(); 
+                //                     const apart2 = parts[1].trim(); 
+                //                     notesMap[apart1] = processedText + ' - modifier ' +  parts[1] + ' added to ' +  client2;
+                //                     if(client2 != annex2) {
+                //                         notesMap[clientInf[i]] = processedText + ' - ' + client2 + ' changed to ' + annex2;
+                //                     }
+                //                 } else {
+                //                     notesMap[clientInf[i]] = processedText + ' - ' + clientInf[i] + ' changed to ' + annexInf[i];
+                //                 }
+                //                 previousValue[clientInf[i]] = processedText + ' - ' + clientInf[i];
+                //                 var noteLines =  notes.split('\n');
+                //                 for (var j = 0; j < noteLines.length; j++) {
+                //                         if(noteLines[j].includes(processedText)){
+                //                             if(noteLines[j].includes(processedText + ' - ' + clientInf[i])) {
+                //                             } else {
+                //                                 noteLines = noteLines.filter((item, index) => index !== j).join('\n');
+                //                                 notes = noteLines;
+                                            
+                //                             }
+                //                             // if(noteLines[j].includes(processedText + ' - ' + annexInf[i]) + 'added') {
+                                            
+                //                             // } else {
+                                        
+                //                             //     noteLines = noteLines.filter((item, index) => index !== j).join('\n');
+                //                             //     notes = noteLines;
+                                            
+                //                             // }
+
+                //                         }
+                //                 }
+                //             } else {
+                //                 var lines = notes.split('\n');
+                //                 var matchedLine = lines.find(line => line.includes(processedText + ' - ' + annexInf[i]));
+                //                 if (matchedLine) {
+                //                     notes = lines.filter(line => line !== matchedLine).join('\n');
+                //                 }
+                //                 var noteLines =  notes.split('\n');
+                //                 for (var j = 0; j < noteLines.length; j++) {
+                //                         if(noteLines[j].includes(processedText)){
+                //                             if(noteLines[j].includes(processedText + ' - ' + clientInf[i])) {
+                //                             } else {
+                //                                 noteLines = noteLines.filter((item, index) => index !== j).join('\n');
+                //                                 notes = noteLines;
+                                            
+                //                             }
+                //                         }
+                //                 }
+                //             }
+                //             if (annexInfMap[annexInf[i]] > 0) {
+                //                 annexInfMap[annexInf[i]]--;
+                //                 if (annexInfMap[annexInf[i]] === 0) {
+                //                     delete annexInfMap[annexInf[i]];
+                //                 }
+                //             }
+                        
+                //         } else {
+                //             if(annexInf.length > 1 && annexInf[0] == ''){
+                //                 notesMap[clientInf[i]] = processedText + ' - ' + clientInf[i] + ' removed';
+                //             } else if(annexInf[0] !== '') {
+                //                 notesMap[clientInf[i]] = processedText + ' - ' + clientInf[i] + ' removed';
+                //             } else {
+                //                 var lines = notes.split('\n');
+                //                 for (var j = 0; j < lines.length; j++) {
+                //                     var matchedLine = lines.find(line => line.includes(processedText )); 
+                //                         notes = lines.filter(line => line !== matchedLine).join('\n');
+                //                 }
+                //             }
+                //             previousValue[clientInf[i]] = processedText + ' - ' + clientInf[i];
+                        
+                //         }
+                //     }
+                
+                //     for (var key in annexInfMap) {
+                //         if (annexInfMap.hasOwnProperty(key) && annexInfMap[key] > 0) {
+                //             if(key && (clientInf[0] !== '')) {
+                //                 notesMap[key] = processedText + ' - ' + key + ' added';
+                //                 var lines = notes.split('\n');
+                //                 var matchedLine = lines.find(line => line.includes(notesMap[key]));
+                //                 if (matchedLine) {
+                //                     notes = lines.filter(line => line !== matchedLine).join('\n');
+                //                 }
+                //             }
+                //         } 
+                //     }
+
+                //     // Convert notesMap to a single string in the order of clientInf
+                //     clientInf.forEach(function (value) {
+                //         if (notesMap[value]) {
+                //             if (notes.includes(previousValue[value])) {
+                //                 var lines = notes.split('\n');
+                //                 var matchedLine = lines.find(line => line.includes(previousValue[value]));
+                //                 if (matchedLine !== undefined) {
+                //                     notes = notes.replace(matchedLine, notesMap[value]);
+                //                 } else {
+                //                     notes += '\n' + notesMap[value];
+                //                 }
+                //             } else {
+                //                 if (notes === "") {
+                //                     notes += notesMap[value];
+                //                 } else {
+                //                     notes += '\n' + notesMap[value];
+                //                 }
+                //             }
+                //             delete notesMap[value];
+                //         }
+                //     });
+
+                //     // Add remaining notes for new additions
+                //     for (var key in notesMap) {
+                //         if (notesMap.hasOwnProperty(key)) {
+                //             notes += '\n' + notesMap[key];
+                //         }
+                //     }
+                
+                //     let noteLines1 = notes.trim().split('\n');
+                //     let uniqueNotes = Array.from(new Set(noteLines1));
+                //     let finalNotes = uniqueNotes.join('\n');
+                //     $('.annex_coder_trends').val(finalNotes);
+                // }
+
+                // $('.am_cpt').on('blur', function () {
+                //     handleBlurEvent('.cpt', '.am_cpt');
+                // });
+
+                // $('.am_icd').on('blur', function () {
+                //     handleBlurEvent('.icd', '.am_icd');
+                // });
+                // function toggleCoderTrends() {
+                //     var hasAMFields = $('.am_cpt').length > 0 || $('.am_icd').length > 0;
+                //     if (hasAMFields) {
+                //         $('.trends_div').show();
+                //     } else {
+                //         $('.trends_div').hide();
+                //     }
+                // }
+                // toggleCoderTrends();
+            
         })
+
         function updateTime() {
             var now = new Date();
             var hours = now.getHours();

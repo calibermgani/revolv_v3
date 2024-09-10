@@ -155,9 +155,9 @@
                                 @endphp
                                 <tr class="clickable-row" data-toggle="modal" style="cursor:pointer">
                                     <td><input type="hidden"
-                                            value={{ $data['project_id'] }}>{{  $projectName == '--' ? '--' : $projectName->project_name }}</td>
+                                            value={{ $data['project_id'] }}>{{  ($projectName == '--' || $projectName == null) ? '--' : $projectName->aims_project_name }}</td>
                                     <td><input type="hidden"
-                                            value={{ $data['sub_project_id'] != null ? $data['sub_project_id'] : null }}>{{ $subProjectName == '--' ? '--' : $subProjectName->sub_project_name }}
+                                            value={{ $data['sub_project_id'] != null ? $data['sub_project_id'] : null }}>{{ ($subProjectName == '--' ||  $subProjectName == null) ? '--' : $subProjectName->sub_project_name }}
                                     </td>
                                     <td><input type="hidden"
                                             value={{ $data['coder_emp_id'] != null ? $data['coder_emp_id'] : null }}>{{ $coderName == null ? '--' : $coderName }}
@@ -211,7 +211,14 @@
                 $(document).on('change', '#project_id,#edit_project_id', function() {
                     var project_id = $(this).val();
                     var subproject_id = '';
+                    KTApp.block('#qa_sampling_form', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Fetching...',
+                    });
                     subProjectNameList(project_id,subproject_id);
+                    KTApp.unblock('#qa_sampling_form');
                 });
                 function subProjectNameList(project_id,subproject_id) {
                     $.ajaxSetup({

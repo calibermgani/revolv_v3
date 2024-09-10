@@ -12,15 +12,17 @@ class ProjectWorkMail extends Mailable
     use Queueable, SerializesModels;
     public $mailHeader;
     public $mailBody;
+    public $yesterday;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($mailHeader, $mailBody)
+    public function __construct($mailHeader, $mailBody, $yesterday)
     {
         $this->mailHeader = $mailHeader;
         $this->mailBody = $mailBody;
+        $this->yesterday = $yesterday;
     }
 
     /**

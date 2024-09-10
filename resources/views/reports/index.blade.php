@@ -1,6 +1,6 @@
 @extends('layouts.app3')
 @section('content')
-<div class="card card-custom custom-card" id="generateReportClass">
+<div class="card card-custom custom-card" id="generateReportClass" style = "height:100%">
     <div class="card-body py-2 px-2">
         <div class="d-flex justify-content-between align-items-center m-2">
             <span class="project_header">Report</span>
@@ -10,8 +10,8 @@
                 </button>
             </div>
         </div>
-        <div class="text-center" style="height:600px">
-            <div style="margin-top: 170px;">
+        <div class="text-center" style="height:100%">
+            <div>
                 <img src="{{ asset('assets/svg/green_human_image.svg') }}">
                 <p style="margin-top: 30px">Click Generate report to get response</p>
             </div>
@@ -19,7 +19,7 @@
     </div>
 </div>
 <div class="card card-custom custom-card" style="display: none" id="listData">
-    <div class="card-body py-2 px-2">
+    <div class="card-body  px-4">
         <div class="card-header border-0 px-4">
             <div class="row">
                 <div class="col-md-6">
@@ -155,7 +155,7 @@
     .table.table-separate .inv_lft th:last-child,
     .table.table-separate td:last-child {
         padding-right: 10 !important;
-    }
+        }
 </style>
 @push('view.scripts')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
@@ -187,6 +187,12 @@
             });
 
             $(document).on('change', '#project_id', function() {
+                KTApp.block('#reportModal', {
+                    overlayColor: '#000000',
+                    state: 'danger',
+                    opacity: 0.1,
+                    message: 'Fetching...',
+                });
                 var project_id = $(this).val();
                 $.ajaxSetup({
                     headers: {
@@ -214,6 +220,7 @@
                                 '</option>';
                         });
                         $("#user").html(user_options);
+                        KTApp.unblock('#reportModal');
                     },
                     error: function(jqXHR, exception) {}
                 });
@@ -243,14 +250,24 @@
                             var columns = res.columnsHeader;
                             var $modalRow = $('#headers_row');
                             $modalRow.empty();
-                            var $selectAllCheckbox = $('<div class="col-md-3 my-3 header_columns"><div class="checkbox-inline"><label class="checkbox checkbox-primary"><input type="checkbox" value="all" id="select_all_columns">Select All<span></span></label></div></div>');
+                            var $selectAllCheckbox = $('<div class="col-md-3 my-3 header_columns"><div class="checkbox-inline"><label class="checkbox checkbox-primary"><input type="checkbox" value="all" id="select_all_columns" checked>Select All<span></span></label></div></div>');
                             $modalRow.append($selectAllCheckbox);
                             $.each(columns, function(index, columnName) {
                                 if (columnName !== 'id') {
-                                    var displayName = columnName.split('_').map(function(word) {
-                                        return word.charAt(0).toUpperCase() + word.slice(1);
-                                    }).join(' ');
-                                    var $checkbox = $('<div class="col-md-3 my-3 header_columns"><div class="checkbox-inline"><label class="checkbox checkbox-primary"><input type="checkbox" name="project_columns" value="' + columnName + '">' + displayName + '<span></span></label></div></div>');
+                                    if(columnName === "chart_status") {
+                                        var displayName = "Charge Status";
+                                    } else if(columnName === "coder_cpt_trends") {
+                                        var displayName = "CPT trends";
+                                    } else if(columnName === "coder_icd_trends") {
+                                        var displayName = "ICD trends";
+                                    } else if(columnName === "coder_modifiers") {
+                                        var displayName = "Modifiers";
+                                    } else {console.log(columnName,'if else');
+                                        var displayName = columnName.split('_').map(function(word) {
+                                            return word.charAt(0).toUpperCase() + word.slice(1);
+                                        }).join(' ');
+                                   }
+                                    var $checkbox = $('<div class="col-md-3 my-3 header_columns"><div class="checkbox-inline"><label class="checkbox checkbox-primary"><input type="checkbox" name="project_columns" value="' + columnName + '" checked>' + displayName + '<span></span></label></div></div>');
                                     $modalRow.append($checkbox);
                                 }
                             });
@@ -298,7 +315,7 @@
                 var checkedValues = [];
                 $('.header_columns').find('input[type="checkbox"]:checked').each(function() {
                     checkedValues.push($(this).val());
-                });
+                });console.log(checkedValues,'checkedValues');
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

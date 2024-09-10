@@ -112,7 +112,7 @@
                         <div class="dash_card3_filter mt-4 ml-4">
                             <span><b>Projects</b></span>
                             <div>
-                                {!! Form::select('prj_calendar_id', ['month' => 'Month', 'year' => 'Year'], null, [
+                                {!! Form::select('prj_calendar_id', [  '0' => 'Today','month' => 'Month', 'year' => 'Year'], null, [
                                     'class' => 'form-control white-smoke kt_select2_project',
                                     'id' => 'prj_calendar_id',
                                 ]) !!}
@@ -127,7 +127,7 @@
                                     <thead>
                                         <tr>
                                             <th width="15px"></th>
-                                            <th>Client Name</th>
+                                            <th>Project</th>
                                             <th>Assigned</th>
                                             <th>Completed</th>
                                             <th>Pending</th>
@@ -135,7 +135,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                  
                                         @if (isset($projects) && count($projects) > 0)
                                             @foreach ($projects as $data)
                                                 @php
@@ -155,7 +154,7 @@
                                                                 'user_hrdetails'
                                                             ]['current_designation']
                                                             : '';
-                                                            $projectName = App\Http\Helper\Admin\Helpers::projectName($data["id"])->project_name;
+                                                    $projectName = App\Http\Helper\Admin\Helpers::projectName($data["id"])->project_name;//$data['client_name'];
                                                     if (
                                                         isset($data['subprject_name']) &&
                                                         !empty($data['subprject_name'])
@@ -192,14 +191,14 @@
                                                         // $startDate = Carbon\Carbon::now()
                                                         //     ->subDays($days)
                                                         //     ->startOfDay()
-                                                        //     ->toDateTimeString();
-                                                        // $endDate = Carbon\Carbon::now()->endOfDay()->toDateTimeString();
+                                                        //     ->toDateString();
+                                                        // $endDate = Carbon\Carbon::now()->endOfDay()->toDateString();
                                                         $startDate = Carbon\Carbon::now()
-                                                            ->startOfMonth()
-                                                            ->toDateTimeString();
+                                                            ->startOfDay()
+                                                            ->toDateString();
                                                         $endDate = Carbon\Carbon::now()
-                                                            ->endOfMonth()
-                                                            ->toDateTimeString();
+                                                            ->endOfDay()
+                                                            ->toDateString();
                                                         $assignedCount = 0;
                                                         $completedCount = 0;
                                                         $pendingCount = 0;
@@ -208,24 +207,24 @@
                                                         if (class_exists($modelClass) == true) {
                                                             $assignedCount = $modelClass
                                                                 ::where('chart_status', 'CE_Assigned')
-                                                                ->whereBetween('updated_at', [$startDate, $endDate])
+                                                                ->whereBetween('invoke_date', [$startDate, $endDate])
                                                                 ->where('CE_emp_id', $loginEmpId)
                                                                 ->count();
                                                             $completedCount = $modelClass
                                                                 ::where('chart_status', 'CE_Completed')
-                                                                ->where('qa_work_status', 'Sampling')
+                                                                
                                                                 ->where('CE_emp_id', $loginEmpId)
-                                                                ->whereBetween('updated_at', [$startDate, $endDate])
+                                                                ->whereBetween('invoke_date', [$startDate, $endDate])
                                                                 ->count();
                                                             $pendingCount = $modelClass
                                                                 ::where('chart_status', 'CE_Pending')
                                                                 ->where('CE_emp_id', $loginEmpId)
-                                                                ->whereBetween('updated_at', [$startDate, $endDate])
+                                                                ->whereBetween('invoke_date', [$startDate, $endDate])
                                                                 ->count();
                                                             $holdCount = $modelClass
                                                                 ::where('chart_status', 'CE_Hold')
                                                                 ->where('CE_emp_id', $loginEmpId)
-                                                                ->whereBetween('updated_at', [$startDate, $endDate])
+                                                                ->whereBetween('invoke_date', [$startDate, $endDate])
                                                                 ->count();
                                                             $modelFlag = 1;
                                                         } else {
@@ -242,7 +241,6 @@
                                                         $modelTFlag += $modelFlag;
                                                     }
                                                 @endphp
-                                                     
                                                 @if ($modelTFlag > 0)
                                                     <tr class="clickable-client cursor_hand">
                                                         <td class="details-control"></td>
@@ -273,7 +271,7 @@
                                     <thead>
                                         <tr>
                                             <th width="15px"></th>
-                                            <th>Client Name</th>
+                                            <th>Project</th>
                                             <th>On Hold</th>
                                         </tr>
                                     </thead>
@@ -297,7 +295,7 @@
                                                                 'user_hrdetails'
                                                             ]['current_designation']
                                                             : '';
-                                                    $projectName = $data['client_name'];
+                                                            $projectName = App\Http\Helper\Admin\Helpers::projectName($data["id"])->project_name;// $data['client_name'];
                                                     if (
                                                         isset($data['subprject_name']) &&
                                                         !empty($data['subprject_name'])
@@ -333,8 +331,8 @@
                                                         $startDate = Carbon\Carbon::now()
                                                             ->subDays($days)
                                                             ->startOfDay()
-                                                            ->toDateTimeString();
-                                                        $endDate = Carbon\Carbon::now()->endOfDay()->toDateTimeString();
+                                                            ->toDateString();
+                                                        $endDate = Carbon\Carbon::now()->endOfDay()->toDateString();
                                                         $assignedCount = 0;
                                                         $completedCount = 0;
                                                         $pendingCount = 0;
@@ -346,19 +344,19 @@
                                                                 ->count();
                                                             $completedCount = $modelClass
                                                                 ::where('chart_status', 'CE_Completed')
-                                                                ->where('qa_work_status', 'Sampling')
+                                                               
                                                                 ->where('CE_emp_id', $loginEmpId)
-                                                                // ->whereBetween('updated_at', [$startDate, $endDate])
+                                                                // ->whereBetween('invoke_date', [$startDate, $endDate])
                                                                 ->count();
                                                             $pendingCount = $modelClass
                                                                 ::where('chart_status', 'CE_Pending')
                                                                 ->where('CE_emp_id', $loginEmpId)
-                                                                // ->whereBetween('updated_at', [$startDate, $endDate])
+                                                                // ->whereBetween('invoke_date', [$startDate, $endDate])
                                                                 ->count();
                                                             $holdCount = $modelClass
                                                                 ::where('chart_status', 'CE_Hold')
                                                                 ->where('CE_emp_id', $loginEmpId)
-                                                                // ->whereBetween('updated_at', [$startDate, $endDate])
+                                                                // ->whereBetween('invoke_date', [$startDate, $endDate])
                                                                 ->count();
                                                         } else {
                                                             $assignedCount = 0;
@@ -442,7 +440,8 @@
                     backgroundColor: getRandomColor(),
                     borderColor: getRandomColor(),
                     borderWidth: 1,
-                    fontSize: 1
+                    fontSize: 1,
+                    barThickness: 40
                 });
             });
             console.log(datasets, 'datasets');
@@ -457,14 +456,14 @@
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Custom Chart Title',
+                            text: 'Aging - Analysis',
                             padding: {
                                 top: 0,
                                 bottom: 10,
                             }
                         },
                         legend: {
-                            position: 'right',
+                            position: 'bottom',
                             labels: {
                                 font: {
                                     size: 8

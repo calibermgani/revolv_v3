@@ -138,8 +138,8 @@
             <div class="resolv_img">
                 <div class="copyright-container">
                     <div style="display:flex;justify-content:space-between;align-items: center;margin:0px 15px">
-                        <div>&copy; {{ date('Y') }} Procode - All rights reserved by Annexmed</div>
-                    <div>&#x2709; : procodesupport@annexmed.net</div>
+                        <div>&copy; {{ date('Y') }} Resolv - All rights reserved by Annexmed</div>
+                    <div>&#x2709; : resolvsupport@annexmed.net</div>
                     </div>
                     
                 </div>

@@ -105,12 +105,12 @@
                 </div>
             </div>
             <div class="row mt-2">
-                <div class="col-md-6 pr-0" style="margin-top:-8rem">
-                    <div class="card" style="height:252px">
+                <div class="col-md-6 pr-0" style="margin-top:-7.7rem">
+                    <div class="card" style="height:352px">
                         <div class="dash_card3_filter mt-4 ml-4">
                             <span><b>Projects</b></span>
                             <div>
-                                {!! Form::select('prj_calendar_id', ['month' => 'Month', 'year' => 'Year'], null, [
+                                {!! Form::select('prj_calendar_id', [  '0' => 'Today','month' => 'Month', 'year' => 'Year'], null, [
                                     'class' => 'form-control white-smoke kt_select2_project',
                                     'id' => 'prj_calendar_id',
                                 ]) !!}
@@ -124,7 +124,7 @@
                                     <thead>
                                         <tr>
                                             <th width="15px"></th>
-                                            <th>Client Name</th>
+                                            <th>Project</th>
                                             <th>Assigned</th>
                                             <th>Completed</th>
                                             <th>Pending</th>
@@ -151,7 +151,7 @@
                                                                 'user_hrdetails'
                                                             ]['current_designation']
                                                             : '';
-                                                            $projectName = App\Http\Helper\Admin\Helpers::projectName($data["id"])->project_name;
+                                                    $projectName = App\Http\Helper\Admin\Helpers::projectName($data["id"])->project_name;//$data['client_name'];
                                                     if (
                                                         isset($data['subprject_name']) &&
                                                         !empty($data['subprject_name'])
@@ -187,14 +187,14 @@
                                                         // $startDate = Carbon\Carbon::now()
                                                         //     ->subDays($days)
                                                         //     ->startOfDay()
-                                                        //     ->toDateTimeString();
-                                                        // $endDate = Carbon\Carbon::now()->endOfDay()->toDateTimeString();
+                                                        //     ->toDateString();
+                                                        // $endDate = Carbon\Carbon::now()->endOfDay()->toDateString();
                                                         $startDate = Carbon\Carbon::now()
-                                                            ->startOfMonth()
-                                                            ->toDateTimeString();
+                                                            ->startOfDay()
+                                                            ->toDateString();
                                                         $endDate = Carbon\Carbon::now()
-                                                            ->endOfMonth()
-                                                            ->toDateTimeString();
+                                                            ->endOfDay()
+                                                            ->toDateString();
                                                         $assignedCount = 0;
                                                         $completedCount = 0;
                                                         $pendingCount = 0;
@@ -204,20 +204,20 @@
                                                             $assignedCount = $modelClass
                                                                 ::where('chart_status', 'CE_Assigned')
                                                                 ->whereNotNull('CE_emp_id')
-                                                                ->whereBetween('updated_at', [$startDate, $endDate])
+                                                                ->whereBetween('invoke_date', [$startDate, $endDate])
                                                                 ->count();
                                                             $completedCount = $modelClass
                                                                 ::where('chart_status', 'CE_Completed')
-                                                                ->where('qa_work_status', 'Sampling')
-                                                                ->whereBetween('updated_at', [$startDate, $endDate])
+                                                               
+                                                                ->whereBetween('invoke_date', [$startDate, $endDate])
                                                                 ->count();
                                                             $pendingCount = $modelClass
                                                                 ::where('chart_status', 'CE_Pending')
-                                                                ->whereBetween('updated_at', [$startDate, $endDate])
+                                                                ->whereBetween('invoke_date', [$startDate, $endDate])
                                                                 ->count();
                                                             $holdCount = $modelClass
                                                                 ::where('chart_status', 'CE_Hold')
-                                                                ->whereBetween('updated_at', [$startDate, $endDate])
+                                                                ->whereBetween('invoke_date', [$startDate, $endDate])
                                                                 ->count();
                                                             $modelFlag = 1;
                                                         } else {
@@ -264,7 +264,7 @@
                                     <thead>
                                         <tr>
                                             <th width="15px"></th>
-                                            <th>Client Name</th>
+                                            <th>Project</th>
                                             <th>On Hold</th>
                                         </tr>
                                     </thead>
@@ -288,7 +288,7 @@
                                                                 'user_hrdetails'
                                                             ]['current_designation']
                                                             : '';
-                                                    $projectName = $data['client_name'];
+                                                    $projectName = App\Http\Helper\Admin\Helpers::projectName($data["id"])->project_name;//$data['client_name'];
                                                     if (
                                                         isset($data['subprject_name']) &&
                                                         !empty($data['subprject_name'])
@@ -324,8 +324,8 @@
                                                         $startDate = Carbon\Carbon::now()
                                                             ->subDays($days)
                                                             ->startOfDay()
-                                                            ->toDateTimeString();
-                                                        $endDate = Carbon\Carbon::now()->endOfDay()->toDateTimeString();
+                                                            ->toDateString();
+                                                        $endDate = Carbon\Carbon::now()->endOfDay()->toDateString();
                                                         $assignedCount = 0;
                                                         $completedCount = 0;
                                                         $pendingCount = 0;
@@ -338,7 +338,7 @@
                                                                 ->count();
                                                             $completedCount = $modelClass
                                                                 ::where('chart_status', 'CE_Completed')
-                                                                ->where('qa_work_status', 'Sampling')
+                                                              
                                                                 ->count();
                                                             $pendingCount = $modelClass
                                                                 ::where('chart_status', 'CE_Pending')
@@ -437,7 +437,8 @@
                     backgroundColor: getRandomColor(),
                     borderColor: getRandomColor(),
                     borderWidth: 1,
-                    fontSize: 1
+                    fontSize: 1,
+                    barThickness: 40
                 });
             });
             console.log(datasets, 'datasets');
@@ -557,7 +558,7 @@
                     paging: false,
                     scrollCollapse: true,
                     scrollX: true,
-                    scrollY: 100,
+                    scrollY: 200,
                     "initComplete": function(settings, json) {
                         $('body').find('.dataTables_scrollBody').addClass("scrollbar");
                     },
@@ -623,6 +624,7 @@
                 $.each(subProjects, function(index, val) {
                     $.each(val, function(valIndex, data) {
                         // if(data.assignedCount > 0 || data.CompletedCount > 0 || data.PendingCount > 0 || data.holdCount > 0) {
+                            if(data.resource_emp_id !== '--') {
                             html +=
                                 '<tbody><tr class="clickable-row cursor_hand">' +
                                 '<td><input type="hidden" value=' + data.client_id + '></td>' +
@@ -637,7 +639,7 @@
                                 '<td>' + data.PendingCount + '</td>' +
                                 '<td>' + data.holdCount + '</td>' +
                                 '</tr></tbody>';
-                        // }
+                        }
                     });
                 });
                 html += '</table>';
@@ -740,6 +742,7 @@
 
                 $.each(subProjects, function(index, val) {
                     $.each(val, function(valIndex, data) {
+                        if(data.holdCount > 0 && data.holdCount !== '--') {
                         html +=
                             '<tbody><tr class="hold-clickable-row cursor_hand">' +
                             '<td><input type="hidden" value=' + data.client_id + '></td>' +
@@ -751,6 +754,7 @@
                             .sub_project_id + '></td>' +
                             '<td>' + data.holdCount + '</td>' +
                             '</tr></tbody>';
+                        }
                     });
                 });
                 html += '</table>';
@@ -761,14 +765,26 @@
             $(document).on('click', '.hold-clickable-row', function(e) {
                 var clientName = $(this).closest('tr').find('td:eq(0) input').val();
                 var subProjectName = $(this).closest('tr').find('td:eq(2) input').val();
-
+                var resourceName = $(this).closest('tr').find('td:eq(1) input').val();
                 if (!clientName) {
                     console.error('encodedclientname is undefined or empty');
                     return;
                 }
-                window.location.href = baseUrl + 'projects_hold/' + btoa(clientName) + '/' + btoa(
-                        subProjectName) + "?parent=" +
-                    getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
+                // window.location.href = baseUrl + 'projects_hold/' + btoa(clientName) + '/' + btoa(
+                //         subProjectName) + "?parent=" +
+                //     getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
+                    var url = baseUrl + 'projects_hold/' + btoa(clientName) + '/' + btoa(
+                    subProjectName);
+                    var params = {
+                        parent: getUrlVars()["parent"],
+                        child: getUrlVars()["child"],
+                        resourceName: btoa(resourceName) 
+                    };
+
+             
+                    url += '?' + $.param(params);
+
+                    window.location.href = url
 
             })
 

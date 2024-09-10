@@ -3,7 +3,7 @@
     <div class="card card-custom custom-card">
         <div class="card-body pt-4 pb-0 px-2">
             <div class="my-client-div">
-                <span class="project_header" style="margin-left: 4px !important">QA Client List</span>
+                <span class="project_header" style="margin-left: 4px !important">QA Project List</span>
             </div>
 
             <div class="table-responsive pb-4">
@@ -11,7 +11,7 @@
                     <thead>
                         <tr>
                             <th width="15px"></th>
-                            <th>Client Name</th>
+                            <th>Project</th>
                             <th>Assigned</th>
                             <th>Completed</th>
                             <th>Pending</th>
@@ -38,7 +38,7 @@
                                                 'current_designation'
                                             ]
                                             : '';
-                                    $projectName = $data['client_name'];
+                                    $projectName = App\Http\Helper\Admin\Helpers::projectName($data["id"])->project_name;//$data['client_name'];
                                     if (isset($data['subprject_name']) && !empty($data['subprject_name'])) {
                                         $subproject_name = $data['subprject_name'];
                                         $model_name = collect($subproject_name)
@@ -181,6 +181,12 @@
                     row.child.hide();
                     tr.removeClass('shown');
                 } else {
+                    KTApp.block('#clients_list', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Fetching...',
+                    });
                     $.ajaxSetup({
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -211,6 +217,7 @@
                                 }
                             }
                             tr.addClass('shown');
+                            KTApp.unblock('#clients_list');
                         },
                         error: function(jqXHR, exception) {}
                     });
@@ -250,9 +257,16 @@
                     console.error('encodedclientname is undefined or empty');
                     return;
                 }
-                window.location.href = baseUrl + 'qa_production/qa_projects_assigned/' + btoa(clientName) + '/' + btoa(
-                        subProjectName) + "?parent=" +
-                    getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
+                KTApp.block('#clients_list', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Fetching...',
+                    });
+                    window.location.href = baseUrl + 'qa_production/qa_projects_assigned/' + btoa(clientName) + '/' + btoa(
+                            subProjectName) + "?parent=" +
+                        getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
+                KTApp.unblock('#clients_list');
 
             })
         })

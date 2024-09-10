@@ -10,12 +10,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Config;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use App\Mail\ProcodeProjectFile;
 use App\Models\MailNotification;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Session;
-
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 class AIGController extends Controller {
     public function projectDetails(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
@@ -100,8 +101,8 @@ class AIGController extends Controller {
 
                 return response()->json(['key' =>$project_details]);
                 return $return_value = Response::json($project_details);
-            } catch (Exception $e) {
-                log::debug($e->getMessage());
+            } catch (\Exception $e) {
+                Log::debug($e->getMessage());
             }
         } else {
             return redirect('/');
@@ -118,7 +119,7 @@ class AIGController extends Controller {
                 $mailHeader = "xxx File not in Specific folder";
                 $Inventory_wound_data = [];
                 // $toMailId = "mgani@caliberfocus.com";
-                $toMailId = 'vithya@caliberfocus.com,mgani@caliberfocus.com';
+                $toMailId = 'mgani@caliberfocus.com';
                 $toMailId = $toMailId != null ? explode(",",$toMailId) : [];
                 Mail::to($toMailId)->send(new ProcodeProjectFile($mailHeader, $fileStatus, $Inventory_wound_data));
                 return response()->json([
@@ -211,5 +212,23 @@ class AIGController extends Controller {
                 $fileStatus = "The ".Str::upper($project_information['project_name'])." has some duplicate inventory records. Please find the list of duplicates below";
                 $mailHeader = Str::upper($project_information['project_name'])." - "."Duplicate Entries";
                 Mail::to($toMailId)->send(new ProcodeProjectFile($mailHeader, $fileStatus, $duplicateRecords));
+    }
+
+    public function projectFileNotInFolder(Request $request)
+    {
+                $project_information = $request->all();
+                $current_time = Carbon::now();
+                if ($current_time->hour >= 11) {
+                    $fileStatus = "The " .$project_information['project_name']." inventory is not in the specified location. Could you please check and place the inventory files for today as soon as possible. This will help avoid delays in production.";
+                    $mailHeader = $project_information['project_name']." File not in Specific folder";
+                    $toMailId = ["mgani@caliberfocus.com"];
+                    Mail::to($toMailId)->send(new ProcodeProjectFile($mailHeader, $fileStatus));
+                    Log::info('ProjectFileNotThere executed successfully.');
+                    return response()->json([
+                        "message" => "file is not there"
+                        ]);
+                }
+               
+             
     }
 }

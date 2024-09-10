@@ -66,6 +66,7 @@ Route::any('qa_sampling_update', 'App\Http\Controllers\SettingController@quality
 Route::any('client_rework_datas_details', 'App\Http\Controllers\ProductionController@clientReworkDatasDetails');
 Route::any('project_rework_update/{projectName}/{subProjectName}', 'App\Http\Controllers\ProductionController@clientsReworkUpdate');//
 Route::any('projects_unassigned/{clientName}/{subProjectName}', 'App\Http\Controllers\ProductionController@clientUnAssignedTab')->name('clientUnAssigned');
+Route::any('assignee_drop_down', 'App\Http\Controllers\ProductionController@assigneeDropdown');
 
 Route::group(['prefix' => 'qa_production'], function () {
     Route::any('qa_clients', 'App\Http\Controllers\QA\QAProductionController@clients')->name('qaClients');
@@ -83,6 +84,8 @@ Route::group(['prefix' => 'qa_production'], function () {
     Route::any('qa_sub_status_list', 'App\Http\Controllers\QA\QAProductionController@qaSubStatusList');
     Route::any('qa_projects_auto_close/{clientName}/{subProjectName}', 'App\Http\Controllers\QA\QAProductionController@clientAutoClose');
     Route::any('sampling_assignee', 'App\Http\Controllers\QA\QAProductionController@samplingAssignee');
+    Route::any('qa_projects_unAssigned/{clientName}/{subProjectName}', 'App\Http\Controllers\QA\QAProductionController@clientUnAssignedTab')->name('qaClientUnAssigned');
+    Route::any('assignee_drop_down', 'App\Http\Controllers\QA\QAProductionController@assigneeDropdown');
 });
 
 
@@ -123,12 +126,11 @@ Route::group(['prefix' => 'qa_production'], function () {
         Route::any('user_grand_page_permission', 'MenuPermissionController@page_permission_store');
         Route::any('side_menu_list', 'MenuPermissionController@SideMenuList');
     });
-  
 
+    Route::group(['prefix' => 'report'], function () {
+        Route::any('inventory_error_report_list', 'App\Http\Controllers\Reports\ReportsController@inventoryErrorReportList');
+        Route::any('inventory_error_report', 'App\Http\Controllers\Reports\ReportsController@inventoryErrorReport');
+    });
 Auth::routes();
-Route::any('/test_url', function (){
-    return
-      'Laravel Playground';
-   
-  });
+
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

@@ -12,7 +12,6 @@ class ProcodeProjectFile extends Mailable
     use Queueable, SerializesModels;
     public $mailHeader;
     public $fileStatus;
-    public $Inventory_wound_data;
 
 
     /**
@@ -20,11 +19,10 @@ class ProcodeProjectFile extends Mailable
      *
      * @return void
      */
-    public function __construct($mailHeader, $fileStatus, $Inventory_wound_data)
+    public function __construct($mailHeader, $fileStatus)
     {
         $this->mailHeader = $mailHeader;
         $this->fileStatus = $fileStatus;
-        $this->Inventory_wound_data = $Inventory_wound_data;
     }
 
     /**
@@ -34,6 +32,6 @@ class ProcodeProjectFile extends Mailable
      */
     public function build()
     {
-        return $this->subject("Pro-Code - ".$this->mailHeader)->view('emails.projectFileStatus');
+        return $this->subject("Pro-Code - ".$this->mailHeader)->view('emails.projectFileNotThere');
     }
 }
