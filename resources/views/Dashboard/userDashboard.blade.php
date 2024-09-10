@@ -210,7 +210,7 @@
                                                                 ::where('chart_status', 'CE_Assigned')
                                                                 ->whereBetween('updated_at', [$startDate, $endDate])
                                                                 ->where('CE_emp_id', $loginEmpId)
-                                                                ->count();
+                                                                ->count();dd($assignedCount,$startDate, $endDate,$loginEmpId);
                                                             $completedCount = $modelClass
                                                                 ::where('chart_status', 'CE_Completed')
                                                                 ->where('qa_work_status', 'Sampling')
