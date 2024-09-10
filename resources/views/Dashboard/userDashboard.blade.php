@@ -135,6 +135,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @php dd($projects); @endphp
                                         @if (isset($projects) && count($projects) > 0)
                                             @foreach ($projects as $data)
                                                 @php

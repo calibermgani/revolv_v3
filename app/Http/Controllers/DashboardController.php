@@ -55,7 +55,7 @@ class DashboardController extends Controller
                 $startDate = Carbon::now()->startOfDay()->toDateTimeString();
                 $endDate = Carbon::now()->endOfDay()->toDateTimeString();
                 $models = [];
-                $projectIds = [];dd($projects);
+                $projectIds = [];
                 foreach ($projects as $project) {
                     if (count($project["subprject_name"]) > 0) {
                         foreach ($project["subprject_name"] as $key => $subProject) {
