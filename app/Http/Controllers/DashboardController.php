@@ -55,7 +55,7 @@ class DashboardController extends Controller
                 $startDate = Carbon::now()->startOfDay()->toDateTimeString();
                 $endDate = Carbon::now()->endOfDay()->toDateTimeString();
                 $models = [];
-                $projectIds = [];
+                $projectIds = [];dd($projects);
                 foreach ($projects as $project) {
                     if (count($project["subprject_name"]) > 0) {
                         foreach ($project["subprject_name"] as $key => $subProject) {
@@ -947,8 +947,8 @@ class DashboardController extends Controller
                 $totalCount = $totalAssignedCount + $totalCompleteCount + $totalPendingCount + $totalHoldCount + $totalReworkCount;
 
                 $agingData = [
-                    'AMBC' => [50, 0, 0, 0, 0, 100, 0, 153, 0, 45, 45],
-                    // 'Cancer Care Specialists' => [50, 0, 0, 0, 0, 0, 0, 11, 0, 45, 45],
+                    'AMBC' => [20, 10, 30, 100],
+                    //  'Cancer Care Specialists' => [30, 10, 0, 0, 0, 0, 0, 11, 0, 45, 45],
                     // "Saco River Medical Group" => [50, 0, 0, 0, 0, 0, 0, 12, 0, 45, 45],
                     // "AIG" => [250, 0, 0, 0, 0, 70, 0, 12, 0, 45, 45],
                     // "Ash Meomorial Hospital" => [250, 0, 0, 0, 0, 0, 0, 12, 0, 45, 45],
