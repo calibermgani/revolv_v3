@@ -204,13 +204,13 @@
                                                         $completedCount = 0;
                                                         $pendingCount = 0;
                                                         $holdCount = 0;
-                                                        $modelFlag = 0;dd($modelClass,class_exists($modelClass));
+                                                        $modelFlag = 0;
                                                         if (class_exists($modelClass) == true) {
                                                             $assignedCount = $modelClass
                                                                 ::where('chart_status', 'CE_Assigned')
                                                                 ->whereBetween('updated_at', [$startDate, $endDate])
                                                                 ->where('CE_emp_id', $loginEmpId)
-                                                                ->count();dd($assignedCount,$startDate, $endDate,$loginEmpId);
+                                                                ->count();
                                                             $completedCount = $modelClass
                                                                 ::where('chart_status', 'CE_Completed')
                                                                 ->where('qa_work_status', 'Sampling')
@@ -242,7 +242,7 @@
                                                         $modelTFlag += $modelFlag;
                                                     }
                                                 @endphp
-                                                      @php dd($projects,$modelTFlag,$modelFlag,$assignedCount,$loginEmpId); @endphp
+                                                     
                                                 @if ($modelTFlag > 0)
                                                     <tr class="clickable-client cursor_hand">
                                                         <td class="details-control"></td>
