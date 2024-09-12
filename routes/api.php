@@ -69,4 +69,10 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('restoration_healthcare_iv_denial_duplicates', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareIvDenialDuplicates');
     Route::any('restoration_healthcare_iv_rejection', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareIvRejection');
     Route::any('restoration_healthcare_iv_rejection_duplicates', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareIvRejectionDuplicates');
+
+    // Resolve Route Files
+    Route::any('onpoint', 'App\Http\Controllers\ProjectAutomationController@onpoint');
+
+
+
 });
