@@ -54,6 +54,8 @@ use App\Models\RhIvDenial;
 use App\Models\RhIvDenialDuplicates;
 use App\Models\RhIvRejection;
 use App\Models\RhIvRejectionDuplicates;
+use App\Models\OmsiProject;
+
 class ProjectAutomationController extends Controller
 {
 
@@ -3496,4 +3498,46 @@ class ProjectAutomationController extends Controller
             $e->getMessage();
         }
     }
+
+
+
+    // Resolv Details
+
+    public function onpoint(Request $request)
+    {
+        try {
+           
+
+           
+                OmsiProject::insert([
+                    'office_keys' => isset($request->slip) && $request->slip != "NULL" ? $request->slip : NULL,
+                    'worklist' => isset($request->date_of_service) && $request->date_of_service != "NULL" ? $request->date_of_service : NULL,
+                    'insurance_balance' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'past_due_days' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,
+                    'visit' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                    'dos' => isset($request->department) && $request->department != "NULL" ? $request->department : NULL,
+                    'patient' => isset($request->appointment_type) && $request->appointment_type != "NULL" ? $request->appointment_type : NULL,
+                    'insurance' => isset($request->day_of_week) && $request->day_of_week != "NULL" ? $request->day_of_week : NULL,
+                    'facility' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                    'provider' => isset($request->appointment_status) && $request->appointment_status != "NULL" ? $request->appointment_status : NULL,
+                    'last_date' => isset($request->encounter_status) && $request->encounter_status != "NULL" ? $request->encounter_status : NULL,
+                    'last_action' => isset($request->provider_review) && $request->provider_review != "NULL" ? $request->provider_review : NULL,
+                    'follow_up_date' => isset($request->charge_entry_status) && $request->charge_entry_status != "NULL" ? $request->charge_entry_status : NULL,
+                    'follow_up_action' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,                    
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                ]);
+                return response()->json(['message' => 'Record Inserted Successfully']);
+            
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+
+
+
+
+
 }
