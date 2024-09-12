@@ -1332,7 +1332,7 @@ class ProductionController extends Controller
                         'user_id' => $userId
                     ];
 
-                    $response = $client->request('POST', config("constants.PRO_CODE_URL").'/api/v1_users/get_resource_name', [
+                    $response = $client->request('POST', config("constants.PRO_CODE_URL").'/api/v1_users/get_resource_name_resolv', [
                         'json' => $payload
                     ]);
                     if ($response->getStatusCode() == 200) {

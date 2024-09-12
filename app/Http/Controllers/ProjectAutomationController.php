@@ -3524,7 +3524,7 @@ class ProjectAutomationController extends Controller
                     'last_action' => isset($request->last_action) && $request->last_action != "NULL" ? $request->last_action : NULL,
                     'follow_up_date' => isset($request->follow_up_date) && $request->follow_up_date != "NULL" ? $request->follow_up_date : NULL,
                     'follow_up_action' => isset($request->follow_up_action) && $request->follow_up_action != "NULL" ? $request->follow_up_action : NULL,                    
-                    'CE_emp_id' => isset($request->Emp_id) && $request->Emp_id != '-' && $request->Emp_id != "NULL" ? $request->Emp_id : NULL,                   
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,                   
                     'chart_status' => "CE_Assigned",
                 ]);
                 return response()->json(['message' => 'Record Inserted Successfully']);
