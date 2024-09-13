@@ -1282,10 +1282,10 @@
         $(document).ready(function() {
             $('.cpt').attr('readonly', true);
             $('.icd').attr('readonly', true);
-            $('#myModal_status').on('shown.bs.modal', function () {
-                $('#qa_status').val(7).change(); 
-                $('#qa_sub_status').val(12).change();
-            });
+          //  $('#myModal_status').on('shown.bs.modal', function () {
+                //$('#qa_status').val(7).change(); 
+               // $('#qa_sub_status').val(12).change();
+           // });
             var qaSubStatusList = @json($qaSubStatusListVal);
             var qaStatusList = @json( $qaStatusList);
             var prevValues;
