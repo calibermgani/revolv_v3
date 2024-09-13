@@ -115,10 +115,10 @@ class ProjectController extends Controller
             } elseif ($yesterday->isSunday()) {
                 $yesterday = $yesterday->subDay(2); // Friday
             }
-            $mailHeader = "Procode Utilization Report for " . $yesterday->format('m/d/Y');
+            $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y');
             $yesterDayStartDate = $yesterday->startOfDay()->toDateTimeString();
             $yesterDayEndDate = $yesterday->endOfDay()->toDateTimeString();
-            // $mailHeader = "Procode Utilization Report for 06/07/2024";
+            // $mailHeader = "Resolv Utilization Report for 06/07/2024";
             // $yesterDayStartDate = "2024-06-07 00:00:00";
             // $yesterDayEndDate = "2024-06-07 23:59:59";
             $projects = $this->getProjects();
@@ -191,12 +191,12 @@ class ProjectController extends Controller
     public function procodeProjectOnHoldMail()
     {
         try {
-            Log::info('Executing procodeProjectOnHoldMail logic.');
+            Log::info('Executing resolvProjectOnHoldMail logic.');
             $loginEmpId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null ? Session::get('loginDetails')['userDetail']['emp_id'] : "";
             $client = new Client();
             // $toMailId = ["vijayalaxmi@caliberfocus.com"];
             // $ccMailId = ["mgani@caliberfocus.com"];
-            $mailHeader = "Procode - Project Hold Charges reminder";
+            $mailHeader = "Resolv - Project Hold Charges reminder";
             $projects = $this->getProjects();
             foreach ($projects as $project) {
                 $prjName =  Helpers::projectName($project["id"]) != null ? Helpers::projectName($project["id"])->project_name : null;//dd($prjName);
@@ -257,7 +257,7 @@ class ProjectController extends Controller
                         $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'project hold records')->first();
                         $ccMailId = explode(",", $ccMail->cc_emails);
                         Mail::to($toMailId)->cc($ccMailId)->send(new ProcodeProjectOnHoldMail($mailHeader, $clientIds, $mailBody));
-                        Log::info('Procode Project On Hold Mail executed successfully.');
+                        Log::info('Resolv Project On Hold Mail executed successfully.');
                     }
                 }
             }
@@ -306,7 +306,7 @@ class ProjectController extends Controller
     public function procodeProjectInventoryRecords()
     {
         try {
-            Log::info('Execute the Procode project current date records check and send mail after 12 PM');
+            Log::info('Execute the Resolv project current date records check and send mail after 12 PM');
             $loginEmpId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null ? Session::get('loginDetails')['userDetail']['emp_id'] : "";
             $client = new Client();
             $currentDate = Carbon::now()->format('Y-m-d');
@@ -316,7 +316,7 @@ class ProjectController extends Controller
             $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'procode project inventory cc mail')->first();
             $ccMailId = explode(",", $ccMail->cc_emails);
             $mailDate =  Carbon::now()->format('m/d/Y');
-            $mailHeader = "ProCode - Inventory Upload Successful - " . $mailDate;
+            $mailHeader = "Resolv - Inventory Upload Successful - " . $mailDate;
             $projects = $this->getProjects();
             foreach ($projects as $project) {
                 if (count($project["subprject_name"]) > 0) {
@@ -358,7 +358,7 @@ class ProjectController extends Controller
                 $current_time = Carbon::now();
                 if ($current_time->hour >= 12) {
                     Mail::to($toMailId)->cc($ccMailId)->send(new ProcodeProjectInventory($mailHeader, $mailBody));
-                    Log::info('Procode Project Inventory Mail executed successfully.');
+                    Log::info('Resolv Project Inventory Mail executed successfully.');
                 }
             }
         } catch (\Exception $e) {
@@ -393,6 +393,6 @@ class ProjectController extends Controller
             }
         }
         Log::info('Project Error Details: ' . print_r($project_information, true));
-        return response()->json(["message" => "Error Mail Sent by ProCode"]);
+        return response()->json(["message" => "Error Mail Sent by Resolv"]);
     }
 }
