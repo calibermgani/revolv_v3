@@ -14,7 +14,7 @@ use App\Mail\ProcodeInventoryExeFile;
 use App\Http\Helper\Admin\Helpers as Helpers;
 use App\Models\InventoryErrorLogs;
 use App\Models\OmsiProject;
-
+use App\Models\OmsiProjectDuplicates;
 class ProjectAutomationController extends Controller
 {
 
@@ -133,6 +133,33 @@ class ProjectAutomationController extends Controller
                 'chart_status' => "CE_Assigned",
             ]);
             return response()->json(['message' => 'Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function onpointDuplicates(Request $request)
+    {
+        try {
+            OmsiProjectDuplicates::insert([
+                'office_keys' => isset($request->office_keys) && $request->slip != "NULL" ? $request->office_keys : NULL,
+                'worklist' => isset($request->worklist) && $request->worklist != "NULL" ? $request->worklist : NULL,
+                'insurance_balance' => isset($request->insurance_balance) && $request->insurance_balance != "NULL" ? $request->insurance_balance : NULL,
+                'past_due_days' => isset($request->past_due_days) && $request->past_due_days != "NULL" ? $request->past_due_days : NULL,
+                'visit' => isset($request->visit) && $request->visit != "NULL" ? $request->visit : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                'last_date' => isset($request->last_date) && $request->last_date != "NULL" ? $request->last_date : NULL,
+                'last_action' => isset($request->last_action) && $request->last_action != "NULL" ? $request->last_action : NULL,
+                'follow_up_date' => isset($request->follow_up_date) && $request->follow_up_date != "NULL" ? $request->follow_up_date : NULL,
+                'follow_up_action' => isset($request->follow_up_action) && $request->follow_up_action != "NULL" ? $request->follow_up_action : NULL,
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
         } catch (\Exception $e) {
             $e->getMessage();
         }
