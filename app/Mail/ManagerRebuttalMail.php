@@ -33,6 +33,6 @@ class ManagerRebuttalMail extends Mailable
      */
     public function build()
     {
-        return $this->subject("Pro-Code - ".$this->mailHeader)->view('emails.managerRebuttal');
+        return $this->subject("Resolv - ".$this->mailHeader)->view('emails.managerRebuttal');
     }
 }

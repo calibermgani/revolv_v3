@@ -37,7 +37,7 @@
             <p>Dear Team, </p>
         </h4>
 
-        <p>Please find below the daily update for the production inventory : {{$yesterday->format('m/d/Y')}}</p>
+        <p>Please find below the daily update for the utilization : {{$yesterday->format('m/d/Y')}}</p>
         {{-- <p>Please find below the daily update for the production inventory : 06/07/2024</p> --}}
        
         <table class="table" border="1" style="border-collapse: collapse">
