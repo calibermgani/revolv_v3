@@ -107,8 +107,8 @@ class ProjectController extends Controller
             $toMailId = explode(",", $toMail->cc_emails);
             $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'project work mail cc mail id')->first();
             $ccMailId = explode(",", $ccMail->cc_emails);
-            // $toMailId = ["vijayalaxmi@caliberfocus.com"];
-            // $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+            $toMailId = ["vijayalaxmi@caliberfocus.com"];
+            $ccMailId = ["vijayalaxmi@caliberfocus.com"];
             $yesterday = Carbon::yesterday();
             if ($yesterday->isSaturday()) {
                 $yesterday = $yesterday->subDay(1); // Friday
@@ -288,7 +288,8 @@ class ProjectController extends Controller
             } else {
                 return response()->json(['error' => 'API request failed'], $response->getStatusCode());
             }
-            $toMailId = $apiData['people_email'];
+            // $toMailId = $apiData['people_email'];
+            $toMailId = "mgani@caliberfocus.com";
             $reportingPerson = $apiData['reprting_person'];
             $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'project file not there')->first();
             $ccMailId = explode(",", $ccMail->cc_emails);
