@@ -34,6 +34,6 @@ class ProcodeProjectError extends Mailable
      */
     public function build()
     {
-        return $this->subject("Pro-Code - ".$this->mailHeader)->view('emails.ProcodeProjectError');
+        return $this->subject("Resolv - ".$this->mailHeader)->view('emails.ProcodeProjectError');
     }
 }
