@@ -46,7 +46,7 @@
                     <th style="text-align: left;padding: 5px;">Project</th>
                     {{-- <th style="text-align: left;padding: 5px;">Chats</th> --}}
                     <th style="text-align: left;padding: 5px;">Inventory Uploaded</th>
-                    <th style="text-align: left;padding: 5px;">Coder</th>
+                    <th style="text-align: left;padding: 5px;">AR</th>
                     <th style="text-align: left;padding: 5px;">QA</th>
                     {{-- <th style="text-align: left;padding: 5px;">Balance</th> --}}
                 </tr>
