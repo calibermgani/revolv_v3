@@ -182,8 +182,14 @@ class ReportsController extends Controller
                         }
 
                         if ($header === 'chart_status') {
-                            // $data = str_replace('_', ' ', $data);
-                            $data = str_replace('_', ' ', $row->{'record_status'});//here fetching chart status from call charts table
+                            //$data = str_replace('_', ' ', $row->{'record_status'});
+                            $recordStatus = $row->{'record_status'};
+                             if (strpos($recordStatus, 'CE_') === 0) {
+                                  $data = str_replace('CE_', 'AR ', $recordStatus);
+                            } elseif (strpos($recordStatus, 'QA_') === 0) {
+                                $data = str_replace('QA_', 'QA ', $recordStatus);
+                            } else {
+                            }
                         }
                         if ($header === 'qa_work_status') {
                             $data = str_replace('_', ' ', $data);

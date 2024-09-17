@@ -110,7 +110,7 @@
                             <div class="col-md-12">
                                 {!! Form::select(
                                     'client_status',
-                                    ['CE_Inprocess' => 'CE Inprocess','CE_Pending' => 'CE Pending','CE_Completed' => 'CE Completed','CE_Hold' => 'CE Hold',
+                                    ['CE_Inprocess' => 'AR Inprocess','CE_Pending' => 'AR Pending','CE_Completed' => 'AR Completed','CE_Hold' => 'AR Hold',
                                     'QA_Inprocess' => 'QA Inprocess','QA_Pending' => 'QA Pending','QA_Completed' => 'QA Completed','QA_Hold' => 'QA Hold','Revoke' => 'Rework'],null,
                                     ['class' => 'text-black form-control select2 report_client_status', 'id' => 'client_status', 'placeholder'=> 'Status']
                                 ) !!}
