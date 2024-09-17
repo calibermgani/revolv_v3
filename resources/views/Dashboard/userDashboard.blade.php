@@ -626,8 +626,12 @@
                     console.error('encodedclientname is undefined or empty');
                     return;
                 }
-                window.location.href = baseUrl + 'projects_assigned/' + btoa(clientName) + '/' + btoa(
-                        subProjectName) + "?parent=" +
+                if(subProjectName == '--') {
+                    decodeSubProjectName = subProjectName;
+                } else {
+                    decodeSubProjectName = btoa(subProjectName);
+                }
+                window.location.href = baseUrl + 'projects_assigned/' + btoa(clientName) + '/' + decodeSubProjectName + "?parent=" +
                     getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
             })
 
@@ -721,8 +725,13 @@
                     console.error('encodedclientname is undefined or empty');
                     return;
                 }
-                window.location.href = baseUrl + 'projects_hold/' + btoa(clientName) + '/' + btoa(
-                        subProjectName) + "?parent=" +
+                if(subProjectName == '--') {
+                    decodeSubProjectName = subProjectName;
+                } else {
+                    decodeSubProjectName = btoa(subProjectName);
+                }
+                window.location.href = baseUrl + 'projects_hold/' + btoa(clientName) + '/' + 
+                        decodeSubProjectName + "?parent=" +
                     getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
 
             });
