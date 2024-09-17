@@ -160,6 +160,12 @@ class ReportsController extends Controller
                         $body_info .= '<th>AR Emp Id </th>';
                     } else if ($header == 'ce_hold_reason') {
                         $body_info .= '<th>AR Hold Reason </th>';
+                    } else if($header == "coder_rework_status") {
+                        $body_info .= '<th>AR Rework Status</th>';
+                    } else if($header == "coder_rework_reason") {
+                        $body_info .= '<th>AR Rework Reason</th>';
+                    } else if($header == "coder_error_count") {
+                        $body_info .= '<th>AR Error Count</th>';
                     }
                      else {
                         $body_info .= '<th>' . ucwords(str_replace(['_else_', '_'], ['/', ' '], $header)) . '</th>';

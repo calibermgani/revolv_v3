@@ -266,6 +266,12 @@
                                         var displayName = "AR Emp Id";
                                     } else if(columnName === "ce_hold_reason") {
                                         var displayName = "AR Hold Reason";
+                                    } else if(columnName === "coder_rework_status") {
+                                        var displayName = "AR Rework Status";
+                                    } else if(columnName === "coder_rework_reason") {
+                                        var displayName = "AR Rework Reason";
+                                    } else if(columnName === "coder_error_count") {
+                                        var displayName = "AR Error Count";
                                     }
                                      else {console.log(columnName,'if else');
                                         var displayName = columnName.split('_').map(function(word) {
