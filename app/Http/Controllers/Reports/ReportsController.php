@@ -156,7 +156,12 @@ class ReportsController extends Controller
                         $body_info .= '<th>ICD Trends </th>';
                     } else if ($header == 'coder_modifiers') {
                         $body_info .= '<th>Modifiers </th>';
-                    } else {
+                    } else if ($header == 'CE_emp_id') {
+                        $body_info .= '<th>AR Emp Id </th>';
+                    } else if ($header == 'ce_hold_reason') {
+                        $body_info .= '<th>AR Hold Reason </th>';
+                    }
+                     else {
                         $body_info .= '<th>' . ucwords(str_replace(['_else_', '_'], ['/', ' '], $header)) . '</th>';
                     }
                 }
