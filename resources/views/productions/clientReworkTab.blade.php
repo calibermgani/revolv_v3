@@ -1149,7 +1149,7 @@
        // var startTime_db;
         $(document).ready(function() {
             var qaSubStatusList = @json($qaSubStatusListVal);
-            var qaStatusList = @json( $qaStatusList);
+            var qaStatusList = @json($qaStatusList);
 
               function getUrlParam(param) {
                 const urlParams = new URLSearchParams(window.location.search);
