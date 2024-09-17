@@ -259,7 +259,7 @@ class ReportsController extends Controller
                             }
                         }
                        
-                        $body_info .= '<td class="wrap-text paragraph-style">' . $data . '</td>';
+                        $body_info .= '<td class="wrap-text">' . $data . '</td>';
                     }
                     $body_info .= '</tr>';
                 }
