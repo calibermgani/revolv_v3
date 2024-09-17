@@ -262,7 +262,12 @@
                                         var displayName = "ICD trends";
                                     } else if(columnName === "coder_modifiers") {
                                         var displayName = "Modifiers";
-                                    } else {console.log(columnName,'if else');
+                                    } else if(columnName === "CE_emp_id") {
+                                        var displayName = "AR Emp Id";
+                                    } else if(columnName === "ce_hold_reason") {
+                                        var displayName = "AR Hold Reason";
+                                    }
+                                     else {console.log(columnName,'if else');
                                         var displayName = columnName.split('_').map(function(word) {
                                             return word.charAt(0).toUpperCase() + word.slice(1);
                                         }).join(' ');
