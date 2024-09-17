@@ -821,9 +821,9 @@ font-size: 10px;
    
 }
 .wrap-text {
-    word-wrap: break-word;
-    white-space: normal;
-    max-width: 400px;
+    word-wrap: break-word !important;
+    white-space: normal !important;
+    max-width: 400px !important;
 }
 .break-text {
     word-wrap: break-word; /* Break long words if necessary */
@@ -832,8 +832,8 @@ font-size: 10px;
     padding: 10px;         /* Add padding for better readability */
 }
 .paragraph-style {
-    white-space: pre-wrap; /* Preserves newlines */
-    text-indent: 20px;     /* Indent the first line of each paragraph */
-    line-height: 1.8;      /* Control line height */
-    margin-bottom: 15px;   /* Adds spacing between 'paragraphs' */
+    white-space: pre-wrap !important;
+    text-indent: 20px !important; 
+    line-height: 1.8 !important;    
+    margin-bottom: 15px !important;   
 }
