@@ -831,3 +831,9 @@ font-size: 10px;
     line-height: 1.5;      /* Increase the space between lines */
     padding: 10px;         /* Add padding for better readability */
 }
+.paragraph-style {
+    white-space: pre-wrap; /* Preserves newlines */
+    text-indent: 20px;     /* Indent the first line of each paragraph */
+    line-height: 1.8;      /* Control line height */
+    margin-bottom: 15px;   /* Adds spacing between 'paragraphs' */
+}
