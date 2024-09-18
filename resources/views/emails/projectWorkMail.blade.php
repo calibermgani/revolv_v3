@@ -34,10 +34,10 @@
     <div class="table-responsive pb-2">
 
         <h4>
-            <p>Dear Team, </p>
+            <p>Hello Team, </p>
         </h4>
 
-        <p>Please find below the daily update for the utilization : {{$yesterday->format('m/d/Y')}}</p>
+        <p>Find below the Resolv utilization report for {{$yesterday->format('m/d/Y')}}</p>
         {{-- <p>Please find below the daily update for the production inventory : 06/07/2024</p> --}}
        
         <table class="table" border="1" style="border-collapse: collapse">
@@ -71,7 +71,7 @@
 
             </tbody>
         </table>
-        <p>Thank you for your attention.</p>
+        <p>Thanks</p>
         <br>
         @include('emails.emailFooter')
     </div>
