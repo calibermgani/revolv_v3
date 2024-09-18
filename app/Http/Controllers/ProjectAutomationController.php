@@ -172,6 +172,7 @@ class ProjectAutomationController extends Controller
                         'follow_up_action' => isset($request->follow_up_action) && $request->follow_up_action != "NULL" ? $request->follow_up_action : NULL,
                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
                 ]);
                 return response()->json(['message' => 'Yesterday Record Updated Successfully']);
             }
