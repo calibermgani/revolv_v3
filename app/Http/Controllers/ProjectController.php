@@ -104,20 +104,24 @@ class ProjectController extends Controller
             // $toMailId = ["elanchezhian@annexmed.net", "fabian@annexmed.com", "ushashree@annexmed.com"];
             // $ccMailId = ["mgani@caliberfocus.com"];
             $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'project work mail to mail id')->first();
-            $toMailId = explode(",", $toMail->cc_emails);
+            $toMailId = $toMail != null ? explode(",", $toMail->cc_emails) : null;
             $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'project work mail cc mail id')->first();
-            $ccMailId = explode(",", $ccMail->cc_emails);
+            $ccMailId = $ccMail != null ? explode(",", $ccMail->cc_emails) : null;
             // $toMailId = ["vijayalaxmi@caliberfocus.com"];
             // $ccMailId = ["vijayalaxmi@caliberfocus.com"];
             $yesterday = Carbon::yesterday();
+            $today = Carbon::today();
             if ($yesterday->isSaturday()) {
                 $yesterday = $yesterday->subDay(1); // Friday
             } elseif ($yesterday->isSunday()) {
                 $yesterday = $yesterday->subDay(2); // Friday
             }
             $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y');
-            $yesterDayStartDate = $yesterday->startOfDay()->toDateTimeString();
-            $yesterDayEndDate = $yesterday->endOfDay()->toDateTimeString();
+            // $yesterDayStartDate = $yesterday->startOfDay()->toDateTimeString();
+            // $yesterDayEndDate = $yesterday->endOfDay()->toDateTimeString();
+            $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
+            $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString(); // 8 AM
+
             // $mailHeader = "Resolv Utilization Report for 06/07/2024";
             // $yesterDayStartDate = "2024-06-07 00:00:00";
             // $yesterDayEndDate = "2024-06-07 23:59:59";
