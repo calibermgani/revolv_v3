@@ -43,11 +43,11 @@
         <table class="table" border="1" style="border-collapse: collapse">
             <thead>
                 <tr>
-                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff">Project</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;">Project</th>
                     {{-- <th style="text-align: left;padding: 5px;">Chats</th> --}}
-                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff">Inventory Uploaded</th>
-                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff">AR</th>
-                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff">QA</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;">Inventory Uploaded</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;">AR</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;">QA</th>
                     {{-- <th style="text-align: left;padding: 5px;">Balance</th> --}}
                 </tr>
             </thead>
@@ -56,10 +56,10 @@
                 @if (isset($mailBody) && count($mailBody) > 0)
                     @foreach ($mailBody as $data)
                         <tr>
-                            <td style="text-align: left;padding: 5px;">{{ $data['project'] }}</td>
-                            <td style="text-align: left;padding: 5px;">{{ $data['Chats'] == 0 ? 'No' : 'Yes' }}</td>
-                            <td style="text-align: left;padding: 5px;">{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder']}}</td>
-                            <td style="text-align: left;padding: 5px;">{{ $data['QA'] == 0 ? 'No Activity' : $data['QA']}}</td>
+                            <td style="text-align: center;padding: 5px;">{{ $data['project'] }}</td>
+                            <td style="text-align: center;padding: 5px;">{{ $data['Chats'] == 0 ? 'No' : 'Yes' }}</td>
+                            <td style="text-align: center;padding: 5px;">{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder']}}</td>
+                            <td style="text-align: center;padding: 5px;">{{ $data['QA'] == 0 ? 'No Activity' : $data['QA']}}</td>
                             {{-- <td style="text-align: left;padding: 5px;">{{ $data['Balance'] }}</td> --}}
                         </tr>
                     @endforeach
