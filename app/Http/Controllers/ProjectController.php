@@ -276,7 +276,7 @@ class ProjectController extends Controller
         $project_information = $request->all();
         $current_time = Carbon::now();
         $today = Carbon::today();
-        if ($current_time->hour >= 11 && $today->isSaturday() ==  false  && $today->isSunday() ==  false ) {
+        if (($current_time->hour >= 17 || $current_time->hour < 8)&& $today->isSaturday() ==  false  && $today->isSunday() ==  false ) {
             $fileStatus = "The " . $project_information['project_name'] . " inventory is not in the specified location. Could you please check and place the inventory files for today as soon as possible. This will help avoid delays in production.";
             $mailHeader = $project_information['project_name'] . " File not in Specific folder";
             $client = new Client();
