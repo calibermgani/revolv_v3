@@ -45,7 +45,7 @@
                 <tr>
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff">Project</th>
                     {{-- <th style="text-align: left;padding: 5px;">Chats</th> --}}
-                    <th style="text-align: center;padding: 7px;background-color:#2f75b5;color:#ffffff">Inventory Uploaded</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff">Inventory Uploaded</th>
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff">AR</th>
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff">QA</th>
                     {{-- <th style="text-align: left;padding: 5px;">Balance</th> --}}
