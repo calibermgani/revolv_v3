@@ -33,21 +33,21 @@
 
     <div class="table-responsive pb-2">
 
-        <h4>
+        {{-- <h4>
             <p>Hello Team, </p>
-        </h4>
+        </h4> --}}
 
-        <p>Find below the Resolv utilization report for {{$yesterday->format('m/d/Y')}}</p>
+        <p>Hello Team - Find below the Resolv utilization report for {{$yesterday->format('m/d/Y')}}</p>
         {{-- <p>Please find below the daily update for the production inventory : 06/07/2024</p> --}}
        
         <table class="table" border="1" style="border-collapse: collapse">
             <thead>
                 <tr>
-                    <th style="text-align: left;padding: 5px;">Project</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff">Project</th>
                     {{-- <th style="text-align: left;padding: 5px;">Chats</th> --}}
-                    <th style="text-align: left;padding: 5px;">Inventory Uploaded</th>
-                    <th style="text-align: left;padding: 5px;">AR</th>
-                    <th style="text-align: left;padding: 5px;">QA</th>
+                    <th style="text-align: center;padding: 7px;background-color:#2f75b5;color:#ffffff">Inventory Uploaded</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff">AR</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff">QA</th>
                     {{-- <th style="text-align: left;padding: 5px;">Balance</th> --}}
                 </tr>
             </thead>
