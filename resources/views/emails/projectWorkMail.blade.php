@@ -43,11 +43,11 @@
         <table class="table" border="1" style="border-collapse: collapse">
             <thead>
                 <tr>
-                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;">Project</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Project</th>
                     {{-- <th style="text-align: left;padding: 5px;">Chats</th> --}}
-                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;">Inventory Uploaded</th>
-                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;">AR</th>
-                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;">QA</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Inventory Uploaded</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">AR</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">QA</th>
                     {{-- <th style="text-align: left;padding: 5px;">Balance</th> --}}
                 </tr>
             </thead>
