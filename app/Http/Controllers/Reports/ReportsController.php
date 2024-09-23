@@ -200,6 +200,7 @@ class ReportsController extends Controller
                             } elseif (strpos($recordStatus, 'QA_') === 0) {
                                 $data = str_replace('QA_', 'QA ', $recordStatus);
                             } else {
+                                $data = $recordStatus;
                             }
                         }
                         if ($header === 'qa_work_status') {
