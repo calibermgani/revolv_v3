@@ -344,7 +344,7 @@
                                                     @endif
                                                 </div>
                                                 <div class="col-md-9" style="border-left: 1px solid #ccc;" data-scroll="true" data-height="400">
-                                                    <h6 class="title-h6">Coder</h6>&nbsp;&nbsp;
+                                                    <h6 class="title-h6">AR</h6>&nbsp;&nbsp;
                                                     @if (count($popupEditableFields) > 0)
                                                         @php $count = 0; @endphp
                                                         @foreach ($popupEditableFields as $key => $data)
@@ -671,7 +671,7 @@
                                                     @endif
                                                 </div>
                                                 <div class="col-md-9" style="border-left: 1px solid #ccc;" data-scroll="true" data-height="400">
-                                                    <h6 class="title-h6">Coder</h6>&nbsp;&nbsp;
+                                                    <h6 class="title-h6">AR</h6>&nbsp;&nbsp;
                                                     @if (count($popupEditableFields) > 0)
                                                         @php $count = 0; @endphp
                                                         @foreach ($popupEditableFields as $key => $data)
