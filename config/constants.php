@@ -9,7 +9,7 @@ if (php_sapi_name() == 'cli') {
     $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
 }
 
-if ($host === '34.68.123.137' || $host === '34.68.123.137') {
+if ($host === '34.68.123.137' || $host === 'resolv-aims.com') {
     return [
         'PRO_CODE_URL' => 'https://aims.officeos.in',
     ];
