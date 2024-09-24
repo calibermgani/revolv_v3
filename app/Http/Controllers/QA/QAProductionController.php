@@ -678,6 +678,7 @@ class QAProductionController extends Controller
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName.'Datas';
                 $originalModelClass = "App\\Models\\" . $modelName;
+                $modelClassRevokeHistory = "App\\Models\\" . $modelName.'RevokeHistory';
                 // $modelClass = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',ucfirst($decodedClientName).ucfirst($decodedsubProjectName)).'Datas';
                 $data = [];
                 foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
@@ -750,11 +751,24 @@ class QAProductionController extends Controller
                 if(isset($data['annex_qa_trends']) && $data['annex_qa_trends'] != null) {
                     $data['annex_qa_trends'] = $data['annex_qa_trends'] != null ?  str_replace("\r\n", '_el_', $data['annex_qa_trends']) : null;      
                 }// dd($data);
+                if($data['chart_status'] == "Revoke") {
+                    $data['coder_error_count'] = $datasRecord['coder_error_count'] == null ? 1 : $datasRecord['coder_error_count']+1;
+                    if($datasRecord != null) {
+                        $newDataRecord = $datasRecord->getAttributes();
+                        unset($newDataRecord["id"]);
+                       $modelClassRevokeHistory::create($newDataRecord);
+                    } else {
+                        $modelClassRevokeHistory::create($data);
+                    }
+                } else {
+                    $data['coder_error_count'] = $datasRecord['coder_error_count'];
+                }
+
                 if($datasRecord != null) {
                     $datasRecord->update($data);
-                    $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count']]);
+                    $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count']]);
                 } else {
-                    $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count']]);
+                    $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count']]);
                     $modelClass::create($data);
                 }
                 if($data['chart_status'] == "Revoke" &&  $datasRecord['coder_rework_status'] == "Rebuttal") {
@@ -816,6 +830,7 @@ class QAProductionController extends Controller
                 $modelName = Str::studly($table_name);
                 $originalModelClass = "App\\Models\\" . $modelName;
                 $modelClass = "App\\Models\\" . $modelName.'Datas';
+                $modelClassRevokeHistory = "App\\Models\\" . $modelName.'RevokeHistory';
                 $data = [];
                 foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
                     if (is_array($value)) {
@@ -833,9 +848,9 @@ class QAProductionController extends Controller
                 if($data['chart_status'] == "QA_Completed") {
                     $data['qa_work_date'] = Carbon::now()->format('Y-m-d');
                 }
-                // if($data['chart_status'] == "Revoke") {
-                //   $data['coder_error_count'] = $datasRecord['coder_error_count']+1;
-                // }
+                if($data['chart_status'] == "Revoke") {
+                  $data['coder_error_count'] = $datasRecord['coder_error_count']+1;
+                }
                if($data['chart_status'] == "QA_Completed" &&  $datasRecord['coder_rework_status'] == "Rebuttal") {
                     $data['qa_error_count'] = 1;
                 } else {
@@ -873,6 +888,19 @@ class QAProductionController extends Controller
                if(isset($data['annex_qa_trends']) && $data['annex_qa_trends'] != null) {
                  $data['annex_qa_trends'] = isset($data['annex_qa_trends']) && $data['annex_qa_trends'] != null ?  str_replace("\r\n", '_el_', $data['annex_qa_trends']) : null ;//dd($data);
                }
+               if($data['chart_status'] == "Revoke") {
+                $data['coder_error_count'] = $datasRecord['coder_error_count'] == null ? 1 : $datasRecord['coder_error_count']+1;
+                if($datasRecord != null) {
+                    $newDataRecord = $datasRecord->getAttributes();
+                    unset($newDataRecord["id"]);
+                   $modelClassRevokeHistory::create($newDataRecord);
+                } else {
+                    $modelClassRevokeHistory::create($data);
+                }
+            } else {
+                $data['coder_error_count'] = $datasRecord['coder_error_count'];
+            }
+
                 if($datasRecord != null) {
                     $fieldsToExclude = [
                         'annex_coder_trends',
@@ -888,11 +916,11 @@ class QAProductionController extends Controller
                     $data = array_diff_key($data, array_flip($fieldsToExclude));
                   $datasRecord->update($data);
                   $record = $originalModelClass::where('id', $data['parent_id'])->first();
-                  $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count']]);
+                  $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count']]);
                  } else {
                     $data['parent_id'] = $data['idValue'];
                     $record = $originalModelClass::where('id', $data['parent_id'])->first();
-                    $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count']] );
+                    $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count']] );
                     $modelClass::create($data);
                 }
                 if($data['chart_status'] == "Revoke" &&  $datasRecord['coder_rework_status'] == "Rebuttal") {

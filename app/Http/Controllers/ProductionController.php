@@ -534,12 +534,12 @@ class ProductionController extends Controller
                    }
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
-                      $revokeProjectDetails = $modelClass::where('chart_status','Revoke')->whereNull('tl_error_count')->where('CE_emp_id',$loginEmpId)->where('updated_at','<=',$yesterDayDate)->orderBy('id','ASC')->get();
+                      $revokeProjectDetails = $modelClass::where('chart_status','Revoke')->whereNull('tl_error_count')->where('CE_emp_id',$loginEmpId)->orderBy('id','ASC')->get();
                       $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->count();
                       $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                       $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                       $holdCount = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                      $reworkCount = $modelClass::where('chart_status','Revoke')->whereNull('tl_error_count')->where('CE_emp_id',$loginEmpId)->where('updated_at','<=',$yesterDayDate)->count();
+                      $reworkCount = $modelClass::where('chart_status','Revoke')->whereNull('tl_error_count')->where('CE_emp_id',$loginEmpId)->count();
                       $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','desc')->pluck('record_id')->toArray();
                    }
                  }
@@ -1162,6 +1162,76 @@ class ProductionController extends Controller
         }
     }
 
+    // public function clientsReworkUpdate(Request $request,$clientName,$subProjectName) {
+    //     if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+    //         try {
+    //              $data = $request->all();
+    //              $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
+    //             $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
+    //             $decodedPracticeName =  $subProjectName == '--' ? NULL : Helpers::encodeAndDecodeID($subProjectName, 'decode');
+    //             $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+    //             $decodedsubProjectName = $decodedPracticeName == NULL ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
+    //             $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
+    //             $modelName = Str::studly($table_name);
+    //             $originalModelClass = "App\\Models\\" . $modelName;
+    //             $modelClass = "App\\Models\\" . $modelName.'Datas';
+    //             $data = [];
+    //             foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
+    //                 if (is_array($value)) {
+    //                     $data[$key] = implode('_el_', $value);
+    //                 } else {
+    //                     $data[$key] = $value;
+    //                 }
+    //             }
+
+    //             $data['parent_id'] = $data['parentId'];
+    //             $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','desc')->first();
+    //             $record = $originalModelClass::where('id', $data['parent_id'])->first();
+    //             $qaData = $originalModelClass::where('id', $data['parent_id'])->first()->toArray();
+    //             $excludeKeys = ['id', 'created_at', 'updated_at', 'deleted_at'];
+    //             $filteredQAData = collect($qaData)->except($excludeKeys)->toArray();
+    //             $data = array_merge($data, array_diff_key($filteredQAData, $data));
+    //             if($data['coder_rework_status'] == 'Accept' && $datasRecord['tl_error_count'] == NULL) {//coder accepted
+    //                 $data['chart_status'] = "QA_Completed";
+    //                 $data['QA_required_sampling'] = "Auto_Close";
+    //                 $data['coder_error_count'] = 1;
+    //                 $data['qa_error_count'] = NULL;
+    //                 $data['tl_comments'] = $datasRecord['tl_comments'];
+    //              } else if($data['coder_rework_status'] == 'Accept' &&  $datasRecord['tl_error_count'] == 1) {//maanger assigned to coder
+    //                 $data['chart_status'] = "QA_Completed";
+    //                 $data['QA_required_sampling'] = "Auto_Close";
+    //                 $data['qa_error_count'] = NULL;
+    //                 $data['coder_error_count'] = 1;
+    //                 $data['tl_comments'] = $data['coder_rework_reason'].'@'.$loginEmpId;
+    //                 $data['coder_rework_reason'] = $datasRecord['coder_rework_reason'];
+    //              }
+    //               else if($data['coder_rework_status'] == 'Rebuttal' &&  $datasRecord['tl_error_count'] == 1) {//maanger assigned to QA
+    //                 $data['chart_status'] = "QA_Completed";
+    //                 $data['QA_required_sampling'] = "Auto_Close";
+    //                 $data['qa_error_count'] = 1;
+    //                 $data['coder_error_count'] = NULL;
+    //                 $data['tl_comments'] = $data['coder_rework_reason'].'@'.$loginEmpId;
+    //                 $data['coder_rework_reason'] = $datasRecord['coder_rework_reason'];
+    //              } else {
+    //                 $data['chart_status'] = "CE_Completed";
+    //                 $data['QA_required_sampling'] = "Sampling";
+    //                 $data['coder_error_count'] = NULL;
+    //                 $data['qa_error_count'] = NULL;
+    //                 $data['tl_comments'] = $datasRecord['tl_comments'];
+    //             }
+    //             $datasRecord->update( ['chart_status' => $data['chart_status'],'QA_required_sampling' => $data['QA_required_sampling'],'coder_rework_status' => $data['coder_rework_status'],'coder_rework_reason' => $data['coder_rework_reason'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'], 'tl_comments' => $data['tl_comments']] );
+    //             $record->update( ['chart_status' => $data['chart_status'],'QA_required_sampling' => $data['QA_required_sampling'],'coder_rework_status' => $data['coder_rework_status'],'coder_rework_reason' => $data['coder_rework_reason'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_comments' => $data['tl_comments']] );
+
+    //             return redirect('/projects_Revoke/'.$clientName.'/'.$subProjectName);
+    //             // $tabUrl = $data['record_old_status'] == "Revoke" ? $data['record_old_status'] : lcfirst(str_replace('CE_', '', $data['record_old_status']));
+    //             // return redirect('/projects_'.$tabUrl.'/'.$clientName.'/'.$subProjectName);
+    //         } catch (\Exception $e) {
+    //             log::debug($e->getMessage());
+    //         }
+    //     } else {
+    //         return redirect('/');
+    //     }
+    // }
     public function clientsReworkUpdate(Request $request,$clientName,$subProjectName) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
             try {
@@ -1175,6 +1245,7 @@ class ProductionController extends Controller
                 $modelName = Str::studly($table_name);
                 $originalModelClass = "App\\Models\\" . $modelName;
                 $modelClass = "App\\Models\\" . $modelName.'Datas';
+                $modelClassRevokeHistory = "App\\Models\\" . $modelName.'RevokeHistory';
                 $data = [];
                 foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
                     if (is_array($value)) {
@@ -1183,49 +1254,89 @@ class ProductionController extends Controller
                         $data[$key] = $value;
                     }
                 }
-
+                $data['invoke_date'] = date('Y-m-d',strtotime($data['invoke_date']));
                 $data['parent_id'] = $data['parentId'];
                 $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','desc')->first();
+                $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->get();
+                $coderCompletedRecordsCount = count($coderCompletedRecords);
+                if( $data['chart_status'] == "CE_Completed") {
+                    $data['coder_work_date'] = Carbon::now()->format('Y-m-d');
+                    $data['qa_work_status'] = "Sampling";
+                }
                 $record = $originalModelClass::where('id', $data['parent_id'])->first();
                 $qaData = $originalModelClass::where('id', $data['parent_id'])->first()->toArray();
                 $excludeKeys = ['id', 'created_at', 'updated_at', 'deleted_at'];
                 $filteredQAData = collect($qaData)->except($excludeKeys)->toArray();
                 $data = array_merge($data, array_diff_key($filteredQAData, $data));
-                if($data['coder_rework_status'] == 'Accept' && $datasRecord['tl_error_count'] == NULL) {//coder accepted
-                    $data['chart_status'] = "QA_Completed";
-                    $data['QA_required_sampling'] = "Auto_Close";
-                    $data['coder_error_count'] = 1;
-                    $data['qa_error_count'] = NULL;
-                    $data['tl_comments'] = $datasRecord['tl_comments'];
-                 } else if($data['coder_rework_status'] == 'Accept' &&  $datasRecord['tl_error_count'] == 1) {//maanger assigned to coder
-                    $data['chart_status'] = "QA_Completed";
-                    $data['QA_required_sampling'] = "Auto_Close";
-                    $data['qa_error_count'] = NULL;
-                    $data['coder_error_count'] = 1;
-                    $data['tl_comments'] = $data['coder_rework_reason'].'@'.$loginEmpId;
-                    $data['coder_rework_reason'] = $datasRecord['coder_rework_reason'];
-                 }
-                  else if($data['coder_rework_status'] == 'Rebuttal' &&  $datasRecord['tl_error_count'] == 1) {//maanger assigned to QA
-                    $data['chart_status'] = "QA_Completed";
-                    $data['QA_required_sampling'] = "Auto_Close";
-                    $data['qa_error_count'] = 1;
-                    $data['coder_error_count'] = NULL;
-                    $data['tl_comments'] = $data['coder_rework_reason'].'@'.$loginEmpId;
-                    $data['coder_rework_reason'] = $datasRecord['coder_rework_reason'];
-                 } else {
-                    $data['chart_status'] = "CE_Completed";
-                    $data['QA_required_sampling'] = "Sampling";
-                    $data['coder_error_count'] = NULL;
-                    $data['qa_error_count'] = NULL;
-                    $data['tl_comments'] = $datasRecord['tl_comments'];
+                if(isset($data['annex_coder_trends']) && $data['annex_coder_trends'] != null) {
+                  $annex_coder_trends = isset($data['annex_coder_trends']) && $data['annex_coder_trends'] != null ?  explode('_el_',str_replace("\r\n", '_el_', $data['annex_coder_trends'])) : null;
                 }
-                $datasRecord->update( ['chart_status' => $data['chart_status'],'QA_required_sampling' => $data['QA_required_sampling'],'coder_rework_status' => $data['coder_rework_status'],'coder_rework_reason' => $data['coder_rework_reason'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'], 'tl_comments' => $data['tl_comments']] );
-                $record->update( ['chart_status' => $data['chart_status'],'QA_required_sampling' => $data['QA_required_sampling'],'coder_rework_status' => $data['coder_rework_status'],'coder_rework_reason' => $data['coder_rework_reason'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_comments' => $data['tl_comments']] );
-
-                return redirect('/projects_Revoke/'.$clientName.'/'.$subProjectName);
-                // $tabUrl = $data['record_old_status'] == "Revoke" ? $data['record_old_status'] : lcfirst(str_replace('CE_', '', $data['record_old_status']));
-                // return redirect('/projects_'.$tabUrl.'/'.$clientName.'/'.$subProjectName);
-            } catch (\Exception $e) {
+                  if(isset($annex_coder_trends) && $annex_coder_trends != null) {
+                    foreach( $annex_coder_trends as $trend){
+                        if (str_contains($trend, 'CPT -') && !str_contains($trend, 'modifier')) {
+                            $array[]= $trend;
+                            $data['coder_cpt_trends'] = implode('_el_', $array);
+                        }
+                        if (str_contains($trend, 'ICD -') && !str_contains($trend, 'modifier')) {
+                            $a1[]= $trend;
+                            $data['coder_icd_trends'] =implode('_el_', $a1);
+                        }
+                        if (str_contains($trend, 'modifier ')) {
+                            $a2[]= $trend;
+                            $data['coder_modifiers'] = implode('_el_', $a2);
+                        }
+                    }
+                }
+                    if(isset($data['annex_coder_trends']) && $data['annex_coder_trends'] != null) {
+                        $data['annex_coder_trends'] = isset($data['annex_coder_trends']) && $data['annex_coder_trends'] != null ?  str_replace("\r\n", '_el_', $data['annex_coder_trends']) : null;
+                    }
+                    if($data['chart_status'] == "CE_Completed") {                     
+                        if($datasRecord != null) {
+                            $newDataRecord = $datasRecord->getAttributes();
+                            unset($newDataRecord["id"]);
+                           $modelClassRevokeHistory::create($newDataRecord);
+                        } else {
+                            $modelClassRevokeHistory::create($data);
+                        }
+                    } 
+                if($datasRecord != null) {
+                    $fieldsToExclude = [
+                        'annex_coder_trends',
+                        'coder_cpt_trends',
+                        'coder_icd_trends',
+                        'coder_modifiers',
+                        'qa_cpt_trends',
+                        'qa_icd_trends',
+                        'qa_modifiers',
+                        'annex_qa_trends',
+                    ];
+                    
+                    $data = array_diff_key($data, array_flip($fieldsToExclude));
+                    $datasRecord->update($data);
+                    ($data['chart_status'] == "CE_Completed") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'QA_required_sampling' => $data['QA_required_sampling'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason']] );
+                } else {
+                    $data['parent_id'] = $data['idValue'];
+                    ($data['chart_status'] == "CE_Completed") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'QA_required_sampling' => $data['QA_required_sampling'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason']] );
+                    $modelClass::create($data);
+                }
+                $currentTime = Carbon::now();
+                $callChartWorkLogExistingRecord = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
+                ->where('record_status',$data['record_old_status'])
+                ->where('project_id', $decodedProjectName)
+                ->where('sub_project_id', $decodedPracticeName)
+                ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->first();
+                  if($callChartWorkLogExistingRecord && $callChartWorkLogExistingRecord != null) {
+                    $start_time = Carbon::parse($callChartWorkLogExistingRecord->start_time);
+                    $time_difference = $currentTime->diff($start_time);
+                    $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
+                    $callChartWorkLogExistingRecord->update([
+                        'record_status' => $data['chart_status'],
+                        'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time
+                    ]);
+                }
+                $tabUrl = $data['record_old_status'] == "Revoke" ? $data['record_old_status'] : lcfirst(str_replace('CE_', '', $data['record_old_status']));
+                return redirect('/projects_'.$tabUrl.'/'.$clientName.'/'.$subProjectName);
+             } catch (\Exception $e) {
                 log::debug($e->getMessage());
             }
         } else {

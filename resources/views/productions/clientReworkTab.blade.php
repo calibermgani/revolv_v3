@@ -181,7 +181,7 @@
                                     @foreach ($revokeProjectDetails as $data)
                                         <tr style="{{ $data->invoke_date == 125 ? 'background-color: #f77a7a;' : '' }}">
                                             <td>
-                                                {{-- @if (
+                                                @if (
                                                     ($empDesignation !== 'Administrator' ||
                                                         strpos($empDesignation, 'Manager') !== true ||
                                                         strpos($empDesignation, 'VP') !== true ||
@@ -200,7 +200,7 @@
                                                                 class="fa fa-play-circle icon-circle1 mt-0"
                                                                 aria-hidden="true" style="color:#ffffff"></i></button>
                                                     @endif
-                                                @endif --}}
+                                                @endif
                                                 <button class="task-start clickable-view" title="View"><i
                                                         class="fa far fa-eye text-eye icon-circle1 mt-0"></i></button>
                                             </td>
@@ -338,7 +338,7 @@
                                  {{-- </div> --}}
                          </div>
                          </div>
-                         {{-- {!! Form::open([
+                         {!! Form::open([
                              'url' =>
                                  url('project_rework_update/' . $projectName . '/' . $subProjectName) .
                                  '?parent=' .
@@ -349,7 +349,7 @@
                              'id' => 'revokeFormConfiguration',
                              'enctype' => 'multipart/form-data',
                          ]) !!}
-                         @csrf --}}
+                         @csrf
                          <div class="modal-body">
                              <div class="row">
                                  <div class="col-md-3" data-scroll="true" data-height="400">
@@ -824,10 +824,10 @@
                              <div class="modal-footer">
                                 <button type="button" class="btn btn-light-danger" id="close"
                                 data-dismiss="modal">Close</button>
-                                {{-- <button type="submit"  class="btn1" id="project_revoke_save" style="margin-right: -2rem">Submit</button> --}}
+                                <button type="submit"  class="btn1" id="project_revoke_save" style="margin-right: -2rem">Submit</button>
                                </div>
                          </div>
-                         {{-- {!! Form::close() !!} --}}
+                         {!! Form::close() !!}
                      </div>
 
              </div>
@@ -887,7 +887,7 @@
                                  </div> --}}
                              </div>
                          </div>
-                         {!! Form::open([
+                         {{-- {!! Form::open([
                             'url' =>
                                 url('project_rework_update/' . $projectName . '/' . $subProjectName) .
                                 '?parent=' .
@@ -898,7 +898,7 @@
                             'id' => 'revokeFormConfiguration',
                             'enctype' => 'multipart/form-data',
                         ]) !!}
-                        @csrf
+                        @csrf --}}
                          <div class="modal-body">
                              <div class="row">
                                  <div class="col-md-3" data-scroll="true" data-height="400">
@@ -1011,7 +1011,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row mt-4">
+                                    {{-- <div class="row mt-4">
                                         <div class="col-md-6">
                                             <div class="form-group row">
                                                 <label class="col-md-12 required" id="rework_status_label" >
@@ -1047,7 +1047,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                  </div>
                              </div>
                              {{-- <div class="modal-footer">
@@ -1061,10 +1061,10 @@
                              <div class="modal-footer">
                                 <button type="button" class="btn btn-light-danger" id="close"
                                 data-dismiss="modal">Close</button>
-                                <button type="submit"  class="btn1" id="project_revoke_save" style="margin-right: -2rem">Submit</button>
+                                {{-- <button type="submit"  class="btn1" id="project_revoke_save" style="margin-right: -2rem">Submit</button> --}}
                                </div>
                          </div>
-                         {!! Form::close() !!}
+                         {{-- {!! Form::close() !!} --}}
                      </div>
 
              </div>
@@ -1799,6 +1799,7 @@
                 $(document).on('click', '#project_revoke_save', function(e) {
                     e.preventDefault();
 
+
                     $('#revokeFormConfiguration').serializeArray().map(function(input) {
                         labelName = input.name;
                         if(labelName.substring(0, 3).toLowerCase() == "cpt") {
@@ -1967,24 +1968,24 @@
                         //     qaRequired.next('.select2').find(".select2-selection").css('border-color', '');
                         //     inputTypeValue = 0;
                         // }
-                        var reworkStatus = $('#rework_status');
-                        var reworkStatusReason = $('#rework_reason');
-                        if (reworkStatus.val() == '' || reworkStatus.val() == null) {
-                            reworkStatus.css('border-color', 'red','important');
-                            inputTypeValue = 1;
-                            return false;
-                        } else {
-                            reworkStatus.css('border-color', '');
-                            inputTypeValue = 0;
-                        }
-                        if (reworkStatusReason.val() == '' || reworkStatusReason.val() == null) {
-                            reworkStatusReason.css('border-color', 'red','important');
-                            inputTypeValue = 1;
-                            return false;
-                        } else {
-                            reworkStatusReason.css('border-color', '');
-                            inputTypeValue = 0;
-                        }
+                        // var reworkStatus = $('#rework_status');
+                        // var reworkStatusReason = $('#rework_reason');
+                        // if (reworkStatus.val() == '' || reworkStatus.val() == null) {
+                        //     reworkStatus.css('border-color', 'red','important');
+                        //     inputTypeValue = 1;
+                        //     return false;
+                        // } else {
+                        //     reworkStatus.css('border-color', '');
+                        //     inputTypeValue = 0;
+                        // }
+                        // if (reworkStatusReason.val() == '' || reworkStatusReason.val() == null) {
+                        //     reworkStatusReason.css('border-color', 'red','important');
+                        //     inputTypeValue = 1;
+                        //     return false;
+                        // } else {
+                        //     reworkStatusReason.css('border-color', '');
+                        //     inputTypeValue = 0;
+                        // }
 
                     if (inputTypeValue == 0) {
 

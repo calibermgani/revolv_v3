@@ -99,6 +99,7 @@ class FormController extends Controller
                 $tableDataName = Str::slug(($projectName->project_name.'_'.$subProjectName. '_datas'),'_');
                 $duplicateTableName = Str::slug(($projectName->project_name . '_' . $subProjectName . '_duplicates'),'_');
                 $tableHistoryName =Str::slug(($projectName->project_name.'_'.$subProjectName. '_history'),'_');
+                $tableRevokeHistoryName =Str::slug(($projectName->project_name.'_'.$subProjectName. '_revoke_history'),'_');
                 $tableExists = DB::select("SHOW TABLES LIKE '$tableName'");
                     if (empty($tableExists)) {
                         $createTableSQL = "CREATE TABLE $tableName (id INT AUTO_INCREMENT PRIMARY KEY";
@@ -337,6 +338,65 @@ class FormController extends Controller
                         }
                     }
 
+                    $tableRevokeHistoryExists = DB::select("SHOW TABLES LIKE '$tableRevokeHistoryName'");
+                    if (empty($tableRevokeHistoryExists)) {
+                        $createTableSQL = "CREATE TABLE $tableRevokeHistoryName (id INT AUTO_INCREMENT PRIMARY KEY";
+                        foreach ($columns as $columnName => $columnType) {
+                            $createTableSQL .= ", $columnName TEXT";
+                        }
+
+                        $createTableSQL .= ", parent_id INT NULL,invoke_date DATE NULL,
+                                            CE_emp_id VARCHAR(255) NULL,
+                                            QA_emp_id VARCHAR(255) NULL,
+                                            chart_status ENUM('CE_Assigned','CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold','Revoke') DEFAULT 'CE_Assigned',
+                                            ce_hold_reason TEXT NULL,
+                                            qa_hold_reason TEXT NULL,
+                                            qa_work_status VARCHAR(255) NULL,
+                                            QA_required_sampling VARCHAR(255) NULL,
+                                            QA_rework_comments TEXT NULL,
+                                            QA_status_code VARCHAR(255) NULL,
+                                            QA_sub_status_code VARCHAR(255) NULL,
+                                            QA_followup_date DATE NULL,
+                                            CE_status_code VARCHAR(255) NULL,
+                                            CE_sub_status_code VARCHAR(255) NULL,
+                                            CE_followup_date DATE NULL,
+                                            annex_coder_trends TEXT NULL,
+                                            annex_qa_trends TEXT NULL,
+                                            cpt_trends TEXT NULL,
+                                            icd_trends TEXT NULL,
+                                            modifiers TEXT NULL,
+                                            QA_comments_count VARCHAR(255) NULL,
+                                            coder_work_date DATE NULL,
+                                            qa_work_date DATE NULL,
+                                            coder_rework_status VARCHAR(255) NULL,
+                                            coder_rework_reason TEXT NULL,
+                                            coder_error_count VARCHAR(255) NULL,
+                                            qa_error_count VARCHAR(255) NULL,
+                                            tl_error_count VARCHAR(255) NULL,
+                                            tl_comments TEXT NULL,
+                                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                            updated_at TIMESTAMP NULL,
+                                            deleted_at TIMESTAMP NULL)";
+                        DB::statement($createTableSQL);
+                        $dynamicModel = new DynamicModel($tableRevokeHistoryName);
+                    } else {
+                        $afterColumn = 'created_at';
+                        foreach ($columns as $columnName => $columnType) {
+                            $columnExists = DB::select("
+                                SELECT COLUMN_NAME
+                                FROM INFORMATION_SCHEMA.COLUMNS
+                                WHERE TABLE_NAME = '$tableRevokeHistoryName'
+                                AND COLUMN_NAME = '$columnName'
+                            ");
+                            if (empty($columnExists)) {
+
+                                DB::statement("ALTER TABLE $tableRevokeHistoryName ADD COLUMN $columnName TEXT AFTER $afterColumn");
+                                $dynamicModel = new DynamicModel($tableRevokeHistoryName);
+                                $dynamicModel->refreshFillableFromTable();
+                            }
+                        }
+                    }
+
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
@@ -434,6 +494,7 @@ class FormController extends Controller
                 $tableDataName =Str::slug($projectName->project_name.'_'.$subProjectName. '_datas','_');
                 $duplicateTableName = Str::slug($projectName->project_name . '_' . $subProjectName . '_duplicates','_');
                 $tableHistoryName = Str::slug($projectName->project_name.'_'.$subProjectName. '_history','_');
+                $tableRevokeHistoryName =Str::slug(($projectName->project_name.'_'.$subProjectName. '_revoke_history'),'_');
 
                 $tableExists = DB::select("SHOW TABLES LIKE '$tableName'");
                     if (empty($tableExists)) {
@@ -670,6 +731,65 @@ class FormController extends Controller
                             }
                         }
                     }
+
+                    $tableRevokeHistoryExists = DB::select("SHOW TABLES LIKE '$tableRevokeHistoryName'");
+                    if (empty($tableRevokeHistoryExists)) {
+                        $createTableSQL = "CREATE TABLE $tableRevokeHistoryName (id INT AUTO_INCREMENT PRIMARY KEY";
+                        foreach ($columns as $columnName => $columnType) {
+                            $createTableSQL .= ", $columnName TEXT";
+                        }
+
+                        $createTableSQL .= ", parent_id INT NULL,invoke_date DATE NULL,
+                                            CE_emp_id VARCHAR(255) NULL,
+                                            QA_emp_id VARCHAR(255) NULL,
+                                            chart_status ENUM('CE_Assigned','CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold','Revoke') DEFAULT 'CE_Assigned',
+                                            ce_hold_reason TEXT NULL,
+                                            qa_hold_reason TEXT NULL,
+                                            qa_work_status VARCHAR(255) NULL,
+                                            QA_required_sampling VARCHAR(255) NULL,
+                                            QA_rework_comments TEXT NULL,
+                                            QA_status_code VARCHAR(255) NULL,
+                                            QA_sub_status_code VARCHAR(255) NULL,
+                                            QA_followup_date DATE NULL,
+                                            CE_status_code VARCHAR(255) NULL,
+                                            CE_sub_status_code VARCHAR(255) NULL,
+                                            CE_followup_date DATE NULL,
+                                            annex_coder_trends TEXT NULL,
+                                            annex_qa_trends TEXT NULL,
+                                            cpt_trends TEXT NULL,
+                                            icd_trends TEXT NULL,
+                                            modifiers TEXT NULL,
+                                            QA_comments_count VARCHAR(255) NULL,
+                                            coder_work_date DATE NULL,
+                                            qa_work_date DATE NULL,
+                                            coder_rework_status VARCHAR(255) NULL,
+                                            coder_rework_reason TEXT NULL,
+                                            coder_error_count VARCHAR(255) NULL,
+                                            qa_error_count VARCHAR(255) NULL,
+                                            tl_error_count VARCHAR(255) NULL,
+                                            tl_comments TEXT NULL,
+                                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                            updated_at TIMESTAMP NULL,
+                                            deleted_at TIMESTAMP NULL)";
+                        DB::statement($createTableSQL);
+                        $dynamicModel = new DynamicModel($tableRevokeHistoryName);
+                    } else {
+                        $afterColumn = 'created_at';
+                        foreach ($columns as $columnName => $columnType) {
+                            $columnExists = DB::select("
+                                SELECT COLUMN_NAME
+                                FROM INFORMATION_SCHEMA.COLUMNS
+                                WHERE TABLE_NAME = '$tableRevokeHistoryName'
+                                AND COLUMN_NAME = '$columnName'
+                            ");
+                            if (empty($columnExists)) {
+
+                                DB::statement("ALTER TABLE $tableRevokeHistoryName ADD COLUMN $columnName TEXT AFTER $afterColumn");
+                                $dynamicModel = new DynamicModel($tableRevokeHistoryName);
+                                $dynamicModel->refreshFillableFromTable();
+                            }
+                        }
+                    }
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
@@ -690,11 +810,13 @@ class FormController extends Controller
                     $table_name_datas= Str::slug((Str::lower($projectName).'_'.Str::lower($subProjectName). '_datas'),'_');
                     $table_name_duplicates= Str::slug((Str::lower($projectName).'_'.Str::lower($subProjectName). '_duplicates'),'_');
                     $table_name_history= Str::slug((Str::lower($projectName).'_'.Str::lower($subProjectName).'_history'),'_');
+                    $table_name_revoke_history =Str::slug(($projectName->project_name.'_'.$subProjectName. '_revoke_history'),'_');
                     $dataCount = DB::table($table_name)->count();
                     $modelName = Str::studly($table_name);
                     $modelNameDatas = Str::studly($table_name_datas);
                     $modelNameDuplicates = Str::studly($table_name_duplicates);
                     $modelNameHistory = Str::studly($table_name_history);
+                    $modelNameRevokeHistory = Str::studly($table_name_revoke_history);
                     $existingRecord =  formConfiguration::where('project_id',$data['projectId'])->where('sub_project_id',$data['subProjectId'])->get();
 
                     if($dataCount == 0) {
@@ -710,6 +832,9 @@ class FormController extends Controller
                         if (Schema::hasTable($table_name_history)) {
                             Schema::dropIfExists($table_name_history);
                         }
+                        if (Schema::hasTable($table_name_revoke_history)) {
+                            Schema::dropIfExists($table_name_revoke_history);
+                        }
 
                         if (class_exists("App\\Models\\" .$modelName)) {
                             unlink(app_path('Models/'.$modelName.'.php'));
@@ -723,6 +848,9 @@ class FormController extends Controller
                         if (class_exists("App\\Models\\" .$modelNameHistory)) {
                              unlink(app_path('Models/'.$modelNameHistory.'.php'));
                         }
+                        if (class_exists("App\\Models\\" .$modelNameRevokeHistory)) {
+                            unlink(app_path('Models/'.$modelNameRevokeHistory.'.php'));
+                       }
                         foreach ($existingRecord as $record) {
                             $record->deleted_at = Carbon::now();
                             $record->save();
