@@ -77,8 +77,10 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('nau_urology_duplicate', 'App\Http\Controllers\ProjectAutomationController@nauUrologyDuplicates');
     Route::any('chestnut_ar', 'App\Http\Controllers\ProjectAutomationController@chestnutAr');
     Route::any('chestnut_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@chestnutArDuplicates');    
-    Route::any('mhaw_ar', 'App\Http\Controllers\ProjectAutomationController@MillenniumHealthAr');
-    Route::any('mhaw_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@MillenniumHealthArDuplicates');
+    Route::any('mhaw_ar', 'App\Http\Controllers\ProjectAutomationController@millenniumHealthAr');
+    Route::any('mhaw_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@millenniumHealthArDuplicates');   
+    Route::any('lsc_ar', 'App\Http\Controllers\ProjectAutomationController@lowerShoreClinicAr');
+    Route::any('lsc_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@lowerShoreClinicArDuplicates');
 
 
 

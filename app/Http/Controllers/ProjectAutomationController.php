@@ -21,6 +21,8 @@ use App\Models\ChsiAr;
 use App\Models\ChsiArDuplicates;
 use App\Models\MhawAr;
 use App\Models\MhawArDuplicates;
+use App\Models\LscAr;
+use App\Models\LscArDuplicates;
 class ProjectAutomationController extends Controller
 {
 
@@ -133,7 +135,6 @@ class ProjectAutomationController extends Controller
                 'last_action' => isset($request->last_action) && $request->last_action != "NULL" ? $request->last_action : NULL,
                 'follow_up_date' => isset($request->follow_up_date) && $request->follow_up_date != "NULL" ? $request->follow_up_date : NULL,
                 'follow_up_action' => isset($request->follow_up_action) && $request->follow_up_action != "NULL" ? $request->follow_up_action : NULL,
-                'chart_status' => "CE_Assigned",
             ];
 
             $duplicateRecordExisting  =  OmsiProject::where($attributes)->exists();
@@ -160,7 +161,7 @@ class ProjectAutomationController extends Controller
                     ]);
                         return response()->json(['message' => 'Record Inserted Successfully']);
             } else {
-                $duplicateRecord  =  OmsiProject::where($attributes)->first();
+                $duplicateRecord  =  OmsiProject::where($attributes)->where('chart_status',"CE_Assigned")->first();
                 $duplicateRecord->update([
                         'office_keys' => isset($request->office_keys) && $request->slip != "NULL" ? $request->office_keys : NULL,
                         'worklist' => isset($request->worklist) && $request->worklist != "NULL" ? $request->worklist : NULL,
@@ -232,7 +233,6 @@ class ProjectAutomationController extends Controller
                 'all_chgs' => isset($request->all_chgs) && $request->all_chgs != "NULL" ? $request->all_chgs : NULL,
                 'primary_bal' => isset($request->primary_bal) && $request->primary_bal != "NULL" ? $request->primary_bal : NULL,
                 'secondary_bal' => isset($request->secondary_bal) && $request->secondary_bal != "NULL" ? $request->secondary_bal : NULL,
-                'chart_status' => "CE_Assigned",
             ];
 
             $duplicateRecordExisting  =  NuAr::where($attributes)->exists();
@@ -257,7 +257,7 @@ class ProjectAutomationController extends Controller
                     ]);
                         return response()->json(['message' => 'Record Inserted Successfully']);
             } else {
-                $duplicateRecord  =  NuAr::where($attributes)->first();
+                $duplicateRecord  =  NuAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
                 $duplicateRecord->update([
                         'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
                         'srv_day' => isset($request->srv_day) && $request->srv_day != "NULL" ? $request->srv_day : NULL,
@@ -325,7 +325,6 @@ class ProjectAutomationController extends Controller
                 'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
                 'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
                 'notes' => isset($request->notes) && $request->notes != "NULL" ? $request->notes : NULL,
-                'chart_status' => "CE_Assigned",
             ];
 
             $duplicateRecordExisting  =  ChsiAr::where($attributes)->exists();
@@ -350,7 +349,7 @@ class ProjectAutomationController extends Controller
                     ]);
                         return response()->json(['message' => 'Record Inserted Successfully']);
             } else {
-                $duplicateRecord  =  ChsiAr::where($attributes)->first();
+                $duplicateRecord  =  ChsiAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
                 $duplicateRecord->update([
                         'claims_no' => isset($request->claims_no) && $request->claims_no != "NULL" ? $request->claims_no : NULL,
                         'service_date' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
@@ -401,7 +400,7 @@ class ProjectAutomationController extends Controller
             $e->getMessage();
         }
     }
-    public function MillenniumHealthAr(Request $request)
+    public function millenniumHealthAr(Request $request)
     {
         try {
             $attributes = [
@@ -416,8 +415,7 @@ class ProjectAutomationController extends Controller
                 'office_name' => isset($request->office_name) && $request->office_name != "NULL" ? $request->office_name : NULL,
                 'doctor_name' => isset($request->doctor_name) && $request->doctor_name != "NULL" ? $request->doctor_name : NULL,
                 'ins_name' => isset($request->ins_name) && $request->ins_name != "NULL" ? $request->ins_name : NULL,
-                'fc' => isset($request->fc) && $request->fc != "NULL" ? $request->fc : NULL,
-                'chart_status' => "CE_Assigned",
+                'fc' => isset($request->fc) && $request->fc != "NULL" ? $request->fc : NULL
             ];
 
             $duplicateRecordExisting  =  MhawAr::where($attributes)->exists();
@@ -442,7 +440,7 @@ class ProjectAutomationController extends Controller
                     ]);
                         return response()->json(['message' => 'Record Inserted Successfully']);
             } else {
-                $duplicateRecord  =  MhawAr::where($attributes)->first();
+                $duplicateRecord  =  MhawAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
                 $duplicateRecord->update([
                         'trans_id' => isset($request->trans_id) && $request->trans_id != "NULL" ? $request->trans_id : NULL,
                         'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
@@ -467,7 +465,7 @@ class ProjectAutomationController extends Controller
             $e->getMessage();
         }
     }
-    public function MillenniumHealthArDuplicates(Request $request)
+    public function millenniumHealthArDuplicates(Request $request)
     {
         try {
             MhawArDuplicates::insert([
@@ -483,6 +481,134 @@ class ProjectAutomationController extends Controller
                 'doctor_name' => isset($request->doctor_name) && $request->doctor_name != "NULL" ? $request->doctor_name : NULL,
                 'ins_name' => isset($request->ins_name) && $request->ins_name != "NULL" ? $request->ins_name : NULL,
                 'fc' => isset($request->fc) && $request->fc != "NULL" ? $request->fc : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+    public function lowerShoreClinicAr(Request $request)
+    {
+        try {
+            $attributes = [
+                'service_id' => isset($request->service_id) && $request->service_id != "NULL" ? $request->service_id : NULL,
+                'service_date' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
+                'age' => isset($request->age) && $request->age != "NULL" ? $request->age : NULL,
+                'age_range' => isset($request->age_range) && $request->age_range != "NULL" ? $request->age_range : NULL,
+                'client_name' => isset($request->client_name) && $request->client_name != "NULL" ? $request->client_name : NULL,
+                'service_type' => isset($request->service_type) && $request->service_type != "NULL" ? $request->service_type : NULL,
+                'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                'program' => isset($request->program) && $request->program != "NULL" ? $request->program : NULL,
+                'location' => isset($request->location) && $request->location != "NULL" ? $request->location : NULL,
+                'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                'billing_rate' => isset($request->billing_rate) && $request->billing_rate != "NULL" ? $request->billing_rate : NULL,
+                'curpayer_code' => isset($request->curpayer_code) && $request->curpayer_code != "NULL" ? $request->curpayer_code : NULL,
+                'curid_insur' => isset($request->curid_insur) && $request->curid_insur != "NULL" ? $request->curid_insur : NULL,
+                'auth_id' => isset($request->auth_id) && $request->auth_id != "NULL" ? $request->auth_id : NULL,
+                'balance_due' => isset($request->balance_due) && $request->balance_due != "NULL" ? $request->balance_due : NULL,
+                'client_due' => isset($request->client_due) && $request->client_due != "NULL" ? $request->client_due : NULL,
+                'insur_due' => isset($request->insur_due) && $request->insur_due != "NULL" ? $request->insur_due : NULL,
+                'batch_date' => isset($request->batch_date) && $request->batch_date != "NULL" ? $request->batch_date : NULL,
+                'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
+                'comments' => isset($request->comments) && $request->comments != "NULL" ? $request->comments : NULL,
+                'credible_notes' => isset($request->credible_notes) && $request->credible_notes != "NULL" ? $request->credible_notes : NULL
+            ];
+
+            $duplicateRecordExisting  =  LscAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                LscAr::insert([
+                        'service_id' => isset($request->service_id) && $request->service_id != "NULL" ? $request->service_id : NULL,
+                        'service_date' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
+                        'age' => isset($request->age) && $request->age != "NULL" ? $request->age : NULL,
+                        'age_range' => isset($request->age_range) && $request->age_range != "NULL" ? $request->age_range : NULL,
+                        'client_name' => isset($request->client_name) && $request->client_name != "NULL" ? $request->client_name : NULL,
+                        'service_type' => isset($request->service_type) && $request->service_type != "NULL" ? $request->service_type : NULL,
+                        'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                        'program' => isset($request->program) && $request->program != "NULL" ? $request->program : NULL,
+                        'location' => isset($request->location) && $request->location != "NULL" ? $request->location : NULL,
+                        'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                        'billing_rate' => isset($request->billing_rate) && $request->billing_rate != "NULL" ? $request->billing_rate : NULL,
+                        'curpayer_code' => isset($request->curpayer_code) && $request->curpayer_code != "NULL" ? $request->curpayer_code : NULL,
+                        'curid_insur' => isset($request->curid_insur) && $request->curid_insur != "NULL" ? $request->curid_insur : NULL,
+                        'auth_id' => isset($request->auth_id) && $request->auth_id != "NULL" ? $request->auth_id : NULL,
+                        'balance_due' => isset($request->balance_due) && $request->balance_due != "NULL" ? $request->balance_due : NULL,
+                        'client_due' => isset($request->client_due) && $request->client_due != "NULL" ? $request->client_due : NULL,
+                        'insur_due' => isset($request->insur_due) && $request->insur_due != "NULL" ? $request->insur_due : NULL,
+                        'batch_date' => isset($request->batch_date) && $request->batch_date != "NULL" ? $request->batch_date : NULL,
+                        'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
+                        'comments' => isset($request->comments) && $request->comments != "NULL" ? $request->comments : NULL,
+                        'credible_notes' => isset($request->credible_notes) && $request->credible_notes != "NULL" ? $request->credible_notes : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  LscAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                $duplicateRecord->update([
+                        'service_id' => isset($request->service_id) && $request->service_id != "NULL" ? $request->service_id : NULL,
+                        'service_date' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
+                        'age' => isset($request->age) && $request->age != "NULL" ? $request->age : NULL,
+                        'age_range' => isset($request->age_range) && $request->age_range != "NULL" ? $request->age_range : NULL,
+                        'client_name' => isset($request->client_name) && $request->client_name != "NULL" ? $request->client_name : NULL,
+                        'service_type' => isset($request->service_type) && $request->service_type != "NULL" ? $request->service_type : NULL,
+                        'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                        'program' => isset($request->program) && $request->program != "NULL" ? $request->program : NULL,
+                        'location' => isset($request->location) && $request->location != "NULL" ? $request->location : NULL,
+                        'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                        'billing_rate' => isset($request->billing_rate) && $request->billing_rate != "NULL" ? $request->billing_rate : NULL,
+                        'curpayer_code' => isset($request->curpayer_code) && $request->curpayer_code != "NULL" ? $request->curpayer_code : NULL,
+                        'curid_insur' => isset($request->curid_insur) && $request->curid_insur != "NULL" ? $request->curid_insur : NULL,
+                        'auth_id' => isset($request->auth_id) && $request->auth_id != "NULL" ? $request->auth_id : NULL,
+                        'balance_due' => isset($request->balance_due) && $request->balance_due != "NULL" ? $request->balance_due : NULL,
+                        'client_due' => isset($request->client_due) && $request->client_due != "NULL" ? $request->client_due : NULL,
+                        'insur_due' => isset($request->insur_due) && $request->insur_due != "NULL" ? $request->insur_due : NULL,
+                        'batch_date' => isset($request->batch_date) && $request->batch_date != "NULL" ? $request->batch_date : NULL,
+                        'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
+                        'comments' => isset($request->comments) && $request->comments != "NULL" ? $request->comments : NULL,
+                        'credible_notes' => isset($request->credible_notes) && $request->credible_notes != "NULL" ? $request->credible_notes : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                ]);
+                return response()->json(['message' => 'Yesterday Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function lowerShoreClinicArDuplicates(Request $request)
+    {
+        try {
+            LscArDuplicates::insert([
+                'service_id' => isset($request->service_id) && $request->service_id != "NULL" ? $request->service_id : NULL,
+                'service_date' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
+                'age' => isset($request->age) && $request->age != "NULL" ? $request->age : NULL,
+                'age_range' => isset($request->age_range) && $request->age_range != "NULL" ? $request->age_range : NULL,
+                'client_name' => isset($request->client_name) && $request->client_name != "NULL" ? $request->client_name : NULL,
+                'service_type' => isset($request->service_type) && $request->service_type != "NULL" ? $request->service_type : NULL,
+                'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                'program' => isset($request->program) && $request->program != "NULL" ? $request->program : NULL,
+                'location' => isset($request->location) && $request->location != "NULL" ? $request->location : NULL,
+                'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                'billing_rate' => isset($request->billing_rate) && $request->billing_rate != "NULL" ? $request->billing_rate : NULL,
+                'curpayer_code' => isset($request->curpayer_code) && $request->curpayer_code != "NULL" ? $request->curpayer_code : NULL,
+                'curid_insur' => isset($request->curid_insur) && $request->curid_insur != "NULL" ? $request->curid_insur : NULL,
+                'auth_id' => isset($request->auth_id) && $request->auth_id != "NULL" ? $request->auth_id : NULL,
+                'balance_due' => isset($request->balance_due) && $request->balance_due != "NULL" ? $request->balance_due : NULL,
+                'client_due' => isset($request->client_due) && $request->client_due != "NULL" ? $request->client_due : NULL,
+                'insur_due' => isset($request->insur_due) && $request->insur_due != "NULL" ? $request->insur_due : NULL,
+                'batch_date' => isset($request->batch_date) && $request->batch_date != "NULL" ? $request->batch_date : NULL,
+                'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
+                'comments' => isset($request->comments) && $request->comments != "NULL" ? $request->comments : NULL,
+                'credible_notes' => isset($request->credible_notes) && $request->credible_notes != "NULL" ? $request->credible_notes : NULL,
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
