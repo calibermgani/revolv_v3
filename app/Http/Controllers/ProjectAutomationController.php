@@ -19,6 +19,8 @@ use App\Models\NuAr;
 use App\Models\NuArDuplicates;
 use App\Models\ChsiAr;
 use App\Models\ChsiArDuplicates;
+use App\Models\MhawAr;
+use App\Models\MhawArDuplicates;
 class ProjectAutomationController extends Controller
 {
 
@@ -389,6 +391,98 @@ class ProjectAutomationController extends Controller
                 'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
                 'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
                 'notes' => isset($request->notes) && $request->notes != "NULL" ? $request->notes : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function MillenniumHealthAr(Request $request)
+    {
+        try {
+            $attributes = [
+                'trans_id' => isset($request->trans_id) && $request->trans_id != "NULL" ? $request->trans_id : NULL,
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'aging' => isset($request->aging) && $request->aging != "NULL" ? $request->aging : NULL,
+                'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                'perf_doctor_name' => isset($request->perf_doctor_name) && $request->perf_doctor_name != "NULL" ? $request->perf_doctor_name : NULL,
+                'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,
+                'office_name' => isset($request->office_name) && $request->office_name != "NULL" ? $request->office_name : NULL,
+                'doctor_name' => isset($request->doctor_name) && $request->doctor_name != "NULL" ? $request->doctor_name : NULL,
+                'ins_name' => isset($request->ins_name) && $request->ins_name != "NULL" ? $request->ins_name : NULL,
+                'fc' => isset($request->fc) && $request->fc != "NULL" ? $request->fc : NULL,
+                'chart_status' => "CE_Assigned",
+            ];
+
+            $duplicateRecordExisting  =  MhawAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                MhawAr::insert([
+                        'trans_id' => isset($request->trans_id) && $request->trans_id != "NULL" ? $request->trans_id : NULL,
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'aging' => isset($request->aging) && $request->aging != "NULL" ? $request->aging : NULL,
+                        'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                        'perf_doctor_name' => isset($request->perf_doctor_name) && $request->perf_doctor_name != "NULL" ? $request->perf_doctor_name : NULL,
+                        'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,
+                        'office_name' => isset($request->office_name) && $request->office_name != "NULL" ? $request->office_name : NULL,
+                        'doctor_name' => isset($request->doctor_name) && $request->doctor_name != "NULL" ? $request->doctor_name : NULL,
+                        'ins_name' => isset($request->ins_name) && $request->ins_name != "NULL" ? $request->ins_name : NULL,
+                        'fc' => isset($request->fc) && $request->fc != "NULL" ? $request->fc : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  MhawAr::where($attributes)->first();
+                $duplicateRecord->update([
+                        'trans_id' => isset($request->trans_id) && $request->trans_id != "NULL" ? $request->trans_id : NULL,
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'aging' => isset($request->aging) && $request->aging != "NULL" ? $request->aging : NULL,
+                        'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                        'perf_doctor_name' => isset($request->perf_doctor_name) && $request->perf_doctor_name != "NULL" ? $request->perf_doctor_name : NULL,
+                        'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,
+                        'office_name' => isset($request->office_name) && $request->office_name != "NULL" ? $request->office_name : NULL,
+                        'doctor_name' => isset($request->doctor_name) && $request->doctor_name != "NULL" ? $request->doctor_name : NULL,
+                        'ins_name' => isset($request->ins_name) && $request->ins_name != "NULL" ? $request->ins_name : NULL,
+                        'fc' => isset($request->fc) && $request->fc != "NULL" ? $request->fc : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                ]);
+                return response()->json(['message' => 'Yesterday Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function MillenniumHealthArDuplicates(Request $request)
+    {
+        try {
+            MhawArDuplicates::insert([
+                'trans_id' => isset($request->trans_id) && $request->trans_id != "NULL" ? $request->trans_id : NULL,
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'aging' => isset($request->aging) && $request->aging != "NULL" ? $request->aging : NULL,
+                'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                'perf_doctor_name' => isset($request->perf_doctor_name) && $request->perf_doctor_name != "NULL" ? $request->perf_doctor_name : NULL,
+                'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,
+                'office_name' => isset($request->office_name) && $request->office_name != "NULL" ? $request->office_name : NULL,
+                'doctor_name' => isset($request->doctor_name) && $request->doctor_name != "NULL" ? $request->doctor_name : NULL,
+                'ins_name' => isset($request->ins_name) && $request->ins_name != "NULL" ? $request->ins_name : NULL,
+                'fc' => isset($request->fc) && $request->fc != "NULL" ? $request->fc : NULL,
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
