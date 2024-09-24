@@ -17,6 +17,8 @@ use App\Models\OmsiProject;
 use App\Models\OmsiProjectDuplicates;
 use App\Models\NuAr;
 use App\Models\NuArDuplicates;
+use App\Models\ChsiAr;
+use App\Models\ChsiArDuplicates;
 class ProjectAutomationController extends Controller
 {
 
@@ -172,6 +174,7 @@ class ProjectAutomationController extends Controller
                         'last_action' => isset($request->last_action) && $request->last_action != "NULL" ? $request->last_action : NULL,
                         'follow_up_date' => isset($request->follow_up_date) && $request->follow_up_date != "NULL" ? $request->follow_up_date : NULL,
                         'follow_up_action' => isset($request->follow_up_action) && $request->follow_up_action != "NULL" ? $request->follow_up_action : NULL,
+                        'invoke_date' => date('Y-m-d'),
                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
                         'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
@@ -266,6 +269,7 @@ class ProjectAutomationController extends Controller
                         'all_chgs' => isset($request->all_chgs) && $request->all_chgs != "NULL" ? $request->all_chgs : NULL,
                         'primary_bal' => isset($request->primary_bal) && $request->primary_bal != "NULL" ? $request->primary_bal : NULL,
                         'secondary_bal' => isset($request->secondary_bal) && $request->secondary_bal != "NULL" ? $request->secondary_bal : NULL,
+                        'invoke_date' => date('Y-m-d'),
                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
                         'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
@@ -292,6 +296,99 @@ class ProjectAutomationController extends Controller
                 'all_chgs' => isset($request->all_chgs) && $request->all_chgs != "NULL" ? $request->all_chgs : NULL,
                 'primary_bal' => isset($request->primary_bal) && $request->primary_bal != "NULL" ? $request->primary_bal : NULL,
                 'secondary_bal' => isset($request->secondary_bal) && $request->secondary_bal != "NULL" ? $request->secondary_bal : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+    public function chestnutAr(Request $request)
+    {
+        try {
+            $attributes = [
+                'claims_no' => isset($request->claims_no) && $request->claims_no != "NULL" ? $request->claims_no : NULL,
+                'service_date' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
+                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                'aging' => isset($request->aging) && $request->aging != "NULL" ? $request->aging : NULL,
+                'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                'visit_type' => isset($request->visit_type) && $request->visit_type != "NULL" ? $request->visit_type : NULL,
+                'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                'notes' => isset($request->notes) && $request->notes != "NULL" ? $request->notes : NULL,
+                'chart_status' => "CE_Assigned",
+            ];
+
+            $duplicateRecordExisting  =  ChsiAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                ChsiAr::insert([
+                        'claims_no' => isset($request->claims_no) && $request->claims_no != "NULL" ? $request->claims_no : NULL,
+                        'service_date' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
+                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                        'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                        'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                        'aging' => isset($request->aging) && $request->aging != "NULL" ? $request->aging : NULL,
+                        'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                        'visit_type' => isset($request->visit_type) && $request->visit_type != "NULL" ? $request->visit_type : NULL,
+                        'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                        'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                        'notes' => isset($request->notes) && $request->notes != "NULL" ? $request->notes : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  ChsiAr::where($attributes)->first();
+                $duplicateRecord->update([
+                        'claims_no' => isset($request->claims_no) && $request->claims_no != "NULL" ? $request->claims_no : NULL,
+                        'service_date' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
+                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                        'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                        'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                        'aging' => isset($request->aging) && $request->aging != "NULL" ? $request->aging : NULL,
+                        'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                        'visit_type' => isset($request->visit_type) && $request->visit_type != "NULL" ? $request->visit_type : NULL,
+                        'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                        'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                        'notes' => isset($request->notes) && $request->notes != "NULL" ? $request->notes : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                ]);
+                return response()->json(['message' => 'Yesterday Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function chestnutArDuplicates(Request $request)
+    {
+        try {
+            ChsiArDuplicates::insert([
+                'claims_no' => isset($request->claims_no) && $request->claims_no != "NULL" ? $request->claims_no : NULL,
+                'service_date' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
+                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                'aging' => isset($request->aging) && $request->aging != "NULL" ? $request->aging : NULL,
+                'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                'visit_type' => isset($request->visit_type) && $request->visit_type != "NULL" ? $request->visit_type : NULL,
+                'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                'notes' => isset($request->notes) && $request->notes != "NULL" ? $request->notes : NULL,
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
