@@ -284,7 +284,7 @@
 
                     $.ajax({
                         type: "POST",
-                        url: proCodeUrl+ '/api/v1_users/login_authentication',
+                        url: proCodeUrl+ '/api/v1_users/resolv_login_authentication',
                         // url: "https://aims.officeos.in/api/v1_users/login_authentication",
                         data: {
                             token: token,
