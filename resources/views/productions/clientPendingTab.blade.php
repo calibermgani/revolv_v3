@@ -182,10 +182,10 @@
                                                                @if (($loginEmpId !== "Admin" || strpos($empDesignation, 'Manager') !== true || strpos($empDesignation, 'VP') !== true || strpos($empDesignation, 'Leader') !== true || strpos($empDesignation, 'Team Lead') !== true || strpos($empDesignation, 'CEO') !== true || strpos($empDesignation, 'Vice') !== true) && $loginEmpId != $data->CE_emp_id)
                                                                 {{-- @if (empty($assignedDropDown)) --}}
                                                                 @else
-                                                                @if (empty($existingCallerChartsWorkLogs)  && $reworkCount < 1)
+                                                                @if (empty($existingCallerChartsWorkLogs)  && $reworkCount < 6)
                                                                     <button class="task-start clickable-row start"
                                                                         title="Start"><i class="fa fa-play-circle icon-circle1 mt-0" aria-hidden="true" style="color:#ffffff"></i></button>
-                                                                @elseif(in_array($data->id, $existingCallerChartsWorkLogs) && $reworkCount < 1)
+                                                                @elseif(in_array($data->id, $existingCallerChartsWorkLogs) && $reworkCount < 6)
                                                                     <button class="task-start clickable-row start"
                                                                         title="Start"><i class="fa fa-play-circle icon-circle1 mt-0" aria-hidden="true" style="color:#ffffff"></i></button>
                                                                 @endif
