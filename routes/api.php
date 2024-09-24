@@ -73,6 +73,8 @@ Route::group(['prefix' => 'projects'], function() {
     // Resolve Route Files
     Route::any('onpoint', 'App\Http\Controllers\ProjectAutomationController@onpoint');
     Route::any('onpoint_duplicate', 'App\Http\Controllers\ProjectAutomationController@onpointDuplicates');
+    Route::any('nau_urology', 'App\Http\Controllers\ProjectAutomationController@nauUrology');
+    Route::any('nau_urology_duplicate', 'App\Http\Controllers\ProjectAutomationController@nauUrologyDuplicates');
 
 
 
