@@ -1092,7 +1092,7 @@
                     $('#title_status_view').text('Assigned');
                 });
             });
-            function subStatus(statusVal,value) {
+               function subStatus(statusVal,value) {
                     $.ajaxSetup({
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
