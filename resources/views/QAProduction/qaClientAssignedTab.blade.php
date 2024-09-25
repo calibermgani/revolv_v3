@@ -666,6 +666,7 @@
                                                                         'autocomplete' => 'none',
                                                                         'id' => 'ar_status_code',
                                                                         'style' => 'cursor:pointer',
+                                                                        'disabled'
                                                                     ],
                                                                 ) !!}
                                                             </div>
@@ -687,6 +688,7 @@
                                                                         'autocomplete' => 'none',
                                                                         'id' => 'ar_action_code',
                                                                         'style' => 'cursor:pointer',
+                                                                        'disabled'
                                                                     ],
                                                                 ) !!}
         
