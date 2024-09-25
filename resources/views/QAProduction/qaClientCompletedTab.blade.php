@@ -398,6 +398,26 @@
             @endif
             @endforeach
             @endif
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-md-12" id="ar_status_label">
+                            Status Code
+                        </label>
+                        <label class="col-md-12 pop-non-edt-val" id="ar_status_view">
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-md-12" id="ar_action_label">
+                            Action Code
+                        </label>
+                        <label class="col-md-12 pop-non-edt-val" id="ar_action_view">
+                        </label>
+                    </div>
+                </div>
+            </div>
             <hr>
             <h6 class="title-h6">QA</h6>&nbsp;&nbsp;
             @if (count($popupQAEditableFields) > 0)
@@ -548,6 +568,8 @@
         $(document).ready(function() {
             var qaSubStatusList = @json($qaSubStatusListVal);
             var qaStatusList = @json($qaStatusList);
+            var arStatusList = @json( $arStatusList);
+            var arActionList = @json($arActionListVal);
             const url = window.location.href;
             const startIndex = url.indexOf('projects_') + 'projects_'.length;
             const endIndex = url.indexOf('/', startIndex);
@@ -670,6 +692,25 @@
                                     }
                                 });
                                 $('label[id="qa_sub_status_view"]').text(subStatusName);
+                            }
+                            if (header == 'ar_status_code') {
+                                var statusName = '';
+                                    $.each(arStatusList, function(key, val) {
+                                        if (value == key) {
+                                            statusName = val;
+                                        }
+                                    });
+                                    $('label[id="ar_status_view"]').text(statusName);
+                               }
+                            if (header == 'ar_action_code') {
+                                var subStatusName = '';
+                                $.each(arActionList, function(key, val) {
+                                    if (value == key) {
+                                        subStatusName = val;
+                                    }
+                                });
+                                $('label[id="ar_action_view"]').text(subStatusName);
+
                             }
                             $('label[id="' + header + '"]').text(value);
                         }

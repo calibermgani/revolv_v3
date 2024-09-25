@@ -414,6 +414,26 @@
                                                     @endif
                                                         @endforeach
                                                     @endif
+                                                    <div class="row mt-4">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group row">
+                                                                <label class="col-md-12" id="ar_status_label">
+                                                                    Status Code
+                                                                </label>
+                                                                <label class="col-md-12 pop-non-edt-val" id="ar_status_view">
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group row">
+                                                                <label class="col-md-12" id="ar_action_label">
+                                                                    Action Code
+                                                                </label>
+                                                                <label class="col-md-12 pop-non-edt-val" id="ar_action_view">
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     <div class="col-md-6">
                                                         <div class="form-group row" style="margin-left: -2rem">
                                                             <label class="col-md-12">
@@ -508,6 +528,8 @@
     <script>
 
         $(document).ready(function() {
+            var arStatusList = @json( $arStatusList);
+            var arActionList = @json($arActionListVal);
             const url = window.location.href;
             const startIndex = url.indexOf('projects_') + 'projects_'.length;
             const endIndex = url.indexOf('/', startIndex);
@@ -625,7 +647,25 @@
                                 value = value.replace('CE_', '');
                                 $('#title_status_view').text(value);
                         }
+                        if (header == 'ar_status_code') {
+                                var statusName = '';
+                                    $.each(arStatusList, function(key, val) {
+                                        if (value == key) {
+                                            statusName = val;
+                                        }
+                                    });
+                                    $('label[id="ar_status_view"]').text(statusName);
+                               }
+                            if (header == 'ar_action_code') {
+                                var subStatusName = '';
+                                $.each(arActionList, function(key, val) {
+                                    if (value == key) {
+                                        subStatusName = val;
+                                    }
+                                });
+                                $('label[id="ar_action_view"]').text(subStatusName);
 
+                            }
                        $('label[id="' + header + '"]').text(value);
                     }
 
