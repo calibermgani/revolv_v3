@@ -119,6 +119,8 @@
                                                         </th>
                                                     @endforeach
                                                 @endif
+                                                <th>Aging</th>
+                                                <th>Aging Range</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -144,6 +146,8 @@
                                                                 </td>
                                                             @endif
                                                         @endforeach
+                                                        <td>--</td>
+                                                        <td>--</td>
                                                     </tr>
                                                 @endforeach
                                             @endif

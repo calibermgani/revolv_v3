@@ -21,6 +21,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Models\CallerChartsWorkLogs;
 use App\Models\QualitySampling;
+use App\Models\ARActionCodes;
 
 ini_set('memory_limit', '1024M');
 class ProductionController extends Controller
@@ -194,7 +195,7 @@ class ProductionController extends Controller
                $column_names = DB::select("DESCRIBE $table_name");
                $columns = array_column($column_names, 'Field');
                $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-               'coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+               'coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers','ar_status_code','ar_action_code',
                'updated_at','created_at', 'deleted_at'];
                $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                    return !in_array($column, $columnsToExclude);
@@ -1475,4 +1476,17 @@ class ProductionController extends Controller
             return redirect('/');
         }
    }
+   
+   public static function arActionCodeList(Request $request) {
+    if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+        try {
+            $data = ARActionCodes::where('status_code_id', $request['status_code_id'])->pluck('action_code', 'id')->toArray();
+            return response()->json(["subStatus" => $data]);
+        } catch (\Exception $e) {
+            log::debug($e->getMessage());
+        }
+    } else {
+        return redirect('/');
+    }
+}
 }

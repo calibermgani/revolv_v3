@@ -27,6 +27,8 @@ use App\Models\QAStatus;
 use App\Models\QASubStatus;
 use Illuminate\Support\Facades\Session;
 use GuzzleHttp\Client;
+use App\Models\ARStatusCodes;
+use App\Models\ARActionCodes;
 
 class Helpers
 {
@@ -668,4 +670,26 @@ class Helpers
 		asort($coderList);
 		return array('' => '-- Select --') + $coderList;
 	}
+
+	public static function arStatusList()
+	{
+		$data = ARStatusCodes::where('status', 'Active')->pluck('status_code', 'id')->prepend(trans('Select Status'), '')->toArray();
+		return $data;
+	}
+	public static function arActionList()
+	{
+		$data = ARActionCodes::where('status', 'Active')->pluck('action_code', 'id')->prepend(trans('Select Action'), '')->toArray();
+		return $data;
+	}
+	public static function arStatusById($id)
+	{
+		$data = ARStatusCodes::where('status', 'Active')->where('id', $id)->first('status_code');
+		return $data;
+	}
+	public static function arActionById($id)
+	{
+		$data = ARActionCodes::where('status', 'Active')->where('id', $id)->first('action_code');
+		return $data;
+	}
+
 }

@@ -77,6 +77,9 @@ var KTSelect2 = function() {
         $('.report_client_status').select2({
             placeholder: "Select Status"
         });
+        $('.kt_select2_ar_action_code').select2({
+            placeholder: "Action"
+        });
         // loading data from array
         // var data = [{
         //     id: 0,

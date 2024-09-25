@@ -226,7 +226,8 @@
                                                 </th>
                                             @endif
                                         @endforeach
-
+                                        <th>Aging</th>
+                                        <th>Aging Range</th>
                                     </tr>
                                 @endif
 
@@ -347,7 +348,8 @@
                                                     @endif
                                                 @endif
                                             @endforeach
-
+                                            <td>--</td>
+                                            <td>--</td>
                                         </tr>
                                     @endforeach
                                 @endif
@@ -641,6 +643,53 @@
                                                             <div class="col-md-11">
                                                                 {!!Form::textarea('annex_qa_trends',  null, ['class' => 'text-black form-control white-smoke annex_qa_trends','rows' => 6,'readonly']) !!}
     
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-4">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-md-12 required">
+                                                                Status Code
+                                                            </label>
+                                                            @php $arStatusList = App\Http\Helper\Admin\Helpers::arStatusList(); @endphp
+        
+                                                            <div class="col-md-10">
+                                                                <input type="hidden" id="ar_status_val">
+                                                                   {!! Form::Select(
+                                                                    'ar_status_code',
+                                                                    $arStatusList,
+                                                                    null,
+                                                                    [
+                                                                        'class' => 'form-control white-smoke  kt_select2_qa_status pop-non-edt-val ',
+                                                                        'autocomplete' => 'none',
+                                                                        'id' => 'ar_status_code',
+                                                                        'style' => 'cursor:pointer',
+                                                                    ],
+                                                                ) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-md-12 required">
+                                                                Action Code
+                                                            </label>
+                                                            @php $arActionList = []; @endphp
+                                                            <div class="col-md-10">
+                                                                {!! Form::Select(
+                                                                    'ar_action_code',
+                                                                    $arActionList,
+                                                                    null,
+                                                                    [
+                                                                        'class' => 'form-control white-smoke  kt_select2_ar_action_code pop-non-edt-val ',
+                                                                        'autocomplete' => 'none',
+                                                                        'id' => 'ar_action_code',
+                                                                        'style' => 'cursor:pointer',
+                                                                    ],
+                                                                ) !!}
+        
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1070,6 +1119,26 @@
                                         @endif
                                         @endforeach
                                 @endif
+                                <div class="row mt-4">
+                                    <div class="col-md-6">
+                                        <div class="form-group row">
+                                            <label class="col-md-12" id="ar_status_label">
+                                                Status Code
+                                            </label>
+                                            <label class="col-md-12 pop-non-edt-val" id="ar_status_view">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group row">
+                                            <label class="col-md-12" id="ar_action_label">
+                                                Action Code
+                                            </label>
+                                            <label class="col-md-12 pop-non-edt-val" id="ar_action_view">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
                                     <hr>
                                     <h6 class="title-h6">QA</h6>&nbsp;&nbsp;
                                     @if (count($popupQAEditableFields) > 0)
@@ -1288,6 +1357,8 @@
            // });
             var qaSubStatusList = @json($qaSubStatusListVal);
             var qaStatusList = @json( $qaStatusList);
+            var arStatusList = @json( $arStatusList);
+            var arActionList = @json($arActionListVal);
             var prevValues;
             $("#expandButton").click(function() {
                 var modalContent = $(".modal-content");
@@ -1891,6 +1962,14 @@
                                     $('#coder_rework_reason').css('display','none');
                                 }
                             }
+                            if (header == 'ar_status_code') {
+                                $('select[name="ar_status_code"]').val(value).trigger('change');
+                                $('#ar_status_val').val(value);
+                            }
+                            if (header == 'ar_action_code') {
+                                statusVal = $('#ar_status_val').val();
+                                actionCode(statusVal,value);
+                            }
                             $('textarea[name="' + header + '[]"]').val(value);
                             $('label[id="' + header + '"]').text(value);
                             if(value != null) {
@@ -1905,7 +1984,7 @@
 
                 }
             });
-            function subStatus(statusVal,value) {
+                function subStatus(statusVal,value) {
                     $.ajaxSetup({
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -2032,7 +2111,10 @@
                             $('#chart_status').text() == "Assigned" ? $('#qa_sub_status_label').css('display','none') : $('#qa_sub_status_label').css('display','block');
                             $('#chart_status').text() == "Assigned" ? $('#qa_status_view').css('display','none') : $('#qa_status_view').css('display','block');
                             $('#chart_status').text() == "Assigned" ? $('#qa_sub_status_view').css('display','none') : $('#qa_sub_status_view').css('display','block');
-
+                            // $('#chart_status').text() == "Assigned" ? $('#ar_status_label').css('display','none') : $('#ar_status_label').css('display','block');
+                            // $('#chart_status').text() == "Assigned" ? $('#ar_action_label').css('display','none') : $('#ar_action_label').css('display','block');
+                            // $('#chart_status').text() == "Assigned" ? $('#ar_status_view').css('display','none') : $('#ar_status_view').css('display','block');
+                            // $('#chart_status').text() == "Assigned" ? $('#ar_action_view').css('display','none') : $('#ar_action_view').css('display','block');
                             if (header == 'QA_status_code') {
                                 var statusName = '';
                                     $.each(qaStatusList, function(key, val) {
@@ -2050,6 +2132,25 @@
                                         }
                                     });
                                     $('label[id="qa_sub_status_view"]').text(subStatusName);
+
+                                }
+                                if (header == 'ar_status_code') {
+                                var statusName = '';
+                                    $.each(arStatusList, function(key, val) {
+                                        if (value == key) {
+                                            statusName = val;
+                                        }
+                                    });
+                                    $('label[id="ar_status_view"]').text(statusName);
+                               }
+                                if (header == 'ar_action_code') {
+                                    var subStatusName = '';
+                                    $.each(arActionList, function(key, val) {
+                                        if (value == key) {
+                                            subStatusName = val;
+                                        }
+                                    });
+                                    $('label[id="ar_action_view"]').text(subStatusName);
 
                                 }
                                 if (header == 'coder_rework_status') {
@@ -2102,7 +2203,45 @@
             $(document).on('click', '.sop_click', function(e) {
                 $('#myModal_sop').modal('show');
             });
-
+            function actionCode(statusVal,value) {
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ url('production/ar_action_code_list') }}",
+                        data: {
+                            status_code_id: statusVal
+                        },
+                        success: function(res) {
+                            subStatusCount = Object.keys(res.subStatus).length;
+                            var sla_options = '<option value="">-- Select --</option>';
+                            $.each(res.subStatus, function(key, value) {
+                                sla_options += '<option value="' + key + '" ' + '>' + value +
+                                    '</option>';
+                            });
+                            $('select[name="ar_action_code"]').html(sla_options);
+                            // $('select[name="QA_sub_status_code"]').val(12).change();
+                            if (value) {
+                                $('select[name="ar_action_code"]').val(value);
+                            }
+                        },
+                        error: function(jqXHR, exception) {}
+                    });
+                }
+                $(document).on('change', '#ar_status_code', function() {
+                    var status_code_id = $(this).val();
+                        KTApp.block('#myModal_status', {
+                            overlayColor: '#000000',
+                            state: 'danger',
+                            opacity: 0.1,
+                            message: 'Fetching...',
+                        });
+                        actionCode(status_code_id,'');
+                    KTApp.unblock('#myModal_status');
+                });
             $(document).ready(function() {
                 $('#myModal_sop').on('shown.bs.modal', function() {
                     $('#myModal_status').addClass('modal-right');
@@ -3071,278 +3210,7 @@
                     });
                     
                     
-                    // function handleBlurEvent(clientClass, annexClass) {
-                    //     var clientInf = $(clientClass).val().split(',').map(value => value.trim()); 
-                    //     var annexInf = $(annexClass).val().split(',').map(value => value.trim()); 
-                    //     let notesMap = {};
-                    //     var previousValue = [];
-                    //     var processedText = clientClass.replace('.', '').toUpperCase();
-                    //     var annexInfMap = {};
-                    //     var notes = $('.annex_qa_trends').val().trim();
-
-                    //     annexInf.forEach(function (value, index) {
-                    //         annexInfMap[value] = (annexInfMap[value] || 0)+1 ;
-                    //     });
-                                 
-                    //     for (var i = 0; i < clientInf.length; i++) {
-                    //         if (annexInf[i] !== undefined && annexInf[i] !== '') {
-                    //             if (clientInf[0] !== '' && clientInf[i] !== annexInf[i]) {                                    
-                    //                 if (clientInf[i].includes('-') && annexInf[i].includes('-')) {
-                    //                     var clientParts = clientInf[i].split('-');
-                    //                     var annexParts = annexInf[i].split('-');
-                    //                     const clientPart0 = clientParts[0].trim(); 
-                    //                     const annexPart0 = annexParts[0].trim(); 
-                    //                     const part1 = clientParts[1].trim(); 
-                    //                     const part2 = annexParts[1].trim(); 
-                    //                     if(part1 != part2) {
-                    //                         notesMap[part1] = processedText + ' - modifier ' +  part1 + ' changed to ' +  part2 + ' belongs to ' +  clientPart0;
-                    //                         previousValue[part1] = processedText + ' - ' + part1;
-                    //                     }
-                    //                     var noteLines =  notes.split('\n');
-                    //                     for (var j = 0; j < noteLines.length; j++) {
-                    //                         if(noteLines[j].includes(processedText + ' - modifier ' +  part1)) {
-                    //                             noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                    //                             notes = noteLines;
-
-                    //                             var lines = notes.split('\n');
-                    //                             var matchedLine = lines.find(lines => lines.includes(processedText + ' - modifier ' +  part1));
-                    //                             if (matchedLine) {
-                    //                                 notes = lines.filter(lines => lines !== matchedLine).join('\n');
-                    //                             }
-                                                                
-                    //                         }
-                    //                     }
-                    //                     if(clientPart0 != annexPart0) {
-                    //                         notesMap[clientPart0] = processedText + ' - ' + clientPart0 + ' changed to ' + annexPart0;
-                    //                         previousValue[clientPart0] = processedText + ' - ' + clientPart0                                          
-                    //                     }
-                    //                      var lines1 = notes.split('\n');
-                    //                      var matchedLine = lines1.find(lines => lines.includes(processedText + ' - ' + clientPart0));
-                    //                      if (matchedLine) {
-                    //                         notes = lines1.filter(lines => lines !== matchedLine).join('\n');
-                    //                      }
-                    //                     var noteLines =  notes.split('\n');
-                    //                     for (var j = 0; j < noteLines.length; j++) {
-                    //                         if(noteLines[j].includes(processedText + ' - ' + clientPart0)){
-                    //                             noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                    //                             notes = noteLines;                             
-                    //                         }
-                    //                     }
-                    //                 } else if (clientInf[i].includes('-') && !annexInf[i].includes('-')) {
-                    //                     var clientParts = clientInf[i].split('-');
-                    //                     const client1 = clientParts[0].trim(); 
-                    //                     const annex1 =annexInf[i].trim(); 
-                    //                     const cpart1 = clientParts[1].trim(); 
-                    //                     notesMap[cpart1] = processedText + ' - modifier ' +  cpart1 + ' removed belongs to ' + client1;
-                    //                     previousValue[cpart1] = processedText + ' - ' + cpart1;
-
-                    //                     var lines = notes.split('\n');
-                    //                     var matchedLine = lines.find(lines => lines.includes(processedText + ' - modifier ' +  cpart1));
-                    //                     if (matchedLine) {
-                    //                         notes = lines.filter(lines => lines !== matchedLine).join('\n');
-                    //                     }
-                    //                     if(client1 != annex1) {
-                    //                         notesMap[i] = processedText + ' - ' + client1 + ' changed to ' + annex1;
-                    //                         previousValue[client1] = processedText + ' - ' + client1;
-                    //                     }
-                    //                     var noteLines =  notes.split('\n');
-                    //                     for (var j = 0; j < noteLines.length; j++) {
-                    //                         if(noteLines[j].includes(processedText + ' - ' + client1)){
-                    //                             noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                    //                             notes = noteLines;                                                                                         
-                    //                         }
-                    //                     }
-                    //                 } else if (!clientInf[i].includes('-') && annexInf[i].includes('-')) {
-                    //                     var parts = annexInf[i].split('-');
-                    //                     const client2 = clientInf[i].trim(); 
-                    //                     const annex2 = parts[0].trim();
-                    //                     const apart1 = parts[0].trim(); 
-                    //                     const apart2 = parts[1].trim(); 
-                    //                     notesMap[apart1] = processedText + ' - modifier ' +  parts[1] + ' added to ' +  client2;
-                    //                     previousValue[client2] = processedText + ' - ' + client2;
-                    //                     var noteLines =  notes.split('\n');
-                    //                     for (var j = 0; j < noteLines.length; j++) {
-                    //                         if(noteLines[j].includes(processedText + ' - modifier ')){
-                    //                             noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                    //                             notes = noteLines;                                
-                    //                         }
-                    //                     }
-                    //                     var lines = notes.split('\n');
-                    //                     var matchedLine = lines.find(lines => lines.includes(processedText + ' - modifier '));
-                    //                     if (matchedLine) {
-                    //                         notes = lines.filter(lines => lines !== matchedLine).join('\n');
-                    //                     }
-                    //                     if(client2 != annex2) {
-                    //                         notesMap[i] = processedText + ' - ' + client2 + ' changed to ' + annex2;
-                    //                         previousValue[clientInf[i]] = processedText + ' - ' + clientInf[i];
-                    //                     }
-                    //                     var noteLines =  notes.split('\n');
-                    //                     for (var j = 0; j < noteLines.length; j++) {
-                    //                             if(noteLines[j].includes(processedText + ' - ' + client2)){
-                    //                                 noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                    //                                 notes = noteLines;                               
-                    //                             }
-                    //                     }
-                    //                     var lines = notes.split('\n');
-                    //                     var matchedLine = lines.find(lines => lines.includes(processedText + ' - ' + client2));
-                    //                     if (matchedLine) {
-                    //                         notes = lines.filter(lines => lines !== matchedLine).join('\n');
-                    //                     }
-                    //                 } else {
-                    //                     notesMap[i] = processedText + ' - ' + clientInf[i] + ' changed to ' + annexInf[i];
-                    //                     previousValue[clientInf[i]] = processedText + ' - ' + clientInf[i];
-                    //                     var noteLines =  notes.split('\n');
-                    //                     for (var j = 0; j < noteLines.length; j++) {
-                    //                         // if(noteLines[j].includes(processedText + ' - ' + clientInf[i])){
-                    //                         if(noteLines[j].includes(processedText + ' - ' + clientInf[i]) || noteLines[j].includes(processedText + ' - ' + annexInf[i])){
-                    //                             noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                    //                             notes = noteLines;                                              
-                    //                         }
-                    //                         // if(noteLines[j].includes(processedText + ' - ' + annexInf[i])){
-                    //                         //     noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                    //                         //     notes = noteLines;                                              
-                    //                         // }
-                    //                     }
-                    //                 }
-                    //                    var noteLines =  notes.split('\n');
-                    //                     for (var j = 0; j < noteLines.length; j++) {
-                    //                         if(noteLines[j].includes(processedText + ' - ' + clientInf[i])){
-                    //                                 noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                    //                                 notes = noteLines;                                                
-                    //                             }
-                    //                      }
-                                    
-                    //             } else {
-                    //                 var lines = notes.split('\n');
-                    //                  if (clientInf[i].includes('-')) {
-                    //                     var clientParts = clientInf[i].split('-');
-                    //                     var matchedLine = lines.find(line => line.includes(processedText + ' - ' + clientParts[0]));
-                    //                     var matchedLine1 = lines.find(line => line.includes(processedText + ' - modifier ' + clientParts[1])); 
-                    //                     if (matchedLine || matchedLine1) {
-                    //                         lines = lines.filter(line => line !== matchedLine && line !== matchedLine1);
-                    //                         notes = lines.join('\n');
-                    //                     }
-                    //                 } else {
-                    //                     var matchedLine = lines.find(line => line.includes(processedText + ' - ' + clientInf[i]));
-                    //                     if (matchedLine) {
-                    //                         notes = lines.filter(line => line !== matchedLine).join('\n');
-                    //                     }
-                    //                     var noteLines =  notes.split('\n');
-                    //                     for (var j = 0; j < noteLines.length; j++) {
-                    //                         if(noteLines[j].includes(processedText + ' - ' + clientInf[i])){
-                    //                             noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                    //                             notes = noteLines;                                                
-                    //                         }
-                    //                     }      
-                    //                }                              
-                    //             }
-                    //             if (annexInfMap[annexInf[i]] > 0) {
-                    //                 annexInfMap[annexInf[i]]--;
-                    //                 if (annexInfMap[annexInf[i]] === 0) {
-                    //                     delete annexInfMap[annexInf[i]];
-                    //                 }
-                    //             }
-                            
-                    //         } else {
-                    //             if(annexInf.length > 1 && annexInf[0] == ''){
-                    //                 notesMap[clientInf[i]] = processedText + ' - ' + clientInf[i] + ' removed';
-                    //             } else if(annexInf[0] !== '') {
-                    //                 notesMap[clientInf[i]] = processedText + ' - ' + clientInf[i] + ' removed';
-                    //             } else {
-                    //                 var lines = notes.split('\n');
-                    //                 for (var j = 0; j < lines.length; j++) {
-                    //                     var matchedLine = lines.find(line => line.includes(processedText + ' - ' + clientInf[i] )); 
-                    //                         notes = lines.filter(line => line !== matchedLine).join('\n');
-                    //                 }
-                    //             }
-                    //             previousValue[clientInf[i]] = processedText + ' - ' + clientInf[i];
-                            
-                    //         }
-                    //     }
-                      
-                    //     for (var key in annexInfMap) {
-                    //         if (annexInfMap.hasOwnProperty(key) && annexInfMap[key] > 0) {
-                    //             if(key && (clientInf[0] !== '')) {
-                    //                 notesMap[key] = processedText + ' - ' + key + ' added';
-                    //                 var lines = notes.split('\n');
-                    //                 var matchedLine = lines.find(line => line.includes(notesMap[key]));
-                    //                 if (matchedLine) {
-                    //                     notes = lines.filter(line => line !== matchedLine).join('\n');
-                    //                 }
-                    //             }
-                    //         } 
-                    //     }
-                    //      clientInf.forEach(function (value) {
-                    //         let combinedArray = Object.values(previousValue);
-                    //         let filteredArray = combinedArray.filter(item => item !== null && item !== '');
-                    //         if (value.includes('-')) {
-                    //             var clientParts = value.split('-');
-                    //             clientParts.forEach(function(innerValue){
-                    //                 if (notesMap[innerValue]) { 
-                    //                     var lines = notes.split('\n');
-                    //                     if (lines.includes(filteredArray[innerValue])) {
-                    //                     var matchedLine = lines.find(line => line.includes(filteredArray[innerValue]));
-                    //                         if (matchedLine !== undefined) {
-                    //                             notes = notes.replace(matchedLine, notesMap[innerValue]);
-                    //                         } else {
-                    //                             notes += '\n' + notesMap[innerValue];
-                    //                         }
-                    //                     } else {
-                    //                         if (notes === "") {
-                    //                             notes += notesMap[innerValue];
-                    //                         } else {
-                    //                             notes += '\n' + notesMap[innerValue];
-                    //                         }
-                    //                     }
-                    //                     delete notesMap[innerValue];
-                    //                 }
-                    //             })                                                
-                    //         } else {
-                    //             if (notesMap[value]) { 
-                    //                 var lines = notes.split('\n');
-                    //                 if (lines.includes(filteredArray[value])) {
-                    //                     var matchedLine = lines.find(line => line.includes(filteredArray[value]));
-                    //                     if (matchedLine !== undefined) {
-                    //                         notes = notes.replace(matchedLine, notesMap[value]);
-                    //                     } else {
-                    //                         notes += '\n' + notesMap[value];
-                    //                     }
-                    //                 } else {                                    
-                    //                     if (notes === "") {
-                    //                         notes += notesMap[value];
-                    //                     } else {
-                    //                         notes += '\n' + notesMap[value];
-                    //                     }
-                    //                 }
-                    //                 delete notesMap[value];
-                    //             }
-                    //         }
-                    //     });
-
-                    //     // Add remaining notes for new additions
-                    //     for (var key in notesMap) {
-                    //         var lines = notes.split('\n');
-                    //         if (notesMap.hasOwnProperty(key)) {
-                    //             notes += '\n' + notesMap[key];
-                    //         }
-                    //     }
-                    //         var notes1 = notes.split('\n');
-                    //         var matchedLine = notes1.find(line => line.includes(processedText + ' - ') && line.includes(' added') );
-                    //         if (matchedLine !== undefined && !matchedLine.includes(' added to')) {
-                    //             let modifiedString = matchedLine.replace(processedText + ' - ', '').replace(' added', '');
-                    //             var totalParts = annexInf.reduce((acc, item) => acc + item.split('-').length, 0);
-                    //             var notes2 = notes.split('\n').filter(line => line.includes(processedText + ' - '));
-                    //             if (!annexInf.includes(modifiedString)) {
-                    //                 notes1 = notes1.filter(line => line !== matchedLine);
-                    //                 notes = notes1.join('\n');
-                    //             }                                
-                    //         }
-                       
-                    //     let noteLines1 = notes.trim().split('\n');
-                    //     let uniqueNotes = Array.from(new Set(noteLines1));
-                    //     let finalNotes = uniqueNotes.join('\n');
-                    //     $('.annex_qa_trends').val(finalNotes);
-                    // }
+                   
                     function handleBlurEvent(clientClass, annexClass) {
                         var clientInf = $(clientClass).val().split(',').map(value => value.trim()); 
                            clientInf = clientInf.filter(function(item) {

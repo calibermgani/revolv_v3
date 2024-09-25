@@ -180,7 +180,8 @@
                                                                 </th>
                                                             @endif
                                                         @endforeach
-
+                                                        <th>Aging</th>
+                                                        <th>Aging Range</th>
                                                     </tr>
                                                 @endif
 
@@ -215,7 +216,7 @@
                                                                     $columnsToExclude = [
                                                                         'QA_emp_id',
                                                                         'ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-                                                                        'coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                                                                        'coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers','ar_status_code','ar_action_code',
                                                                         'created_at',
                                                                         'updated_at',
                                                                         'deleted_at',
@@ -252,7 +253,8 @@
                                                                     @endif
                                                                 @endif
                                                             @endforeach
-
+                                                            <td>--</td>
+                                                            <td>--</td>
                                                         </tr>
                                                     @endforeach
                                                 @endif
@@ -519,6 +521,52 @@
                                                                                 <div class="col-md-11">
                                                                                     {!!Form::textarea('annex_coder_trends',  null, ['class' => 'text-black form-control white-smoke annex_coder_trends','rows' => 6,'readonly']) !!}
 
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row mt-4">
+                                                                        <div class="col-md-6">
+                                                                            <div class="form-group row">
+                                                                                <label class="col-md-12 required">
+                                                                                    Status Code
+                                                                                </label>
+                                                                                @php $arStatusList = App\Http\Helper\Admin\Helpers::arStatusList(); @endphp
+                            
+                                                                                <div class="col-md-10">
+                                                                                       {!! Form::Select(
+                                                                                        'ar_status_code',
+                                                                                        $arStatusList,
+                                                                                        null,
+                                                                                        [
+                                                                                            'class' => 'form-control white-smoke  kt_select2_qa_status pop-non-edt-val ',
+                                                                                            'autocomplete' => 'none',
+                                                                                            'id' => 'ar_status_code',
+                                                                                            'style' => 'cursor:pointer',
+                                                                                        ],
+                                                                                    ) !!}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div class="form-group row">
+                                                                                <label class="col-md-12 required">
+                                                                                    Action Code
+                                                                                </label>
+                                                                                @php $arActionList = []; @endphp
+                                                                                <div class="col-md-10">
+                                                                                    {!! Form::Select(
+                                                                                        'ar_action_code',
+                                                                                        $arActionList,
+                                                                                        null,
+                                                                                        [
+                                                                                            'class' => 'form-control white-smoke  kt_select2_ar_action_code pop-non-edt-val ',
+                                                                                            'autocomplete' => 'none',
+                                                                                            'id' => 'ar_action_code',
+                                                                                            'style' => 'cursor:pointer',
+                                                                                        ],
+                                                                                    ) !!}
+                            
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -1044,6 +1092,45 @@
                     $('#title_status_view').text('Assigned');
                 });
             });
+            function subStatus(statusVal,value) {
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ url('production/ar_action_code_list') }}",
+                        data: {
+                            status_code_id: statusVal
+                        },
+                        success: function(res) {
+                            subStatusCount = Object.keys(res.subStatus).length;
+                            var sla_options = '<option value="">-- Select --</option>';
+                            $.each(res.subStatus, function(key, value) {
+                                sla_options += '<option value="' + key + '" ' + '>' + value +
+                                    '</option>';
+                            });
+                            $('select[name="ar_action_code"]').html(sla_options);
+                            // $('select[name="QA_sub_status_code"]').val(12).change();
+                            if (value) {
+                                $('select[name="ar_action_code"]').val(value);
+                            }
+                        },
+                        error: function(jqXHR, exception) {}
+                    });
+                }
+                $(document).on('change', '#ar_status_code', function() {
+                    var status_code_id = $(this).val();
+                        KTApp.block('#myModal_status', {
+                            overlayColor: '#000000',
+                            state: 'danger',
+                            opacity: 0.1,
+                            message: 'Fetching...',
+                        });
+                    subStatus(status_code_id,'');
+                    KTApp.unblock('#myModal_status');
+                });
             $(document).on('click', '.clickable-row', function(e) {
               
                 // var record_id = $(this).closest('tr').find('td:eq(0)').text();
