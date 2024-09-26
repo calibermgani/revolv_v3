@@ -575,7 +575,55 @@
                                                         @endif
                                                         @endforeach
                                                 @endif
-
+                                                <div class="row mt-4">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-md-12 required">
+                                                                Status Code
+                                                            </label>
+                                                            @php $arStatusList = App\Http\Helper\Admin\Helpers::arStatusList(); @endphp
+        
+                                                            <div class="col-md-10">
+                                                                <input type="hidden" id="ar_status_val">
+                                                                   {!! Form::Select(
+                                                                    'ar_status_code',
+                                                                    $arStatusList,
+                                                                    null,
+                                                                    [
+                                                                        'class' => 'form-control white-smoke  kt_select2_qa_status pop-non-edt-val ',
+                                                                        'autocomplete' => 'none',
+                                                                        'id' => 'ar_status_code',
+                                                                        'style' => 'cursor:pointer',
+                                                                        'disabled'
+                                                                    ],
+                                                                ) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-md-12 required">
+                                                                Action Code
+                                                            </label>
+                                                            @php $arActionList = []; @endphp
+                                                            <div class="col-md-10">
+                                                                {!! Form::Select(
+                                                                    'ar_action_code',
+                                                                    $arActionList,
+                                                                    null,
+                                                                    [
+                                                                        'class' => 'form-control white-smoke  kt_select2_ar_action_code pop-non-edt-val ',
+                                                                        'autocomplete' => 'none',
+                                                                        'id' => 'ar_action_code',
+                                                                        'style' => 'cursor:pointer',
+                                                                        'disabled'
+                                                                    ],
+                                                                ) !!}
+        
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <hr>
                                                 <h6 class="title-h6">QA</h6>&nbsp;&nbsp;
                                             @if (count($popupQAEditableFields) > 0)
@@ -1001,6 +1049,26 @@
                                         @endif
                                         @endforeach
                                 @endif
+                                <div class="row mt-4">
+                                    <div class="col-md-6">
+                                        <div class="form-group row">
+                                            <label class="col-md-12" id="ar_status_label">
+                                                Status Code
+                                            </label>
+                                            <label class="col-md-12 pop-non-edt-val" id="ar_status_view">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group row">
+                                            <label class="col-md-12" id="ar_action_label">
+                                                Action Code
+                                            </label>
+                                            <label class="col-md-12 pop-non-edt-val" id="ar_action_view">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
                                     <hr>
                                     <h6 class="title-h6">QA</h6>&nbsp;&nbsp;
                                     @if (count($popupQAEditableFields) > 0)
@@ -1213,6 +1281,8 @@
         $(document).ready(function() {
             var qaSubStatusList = @json($qaSubStatusListVal);
             var qaStatusList = @json( $qaStatusList);
+            var arStatusList = @json( $arStatusList);
+            var arActionList = @json($arActionListVal);
             var prevValues;
             $("#expandButton").click(function() {
                 var modalContent = $(".modal-content");
@@ -1803,6 +1873,14 @@
                                     $('#coder_rework_reason').css('display','none');
                                 }
                             }
+                            if (header == 'ar_status_code') {
+                                $('select[name="ar_status_code"]').val(value).trigger('change');
+                                $('#ar_status_val').val(value);
+                            }
+                            if (header == 'ar_action_code') {
+                                statusVal = $('#ar_status_val').val();
+                                actionCode(statusVal,value);
+                            }
                             $('textarea[name="' + header + '[]"]').val(value);
                             $('label[id="' + header + '"]').text(value);
                             if(value != null) {
@@ -1960,6 +2038,25 @@
                                     $('label[id="qa_sub_status_view"]').text(subStatusName);
 
                                 }
+                                if (header == 'ar_status_code') {
+                                   var statusName = '';
+                                    $.each(arStatusList, function(key, val) {
+                                        if (value == key) {
+                                            statusName = val;
+                                        }
+                                    });
+                                    $('label[id="ar_status_view"]').text(statusName);
+                               }
+                                if (header == 'ar_action_code') {
+                                    var subStatusName = '';
+                                    $.each(arActionList, function(key, val) {
+                                        if (value == key) {
+                                            subStatusName = val;
+                                        }
+                                    });
+                                    $('label[id="ar_action_view"]').text(subStatusName);
+
+                                }
                                 if (header == 'coder_rework_status') {
                                    $('label[id="coder_rework_status_view"]').text(value);
                                     if (value !== null) {
@@ -2007,6 +2104,45 @@
 
                 }
             });
+            function actionCode(statusVal,value) {
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ url('production/ar_action_code_list') }}",
+                        data: {
+                            status_code_id: statusVal
+                        },
+                        success: function(res) {
+                            subStatusCount = Object.keys(res.subStatus).length;
+                            var sla_options = '<option value="">-- Select --</option>';
+                            $.each(res.subStatus, function(key, value) {
+                                sla_options += '<option value="' + key + '" ' + '>' + value +
+                                    '</option>';
+                            });
+                            $('select[name="ar_action_code"]').html(sla_options);
+                            // $('select[name="QA_sub_status_code"]').val(12).change();
+                            if (value) {
+                                $('select[name="ar_action_code"]').val(value);
+                            }
+                        },
+                        error: function(jqXHR, exception) {}
+                    });
+                }
+                $(document).on('change', '#ar_status_code', function() {
+                    var status_code_id = $(this).val();
+                        KTApp.block('#myModal_status', {
+                            overlayColor: '#000000',
+                            state: 'danger',
+                            opacity: 0.1,
+                            message: 'Fetching...',
+                        });
+                        actionCode(status_code_id,'');
+                    KTApp.unblock('#myModal_status');
+                });
             $(document).on('click', '.sop_click', function(e) {
                 $('#myModal_sop').modal('show');
             });

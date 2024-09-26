@@ -136,6 +136,8 @@ class FormController extends Controller
                                             qa_error_count VARCHAR(255) NULL,
                                             tl_error_count VARCHAR(255) NULL,
                                             tl_comments TEXT NULL,
+                                            ar_status_code VARCHAR(255) NULL,
+                                            ar_action_code VARCHAR(255) NULL,
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                             updated_at TIMESTAMP NULL,
                                             deleted_at TIMESTAMP NULL)";//dd($createTableSQL);
@@ -197,6 +199,8 @@ class FormController extends Controller
                                                     qa_error_count VARCHAR(255) NULL,
                                                     tl_error_count VARCHAR(255) NULL,
                                                     tl_comments TEXT NULL,
+                                                    ar_status_code VARCHAR(255) NULL,
+                                                    ar_action_code VARCHAR(255) NULL,
                                                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                     updated_at TIMESTAMP NULL,
                                                     deleted_at TIMESTAMP NULL)";
@@ -256,6 +260,8 @@ class FormController extends Controller
                                             qa_error_count VARCHAR(255) NULL,
                                             tl_error_count VARCHAR(255) NULL,
                                             tl_comments TEXT NULL,
+                                            ar_status_code VARCHAR(255) NULL,
+                                            ar_action_code VARCHAR(255) NULL,
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                             updated_at TIMESTAMP NULL,
                                             deleted_at TIMESTAMP NULL)";
@@ -315,6 +321,8 @@ class FormController extends Controller
                                             qa_error_count VARCHAR(255) NULL,
                                             tl_error_count VARCHAR(255) NULL,
                                             tl_comments TEXT NULL,
+                                            ar_status_code VARCHAR(255) NULL,
+                                            ar_action_code VARCHAR(255) NULL,
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                             updated_at TIMESTAMP NULL,
                                             deleted_at TIMESTAMP NULL)";
@@ -374,6 +382,8 @@ class FormController extends Controller
                                             qa_error_count VARCHAR(255) NULL,
                                             tl_error_count VARCHAR(255) NULL,
                                             tl_comments TEXT NULL,
+                                            ar_status_code VARCHAR(255) NULL,
+                                            ar_action_code VARCHAR(255) NULL,
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                             updated_at TIMESTAMP NULL,
                                             deleted_at TIMESTAMP NULL)";
@@ -532,6 +542,8 @@ class FormController extends Controller
                                             qa_error_count VARCHAR(255) NULL,
                                             tl_error_count VARCHAR(255) NULL,
                                             tl_comments TEXT NULL,
+                                            ar_status_code VARCHAR(255) NULL,
+                                            ar_action_code VARCHAR(255) NULL,
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                             updated_at TIMESTAMP NULL,
                                             deleted_at TIMESTAMP NULL)";
@@ -592,6 +604,8 @@ class FormController extends Controller
                                                     qa_error_count VARCHAR(255) NULL,
                                                     tl_error_count VARCHAR(255) NULL,
                                                     tl_comments TEXT NULL,
+                                                    ar_status_code VARCHAR(255) NULL,
+                                                    ar_action_code VARCHAR(255) NULL,
                                                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                     updated_at TIMESTAMP NULL,
                                                     deleted_at TIMESTAMP NULL)";
@@ -650,6 +664,8 @@ class FormController extends Controller
                                             qa_error_count VARCHAR(255) NULL,
                                             tl_error_count VARCHAR(255) NULL,
                                             tl_comments TEXT NULL,
+                                            ar_status_code VARCHAR(255) NULL,
+                                            ar_action_code VARCHAR(255) NULL,
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                             updated_at TIMESTAMP NULL,
                                             deleted_at TIMESTAMP NULL)";
@@ -709,6 +725,8 @@ class FormController extends Controller
                                             qa_error_count VARCHAR(255) NULL,
                                             tl_error_count VARCHAR(255) NULL,
                                             tl_comments TEXT NULL,
+                                            ar_status_code VARCHAR(255) NULL,
+                                            ar_action_code VARCHAR(255) NULL,
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                             updated_at TIMESTAMP NULL,
                                             deleted_at TIMESTAMP NULL)";
@@ -768,6 +786,8 @@ class FormController extends Controller
                                             qa_error_count VARCHAR(255) NULL,
                                             tl_error_count VARCHAR(255) NULL,
                                             tl_comments TEXT NULL,
+                                            ar_status_code VARCHAR(255) NULL,
+                                            ar_action_code VARCHAR(255) NULL,
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                             updated_at TIMESTAMP NULL,
                                             deleted_at TIMESTAMP NULL)";

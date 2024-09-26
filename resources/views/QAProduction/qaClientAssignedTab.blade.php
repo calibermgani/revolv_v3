@@ -2137,7 +2137,7 @@
 
                                 }
                                 if (header == 'ar_status_code') {
-                                var statusName = '';
+                                   var statusName = '';
                                     $.each(arStatusList, function(key, val) {
                                         if (value == key) {
                                             statusName = val;

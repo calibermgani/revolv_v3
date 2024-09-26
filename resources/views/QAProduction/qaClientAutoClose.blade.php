@@ -24,15 +24,6 @@
                     </div>
                     <div class="col-md-6">
                         <div class="row" style="justify-content: flex-end;margin-right:1.4rem">
-
-                            {{-- @if (
-                                $empDesignation == 'Administrator' ||
-                                    strpos($empDesignation, 'Manager') !== false ||
-                                    strpos($empDesignation, 'VP') !== false ||
-                                    strpos($empDesignation, 'Leader') !== false ||
-                                    strpos($empDesignation, 'Team Lead') !== false ||
-                                    strpos($empDesignation, 'CEO') !== false ||
-                                    strpos($empDesignation, 'Vice') !== false) --}}
                                 <div class="col-lg-3 mb-lg-0 mb-6" id="assign_div">
 
                                     <fieldset class="form-group mb-0 white-smoke-disabled">
@@ -45,7 +36,6 @@
                                         ]) !!}
                                     </fieldset>
                                 </div>
-                            {{-- @endif --}}
                             &nbsp;&nbsp;
                             <div>
                                 @if ($popUpHeader != null)
@@ -54,12 +44,10 @@
                                                     $popUpHeader->project_id,
                                                 );
                                                 $sopDetails = App\Models\SopDoc::where('project_id',$popUpHeader->project_id)->where('sub_project_id',$popUpHeader->sub_project_id)->latest()->first('sop_path');
-                                                // $pdfName =  preg_replace('/[^A-Za-z0-9]/', '_',$clientNameDetails->project_name);
                                         @endphp
                                         @else
                                         @php
                                             $sopDetails = '';
-                                            // $pdfName = '';
                                         @endphp
                                     @endif
                                 <a href= {{ isset($sopDetails) && isset($sopDetails->sop_path) ? asset($sopDetails->sop_path) : '#' }} target="_blank">
@@ -147,37 +135,6 @@
                                 </div>
                             </div>
                         </div>
-                        {{-- <div class="wizard-step mb-0 five" data-wizard-type="step">
-                            <div class="wizard-wrapper py-2">
-                                <div class="wizard-label p-2 mt-2">
-                                    <div class="wizard-title" style="display: flex; align-items: center;">
-                                        <h6 style="margin-right: 5px;">Rework</h6>
-                                        @include('CountVar.countRectangle', ['count' => $reworkCount])
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
-                        {{-- @if (
-                            $loginEmpId == 'Admin' ||
-                                strpos($empDesignation, 'Manager') !== false ||
-                                strpos($empDesignation, 'VP') !== false ||
-                                strpos($empDesignation, 'Leader') !== false ||
-                                strpos($empDesignation, 'Team Lead') !== false ||
-                                strpos($empDesignation, 'CEO') !== false ||
-                                strpos($empDesignation, 'Vice') !== false)
-                            <div class="wizard-step mb-0 six" data-wizard-type="step">
-                                <div class="wizard-wrapper py-2">
-                                    <div class="wizard-label p-2 mt-2">
-                                        <div class="wizard-title" style="display: flex; align-items: center;">
-                                            <h6 style="margin-right: 5px;">Duplicate</h6>
-                                            @include('CountVar.countRectangle', [
-                                                'count' => $duplicateCount,
-                                            ])
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif --}}
                     </div>
                 </div>
             </div>
@@ -192,18 +149,9 @@
                             <thead>
                                 @if (!empty($columnsHeader))
                                     <tr>
-                                        {{-- @if (
-                                            $empDesignation == 'Administrator' ||
-                                                strpos($empDesignation, 'Manager') !== false ||
-                                                strpos($empDesignation, 'VP') !== false ||
-                                                strpos($empDesignation, 'Leader') !== false ||
-                                                strpos($empDesignation, 'Team Lead') !== false ||
-                                                strpos($empDesignation, 'CEO') !== false ||
-                                                strpos($empDesignation, 'Vice') !== false) --}}
                                             <th class='notexport'><input type="checkbox" id="ckbCheckAll"
                                                     class="cursor_hand">
                                             </th>
-                                        {{-- @endif --}}
                                         <th class='notexport' style="color:white !important">Action</th>
                                         @foreach ($columnsHeader as $columnName => $columnValue)
                                             @if ($columnValue != 'id')
@@ -236,39 +184,10 @@
                                 @if (isset($autoCloseProjectDetails))
                                     @foreach ($autoCloseProjectDetails as $data)
                                         <tr>
-                                            {{-- @if (
-                                                $empDesignation == 'Administrator' ||
-                                                    strpos($empDesignation, 'Manager') !== false ||
-                                                    strpos($empDesignation, 'VP') !== false ||
-                                                    strpos($empDesignation, 'Leader') !== false ||
-                                                    strpos($empDesignation, 'Team Lead') !== false ||
-                                                    strpos($empDesignation, 'CEO') !== false ||
-                                                    strpos($empDesignation, 'Vice') !== false) --}}
                                                 <td><input type="checkbox" class="checkBoxClass cursor_hand" name='check[]'
                                                         value="{{ $data->id }}">
                                                 </td>
-                                            {{-- @endif --}}
                                             <td>
-                                                {{-- @if (
-                                                    ($empDesignation !== 'Administrator' ||
-                                                        strpos($empDesignation, 'Manager') !== true ||
-                                                        strpos($empDesignation, 'VP') !== true ||
-                                                        strpos($empDesignation, 'Leader') !== true ||
-                                                        strpos($empDesignation, 'Team Lead') !== true ||
-                                                        strpos($empDesignation, 'CEO') !== true ||
-                                                        strpos($empDesignation, 'Vice') !== true) &&
-                                                        $loginEmpId != $data->QA_emp_id)
-                                                @else
-                                                     @if (empty($existingCallerChartsWorkLogs))
-                                                        <button class="task-start clickable-row start" title="Start"><i
-                                                                class="fa fa-play-circle icon-circle1 mt-0"
-                                                                aria-hidden="true" style="color:#ffffff"></i></button>
-                                                    @elseif(in_array($data->id, $existingCallerChartsWorkLogs) || $data->chart_status == 'QA_Inprocess')
-                                                        <button class="task-start clickable-row start" title="Start"><i
-                                                                class="fa fa-play-circle icon-circle1 mt-0"
-                                                                aria-hidden="true" style="color:#ffffff"></i></button>
-                                                    @endif
-                                                @endif --}}
                                                 <button class="task-start clickable-view" title="View"><i
                                                         class="fa far fa-eye text-eye icon-circle1 mt-0"></i></button>
                                             </td>
@@ -401,12 +320,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
-                                        {{-- <div class="col-md-8  justify-content-end"
-                                            style="display: -webkit-box !important;">
-                                            <button type="button" class="btn btn-black-white mr-3 sop_click"
-                                                id="sop_click" style="padding: 0.35rem 1rem;">SOP</button>
-                                        </div> --}}
                                     </div>
                                 </div>
                                 {!! Form::open([
@@ -602,7 +515,55 @@
                                                         @endif
                                                         @endforeach
                                                 @endif
-
+                                                <div class="row mt-4">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-md-12 required">
+                                                                Status Code
+                                                            </label>
+                                                            @php $arStatusList = App\Http\Helper\Admin\Helpers::arStatusList(); @endphp
+        
+                                                            <div class="col-md-10">
+                                                                <input type="hidden" id="ar_status_val">
+                                                                   {!! Form::Select(
+                                                                    'ar_status_code',
+                                                                    $arStatusList,
+                                                                    null,
+                                                                    [
+                                                                        'class' => 'form-control white-smoke  kt_select2_qa_status pop-non-edt-val ',
+                                                                        'autocomplete' => 'none',
+                                                                        'id' => 'ar_status_code',
+                                                                        'style' => 'cursor:pointer',
+                                                                        'disabled'
+                                                                    ],
+                                                                ) !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-md-12 required">
+                                                                Action Code
+                                                            </label>
+                                                            @php $arActionList = []; @endphp
+                                                            <div class="col-md-10">
+                                                                {!! Form::Select(
+                                                                    'ar_action_code',
+                                                                    $arActionList,
+                                                                    null,
+                                                                    [
+                                                                        'class' => 'form-control white-smoke  kt_select2_ar_action_code pop-non-edt-val ',
+                                                                        'autocomplete' => 'none',
+                                                                        'id' => 'ar_action_code',
+                                                                        'style' => 'cursor:pointer',
+                                                                        'disabled'
+                                                                    ],
+                                                                ) !!}
+        
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <hr>
                                                 <h6 class="title-h6">QA</h6>&nbsp;&nbsp;
                                             @if (count($popupQAEditableFields) > 0)
@@ -852,21 +813,6 @@
                                                     <div class="col-md-10">
                                                         <label class="col-md-12 pop-non-edt-val coder_rework_status" id="coder_rework_status" style="display:none">
                                                         </label>
-                                                        {{-- {!! Form::Select(
-                                                            'coder_rework_status',
-                                                            [
-                                                                '' => 'Select',
-                                                                'Accept' => 'Accept',
-                                                                'Rebuttal' => 'Rebuttal',
-                                                              ],
-                                                            null,
-                                                            [
-                                                                'class' => 'form-control white-smoke coder_rework_status pop-non-edt-val ',
-                                                                'autocomplete' => 'none',
-                                                                'id' => 'coder_rework_status',
-                                                                'style' => 'cursor:pointer',
-                                                            ],
-                                                        ) !!} --}}
                                                     </div>
                                                 </div>
                                             </div>
@@ -878,8 +824,6 @@
                                                     <div class="col-md-10">
                                                         <label class="col-md-12 pop-non-edt-val coder_rework_reason" id="coder_rework_reason" style="display:none">
                                                         </label>
-                                                        {{-- {!! Form::textarea('coder_rework_reason',  null, ['class' => 'text-black form-control coder_rework_reason','rows' => 3,'id' => 'rework_reason']) !!} --}}
-
                                                     </div>
                                                 </div>
                                             </div>
@@ -1026,6 +970,26 @@
                                         @endif
                                         @endforeach
                                 @endif
+                                <div class="row mt-4">
+                                    <div class="col-md-6">
+                                        <div class="form-group row">
+                                            <label class="col-md-12" id="ar_status_label">
+                                                Status Code
+                                            </label>
+                                            <label class="col-md-12 pop-non-edt-val" id="ar_status_view">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group row">
+                                            <label class="col-md-12" id="ar_action_label">
+                                                Action Code
+                                            </label>
+                                            <label class="col-md-12 pop-non-edt-val" id="ar_action_view">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
                                     <hr>
                                     <h6 class="title-h6">QA</h6>&nbsp;&nbsp;
                                     @if (count($popupQAEditableFields) > 0)
@@ -1219,6 +1183,8 @@
         $(document).ready(function() {
             var qaSubStatusList = @json($qaSubStatusListVal);
             var qaStatusList = @json( $qaStatusList);
+            var arStatusList = @json( $arStatusList);
+            var arActionList = @json($arActionListVal);
             var prevValues;
             $("#expandButton").click(function() {
                 var modalContent = $(".modal-content");
@@ -1802,6 +1768,14 @@
                                     $('#coder_rework_reason').css('display','none');
                                 }
                             }
+                            if (header == 'ar_status_code') {
+                                $('select[name="ar_status_code"]').val(value).trigger('change');
+                                $('#ar_status_val').val(value);
+                            }
+                            if (header == 'ar_action_code') {
+                                statusVal = $('#ar_status_val').val();
+                                actionCode(statusVal,value);
+                            }
                             $('textarea[name="' + header + '[]"]').val(value);
                             $('input[name="' + header + '[]"]').val(value);
                             $('label[id="' + header + '"]').text(value);
@@ -1954,6 +1928,25 @@
                                     $('label[id="qa_sub_status_view"]').text(subStatusName);
 
                                 }
+                                if (header == 'ar_status_code') {
+                                   var statusName = '';
+                                    $.each(arStatusList, function(key, val) {
+                                        if (value == key) {
+                                            statusName = val;
+                                        }
+                                    });
+                                    $('label[id="ar_status_view"]').text(statusName);
+                               }
+                                if (header == 'ar_action_code') {
+                                    var subStatusName = '';
+                                    $.each(arActionList, function(key, val) {
+                                        if (value == key) {
+                                            subStatusName = val;
+                                        }
+                                    });
+                                    $('label[id="ar_action_view"]').text(subStatusName);
+
+                                }
                                 if (header == 'coder_rework_status') {
                                    $('label[id="coder_rework_status_view"]').text(value);
                                     if (value !== null) {
@@ -2004,7 +1997,45 @@
             $(document).on('click', '.sop_click', function(e) {
                 $('#myModal_sop').modal('show');
             });
-
+            function actionCode(statusVal,value) {
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ url('production/ar_action_code_list') }}",
+                        data: {
+                            status_code_id: statusVal
+                        },
+                        success: function(res) {
+                            subStatusCount = Object.keys(res.subStatus).length;
+                            var sla_options = '<option value="">-- Select --</option>';
+                            $.each(res.subStatus, function(key, value) {
+                                sla_options += '<option value="' + key + '" ' + '>' + value +
+                                    '</option>';
+                            });
+                            $('select[name="ar_action_code"]').html(sla_options);
+                            // $('select[name="QA_sub_status_code"]').val(12).change();
+                            if (value) {
+                                $('select[name="ar_action_code"]').val(value);
+                            }
+                        },
+                        error: function(jqXHR, exception) {}
+                    });
+                }
+                $(document).on('change', '#ar_status_code', function() {
+                    var status_code_id = $(this).val();
+                        KTApp.block('#myModal_status', {
+                            overlayColor: '#000000',
+                            state: 'danger',
+                            opacity: 0.1,
+                            message: 'Fetching...',
+                        });
+                        actionCode(status_code_id,'');
+                    KTApp.unblock('#myModal_status');
+                });
             $(document).ready(function() {
                 $('#myModal_sop').on('shown.bs.modal', function() {
                     $('#myModal_status').addClass('modal-right');
