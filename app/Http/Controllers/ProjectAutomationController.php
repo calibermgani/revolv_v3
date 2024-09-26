@@ -518,8 +518,6 @@ class ProjectAutomationController extends Controller
             $attributes = [
                 'service_id' => isset($request->service_id) && $request->service_id != "NULL" ? $request->service_id : NULL,
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                'age' => isset($request->age) && $request->age != "NULL" ? $request->age : NULL,
-                'age_range' => isset($request->age_range) && $request->age_range != "NULL" ? $request->age_range : NULL,
                 'client_name' => isset($request->client_name) && $request->client_name != "NULL" ? $request->client_name : NULL,
                 'service_type' => isset($request->service_type) && $request->service_type != "NULL" ? $request->service_type : NULL,
                 'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
@@ -544,8 +542,6 @@ class ProjectAutomationController extends Controller
                 LscAr::insert([
                         'service_id' => isset($request->service_id) && $request->service_id != "NULL" ? $request->service_id : NULL,
                         'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                        'age' => isset($request->age) && $request->age != "NULL" ? $request->age : NULL,
-                        'age_range' => isset($request->age_range) && $request->age_range != "NULL" ? $request->age_range : NULL,
                         'client_name' => isset($request->client_name) && $request->client_name != "NULL" ? $request->client_name : NULL,
                         'service_type' => isset($request->service_type) && $request->service_type != "NULL" ? $request->service_type : NULL,
                         'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
@@ -574,8 +570,6 @@ class ProjectAutomationController extends Controller
                 $duplicateRecord->update([
                         'service_id' => isset($request->service_id) && $request->service_id != "NULL" ? $request->service_id : NULL,
                         'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                        'age' => isset($request->age) && $request->age != "NULL" ? $request->age : NULL,
-                        'age_range' => isset($request->age_range) && $request->age_range != "NULL" ? $request->age_range : NULL,
                         'client_name' => isset($request->client_name) && $request->client_name != "NULL" ? $request->client_name : NULL,
                         'service_type' => isset($request->service_type) && $request->service_type != "NULL" ? $request->service_type : NULL,
                         'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
@@ -610,8 +604,6 @@ class ProjectAutomationController extends Controller
             LscArDuplicates::insert([
                 'service_id' => isset($request->service_id) && $request->service_id != "NULL" ? $request->service_id : NULL,
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                'age' => isset($request->age) && $request->age != "NULL" ? $request->age : NULL,
-                'age_range' => isset($request->age_range) && $request->age_range != "NULL" ? $request->age_range : NULL,
                 'client_name' => isset($request->client_name) && $request->client_name != "NULL" ? $request->client_name : NULL,
                 'service_type' => isset($request->service_type) && $request->service_type != "NULL" ? $request->service_type : NULL,
                 'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
