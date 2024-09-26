@@ -535,7 +535,7 @@ class ProjectAutomationController extends Controller
                 'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
                 'comments' => isset($request->comments) && $request->comments != "NULL" ? $request->comments : NULL,
                 'credible_notes' => isset($request->credible_notes) && $request->credible_notes != "NULL" ? $request->credible_notes : NULL,
-                'cpt_code' => isset($request->cpt_code) && $request->cpt_code != "NULL" ? $request->cpt_code : NULL,
+                'balance_range' => isset($request->balance_range) && $request->balance_range != "NULL" ? $request->balance_range : NULL,
                 'cpt_modifier' => isset($request->cpt_modifier) && $request->cpt_modifier != "NULL" ? $request->cpt_modifier : NULL
             ];
 
@@ -561,7 +561,7 @@ class ProjectAutomationController extends Controller
                         'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
                         'comments' => isset($request->comments) && $request->comments != "NULL" ? $request->comments : NULL,
                         'credible_notes' => isset($request->credible_notes) && $request->credible_notes != "NULL" ? $request->credible_notes : NULL,
-                        'cpt_code' => isset($request->cpt_code) && $request->cpt_code != "NULL" ? $request->cpt_code : NULL,
+                        'balance_range' => isset($request->balance_range) && $request->balance_range != "NULL" ? $request->balance_range : NULL,
                         'cpt_modifier' => isset($request->cpt_modifier) && $request->cpt_modifier != "NULL" ? $request->cpt_modifier : NULL,
                         'invoke_date' => date('Y-m-d'),
                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
@@ -591,7 +591,7 @@ class ProjectAutomationController extends Controller
                         'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
                         'comments' => isset($request->comments) && $request->comments != "NULL" ? $request->comments : NULL,
                         'credible_notes' => isset($request->credible_notes) && $request->credible_notes != "NULL" ? $request->credible_notes : NULL,
-                        'cpt_code' => isset($request->cpt_code) && $request->cpt_code != "NULL" ? $request->cpt_code : NULL,
+                        'balance_range' => isset($request->balance_range) && $request->balance_range != "NULL" ? $request->balance_range : NULL,
                         'cpt_modifier' => isset($request->cpt_modifier) && $request->cpt_modifier != "NULL" ? $request->cpt_modifier : NULL,
                         'invoke_date' => date('Y-m-d'),
                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
@@ -627,7 +627,7 @@ class ProjectAutomationController extends Controller
                 'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
                 'comments' => isset($request->comments) && $request->comments != "NULL" ? $request->comments : NULL,
                 'credible_notes' => isset($request->credible_notes) && $request->credible_notes != "NULL" ? $request->credible_notes : NULL,
-                'cpt_code' => isset($request->cpt_code) && $request->cpt_code != "NULL" ? $request->cpt_code : NULL,
+                'balance_range' => isset($request->balance_range) && $request->balance_range != "NULL" ? $request->balance_range : NULL,
                 'cpt_modifier' => isset($request->cpt_modifier) && $request->cpt_modifier != "NULL" ? $request->cpt_modifier : NULL,
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
