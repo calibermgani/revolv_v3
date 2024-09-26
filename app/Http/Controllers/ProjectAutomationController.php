@@ -534,7 +534,9 @@ class ProjectAutomationController extends Controller
                 'batch_date' => isset($request->batch_date) && $request->batch_date != "NULL" ? $request->batch_date : NULL,
                 'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
                 'comments' => isset($request->comments) && $request->comments != "NULL" ? $request->comments : NULL,
-                'credible_notes' => isset($request->credible_notes) && $request->credible_notes != "NULL" ? $request->credible_notes : NULL
+                'credible_notes' => isset($request->credible_notes) && $request->credible_notes != "NULL" ? $request->credible_notes : NULL,
+                'cpt_code' => isset($request->cpt_code) && $request->cpt_code != "NULL" ? $request->cpt_code : NULL,
+                'cpt_modifier' => isset($request->cpt_modifier) && $request->cpt_modifier != "NULL" ? $request->cpt_modifier : NULL
             ];
 
             $duplicateRecordExisting  =  LscAr::where($attributes)->exists();
@@ -559,6 +561,8 @@ class ProjectAutomationController extends Controller
                         'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
                         'comments' => isset($request->comments) && $request->comments != "NULL" ? $request->comments : NULL,
                         'credible_notes' => isset($request->credible_notes) && $request->credible_notes != "NULL" ? $request->credible_notes : NULL,
+                        'cpt_code' => isset($request->cpt_code) && $request->cpt_code != "NULL" ? $request->cpt_code : NULL,
+                        'cpt_modifier' => isset($request->cpt_modifier) && $request->cpt_modifier != "NULL" ? $request->cpt_modifier : NULL,
                         'invoke_date' => date('Y-m-d'),
                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
@@ -587,6 +591,8 @@ class ProjectAutomationController extends Controller
                         'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
                         'comments' => isset($request->comments) && $request->comments != "NULL" ? $request->comments : NULL,
                         'credible_notes' => isset($request->credible_notes) && $request->credible_notes != "NULL" ? $request->credible_notes : NULL,
+                        'cpt_code' => isset($request->cpt_code) && $request->cpt_code != "NULL" ? $request->cpt_code : NULL,
+                        'cpt_modifier' => isset($request->cpt_modifier) && $request->cpt_modifier != "NULL" ? $request->cpt_modifier : NULL,
                         'invoke_date' => date('Y-m-d'),
                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
@@ -621,6 +627,8 @@ class ProjectAutomationController extends Controller
                 'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
                 'comments' => isset($request->comments) && $request->comments != "NULL" ? $request->comments : NULL,
                 'credible_notes' => isset($request->credible_notes) && $request->credible_notes != "NULL" ? $request->credible_notes : NULL,
+                'cpt_code' => isset($request->cpt_code) && $request->cpt_code != "NULL" ? $request->cpt_code : NULL,
+                'cpt_modifier' => isset($request->cpt_modifier) && $request->cpt_modifier != "NULL" ? $request->cpt_modifier : NULL,
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
