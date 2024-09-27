@@ -392,9 +392,8 @@ class ProjectAutomationController extends Controller
     public function chestnutArDuplicates(Request $request)
     {
         try {
-            \DB::table('chsi_ar_duplicates')->insert([
-                'claims_no' => '1234'
-            ]);
+            \DB::insert('insert into chsi_ar_duplicates (claims_no) values (?)', ['1234']);
+
             
             // ChsiArDuplicates::insert([
             //     'claims_no' => "1234",
