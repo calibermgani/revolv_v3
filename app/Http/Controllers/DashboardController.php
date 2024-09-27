@@ -55,8 +55,10 @@ class DashboardController extends Controller
                 $projects = $this->getProjects();
                 // $startDate = Carbon::now()->startOfDay()->toDateString();
                 // $endDate = Carbon::now()->endOfDay()->toDateString();
-                $startDate = Carbon::now()->setTime(17, 0, 0)->toDateTimeString(); // Today 5:00 PM
-                $endDate = Carbon::tomorrow()->setTime(12, 0, 0)->toDateTimeString();
+                $yesterday = Carbon::yesterday();
+                $today = Carbon::today();
+                $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
+            $yesterDayEndDate = $today->setTime(12, 0, 0)->toDateTimeString(); // 8 AM
                 $models = [];
                 $projectIds = [];
                 foreach ($projects as $project) {
