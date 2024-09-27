@@ -391,7 +391,7 @@ class ProjectAutomationController extends Controller
     }
     public function chestnutArDuplicates(Request $request)
     {
-        try {
+        try {dd($request->all());
             ChsiArDuplicates::insert([
                 'claims_no' => isset($request->claims_no) && $request->claims_no != "NULL" ? $request->claims_no : NULL,
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
