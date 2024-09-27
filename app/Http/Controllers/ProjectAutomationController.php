@@ -23,7 +23,7 @@ use App\Models\MhawAr;
 use App\Models\MhawArDuplicates;
 use App\Models\LscAr;
 use App\Models\LscArDuplicates;
-use DB;
+use Illuminate\Support\Facades\DB;
 class ProjectAutomationController extends Controller
 {
 
