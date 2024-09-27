@@ -392,9 +392,12 @@ class ProjectAutomationController extends Controller
     public function chestnutArDuplicates(Request $request)
     {
         try {
+            \DB::table('chsi_ar_duplicates')->insert([
+                'claims_no' => '1234'
+            ]);
             
-            ChsiArDuplicates::insert([
-                'claims_no' => "1234",
+            // ChsiArDuplicates::insert([
+            //     'claims_no' => "1234",
                 // 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
                 // 'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                 // 'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
@@ -415,7 +418,7 @@ class ProjectAutomationController extends Controller
                 // 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 // 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
                 // 'chart_status' => "CE_Assigned",
-            ]);
+            // ]);
             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
         } catch (\Exception $e) {
             $e->getMessage();
