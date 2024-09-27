@@ -11,7 +11,7 @@
                                 {!! Form::select(
                                     'calendar_id',
                                     [
-                                        '0' => 'Today',
+                                        // '0' => 'Today',
                                         'week' => 'Week',
                                         'month' => 'Month',
                                     ],
@@ -110,7 +110,9 @@
                         <div class="dash_card3_filter mt-4 ml-4">
                             <span><b>Projects</b></span>
                             <div>
-                                {!! Form::select('prj_calendar_id', [  '0' => 'Today','month' => 'Month', 'year' => 'Year'], null, [
+                                {!! Form::select('prj_calendar_id', [ 
+                                    //  '0' => 'Today',
+                                'month' => 'Month', 'year' => 'Year'], null, [
                                     'class' => 'form-control white-smoke kt_select2_project',
                                     'id' => 'prj_calendar_id',
                                 ]) !!}
@@ -189,12 +191,14 @@
                                                         //     ->startOfDay()
                                                         //     ->toDateString();
                                                         // $endDate = Carbon\Carbon::now()->endOfDay()->toDateString();
-                                                        $startDate = Carbon\Carbon::now()
-                                                            ->startOfDay()
-                                                            ->toDateString();
-                                                        $endDate = Carbon\Carbon::now()
-                                                            ->endOfDay()
-                                                            ->toDateString();
+                                                        // $startDate = Carbon\Carbon::now()
+                                                        //     ->startOfDay()
+                                                        //     ->toDateString();
+                                                        // $endDate = Carbon\Carbon::now()
+                                                        //     ->endOfDay()
+                                                        //     ->toDateString();
+                                                        $startDate =  Carbon\Carbon::now()->startOfMonth()->startOfDay()->toDateString();
+                                                        $endDate =  Carbon\Carbon::now()->endOfMonth()->endOfDay()->toDateString();
                                                         $assignedCount = 0;
                                                         $completedCount = 0;
                                                         $pendingCount = 0;
