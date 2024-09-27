@@ -12,7 +12,7 @@
                                 {!! Form::select(
                                     'calendar_id',
                                     [
-                                        '0' => 'Today',
+                                        // '0' => 'Today',
                                         'week' => 'Week',
                                         'month' => 'Month',
                                     ],
