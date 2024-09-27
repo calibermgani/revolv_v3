@@ -393,8 +393,8 @@ class ProjectAutomationController extends Controller
     {
         try {
             ChsiArDuplicates::insert([
-                'claims_no' => $request->claims_no,
-                // 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                // 'claims_no' => isset($request->claims_no) && $request->claims_no != "NULL" ? $request->claims_no : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL
                 // 'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                 // 'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
                 // 'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
