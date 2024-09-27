@@ -1,4 +1,7 @@
 @extends('layouts.app3')
+@php
+use Carbon\Carbon;
+@endphp
 @section('content')
 
     <div class="card card-custom custom-card">
@@ -226,8 +229,6 @@
                                                 </th>
                                             @endif
                                         @endforeach
-                                        <th>Aging</th>
-                                        <th>Aging Range</th>
                                     </tr>
                                 @endif
 
@@ -235,6 +236,11 @@
                             <tbody>
                                 @if (isset($assignedProjectDetails))
                                     @foreach ($assignedProjectDetails as $data)
+                                        @php
+                                        $arrayAttrributes = $data->getAttributes();
+                                        $arrayAttrributes['aging']= null; 
+                                        $arrayAttrributes['aging_range']= null;                                       
+                                        @endphp
                                         <tr>
                                             @if (
                                                 $loginEmpId == 'Admin' ||
@@ -278,7 +284,7 @@
                                                 <button class="task-start clickable-view" title="View"><i
                                                         class="fa far fa-eye text-eye icon-circle1 mt-0"></i></button>
                                             </td>
-                                            @foreach ($data->getAttributes() as $columnName => $columnValue)
+                                            @foreach ($arrayAttrributes as $columnName => $columnValue)
                                                 @php
                                                     $columnsToExclude = [
 
@@ -291,7 +297,29 @@
                                                     $text = 'UnAssigned';
                                                     $backgroundColor = $text == 'UnAssigned' ? 'red' : 'transparent';
                                                     $textColor = $text == 'UnAssigned' ? 'white' : 'black';
-
+                                                    if(isset($arrayAttrributes['dos'])) {          
+                                                        $dosDate = Carbon::parse($arrayAttrributes['dos']);
+                                                        $currentDate = Carbon::now();
+                                                        $agingCount = $dosDate->diffInDays($currentDate);
+                                                        if ($agingCount <= 30) {
+                                                            $agingRange = '0-30';
+                                                        } elseif ($agingCount <= 60) {
+                                                            $agingRange ='31-60';
+                                                        } elseif ($agingCount <= 90) {
+                                                            $agingRange = '61-90';
+                                                        } elseif ($agingCount <= 120) {
+                                                            $agingRange = '91-120';
+                                                        } elseif ($agingCount <= 180) {
+                                                            $agingRange = '121-180';
+                                                        } elseif ($agingCount <= 365) {
+                                                            $agingRange = '181-365';
+                                                        } else {
+                                                            $agingRange = '365+';
+                                                        }
+                                                    } else {
+                                                        $agingCount = '--';
+                                                        $agingRange = '--';
+                                                    }
                                                 @endphp
                                                 @if (!in_array($columnName, $columnsToExclude))
                                                     @if ($columnName != 'id')
@@ -330,6 +358,10 @@
 
                                                                     @endphp
                                                                     {{ $columnValue == null ? $columnValue :  $subStatusCode['sub_status_code'] }}
+                                                                @elseif ($columnName == 'aging')                                                                                  
+                                                                    {{ $agingCount }}
+                                                                @elseif ($columnName == 'aging_range')
+                                                                    {{ $agingRange }}
                                                                 @else
                                                                     {{ $columnValue }}
                                                                 @endif
@@ -341,6 +373,10 @@
                                                             id="table_id">
                                                             @if (str_contains($columnValue, '-') && strtotime($columnValue))
                                                                 {{ date('m/d/Y', strtotime($columnValue)) }}
+                                                            @elseif ($columnName == 'aging')                                                                                  
+                                                                {{ $agingCount }}
+                                                            @elseif ($columnName == 'aging_range')
+                                                                {{ $agingRange }}
                                                             @else
                                                                 {{ $columnValue }}
                                                             @endif
@@ -348,8 +384,6 @@
                                                     @endif
                                                 @endif
                                             @endforeach
-                                            <td>--</td>
-                                            <td>--</td>
                                         </tr>
                                     @endforeach
                                 @endif

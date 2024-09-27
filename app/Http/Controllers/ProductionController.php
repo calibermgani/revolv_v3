@@ -192,15 +192,16 @@ class ProductionController extends Controller
                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                $columnsHeader=[];
                if (Schema::hasTable($table_name)) {
-               $column_names = DB::select("DESCRIBE $table_name");
-               $columns = array_column($column_names, 'Field');
-               $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-               'coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers','ar_status_code','ar_action_code',
-               'updated_at','created_at', 'deleted_at'];
-               $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
-                   return !in_array($column, $columnsToExclude);
-               });
-           }
+                    $column_names = DB::select("DESCRIBE $table_name");
+                    $columns = array_column($column_names, 'Field');
+                    $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
+                    'coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers','ar_status_code','ar_action_code',
+                    'updated_at','created_at', 'deleted_at'];
+                    $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
+                        return !in_array($column, $columnsToExclude);
+                    });
+                    array_push($columnsHeader,'aging','aging_range');
+                }
                $modelName = Str::studly($table_name);
                $modelClass = "App\\Models\\" .  $modelName;
                $modelClassDatas = "App\\Models\\" .  $modelName.'Datas'; $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();
@@ -305,6 +306,7 @@ class ProductionController extends Controller
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
                     });
+                    array_push($columnsHeader,'aging','aging_range');
                 }
                $modelName = Str::studly($table_name);
                $modelClass = "App\\Models\\" . $modelName;
@@ -375,6 +377,7 @@ class ProductionController extends Controller
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
                     });
+                    array_push($columnsHeader,'aging','aging_range');
                 }
                $modelName = Str::studly($table_name);
                $modelClass = "App\\Models\\" . $modelName;
@@ -459,6 +462,7 @@ class ProductionController extends Controller
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
                     });
+                    array_push($columnsHeader,'aging','aging_range');
                }
                $modelName = Str::studly($table_name);
                $modelClass = "App\\Models\\" . $modelName;
@@ -528,6 +532,7 @@ class ProductionController extends Controller
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
                     });
+                    array_push($columnsHeader,'aging','aging_range');
                 }
                $modelName = Str::studly($table_name);
                $modelClass = "App\\Models\\" . $modelName;
@@ -598,6 +603,7 @@ class ProductionController extends Controller
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
                     });
+                    array_push($columnsHeader,'aging','aging_range');
                }
                $modelName = Str::studly($table_name);
                //    $modelClassDuplcates = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',ucfirst($decodedClientName).ucfirst($decodedsubProjectName))."Duplicates";
@@ -1376,15 +1382,16 @@ class ProductionController extends Controller
                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                $columnsHeader=[];
                if (Schema::hasTable($table_name)) {
-               $column_names = DB::select("DESCRIBE $table_name");
-               $columns = array_column($column_names, 'Field');
-               $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-               'coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers',
-               'updated_at','created_at', 'deleted_at'];
-               $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
-                   return !in_array($column, $columnsToExclude);
-               });
-           }
+                    $column_names = DB::select("DESCRIBE $table_name");
+                    $columns = array_column($column_names, 'Field');
+                    $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
+                    'coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                    'updated_at','created_at', 'deleted_at'];
+                    $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
+                        return !in_array($column, $columnsToExclude);
+                    });
+                    array_push($columnsHeader,'aging','aging_range');
+                }
                $modelName = Str::studly($table_name);
                $modelClass = "App\\Models\\" .  $modelName;
                $modelClassDatas = "App\\Models\\" .  $modelName.'Datas'; $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();
