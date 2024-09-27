@@ -23,6 +23,7 @@ use App\Models\MhawAr;
 use App\Models\MhawArDuplicates;
 use App\Models\LscAr;
 use App\Models\LscArDuplicates;
+use DB;
 class ProjectAutomationController extends Controller
 {
 
@@ -392,8 +393,9 @@ class ProjectAutomationController extends Controller
     public function chestnutArDuplicates(Request $request)
     {
         try {
-            \DB::insert('insert into chsi_ar_duplicates (claims_no) values (?)', ['1234']);
-
+            $insertSuccess = DB::table('chsi_ar_duplicates')->insert(['claims_no' => '1234']);
+            Log::info('Insert success: ' . $insertSuccess);
+            
             
             // ChsiArDuplicates::insert([
             //     'claims_no' => "1234",
