@@ -53,12 +53,8 @@ class DashboardController extends Controller
                 $userId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['id'] != null ? Session::get('loginDetails')['userDetail']['id'] : "";
                 $agingHeader = Aging::select('days','days_range')->get()->toArray();
                 $projects = $this->getProjects();
-                // $startDate = Carbon::now()->startOfDay()->toDateString();
-                // $endDate = Carbon::now()->endOfDay()->toDateString();
-                $yesterday = Carbon::yesterday();
-                $today = Carbon::today();
-                $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
-            $yesterDayEndDate = $today->setTime(12, 0, 0)->toDateTimeString(); // 8 AM
+                $startDate = Carbon::now()->startOfDay()->toDateString();
+                $endDate = Carbon::now()->endOfDay()->toDateString();
                 $models = [];
                 $projectIds = [];
                 foreach ($projects as $project) {
