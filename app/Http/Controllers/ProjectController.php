@@ -27,7 +27,7 @@ class ProjectController extends Controller
             $payload = [
                 'token' => '1a32e71a46317b9cc6feb7388238c95d',
             ];
-            $client = new Client();
+            $client = new Client(['verify' => false]);
             $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_project_list', [
                 'json' => $payload
             ]);
@@ -177,7 +177,7 @@ class ProjectController extends Controller
             $payload = [
                 'token' => '1a32e71a46317b9cc6feb7388238c95d',
             ];
-            $client = new Client();
+            $client = new Client(['verify' => false]);
             $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_all_clients', [
                 'json' => $payload,
             ]);
@@ -197,7 +197,7 @@ class ProjectController extends Controller
         try {
             Log::info('Executing resolvProjectOnHoldMail logic.');
             $loginEmpId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null ? Session::get('loginDetails')['userDetail']['emp_id'] : "";
-            $client = new Client();
+            $client = new Client(['verify' => false]);
             // $toMailId = ["vijayalaxmi@caliberfocus.com"];
             // $ccMailId = ["mgani@caliberfocus.com"];
             $mailHeader = "Resolv - Project Hold Charges reminder";
@@ -279,7 +279,7 @@ class ProjectController extends Controller
         if (($current_time->hour >= 17 || $current_time->hour < 8) && $today->isSaturday() ==  false  && $today->isSunday() ==  false ) {
             $fileStatus = "The " . $project_information['project_name'] . " inventory is not in the specified location. Could you please check and place the inventory files for today as soon as possible. This will help avoid delays in production.";
             $mailHeader = $project_information['project_name'] . " File not in Specific folder";
-            $client = new Client();
+            $client = new Client(['verify' => false]);
             $payload = [
                 'token' => '1a32e71a46317b9cc6feb7388238c95d',
                 'client_id' => $project_information['project_id']
@@ -313,7 +313,7 @@ class ProjectController extends Controller
         try {
             Log::info('Execute the Resolv project current date records check and send mail after 12 PM');
             $loginEmpId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null ? Session::get('loginDetails')['userDetail']['emp_id'] : "";
-            $client = new Client();
+            $client = new Client(['verify' => false]);
             $currentDate = Carbon::now()->format('Y-m-d');
             // $toMailId = ["elanchezhian@annexmed.net", "fabian@annexmed.com", "ushashree@annexmed.com"];
             $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'procode project inventory to mail')->first();

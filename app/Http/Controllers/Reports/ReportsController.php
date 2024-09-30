@@ -31,7 +31,7 @@ class ReportsController extends Controller
     public function reportClientAssignedTab(Request $request) {
 
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
-            $client = new Client();
+            $client = new Client(['verify' => false]);
             try {
                 $subProject = Helpers::subProjectList($request->project_id);
                 $decodedClientName = Helpers::projectName($request->project_id)->project_name;
@@ -70,7 +70,7 @@ class ReportsController extends Controller
     public function reportClientColumnsList(Request $request) {
 
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
-            $client = new Client();
+            $client = new Client(['verify' => false]);
             try {
                 $decodedClientName = Helpers::projectName($request->project_id)->project_name;
                 $decodedsubProjectName = $request->sub_project_id == null ? 'project' :Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;

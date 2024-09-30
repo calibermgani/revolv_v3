@@ -18,7 +18,7 @@ class DashboardController extends Controller
             try {
                 $loginEmpId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null ? Session::get('loginDetails')['userDetail']['emp_id'] : "";
                 $empDesignation = Session::get('loginDetails') && Session::get('loginDetails')['userDetail']['user_hrdetails'] && Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation'] != null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation'] : "";
-                // $client = new Client();
+                // $client = new Client(['verify' => false]);
                 // $response = $client->post('https://www.google.com/recaptcha/api/siteverify', [
                 //     'form_params' => [
                 //         'secret' => env('NOCAPTCHA_SECRET'),
@@ -187,7 +187,7 @@ class DashboardController extends Controller
                 'token' => '1a32e71a46317b9cc6feb7388238c95d',
                 'client_id' => $request->project_id,
             ];
-            $client = new Client();
+            $client = new Client(['verify' => false]);
             $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_practice_on_client', [
                 'json' => $payload,
             ]);
@@ -420,7 +420,7 @@ class DashboardController extends Controller
                 'token' => '1a32e71a46317b9cc6feb7388238c95d',
                 'client_id' => $request->project_id,
             ];
-            $client = new Client();
+            $client = new Client(['verify' => false]);
             $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_practices_users_on_client', [
                 'json' => $payload,
             ]);
@@ -645,7 +645,7 @@ class DashboardController extends Controller
                     'token' => '1a32e71a46317b9cc6feb7388238c95d',
                     'user_id' => $userId,
                 ];
-                $client = new Client();
+                $client = new Client(['verify' => false]);
                 $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_clients_on_user', [
                     'json' => $payload,
                 ]);
