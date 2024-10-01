@@ -831,13 +831,13 @@ class FormController extends Controller
                     $table_name_duplicates= Str::slug((Str::lower($projectName).'_'.Str::lower($subProjectName). '_duplicates'),'_');
                     $table_name_history= Str::slug((Str::lower($projectName).'_'.Str::lower($subProjectName).'_history'),'_');
                     $table_name_revoke_history =Str::slug(($projectName->project_name.'_'.$subProjectName. '_revoke_history'),'_');
-                    $dataCount = DB::table($table_name)->count();
+                    $dataCount = DB::table($table_name)->count();dd($dataCount,$table_name,$modelName);
                     $modelName = Str::studly($table_name);
                     $modelNameDatas = Str::studly($table_name_datas);
                     $modelNameDuplicates = Str::studly($table_name_duplicates);
                     $modelNameHistory = Str::studly($table_name_history);
                     $modelNameRevokeHistory = Str::studly($table_name_revoke_history);
-                    $existingRecord =  formConfiguration::where('project_id',$data['projectId'])->where('sub_project_id',$data['subProjectId'])->get();dd($dataCount,$table_name,$modelName);
+                    $existingRecord =  formConfiguration::where('project_id',$data['projectId'])->where('sub_project_id',$data['subProjectId'])->get();
 
                     if($dataCount == 0) {
                         if (Schema::hasTable($table_name)) {
