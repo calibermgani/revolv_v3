@@ -25,6 +25,8 @@ use App\Models\LscAr;
 use App\Models\LscArDuplicates;
 use App\Models\MatcAr;
 use App\Models\MatcArDuplicates;
+use App\Models\GchsAr;
+use App\Models\GchsArDuplicates;
 class ProjectAutomationController extends Controller
 {
 
@@ -739,6 +741,98 @@ class ProjectAutomationController extends Controller
                 '90_above' => isset($request->nintyabove) && $request->sixtytonighty != "NULL" ? $request->sixtytonighty : NULL,
                 'total' => isset($request->total) && $request->total != "NULL" ? $request->total : NULL,
                 'previous_payment' => isset($request->previous_payment) && $request->previous_payment != "NULL" ? $request->previous_payment : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+    public function greenClinicHealthSystemAr(Request $request)
+    {
+        try {
+            $attributes = [
+                'member_id' => isset($request->member_id) && $request->member_id != "NULL" ? $request->member_id : NULL,
+                'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,
+                'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'procedures' => isset($request->procedures) && $request->procedures != "NULL" ? $request->procedures : NULL,
+                'charge_amount' => isset($request->charge_amount) && $request->charge_amount != "NULL" ? $request->charge_amount : NULL,
+                'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL,
+                'value_bucket' => isset($request->value_bucket) && $request->value_bucket != "NULL" ? $request->value_bucket : NULL,
+                'plan' => isset($request->plan) && $request->plan != "NULL" ? $request->plan : NULL,
+                'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                'diagnosis' => isset($request->diagnosis) && $request->diagnosis != "NULL" ? $request->diagnosis : NULL
+            ];
+
+            $duplicateRecordExisting  =  GchsAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                GchsAr::insert([
+                        'member_id' => isset($request->member_id) && $request->member_id != "NULL" ? $request->member_id : NULL,
+                        'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,
+                        'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'procedures' => isset($request->procedures) && $request->procedures != "NULL" ? $request->procedures : NULL,
+                        'charge_amount' => isset($request->charge_amount) && $request->charge_amount != "NULL" ? $request->charge_amount : NULL,
+                        'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL,
+                        'value_bucket' => isset($request->value_bucket) && $request->value_bucket != "NULL" ? $request->value_bucket : NULL,
+                        'plan' => isset($request->plan) && $request->plan != "NULL" ? $request->plan : NULL,
+                        'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                        'diagnosis' => isset($request->diagnosis) && $request->diagnosis != "NULL" ? $request->diagnosis : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  GchsAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                $duplicateRecord->update([
+                        'member_id' => isset($request->member_id) && $request->member_id != "NULL" ? $request->member_id : NULL,
+                        'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,
+                        'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'procedures' => isset($request->procedures) && $request->procedures != "NULL" ? $request->procedures : NULL,
+                        'charge_amount' => isset($request->charge_amount) && $request->charge_amount != "NULL" ? $request->charge_amount : NULL,
+                        'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL,
+                        'value_bucket' => isset($request->value_bucket) && $request->value_bucket != "NULL" ? $request->value_bucket : NULL,
+                        'plan' => isset($request->plan) && $request->plan != "NULL" ? $request->plan : NULL,
+                        'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                        'diagnosis' => isset($request->diagnosis) && $request->diagnosis != "NULL" ? $request->diagnosis : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                ]);
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function greenClinicHealthSystemArDuplicates(Request $request)
+    {
+        try {
+            GchsArDuplicates::insert([
+                'member_id' => isset($request->member_id) && $request->member_id != "NULL" ? $request->member_id : NULL,
+                'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,
+                'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'procedures' => isset($request->procedures) && $request->procedures != "NULL" ? $request->procedures : NULL,
+                'charge_amount' => isset($request->charge_amount) && $request->charge_amount != "NULL" ? $request->charge_amount : NULL,
+                'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL,
+                'value_bucket' => isset($request->value_bucket) && $request->value_bucket != "NULL" ? $request->value_bucket : NULL,
+                'plan' => isset($request->plan) && $request->plan != "NULL" ? $request->plan : NULL,
+                'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                'diagnosis' => isset($request->diagnosis) && $request->diagnosis != "NULL" ? $request->diagnosis : NULL,
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
