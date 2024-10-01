@@ -837,7 +837,7 @@ class FormController extends Controller
                     $modelNameDuplicates = Str::studly($table_name_duplicates);
                     $modelNameHistory = Str::studly($table_name_history);
                     $modelNameRevokeHistory = Str::studly($table_name_revoke_history);
-                    $existingRecord =  formConfiguration::where('project_id',$data['projectId'])->where('sub_project_id',$data['subProjectId'])->get();
+                    $existingRecord =  formConfiguration::where('project_id',$data['projectId'])->where('sub_project_id',$data['subProjectId'])->get();dd($dataCount,$table_name,$modelName);
 
                     if($dataCount == 0) {
                         if (Schema::hasTable($table_name)) {
