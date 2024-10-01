@@ -54,7 +54,7 @@ class ReportsController extends Controller
                             return !in_array($column, $columnsToExclude);
                         });
                     }
-                }dd($columnsHeader);
+                }
                 return response()->json([
                     'success' => true,
                     'columnsHeader' => $columnsHeader,
