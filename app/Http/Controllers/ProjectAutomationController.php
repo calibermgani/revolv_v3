@@ -184,7 +184,7 @@ class ProjectAutomationController extends Controller
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
                         'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
                 ]);
-                return response()->json(['message' => 'Yesterday Record Updated Successfully']);
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
             }
         } catch (\Exception $e) {
             $e->getMessage();
@@ -278,7 +278,7 @@ class ProjectAutomationController extends Controller
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
                         'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
                 ]);
-                return response()->json(['message' => 'Yesterday Record Updated Successfully']);
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
             }
         } catch (\Exception $e) {
             $e->getMessage();
@@ -385,7 +385,7 @@ class ProjectAutomationController extends Controller
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
                         'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
                 ]);
-                return response()->json(['message' => 'Yesterday Record Updated Successfully']);
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
             }
         } catch (\Exception $e) {
             $e->getMessage();
@@ -481,7 +481,7 @@ class ProjectAutomationController extends Controller
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
                         'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
                 ]);
-                return response()->json(['message' => 'Yesterday Record Updated Successfully']);
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
             }
         } catch (\Exception $e) {
             $e->getMessage();
@@ -599,7 +599,7 @@ class ProjectAutomationController extends Controller
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
                         'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
                 ]);
-                return response()->json(['message' => 'Yesterday Record Updated Successfully']);
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
             }
         } catch (\Exception $e) {
             $e->getMessage();
@@ -713,7 +713,7 @@ class ProjectAutomationController extends Controller
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
                         'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
                 ]);
-                return response()->json(['message' => 'Yesterday Record Updated Successfully']);
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
             }
         } catch (\Exception $e) {
             $e->getMessage();
