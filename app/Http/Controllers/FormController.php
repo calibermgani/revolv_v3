@@ -826,12 +826,12 @@ class FormController extends Controller
                     $projectName =  Helpers::projectName($data['projectId'])->project_name;
                     $subProjectName = $data['subProjectId'] != null ? Helpers::subProjectName($data['projectId'],$data['subProjectId'])->sub_project_name : 'project';
                     // $subProjectName = $data['subProjectId'] == null ? Helpers::projectName($data['projectId'])->project_name :Helpers::subProjectName($data['projectId'],$data['subProjectId'])->sub_project_name;
-                    $table_name= Str::slug((Str::lower($projectName).'_'.Str::lower($subProjectName)),'_');dd($table_name);
+                    $table_name= Str::slug((Str::lower($projectName).'_'.Str::lower($subProjectName)),'_');
+                    $dataCount = DB::table($table_name)->count();dd($table_name,$dataCount);
                     $table_name_datas= Str::slug((Str::lower($projectName).'_'.Str::lower($subProjectName). '_datas'),'_');
                     $table_name_duplicates= Str::slug((Str::lower($projectName).'_'.Str::lower($subProjectName). '_duplicates'),'_');
                     $table_name_history= Str::slug((Str::lower($projectName).'_'.Str::lower($subProjectName).'_history'),'_');
-                    $table_name_revoke_history =Str::slug(($projectName->project_name.'_'.$subProjectName. '_revoke_history'),'_');
-                    $dataCount = DB::table($table_name)->count();dd($dataCount,$table_name,$modelName);
+                    $table_name_revoke_history =Str::slug((Str::lower($projectName).'_'.Str::lower($subProjectName). '_revoke_history'),'_');                  
                     $modelName = Str::studly($table_name);
                     $modelNameDatas = Str::studly($table_name_datas);
                     $modelNameDuplicates = Str::studly($table_name_duplicates);
