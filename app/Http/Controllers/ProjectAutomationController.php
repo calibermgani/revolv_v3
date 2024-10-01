@@ -23,6 +23,8 @@ use App\Models\MhawAr;
 use App\Models\MhawArDuplicates;
 use App\Models\LscAr;
 use App\Models\LscArDuplicates;
+use App\Models\MatcAr;
+use App\Models\MatcArDuplicates;
 class ProjectAutomationController extends Controller
 {
 
@@ -511,7 +513,6 @@ class ProjectAutomationController extends Controller
             $e->getMessage();
         }
     }
-
     public function lowerShoreClinicAr(Request $request)
     {
         try {
@@ -639,4 +640,117 @@ class ProjectAutomationController extends Controller
             $e->getMessage();
         }
     }
+
+
+    public function maryvilleAddictionTreatmentCenterAr(Request $request)
+    {
+        try {
+            $attributes = [
+                'customer_number' => isset($request->customer_number) && $request->customer_number != "NULL" ? $request->customer_number : NULL,
+                'customer_name' => isset($request->customer_name) && $request->customer_name != "NULL" ? $request->customer_name : NULL,
+                'document_type' => isset($request->document_type) && $request->document_type != "NULL" ? $request->document_type : NULL,
+                'document_number' => isset($request->document_number) && $request->document_number != "NULL" ? $request->document_number : NULL,
+                'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'coding' => isset($request->coding) && $request->coding != "NULL" ? $request->coding : NULL,
+                'doc_date' => isset($request->doc_date) && $request->doc_date != "NULL" ? $request->doc_date : NULL,
+                'due_date_or_check_else_recpt_no' => isset($request->due_date_or_check_else_recpt_no) && $request->due_date_or_check_else_recpt_no != "NULL" ? $request->due_date_or_check_else_recpt_no : NULL,
+                'current' => isset($request->current) && $request->current != "NULL" ? $request->current : NULL,
+                '0_to_30' => isset($request->zerotothirty) && $request->zerotothirty != "NULL" ? $request->zerotothirty : NULL,
+                '30_to_60' => isset($request->thirtytosixty) && $request->thirtytosixty != "NULL" ? $request->thirtytosixty : NULL,
+                '60_to_90' => isset($request->sixtytoninty) && $request->sixtytoninty != "NULL" ? $request->sixtytoninty : NULL,
+                '90_above' => isset($request->nintyabove) && $request->sixtytonighty != "NULL" ? $request->sixtytonighty : NULL,
+                'total' => isset($request->total) && $request->total != "NULL" ? $request->total : NULL,
+                'previous_payment' => isset($request->previous_payment) && $request->previous_payment != "NULL" ? $request->previous_payment : NULL
+            ];
+
+            $duplicateRecordExisting  =  MatcAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                MatcAr::insert([
+                        'customer_number' => isset($request->customer_number) && $request->customer_number != "NULL" ? $request->customer_number : NULL,
+                        'customer_name' => isset($request->customer_name) && $request->customer_name != "NULL" ? $request->customer_name : NULL,
+                        'document_type' => isset($request->document_type) && $request->document_type != "NULL" ? $request->document_type : NULL,
+                        'document_number' => isset($request->document_number) && $request->document_number != "NULL" ? $request->document_number : NULL,
+                        'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'coding' => isset($request->coding) && $request->coding != "NULL" ? $request->coding : NULL,
+                        'doc_date' => isset($request->doc_date) && $request->doc_date != "NULL" ? $request->doc_date : NULL,
+                        'due_date_or_check_else_recpt_no' => isset($request->due_date_or_check_else_recpt_no) && $request->due_date_or_check_else_recpt_no != "NULL" ? $request->due_date_or_check_else_recpt_no : NULL,
+                        'current' => isset($request->current) && $request->current != "NULL" ? $request->current : NULL,
+                        '0_to_30' => isset($request->zerotothirty) && $request->zerotothirty != "NULL" ? $request->zerotothirty : NULL,
+                        '30_to_60' => isset($request->thirtytosixty) && $request->thirtytosixty != "NULL" ? $request->thirtytosixty : NULL,
+                        '60_to_90' => isset($request->sixtytoninty) && $request->sixtytoninty != "NULL" ? $request->sixtytoninty : NULL,
+                        '90_above' => isset($request->nintyabove) && $request->sixtytonighty != "NULL" ? $request->sixtytonighty : NULL,
+                        'total' => isset($request->total) && $request->total != "NULL" ? $request->total : NULL,
+                        'previous_payment' => isset($request->previous_payment) && $request->previous_payment != "NULL" ? $request->previous_payment : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  MatcAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                $duplicateRecord->update([
+                        'customer_number' => isset($request->customer_number) && $request->customer_number != "NULL" ? $request->customer_number : NULL,
+                        'customer_name' => isset($request->customer_name) && $request->customer_name != "NULL" ? $request->customer_name : NULL,
+                        'document_type' => isset($request->document_type) && $request->document_type != "NULL" ? $request->document_type : NULL,
+                        'document_number' => isset($request->document_number) && $request->document_number != "NULL" ? $request->document_number : NULL,
+                        'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'coding' => isset($request->coding) && $request->coding != "NULL" ? $request->coding : NULL,
+                        'doc_date' => isset($request->doc_date) && $request->doc_date != "NULL" ? $request->doc_date : NULL,
+                        'due_date_or_check_else_recpt_no' => isset($request->due_date_or_check_else_recpt_no) && $request->due_date_or_check_else_recpt_no != "NULL" ? $request->due_date_or_check_else_recpt_no : NULL,
+                        'current' => isset($request->current) && $request->current != "NULL" ? $request->current : NULL,
+                        '0_to_30' => isset($request->zerotothirty) && $request->zerotothirty != "NULL" ? $request->zerotothirty : NULL,
+                        '30_to_60' => isset($request->thirtytosixty) && $request->thirtytosixty != "NULL" ? $request->thirtytosixty : NULL,
+                        '60_to_90' => isset($request->sixtytoninty) && $request->sixtytoninty != "NULL" ? $request->sixtytoninty : NULL,
+                        '90_above' => isset($request->nintyabove) && $request->sixtytonighty != "NULL" ? $request->sixtytonighty : NULL,
+                        'total' => isset($request->total) && $request->total != "NULL" ? $request->total : NULL,
+                        'previous_payment' => isset($request->previous_payment) && $request->previous_payment != "NULL" ? $request->previous_payment : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                ]);
+                return response()->json(['message' => 'Yesterday Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function maryvilleAddictionTreatmentCenterArDuplicates(Request $request)
+    {
+        try {
+            MatcArDuplicates::insert([
+                'customer_number' => isset($request->customer_number) && $request->customer_number != "NULL" ? $request->customer_number : NULL,
+                'customer_name' => isset($request->customer_name) && $request->customer_name != "NULL" ? $request->customer_name : NULL,
+                'document_type' => isset($request->document_type) && $request->document_type != "NULL" ? $request->document_type : NULL,
+                'document_number' => isset($request->document_number) && $request->document_number != "NULL" ? $request->document_number : NULL,
+                'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'coding' => isset($request->coding) && $request->coding != "NULL" ? $request->coding : NULL,
+                'doc_date' => isset($request->doc_date) && $request->doc_date != "NULL" ? $request->doc_date : NULL,
+                'due_date_or_check_else_recpt_no' => isset($request->due_date_or_check_else_recpt_no) && $request->due_date_or_check_else_recpt_no != "NULL" ? $request->due_date_or_check_else_recpt_no : NULL,
+                'current' => isset($request->current) && $request->current != "NULL" ? $request->current : NULL,
+                '0_to_30' => isset($request->zerotothirty) && $request->zerotothirty != "NULL" ? $request->zerotothirty : NULL,
+                '30_to_60' => isset($request->thirtytosixty) && $request->thirtytosixty != "NULL" ? $request->thirtytosixty : NULL,
+                '60_to_90' => isset($request->sixtytoninty) && $request->sixtytoninty != "NULL" ? $request->sixtytoninty : NULL,
+                '90_above' => isset($request->nintyabove) && $request->sixtytonighty != "NULL" ? $request->sixtytonighty : NULL,
+                'total' => isset($request->total) && $request->total != "NULL" ? $request->total : NULL,
+                'previous_payment' => isset($request->previous_payment) && $request->previous_payment != "NULL" ? $request->previous_payment : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+
+
+
 }
