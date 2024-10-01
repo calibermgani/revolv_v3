@@ -138,6 +138,8 @@
                                         subProjectId: subProjectId,
                                     },
                                     success: function(response) {
+                                        console.log(response,'response');
+                                        
                                         if (response.success == true) {
                                             js_notification('success', 'Project configuration deleted successfully');
                                             setTimeout(function() {
