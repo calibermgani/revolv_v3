@@ -266,6 +266,8 @@
                                         var displayName = "AR Emp Id";
                                     } else if(columnName === "ce_hold_reason") {
                                         var displayName = "AR Hold Reason";
+                                    } else if(columnName === "coder_work_date") {
+                                        var displayName = "AR Work Date";
                                     } else if(columnName === "coder_rework_status") {
                                         var displayName = "AR Rework Status";
                                     } else if(columnName === "coder_rework_reason") {

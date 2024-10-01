@@ -160,6 +160,8 @@ class ReportsController extends Controller
                         $body_info .= '<th>AR Emp Id </th>';
                     } else if ($header == 'ce_hold_reason') {
                         $body_info .= '<th>AR Hold Reason </th>';
+                    } else if($header == "coder_work_date") {
+                        $body_info .= '<th>AR Work Date</th>';
                     } else if($header == "coder_rework_status") {
                         $body_info .= '<th>AR Rework Status</th>';
                     } else if($header == "coder_rework_reason") {
