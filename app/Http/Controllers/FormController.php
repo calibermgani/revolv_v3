@@ -824,9 +824,9 @@ class FormController extends Controller
               try {
                     $data = $request->all();
                     $projectName =  Helpers::projectName($data['projectId'])->project_name;
-                    $subProjectName = $data['subProjectId'] != null ? Helpers::subProjectName($data['projectId'],$data['subProjectId'])->sub_project_name : 'project';dd($data,$projectName,$subProjectName);
+                    $subProjectName = $data['subProjectId'] != null ? Helpers::subProjectName($data['projectId'],$data['subProjectId'])->sub_project_name : 'project';
                     // $subProjectName = $data['subProjectId'] == null ? Helpers::projectName($data['projectId'])->project_name :Helpers::subProjectName($data['projectId'],$data['subProjectId'])->sub_project_name;
-                    $table_name= Str::slug((Str::lower($projectName).'_'.Str::lower($subProjectName)),'_');
+                    $table_name= Str::slug((Str::lower($projectName).'_'.Str::lower($subProjectName)),'_');dd($table_name);
                     $table_name_datas= Str::slug((Str::lower($projectName).'_'.Str::lower($subProjectName). '_datas'),'_');
                     $table_name_duplicates= Str::slug((Str::lower($projectName).'_'.Str::lower($subProjectName). '_duplicates'),'_');
                     $table_name_history= Str::slug((Str::lower($projectName).'_'.Str::lower($subProjectName).'_history'),'_');
