@@ -77,8 +77,8 @@ class ReportsController extends Controller
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)).'_datas','_');
                 if (isset($request->work_date) && !empty($request->work_date)) {
                     $work_date = explode(' - ', $request->work_date);
-                    $start_date = date('Y-m-d 00:00:00', strtotime($work_date[0]));
-                    $end_date = date('Y-m-d 23:59:59', strtotime($work_date[1]));
+                    $start_date = date('Y-m-d 17:00:00', strtotime($work_date[0]));
+                    $end_date = date('Y-m-d 09:00:00', strtotime($work_date[1] . ' +1 day'));
                 }else{
                     $start_date = "";
                     $end_date = "";
