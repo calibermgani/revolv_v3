@@ -141,6 +141,17 @@ use Carbon\Carbon;
                                 </div>
                             </div>
                         @endif
+                        <div class="wizard-step mb-0 eight" data-wizard-type="done">
+                            <div class="wizard-wrapper py-2">
+                                <div class="wizard-label p-2 mt-2">
+                                    <div class="wizard-title"
+                                    style="display: flex; align-items: center;">
+                                        <h6 style="margin-right: 5px;">Non Workable</h6>
+                                        @include('CountVar.countRectangle', ['count' => $arNonWorkableCount])
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -658,6 +669,7 @@ use Carbon\Carbon;
                                                              // 'CE_Clarification' => 'Clarification',
                                                              'Revoke'=>'Revoke',
                                                              'CE_Hold' => 'Hold',
+                                                             'AR_non_workable'=>'Non Workable'
                                                          ],
                                                          null,
                                                          [
@@ -2232,6 +2244,12 @@ use Carbon\Carbon;
             })
             $(document).on('click', '.seven', function() {
                 window.location.href = baseUrl + 'projects_unassigned/' + clientName + '/' + subProjectName +
+                    "?parent=" +
+                    getUrlVars()[
+                        "parent"] + "&child=" + getUrlVars()["child"];
+            })
+            $(document).on('click', '.eight', function() {
+                window.location.href = baseUrl + 'projects_non_workable/' + clientName + '/' + subProjectName +
                     "?parent=" +
                     getUrlVars()[
                         "parent"] + "&child=" + getUrlVars()["child"];

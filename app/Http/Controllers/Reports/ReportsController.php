@@ -201,8 +201,11 @@ class ReportsController extends Controller
                                   $data = str_replace('CE_', 'AR ', $recordStatus);
                             } elseif (strpos($recordStatus, 'QA_') === 0) {
                                 $data = str_replace('QA_', 'QA ', $recordStatus);
+                            } elseif (strpos($recordStatus, 'QA_') === 0) {
+                                $data = str_replace('QA_', 'QA ', $recordStatus);
                             } else {
-                                $data = $recordStatus;
+                                $data =  str_replace('_', ' ',$recordStatus);
+                                $data = ucwords($data);
                             }
                         }
                         if ($header === 'qa_work_status') {

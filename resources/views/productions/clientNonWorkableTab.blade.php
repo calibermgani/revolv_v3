@@ -106,7 +106,7 @@ use Carbon\Carbon;
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="wizard-step mb-0 four" data-wizard-type="step">
+                                    <div class="wizard-step mb-0 four" data-wizard-type="done">
                                         <div class="wizard-wrapper py-2">
                                             <div class="wizard-label p-2 mt-2">
                                                 <div class="wizard-title" style="display: flex; align-items: center;">
@@ -147,7 +147,7 @@ use Carbon\Carbon;
                                             </div>
                                         </div>
                                     @endif
-                                    <div class="wizard-step mb-0 eight" data-wizard-type="done">
+                                    <div class="wizard-step mb-0 eight" data-wizard-type="step">
                                         <div class="wizard-wrapper py-2">
                                             <div class="wizard-label p-2 mt-2">
                                                 <div class="wizard-title"
@@ -174,8 +174,8 @@ use Carbon\Carbon;
                                         {{-- <thead>
 
                                             <tr>
-                                                @if ($completedProjectDetails->contains('key', 'value'))
-                                                    @foreach ($completedProjectDetails[0]->getAttributes() as $columnName => $columnValue)
+                                                @if ($arNonWorkableProjectDetails->contains('key', 'value'))
+                                                    @foreach ($arNonWorkableProjectDetails[0]->getAttributes() as $columnName => $columnValue)
                                                         @php
                                                             $columnsToExclude = ['id','QA_emp_id', 'created_at', 'updated_at', 'deleted_at'];
                                                         @endphp
@@ -202,7 +202,7 @@ use Carbon\Carbon;
                                         <thead>
                                             @if (!empty($columnsHeader))
                                                 <tr>
-                                                    <th class='notexport' style="color:white !important">Action</th>
+                                                    {{-- <th class='notexport' style="color:white !important">Action</th> --}}
                                                     @foreach ($columnsHeader as $columnName => $columnValue)
                                                         @if ($columnValue != 'id')
                                                             <th><input type="hidden"
@@ -229,17 +229,17 @@ use Carbon\Carbon;
 
                                         </thead>
                                         <tbody>
-                                            @if (isset($completedProjectDetails))
-                                                @foreach ($completedProjectDetails as $data)
+                                            @if (isset($arNonWorkableProjectDetails))
+                                                @foreach ($arNonWorkableProjectDetails as $data)
                                                     @php
                                                     $arrayAttrributes = $data->getAttributes();
                                                     $arrayAttrributes['aging']= null; 
                                                     $arrayAttrributes['aging_range']= null;                                       
                                                     @endphp
                                                     <tr>
-                                                        <td>    <button class="task-start clickable-view"
+                                                        {{-- <td>    <button class="task-start clickable-view"
                                                             title="View"><i
-                                                            class="fa far fa-eye text-eye icon-circle1 mt-0"></i></button></td>
+                                                            class="fa far fa-eye text-eye icon-circle1 mt-0"></i></button></td> --}}
                                                         @foreach ($arrayAttrributes as $columnName => $columnValue)
                                                             @php
                                                                 $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date', 
@@ -746,7 +746,10 @@ use Carbon\Carbon;
                     getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
             })
             $(document).on('click', '.four', function() {
-                window.location.href = "{{ url('#') }}";
+                window.location.href = baseUrl + 'projects_completed/' + clientName + '/' + subProjectName +
+                    "?parent=" +
+                    getUrlVars()[
+                        "parent"] + "&child=" + getUrlVars()["child"];
             })
             $(document).on('click', '.five', function() {
                 window.location.href = baseUrl + 'projects_Revoke/' + clientName + '/' + subProjectName +
@@ -765,11 +768,9 @@ use Carbon\Carbon;
                         "parent"] + "&child=" + getUrlVars()["child"];
             })
             $(document).on('click', '.eight', function() {
-                window.location.href = baseUrl + 'projects_non_workable/' + clientName + '/' + subProjectName +
-                    "?parent=" +
-                    getUrlVars()[
-                        "parent"] + "&child=" + getUrlVars()["child"];
+                window.location.href = "{{ url('#') }}";
             })
+
             $(document).on('click', '#sop_click', function(e) {
                 console.log('sop modal');
                 $('#myModal_sop').modal('show');

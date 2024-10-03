@@ -67,6 +67,7 @@ Route::any('client_rework_datas_details', 'App\Http\Controllers\ProductionContro
 Route::any('project_rework_update/{projectName}/{subProjectName}', 'App\Http\Controllers\ProductionController@clientsReworkUpdate');//
 Route::any('projects_unassigned/{clientName}/{subProjectName}', 'App\Http\Controllers\ProductionController@clientUnAssignedTab')->name('clientUnAssigned');
 Route::any('assignee_drop_down', 'App\Http\Controllers\ProductionController@assigneeDropdown');
+Route::any('projects_non_workable/{clientName}/{subProjectName}', 'App\Http\Controllers\ProductionController@clientNonWorkableTab')->name('clientNonWorkable');
 
 Route::group(['prefix' => 'qa_production'], function () {
     Route::any('qa_clients', 'App\Http\Controllers\QA\QAProductionController@clients')->name('qaClients');
