@@ -382,7 +382,7 @@
             </div>
             <div class="row mt-2">
                 <div class="col-md-6 pr-0">
-                    <div class="card" style="height:352px">
+                    <div class="card" style="height:400px">
                         <div class="dash_card3_filter mt-4 ml-2">
                             <span><b>Inventory Uploads</b></span>
                         </div>
