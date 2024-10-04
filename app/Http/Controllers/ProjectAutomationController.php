@@ -46,7 +46,6 @@ class ProjectAutomationController extends Controller
             ];
             $exists = InventoryExeFile::where($whereAttributes)->whereDate('exe_date', now()->format('Y-m-d'))->exists();
             if (!$exists) {
-                InventoryExeFile::create($attributes);
                 $currentDate = Carbon::now()->format('Y-m-d');
                 if (isset($request->project_id)) {
                     $projectId = $request->project_id;
@@ -99,6 +98,8 @@ class ProjectAutomationController extends Controller
                     $project_information["error_description"] = "Default Assigned Count: " . $procodeProjectsCurrent['assignedCount'] . PHP_EOL . " Inventory Uploaded Time: " . now()->format('m/d/Y g:i A');
                     $project_information["error_status_code"] = 200;
                     $project_information["error_date"] = now()->format('Y-m-d H:i:s');
+                    $attributes["inventory_count"] = $currentCount;
+                    InventoryExeFile::create($attributes);
                     InventoryErrorLogs::create($project_information);
                     if (isset($toMailId) && !empty($toMailId)) {
                         try {

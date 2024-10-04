@@ -9,5 +9,5 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class InventoryExeFile extends Model
 {
     use HasFactory,SoftDeletes;
-    protected $fillable = ['project_id','sub_project_id','file_name','exe_date'];
+    protected $fillable = ['project_id','sub_project_id','file_name','exe_date','inventory_count'];
 }
