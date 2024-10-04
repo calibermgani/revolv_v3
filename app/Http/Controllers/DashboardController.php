@@ -980,7 +980,8 @@ class DashboardController extends Controller
                 foreach ($client_data as $data) {
                     $projectName = Helpers::projectName($data->project_id)->aims_project_name;//dd($data->sub_project_id != null);
                     $subProjectName = $data->sub_project_id != null ?  (Helpers::subProjectName($data->project_id,$data->sub_project_id) != null ? Helpers::subProjectName($data->project_id,$data->sub_project_id)->sub_project_name : '--'): '--';
-                        $body_info .= '<tr>';           
+                    $inventoryCount =  $data->inventory_count !=null ? $data->inventory_count : '--';
+                    $body_info .= '<tr>';           
                         $body_info .= '<td class="wrap-text">' . $projectName. '</td>
                         <td class="wrap-text">' . $subProjectName . '</td>
                         <td class="wrap-text">' . $data->inventory_count . '</td>
