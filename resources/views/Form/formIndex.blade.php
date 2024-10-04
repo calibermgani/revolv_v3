@@ -170,7 +170,7 @@
                                                     'user_type[]',
                                                     [
                                                         3 => 'Both',
-                                                        2 => 'Coder',
+                                                        2 => 'AR',
                                                         10 => 'QA',
 
                                                     ],
@@ -189,7 +189,7 @@
                                                     'input_type_editable[]',
                                                     [
                                                         3 => 'Both',
-                                                        1 => 'Coder',
+                                                        1 => 'AR',
                                                         2 => 'QA',
 
                                                     ],
@@ -281,9 +281,9 @@
                     j +
                     '" value="popup_non_visible"  /><span></span>Non Visible</label></div></div><div class="col-md-2"><label>Visible User</label><div class="form-group mb-1"><select  class="white-smoke form-control user_type" name="user_type[]" id="user_type_id_' +
                     j +
-                    '"><option value="3">Both</option><option value="2">Coder</option><option value="10">QA</option></select></div></div><div class="col-md-2"><label>Input Type Editable</label><div class="form-group mb-1"><select  class="white-smoke form-control input_type_editable" name="input_type_editable[]" id="input_type_editable_' +
+                    '"><option value="3">Both</option><option value="2">AR</option><option value="10">QA</option></select></div></div><div class="col-md-2"><label>Input Type Editable</label><div class="form-group mb-1"><select  class="white-smoke form-control input_type_editable" name="input_type_editable[]" id="input_type_editable_' +
                     j +
-                    '"><option value="3">Both</option><option value="1">Coder</option><option value="2">QA</option></select></div></div> </div></div><div class="col-md-1 text-lg-right pt-2"><i class="fa fas fa-minus  icon-circle-remove ml-1 remove_more" id="' +
+                    '"><option value="3">Both</option><option value="1">AR</option><option value="2">QA</option></select></div></div> </div></div><div class="col-md-1 text-lg-right pt-2"><i class="fa fas fa-minus  icon-circle-remove ml-1 remove_more" id="' +
                     j + '"></i></div></div></div></div></div></div>'
                 );
             });
