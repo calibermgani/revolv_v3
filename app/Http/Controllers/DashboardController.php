@@ -984,7 +984,7 @@ class DashboardController extends Controller
                     $body_info .= '<tr>';           
                         $body_info .= '<td class="wrap-text">' . $projectName. '</td>
                         <td class="wrap-text">' . $subProjectName . '</td>
-                        <td class="wrap-text">' . $data->inventory_count . '</td>
+                        <td class="wrap-text">' . $inventoryCount . '</td>
                         <td class="wrap-text">' . date('m/d/Y H:i:s',strtotime($data->exe_date)) . '</td>';
                         $body_info .= '</tr>';
                     }                 
