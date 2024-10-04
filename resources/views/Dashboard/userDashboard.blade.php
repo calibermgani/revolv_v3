@@ -13,8 +13,9 @@
                                     'calendar_id',
                                     [
                                         // '0' => 'Today',
-                                        'week' => 'Week',
+                                        // 'week' => 'Week',
                                         'month' => 'Month',
+                                        'year' => 'Year'
                                     ],
                                     null,
                                     [

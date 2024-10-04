@@ -56,8 +56,10 @@ class DashboardController extends Controller
                 $projects = $this->getProjects();
                 // $startDate = Carbon::now()->startOfDay()->toDateString();
                 // $endDate = Carbon::now()->endOfDay()->toDateString();
-                $startDate = Carbon::now()->startOfWeek()->startOfDay()->toDateString();
-                $endDate = Carbon::now()->endOfWeek()->endOfDay()->toDateString();
+                // $startDate = Carbon::now()->startOfWeek()->startOfDay()->toDateString();
+                // $endDate = Carbon::now()->endOfWeek()->endOfDay()->toDateString();
+                $startDate = Carbon::now()->startOfMonth()->toDateString();
+                $endDate = Carbon::now()->endOfMonth()->toDateString();
                 $models = [];
                 $projectIds = [];
                 foreach ($projects as $project) {
@@ -262,8 +264,10 @@ class DashboardController extends Controller
                 $projects = $this->getProjects();
                 // $startDate = Carbon::now()->startOfDay()->toDateString();
                 // $endDate = Carbon::now()->endOfDay()->toDateString();
-                $startDate = Carbon::now()->startOfWeek()->startOfDay()->toDateString();
-                $endDate = Carbon::now()->endOfWeek()->endOfDay()->toDateString();
+                // $startDate = Carbon::now()->startOfWeek()->startOfDay()->toDateString();
+                // $endDate = Carbon::now()->endOfWeek()->endOfDay()->toDateString();
+                $startDate = Carbon::now()->startOfMonth()->toDateString();
+                $endDate = Carbon::now()->endOfMonth()->toDateString();
                 $models = $projectIds = [];
                 foreach ($projects as $project) {
                     $project["client_name"] = Helpers::projectName($project["id"])->project_name;
@@ -566,7 +570,11 @@ class DashboardController extends Controller
                     $days =  Carbon::now()->daysInMonth;
                     $startDate = Carbon::now()->startOfMonth()->toDateString();
                     $endDate = Carbon::now()->endOfMonth()->toDateString();
-                } else {
+                } else if ($calendarId == "year") {
+                    $startDate = Carbon::now()->startOfYear()->toDateString();
+                    $endDate = Carbon::now()->endOfYear()->toDateString();
+                } 
+                else {
                     $days = $calendarId;
                     $startDate = Carbon::now()->startOfDay()->toDateString();
                     $endDate = Carbon::now()->endOfDay()->toDateString();
@@ -972,7 +980,7 @@ class DashboardController extends Controller
                             <tr>
                                 <th>Project</th>
                                 <th>Sub Project</th>
-                                <th>Inventory Count</th>
+                                <th>Uploaded Count</th>
                                 <th>Uploaded Date</th>
                             </tr>
                             </thead><tbody>';
