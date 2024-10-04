@@ -967,7 +967,7 @@ class DashboardController extends Controller
                      })->get();
                 }//dd($client_data);
                 // if (count($client_data) > 0) {
-                $body_info = '<table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter" id="report_list">
+                $body_info = '<table class="table table-separate table-head-custom no-footer" id="report_list">
                             <thead>
                             <tr>
                                 <th>Project</th>
