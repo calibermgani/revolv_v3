@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use App\Http\Helper\Admin\Helpers as Helpers;
+use App\Models\InventoryExeFile;
 class DashboardController extends Controller
 {
     public function dashboard(Request $request)
@@ -925,6 +926,76 @@ class DashboardController extends Controller
                 ]);
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
+
+    public function inventoryUploadList(Request $request) {
+
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+             try {
+           
+                if (isset($request->work_date) && !empty($request->work_date)) {
+                    $work_date = explode(' - ', $request->work_date);
+                    $start_date = date('Y-m-d 00:00:00', strtotime($work_date[0]));
+                    $end_date = date('Y-m-d 23:59:59', strtotime($work_date[1]));
+                }else{
+                    $currentDate = Carbon::now();
+                    $start_date = $currentDate->subMonths(2)->startOfMonth()->format('Y-m-d 00:00:00');
+                    $end_date = $currentDate->addMonths(2)->endOfMonth()->format('Y-m-d 23:59:59');
+                }
+                if (isset($request->project_id)) {
+                    $client_data = InventoryExeFile::where('project_id', '=', $request->project_id)
+                            ->where('sub_project_id', '=', $request->sub_project_id)
+                            ->where(function ($query) use ($start_date, $end_date) {
+                                    if (!empty($start_date) && !empty($end_date)) {
+                                        $query->whereBetween('exe_date', [$start_date, $end_date]);
+                                    }else{
+                                        $query;
+                                    }
+                                })->get();
+                } else {
+                    $client_data = InventoryExeFile::
+                    where(function ($query) use ($start_date, $end_date) {
+                         if (!empty($start_date) && !empty($end_date)) {
+                             $query->whereBetween('exe_date', [$start_date, $end_date]);
+                         }else{
+                             $query;
+                         }
+                     })->get();
+                }//dd($client_data);
+                // if (count($client_data) > 0) {
+                $body_info = '<table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter" id="report_list">
+                            <thead>
+                            <tr>
+                                <th>Project</th>
+                                <th>Sub Project</th>
+                                <th>Inventory Count</th>
+                                <th>Uploaded Date</th>
+                            </tr>
+                            </thead><tbody>';
+
+                foreach ($client_data as $data) {
+                    $projectName = Helpers::projectName($data->project_id)->aims_project_name;//dd($data->sub_project_id != null);
+                    $subProjectName = $data->sub_project_id != null ?  (Helpers::subProjectName($data->project_id,$data->sub_project_id) != null ? Helpers::subProjectName($data->project_id,$data->sub_project_id)->sub_project_name : '--'): '--';
+                        $body_info .= '<tr>';           
+                        $body_info .= '<td class="wrap-text">' . $projectName. '</td>
+                        <td class="wrap-text">' . $subProjectName . '</td>
+                        <td class="wrap-text">' . $data->inventory_count . '</td>
+                        <td class="wrap-text">' . date('m/d/Y H:i:s',strtotime($data->exe_date)) . '</td>';
+                        $body_info .= '</tr>';
+                    }                 
+                    $body_info .= '</tbody></table>';
+            
+
+                return response()->json([
+                    'success' => true,
+                    'body_info' => $body_info,
+                ]);
+            } catch (Exception $e) {
+                log::debug($e->getMessage());
             }
         } else {
             return redirect('/');

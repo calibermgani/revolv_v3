@@ -108,6 +108,7 @@ Route::group(['prefix' => 'qa_production'], function () {
         Route::any('calendar_filter','App\Http\Controllers\DashboardController@getCalendarFilter');
         Route::any('projects_calendar_filter','App\Http\Controllers\DashboardController@prjCalendarFilter');
         Route::any('mgr_projects_calendar_filter','App\Http\Controllers\DashboardController@mgrPrjCalendarFilter');
+        Route::any('inventory_upload_list', 'App\Http\Controllers\DashboardController@inventoryUploadList');
 
     });
     Route::any('project_work_mail', 'App\Http\Controllers\ProjectController@projectWorkMail');

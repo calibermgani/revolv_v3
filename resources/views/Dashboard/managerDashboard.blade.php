@@ -380,6 +380,83 @@
                     </div>
                 </div>
             </div>
+            <div class="row mt-2">
+                <div class="col-md-6 pr-0">
+                    <div class="card" style="height:352px">
+                        <div class="dash_card3_filter mt-4 ml-2">
+                            <span><b>Inventory Uploads</b></span>
+                        </div>
+                        <div class="row mt-4 ml-5">
+                            <div class="col-lg-3">
+                                <div class="row form-group">
+                                    <div class="col-md-12">
+                                        @php $projectList = App\Http\Helper\Admin\Helpers::projectList(); @endphp
+                                        {!! Form::select('project_id', $projectList, request()->project_id,
+                                            ['class' => 'text-black form-control select2 project_select', 'id' => 'project_id', 'placeholder'=> 'Select Project']
+                                        ) !!}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="row form-group">
+                                    <div class="col-md-12">
+                                        @if (isset(request()->project_id))
+                                            @php $subProjectList = App\Http\Helper\Admin\Helpers::subProjectList(request()->project_id); @endphp
+                                            {!! Form::select('sub_project_id', $subProjectList, request()->sub_project_id,
+                                                ['class' => 'text-black form-control select2 sub_project_select', 'id' => 'sub_project_id', 'placeholder'=> 'Select Sub Project']
+                                            ) !!}
+                                        @else
+                                            @php $subProjectList = []; @endphp
+                                            {!! Form::select('sub_project_id', $subProjectList, null,
+                                                ['class' => 'text-black form-control select2 sub_project_select', 'id' => 'sub_project_id', 'placeholder'=> 'Select Sub Project']
+                                            ) !!}
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="row form-group">
+                                    <div class="col-md-12">
+                                        {!!Form::text('search_date', null,
+                                        ['class'=>'form-control form-control daterange','autocomplete'=>'off','id' => 'search_date', 'placeholder'=> 'mm/dd/yyyy - mm/dd/yyyy']) !!}
+                                    </div>
+                                </div>
+                            </div>   
+                                <div class="col-lg-1">
+                                    <div class="row form-group">
+                                        <div class="col-md-12">
+                                            <button type="submit" class="search_btn" id="project_inventory_upload_search"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                              </svg></button>   
+                                            {{-- <button type="button" class="btn btn-light-danger" data-dismiss="modal">Close</button>                                            --}}
+                                        </div>
+                                    </div>
+                                </div>                     
+                        </div>
+                        <div class="card-body" style="padding-top: 0.25rem;">
+                            <div class="table-responsive" id="mDashboard_inventory_upload">
+                     
+                        </div>
+                    </div>
+                        {{-- <div class="card-body" style="padding-top: 0.25rem;">
+                            <div class="table-responsive" id="mgrDashProjects">
+                                <table class="table table-separate table-head-custom no-footer"
+                                    id="mDashboard_inventory_upload">
+                                    <thead>
+                                        <tr>
+                                             <th>Project</th>
+                                            <th>Sub Project</th>
+                                            <th>Inventory Count</th>
+                                            <th>Uploaded</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div> --}}
+                    </div>
+                </div>
+               
+            </div>
         </div>
     </div>
 @endsection
@@ -418,6 +495,10 @@
         background: transparent;
         /* Scrollbar track color */
     }
+    .select2-container--default .select2-selection--single {
+    background-color: #ffffff !important;
+}
+
 </style>
 
 @push('view.scripts')
@@ -866,6 +947,119 @@
                     }
                 });
             });
+
+            $("#mDashboard_inventory_upload").DataTable({
+                    processing: true,
+                    lengthChange: false,
+                    searching: false,
+                    pageLength: 20,
+                    "info": false,
+                    paging: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    scrollY: 200,
+                    "initComplete": function(settings, json) {
+                        $('body').find('.dataTables_scrollBody').addClass("scrollbar");
+                    },        
+            });
+            var start = moment().startOf('month');
+            var end = moment().endOf('month');
+
+            $('.daterange').attr("autocomplete", "off");
+            $('.daterange').daterangepicker({
+                showOn: 'both',
+                startDate: start,
+                endDate: end,
+                showDropdowns: true,
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf(
+                        'month')]
+                }
+            });
+            $(document).on('change', '#project_id', function() {
+                KTApp.block('#mDashboard_inventory_upload', {
+                    overlayColor: '#000000',
+                    state: 'danger',
+                    opacity: 0.1,
+                    message: 'Fetching...',
+                });
+                var project_id = $(this).val();
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url('reports/get_sub_projects') }}",
+                    data: {
+                        project_id: project_id
+                    },
+                    success: function(res) {
+                         $("#sub_project_id").val(res.subProject);
+                        var sla_options = '<option value="">-- Select --</option>';
+                        $.each(res.subProject, function(key, value) {
+                            sla_options = sla_options + '<option value="' + key + '">' + value +
+                                '</option>';
+                        });
+                        $("#sub_project_id").html(sla_options);
+                        KTApp.unblock('#mDashboard_inventory_upload');
+                    },
+                    error: function(jqXHR, exception) {}
+                });
+            });
+            var project_id = $('#project_id').val();
+                var sub_project_id = $('#sub_project_id').val();
+                var work_date = $('#search_date').val();
+                inventoryUploadList(project_id,sub_project_id,work_date);
+            $(document).on('click', '#project_inventory_upload_search', function() {
+                var project_id = $('#project_id').val();
+                var sub_project_id = $('#sub_project_id').val();
+                var work_date = $('#search_date').val();
+                inventoryUploadList(project_id,sub_project_id,work_date);
+              
+            });
+            function inventoryUploadList(project_id,sub_project_id,work_date) {
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url('dashboard/inventory_upload_list') }}",
+                    data: {
+                        project_id: project_id,
+                        sub_project_id: sub_project_id,
+                        work_date: work_date
+                    },
+                    success: function(res) {
+                        if (res.body_info) {
+                            $('#mDashboard_inventory_upload').html(res.body_info);
+                            var table = $('#report_list').DataTable({
+                                processing: true,
+                                lengthChange: false,
+                                searching: false,
+                                pageLength: 20,
+                                "info": false,
+                                paging: false,
+                                scrollCollapse: true,
+                                scrollX: true,
+                                scrollY: 200,
+                                "initComplete": function(settings, json) {
+                                    $('body').find('.dataTables_scrollBody').addClass("scrollbar");
+                                },        
+                            })
+                           
+                        }else{
+
+                        }
+                    },
+                    error: function(jqXHR, exception) {
+                    }
+                });                                 
+            }
         })
     </script>
 @endpush
