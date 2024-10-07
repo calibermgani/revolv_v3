@@ -107,7 +107,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row mt-2" id="prj_card">
+            <div class="row mt-2">
                 <div class="col-md-6 pr-0" style="margin-top:-8rem">
                     <div class="card" style="height:356px">
                         <div class="dash_card3_filter mt-4 ml-4">
@@ -526,15 +526,7 @@
         });
         $(document).ready(function() {
             var subprojectCountData;
-            KTApp.block('#uDashboard_clients_list', {
-                    overlayColor: '#000000',
-                    state: 'danger',
-                    opacity: 0.1,
-                    message: 'Fetching...',
-                });
             clientList();
-            
-            // KTApp.unblock('#uDashboard_clients_list');
 
             function clientList() {
                 var subProjects;
