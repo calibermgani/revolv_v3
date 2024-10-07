@@ -534,7 +534,7 @@
                     processing: true,
                     lengthChange: false,
                     searching: false,
-                    pageLength: 20,
+                    pageLength: 5,
                     "info": false,
                     paging: false,
                     scrollCollapse: true,
