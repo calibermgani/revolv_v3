@@ -534,7 +534,7 @@
                 });
             clientList();
             
-            KTApp.unblock('#uDashboard_clients_list');
+            // KTApp.unblock('#uDashboard_clients_list');
 
             function clientList() {
                 var subProjects;
