@@ -107,7 +107,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row mt-2">
+            <div class="row mt-2" id="prj_card">
                 <div class="col-md-6 pr-0" style="margin-top:-8rem">
                     <div class="card" style="height:356px">
                         <div class="dash_card3_filter mt-4 ml-4">
@@ -565,6 +565,12 @@
                         row.child.hide();
                         tr.removeClass('shown');
                     } else {
+                        KTApp.block('#prj_card', {
+                            overlayColor: '#000000',
+                            state: 'danger',
+                            opacity: 0.1,
+                            message: 'Fetching...',
+                        });
                         $.ajaxSetup({
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -583,6 +589,7 @@
                                 if (typeof subprojectCountData !== 'undefined' &&
                                     subprojectCountData > 0) {
                                     row.child(format(row.data(), subProjects)).show();
+                                    KTApp.unblock('#prj_card');
                                 } else {
                                     if (typeof subprojectCountData !== 'undefined') {
                                         window.location.href = baseUrl + 'projects_assigned/' +
