@@ -526,7 +526,15 @@
         });
         $(document).ready(function() {
             var subprojectCountData;
+            KTApp.block('#uDashboard_clients_list', {
+                    overlayColor: '#000000',
+                    state: 'danger',
+                    opacity: 0.1,
+                    message: 'Fetching...',
+                });
             clientList();
+            
+            KTApp.unblock('#uDashboard_clients_list');
 
             function clientList() {
                 var subProjects;
@@ -565,12 +573,6 @@
                         row.child.hide();
                         tr.removeClass('shown');
                     } else {
-                        KTApp.block('#prj_card', {
-                            overlayColor: '#000000',
-                            state: 'danger',
-                            opacity: 0.1,
-                            message: 'Fetching...',
-                        });
                         $.ajaxSetup({
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -589,7 +591,6 @@
                                 if (typeof subprojectCountData !== 'undefined' &&
                                     subprojectCountData > 0) {
                                     row.child(format(row.data(), subProjects)).show();
-                                    KTApp.unblock('#prj_card');
                                 } else {
                                     if (typeof subprojectCountData !== 'undefined') {
                                         window.location.href = baseUrl + 'projects_assigned/' +
