@@ -542,6 +542,7 @@
                     scrollY: 200,
                     "initComplete": function(settings, json) {
                         $('body').find('.dataTables_scrollBody').addClass("scrollbar");
+                        $('body').find('.dataTables_scrollHead').css("margin-left",'5px','important');;
                     },
                     // columnDefs: [{
                     //     className: 'details-control',
