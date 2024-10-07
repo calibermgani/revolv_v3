@@ -109,7 +109,7 @@
             </div>
             <div class="row mt-2">
                 <div class="col-md-6 pr-0" style="margin-top:-8rem">
-                    <div class="card" style="height:352px">
+                    <div class="card" style="height:356px">
                         <div class="dash_card3_filter mt-4 ml-4">
                             <span><b>Projects</b></span>
                             <div>
