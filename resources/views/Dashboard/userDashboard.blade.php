@@ -539,7 +539,7 @@
                     paging: false,
                     scrollCollapse: true,
                     scrollX: true,
-                    scrollY: 100,
+                    scrollY: 200,
                     "initComplete": function(settings, json) {
                         $('body').find('.dataTables_scrollBody').addClass("scrollbar");
                     },
