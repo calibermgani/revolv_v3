@@ -490,7 +490,7 @@ use Carbon\Carbon;
                                                                 <div class="col-md-6 dynamic-field">
                                                                     <div class="form-group row row_mar_bm">
                                                                         <label
-                                                                            class="col-md-12 {{ $data->field_type_2 == 'mandatory' ? 'required' : '' }}">
+                                                                            class="col-md-12 {{ $data->field_type_2 == 'mandatory' && ($data->input_type_editable == 2 || $data->input_type_editable == 3) ? 'required' : '' }}">
                                                                             {{ $labelName }}
                                                                         </label>
                                                                         <div class="col-md-10">
@@ -502,7 +502,7 @@ use Carbon\Carbon;
                                                                                         'style' => 'cursor:pointer',
                                                                                         'rows' => 3,
                                                                                         'id' => $columnName,
-                                                                                        $data->field_type_2 == 'mandatory' ? 'required' : '',
+                                                                                        $data->field_type_2 == 'mandatory' && ($data->input_type_editable == 2 || $data->input_type_editable == 3) ? 'required' : '',
                                                                                         ($data->input_type_editable == 2 || $data->input_type_editable == 3) ? '' : 'readonly'
                                                                                     ]) !!}
                                                                                 @else
@@ -511,7 +511,7 @@ use Carbon\Carbon;
                                                                                         'autocomplete' => 'none',
                                                                                         'style' => 'cursor:pointer',
                                                                                         'id' => 'date_range',
-                                                                                        $data->field_type_2 == 'mandatory' ? 'required' : '',
+                                                                                        $data->field_type_2 == 'mandatory' && ($data->input_type_editable == 2 || $data->input_type_editable == 3) ? 'required' : '',
                                                                                         ($data->input_type_editable == 2 || $data->input_type_editable == 3) ? '' : 'readonly'
                                                                                     ]) !!}
                                                                                 @endif
@@ -539,7 +539,7 @@ use Carbon\Carbon;
                                                                                                         {!! Form::$inputType($columnName . '[]', $options[$i], false, [
                                                                                                             'class' => $columnName,
                                                                                                             'id' => $columnName,
-                                                                                                            $data->field_type_2 == 'mandatory' ? 'required' : '',
+                                                                                                            $data->field_type_2 == 'mandatory' && ($data->input_type_editable == 2 || $data->input_type_editable == 3) ? 'required' : '',
                                                                                                             'onclick' => $data->input_type_editable != 2 && $data->input_type_editable != 3 ? 'return false;' : '',
                                                                                                         ]) !!}{{ $options[$i] }}
                                                                                                         <span></span>
@@ -563,7 +563,7 @@ use Carbon\Carbon;
                                                                                                         {!! Form::$inputType($columnName, $options[$i], false, [
                                                                                                             'class' => $columnName,
                                                                                                             'id' => $columnName,
-                                                                                                            $data->field_type_2 == 'mandatory' ? 'required' : '',
+                                                                                                            $data->field_type_2 == 'mandatory' && ($data->input_type_editable == 2 || $data->input_type_editable == 3) ? 'required' : '',
                                                                                                             'disabled' => $data->input_type_editable != 2 && $data->input_type_editable != 3
                                                                                                         ]) !!}{{ $options[$i] }}
                                                                                                         <span></span>
