@@ -157,7 +157,7 @@
             var table = $("#clients_list").DataTable({
                 processing: true,
                 lengthChange: false,
-                searching: false,
+                searching: true,
                 pageLength: 20,
                     columnDefs: [{
                         className: 'details-control',
