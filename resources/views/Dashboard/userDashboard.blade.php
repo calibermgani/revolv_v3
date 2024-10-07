@@ -402,6 +402,10 @@
         scrollbar-color: rgba(0, 0, 0, 0.5) transparent;
         scrollbar-width: thin;
     }
+    .dataTables_scrollBody.scrollbar {
+    overflow-y: auto; /* Ensures vertical scroll */
+    max-height: 200px;
+}
 
     .chart-container {
         position: relative;
@@ -541,7 +545,11 @@
                     scrollX: true,
                     scrollY: 200,
                     "initComplete": function(settings, json) {
-                        $('body').find('.dataTables_scrollBody').addClass("scrollbar");
+                        // $('body').find('.dataTables_scrollBody').addClass("scrollbar");
+                        var scrollBody = $('body').find('.dataTables_scrollBody');
+                        if (scrollBody.length > 0) {
+                            scrollBody.addClass("scrollbar");
+                        }
                     },
                     // columnDefs: [{
                     //     className: 'details-control',
