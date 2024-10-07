@@ -1,6 +1,6 @@
 @extends('layouts.app3')
 @section('content')
-    <div class="card card-custom mb-5 custom-card" style="background-color: #D9D9D9">
+    <div class="card card-custom mb-5 custom-card" style="background-color: #D9D9D9" id="uDashboard">
         <div class="card-body" style="background-color: #D9D9D9;padding: 0.25rem !important">
 
             <div class="row">
@@ -125,7 +125,7 @@
                         {{-- <div class="card-body" data-scroll="true" data-height="300"> --}}
                         <div class="card-body" style="padding-top: 0.25rem;">
                             <div class="table-responsive" id="reportTable">
-                                <table class="table table-separate table-head-custom no-footer"
+                                {{-- <table class="table table-separate table-head-custom no-footer"
                                     id="uDashboard_clients_list">
                                     <thead>
                                         <tr>
@@ -260,7 +260,7 @@
                                             @endforeach
                                         @endif
                                     </tbody>
-                                </table>
+                                </table> --}}
                             </div>
                         </div>
                     </div>
@@ -526,7 +526,13 @@
         });
         $(document).ready(function() {
             var subprojectCountData;
-            clientList();
+            KTApp.block('#uDashboard', {
+                overlayColor: '#000000',
+                state: 'danger',
+                opacity: 0.1,
+                message: 'Fetching...',
+            });
+            clientList1();
 
             function clientList() {
                 var subProjects;
@@ -784,6 +790,9 @@
             });
 
             $(document).on('change', '#prj_calendar_id', function(e) {
+                clientList1();
+            });
+            function clientList1(){
                 var CalendarId = $('#prj_calendar_id').val();
                 var CalendarText = $('#prj_calendar_id option:selected').text();
                 $.ajaxSetup({
@@ -804,10 +813,11 @@
                             $('#reportTable').html('');
                             $('#reportTable').html(res.body_info);
                             clientList();
+                            KTApp.unblock('#uDashboard');
                         }
                     }
                 });
-            });
+            }
         })
     </script>
 @endpush
