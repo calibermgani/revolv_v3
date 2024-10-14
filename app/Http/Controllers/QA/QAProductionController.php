@@ -188,6 +188,7 @@ class QAProductionController extends Controller
                         $autoCloseCount = $modelClass::where('qa_work_status', 'Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling')->orderBy('id', 'ASC')->pluck('chart_status')->toArray();
                         $unAssignedCount = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->whereNull('qa_work_status')->whereNull('QA_emp_id')->count();
+                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         // $payload = [
                         //     'token' => '1a32e71a46317b9cc6feb7388238c95d',
                         //     'client_id' => $decodedProjectName,
@@ -217,6 +218,7 @@ class QAProductionController extends Controller
                         $reworkCount = $modelClass::where('chart_status', 'revoke')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $autoCloseCount = $modelClass::where('qa_work_status', 'Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling')->where('QA_emp_id', $loginEmpId)->orderBy('id', 'ASC')->pluck('chart_status')->toArray();
+                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     } else {
                         return redirect()->back();
                        }
@@ -230,7 +232,7 @@ class QAProductionController extends Controller
                 $popupQAEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('user_type',  $dept)->where('field_type', 'editable')->where('field_type_3', 'popup_visible')->get();
                 $qaSubStatusListVal = Helpers::qaSubStatusList();
                 $arActionListVal = Helpers::arActionList();
-                return view('QAProduction/qaClientAssignedTab', compact('assignedProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal'));
+                return view('QAProduction/qaClientAssignedTab', compact('assignedProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','rebuttalCount'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -289,6 +291,7 @@ class QAProductionController extends Controller
                         $autoCloseCount = $modelClass::where('qa_work_status', 'Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('emp_id', $loginEmpId)->where('end_time', null)->where('record_status', 'QA_Pending')->orderBy('id', 'desc')->pluck('record_id')->toArray();
                         $unAssignedCount = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->whereNull('qa_work_status')->whereNull('QA_emp_id')->count();
+                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
@@ -300,6 +303,7 @@ class QAProductionController extends Controller
                         $reworkCount = $modelClass::where('chart_status', 'Revoke')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $autoCloseCount = $modelClass::where('qa_work_status', 'Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('emp_id', $loginEmpId)->where('end_time', null)->where('record_status', 'QA_Pending')->orderBy('id', 'desc')->pluck('record_id')->toArray();
+                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 }
                 $dept = Session::get('loginDetails')['userInfo']['department']['id'];
@@ -312,7 +316,7 @@ class QAProductionController extends Controller
                 $popupQAEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('user_type',  $dept)->where('field_type', 'editable')->where('field_type_3', 'popup_visible')->get();
                 $qaSubStatusListVal =  Helpers::qaSubStatusList();
                 $arActionListVal = Helpers::arActionList();
-                return view('QAProduction/qaClientPendingTab', compact('pendingProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'existingCallerChartsWorkLogs', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal'));
+                return view('QAProduction/qaClientPendingTab', compact('pendingProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'existingCallerChartsWorkLogs', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -371,6 +375,7 @@ class QAProductionController extends Controller
                         $autoCloseCount = $modelClass::where('qa_work_status', 'Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('emp_id', $loginEmpId)->where('end_time', null)->where('record_status', 'QA_Hold')->orderBy('id', 'desc')->pluck('record_id')->toArray();
                         $unAssignedCount = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->whereNull('qa_work_status')->whereNull('QA_emp_id')->count();
+                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
@@ -382,6 +387,7 @@ class QAProductionController extends Controller
                         $reworkCount = $modelClass::where('chart_status', 'Revoke')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $autoCloseCount = $modelClass::where('qa_work_status', 'Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('emp_id', $loginEmpId)->where('end_time', null)->where('record_status', 'QA_Hold')->orderBy('id', 'desc')->pluck('record_id')->toArray();
+                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 }
                 $dept = Session::get('loginDetails')['userInfo']['department']['id'];
@@ -394,7 +400,7 @@ class QAProductionController extends Controller
                 $popupQAEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('user_type',  $dept)->where('field_type', 'editable')->where('field_type_3', 'popup_visible')->get();
                 $qaSubStatusListVal =  Helpers::qaSubStatusList();
                 $arActionListVal = Helpers::arActionList();
-                return view('QAProduction/qaClientOnholdTab', compact('holdProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'existingCallerChartsWorkLogs','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal'));
+                return view('QAProduction/qaClientOnholdTab', compact('holdProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'existingCallerChartsWorkLogs','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -451,6 +457,7 @@ class QAProductionController extends Controller
                         $duplicateCount = $modelClassDuplcates::count();
                         $autoCloseCount = $modelClass::where('qa_work_status', 'Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $unAssignedCount = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->whereNull('qa_work_status')->whereNull('QA_emp_id')->count();
+                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
@@ -461,6 +468,7 @@ class QAProductionController extends Controller
                         $holdCount = $modelClass::where('chart_status', 'QA_Hold')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $reworkCount = $modelClass::where('chart_status', 'Revoke')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $autoCloseCount = $modelClass::where('qa_work_status', 'Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 }
                 $dept = Session::get('loginDetails')['userInfo']['department']['id'];
@@ -475,7 +483,7 @@ class QAProductionController extends Controller
                 $qaStatusList = Helpers::qaStatusList();
                 $arStatusList = Helpers::arStatusList();
                 $arActionListVal = Helpers::arActionList();
-                return view('QAProduction/qaClientCompletedTab', compact('completedProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields','popupQAEditableFields','qaSubStatusListVal','qaStatusList','autoCloseCount','unAssignedCount','arStatusList','arActionListVal'));
+                return view('QAProduction/qaClientCompletedTab', compact('completedProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields','popupQAEditableFields','qaSubStatusListVal','qaStatusList','autoCloseCount','unAssignedCount','arStatusList','arActionListVal','rebuttalCount'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -527,6 +535,7 @@ class QAProductionController extends Controller
                         $reworkCount = $modelClass::where('chart_status', 'Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $modelClassDuplcates = "App\\Models\\" . $modelName;
                         $duplicateCount = $modelClassDuplcates::count();
+                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
@@ -536,10 +545,11 @@ class QAProductionController extends Controller
                         $pendingCount = $modelClass::where('chart_status', 'QA_Pending')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $holdCount = $modelClass::where('chart_status', 'QA_Hold')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $reworkCount = $modelClass::where('chart_status', 'Revoke')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 }
 
-                return view('QAProduction/qaClientReworkTab', compact('revokeProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount'));
+                return view('QAProduction/qaClientReworkTab', compact('revokeProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount','rebuttalCount'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -591,6 +601,7 @@ class QAProductionController extends Controller
                         $holdCount = $modelClass::where('chart_status', 'QA_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $reworkCount = $modelClass::where('chart_status', 'Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $duplicateCount = $modelClassDuplcates::count();
+                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 } elseif ($loginEmpId) {
                     if (class_exists($modelClassDuplcates)) {
@@ -600,10 +611,10 @@ class QAProductionController extends Controller
                         $pendingCount = $modelClass::where('chart_status', 'QA_Pending')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $holdCount = $modelClass::where('chart_status', 'QA_Hold')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $reworkCount = $modelClass::where('chart_status', 'Revoke')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                    }
+                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();                    }
                 }
 
-                return view('QAProduction/qaClientDuplicateTab', compact('duplicateProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount'));
+                return view('QAProduction/qaClientDuplicateTab', compact('duplicateProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount','rebuttalCount'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -1089,6 +1100,7 @@ class QAProductionController extends Controller
                         $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling')->orderBy('id', 'ASC')->pluck('chart_status')->toArray();
                         $assignedDropDown = $userDetail;
                         $unAssignedCount = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->whereNull('qa_work_status')->whereNull('QA_emp_id')->count();
+                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 } elseif ($loginEmpId) {
                     if (class_exists($modelClass)) {
@@ -1104,6 +1116,7 @@ class QAProductionController extends Controller
                         if (isset($userDetail[$loginEmpId])) {
                             $assignedDropDown[$loginEmpId] = $userDetail[$loginEmpId];
                           }
+                          $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 }
                 $popUpHeader = formConfiguration::groupBy(['project_id', 'sub_project_id'])
@@ -1115,7 +1128,7 @@ class QAProductionController extends Controller
                 $popupQAEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('user_type',  $dept)->where('field_type', 'editable')->where('field_type_3', 'popup_visible')->get();
                 $qaSubStatusListVal = Helpers::qaSubStatusList();
                 $arActionListVal = Helpers::arActionList();
-                return view('QAProduction/qaClientAutoClose', compact('autoCloseProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal'));
+                return view('QAProduction/qaClientAutoClose', compact('autoCloseProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -1224,6 +1237,7 @@ class QAProductionController extends Controller
                         $duplicateCount = $modelClassDuplcates::count();
                         $autoCloseCount = $modelClass::where('qa_work_status', 'Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->whereNull('qa_work_status')->orderBy('id', 'ASC')->pluck('chart_status')->toArray();
+                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         // $payload = [
                         //     'token' => '1a32e71a46317b9cc6feb7388238c95d',
                         //     'client_id' => $decodedProjectName,
@@ -1251,6 +1265,7 @@ class QAProductionController extends Controller
                         $reworkCount = $modelClass::where('chart_status', 'revoke')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $autoCloseCount = $modelClass::where('qa_work_status', 'Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling')->where('QA_emp_id', $loginEmpId)->orderBy('id', 'ASC')->pluck('chart_status')->toArray();
+                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 }
                 $popUpHeader = formConfiguration::groupBy(['project_id', 'sub_project_id'])
@@ -1262,7 +1277,7 @@ class QAProductionController extends Controller
                 $popupQAEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('user_type',  $dept)->where('field_type', 'editable')->where('field_type_3', 'popup_visible')->get();
                 $qaSubStatusListVal = Helpers::qaSubStatusList();
                 $arActionListVal = Helpers::arActionList();
-                return view('QAProduction/qaClientUnAssignedTab', compact('unAssignedProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal'));
+                return view('QAProduction/qaClientUnAssignedTab', compact('unAssignedProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -1301,4 +1316,114 @@ class QAProductionController extends Controller
             return redirect('/');
         }
    }
+
+   public function clientRebuttalTab($clientName,$subProjectName) {
+
+    if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+       try {
+           $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
+           $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
+           $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
+           $decodedPracticeName = $subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($subProjectName, 'decode');
+           $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+           $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
+           $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
+           $columnsHeader=[];
+           if (Schema::hasTable($table_name)) {
+                $column_names = DB::select("DESCRIBE $table_name");
+                $columns = array_column($column_names, 'Field');
+                $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_rework_comments','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
+                'coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                'updated_at','created_at', 'deleted_at'];
+                $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
+                    return !in_array($column, $columnsToExclude);
+                });
+            }
+           $modelName = Str::studly($table_name);
+           $modelClass = "App\\Models\\" . $modelName;
+           $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString();$yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
+           $revokeProjectDetails = collect(); $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$existingCallerChartsWorkLogs = [];$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
+           if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
+               if (class_exists($modelClass)) {
+                   $rebuttalProjectDetails = $modelClass::where('chart_status','Rebuttal')->orderBy('id','ASC')->where('ar_manager_rebuttal_status','agree')->get();
+                   $assignedCount = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling')->count();
+                   $completedCount = $modelClass::where('chart_status', 'QA_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                   $pendingCount = $modelClass::where('chart_status', 'QA_Pending')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                   $holdCount = $modelClass::where('chart_status', 'QA_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                   $reworkCount = $modelClass::where('chart_status', 'Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                   $modelClassDuplcates = "App\\Models\\" . $modelName . 'Duplicates';
+                   $duplicateCount = $modelClassDuplcates::count();
+                   $autoCloseCount = $modelClass::where('qa_work_status', 'Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                   $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('emp_id', $loginEmpId)->where('end_time', null)->where('record_status', 'QA_Pending')->orderBy('id', 'desc')->pluck('record_id')->toArray();
+                   $unAssignedCount = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->whereNull('qa_work_status')->whereNull('QA_emp_id')->count();
+                   $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->count();
+         
+               }
+            } else if ($loginEmpId) {
+                if (class_exists($modelClass)) {
+                  $rebuttalProjectDetails = $modelClass::where('chart_status','Rebuttal')->orderBy('id','ASC')->where('ar_manager_rebuttal_status','agree')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','ASC')->get();
+                  $assignedCount = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling')->where('QA_emp_id', $loginEmpId)->count();
+                  $completedCount = $modelClass::where('chart_status', 'QA_Completed')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                  $pendingCount = $modelClass::where('chart_status', 'QA_Pending')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                  $holdCount = $modelClass::where('chart_status', 'QA_Hold')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                  $reworkCount = $modelClass::where('chart_status', 'Revoke')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                  $autoCloseCount = $modelClass::where('qa_work_status', 'Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                  $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('emp_id', $loginEmpId)->where('end_time', null)->where('record_status', 'QA_Pending')->orderBy('id', 'desc')->pluck('record_id')->toArray();
+                  $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+               }
+             }
+             $dept= Session::get('loginDetails')['userInfo']['department']['id'];
+             $popUpHeader =  formConfiguration::groupBy(['project_id', 'sub_project_id'])
+             ->where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)
+             ->select('project_id', 'sub_project_id')
+             ->first();
+            $popupNonEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->whereIn('user_type', [3, $dept])->where('field_type', 'non_editable')->where('field_type_3', 'popup_visible')->get();
+            $popupEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->whereIn('user_type',[3,$dept])->where('field_type', 'editable')->where('field_type_3', 'popup_visible')->get();
+            $popupQAEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('user_type',  10)->where('field_type', 'editable')->where('field_type_3', 'popup_visible')->get();
+            $qaSubStatusListVal = Helpers::qaSubStatusList();
+            $qaStatusList = Helpers::qaStatusList();
+             return view('QAProduction/qaRebuttalTab',compact('rebuttalProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','existingCallerChartsWorkLogs','popUpHeader','popupNonEditableFields','popupEditableFields','popupQAEditableFields','qaSubStatusListVal','unAssignedCount','qaStatusList','rebuttalCount','autoCloseCount'));
+
+       } catch (\Exception $e) {
+           log::debug($e->getMessage());
+       }
+   } else {
+       return redirect('/');
+   }
+}
+
+ public function qaRebuttalUpdate(Request $request) {
+    if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+        try {
+            $decodedProjectName = Helpers::encodeAndDecodeID($request->clientName, 'decode');
+            $decodedPracticeName =  $request->subProjectName == '--' ? NULL : Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+            $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+            $decodedsubProjectName = $decodedPracticeName == NULL ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
+            $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
+            $modelName = Str::studly($table_name);
+            $originalModelClass = "App\\Models\\" . $modelName;
+            $modelClass = "App\\Models\\" . $modelName.'Datas';
+            $datasRecord = $modelClass::where('parent_id', $request->parentId)->orderBy('id','desc')->first();
+            $record = $originalModelClass::where('id', $request->parentId)->first();
+            if($request->qa_manager_rebuttal_status == 'agree') {
+                $chargeStatus  = 'QA_Completed';
+                $qaErrorCount = 1;
+                $arErrorCount = $datasRecord['coder_error_count'];
+             } else {
+                 $chargeStatus =  'QA_Completed';
+                 $arErrorCount = $datasRecord['coder_error_count'] + 1;
+                 $qaErrorCount = NULL;
+             }
+            $datasRecord->update( ['chart_status' => $chargeStatus,'coder_error_count' => $arErrorCount,'qa_error_count' => $qaErrorCount,'qa_manager_rebuttal_status' => $request->qa_manager_rebuttal_status,'qa_manager_rebuttal_comments' => $request->qa_manager_rebuttal_comments] );
+            $record->update( ['chart_status' => $chargeStatus,'coder_error_count' => $arErrorCount,'qa_error_count' => $qaErrorCount,'qa_manager_rebuttal_status' => $request->qa_manager_rebuttal_status,'qa_manager_rebuttal_comments' => $request->qa_manager_rebuttal_comments] );
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            log::debug($e->getMessage());
+        }
+    } else {
+        return redirect('/');
+    }
+}
+
 }

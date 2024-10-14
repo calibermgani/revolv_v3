@@ -155,6 +155,18 @@ use Carbon\Carbon;
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="wizard-step mb-0 nine" data-wizard-type="step">
+                                        <div class="wizard-wrapper py-2">
+                                            <div class="wizard-label p-2 mt-2">
+                                                <div class="wizard-title" style="display: flex; align-items: center;">
+                                                    <h6 style="margin-right: 5px;">Rebuttal</h6>
+                                                    @include('CountVar.countRectangle', [
+                                                        'count' => $rebuttalCount,
+                                                    ])
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                      @if($reworkCount >= 1 && ($loginEmpId !== "Admin" && strpos($empDesignation, 'Manager') !== 0 && strpos($empDesignation, 'VP') !== 0 && strpos($empDesignation, 'Leader') !== 0 && strpos($empDesignation, 'Team Lead') !== 0 && strpos($empDesignation, 'CEO') !== 0 && strpos($empDesignation, 'Vice') !== 0))<p style="color:red; font-weight: 600;">*you have rework records!</p>@endif
                                 </div>
                             </div>
@@ -1817,7 +1829,12 @@ use Carbon\Carbon;
                     getUrlVars()[
                         "parent"] + "&child=" + getUrlVars()["child"];
             })
-
+            $(document).on('click', '.nine', function() {
+                window.location.href = baseUrl + 'ar_rebuttal/' + clientName + '/' + subProjectName +
+                    "?parent=" +
+                    getUrlVars()[
+                        "parent"] + "&child=" + getUrlVars()["child"];
+            })
                 $(document).on('change', '#chart_status', function() {
                         var claimStatus = $(this).val();
                         if(claimStatus == "CE_Hold") {

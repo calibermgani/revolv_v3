@@ -68,6 +68,8 @@ Route::any('project_rework_update/{projectName}/{subProjectName}', 'App\Http\Con
 Route::any('projects_unassigned/{clientName}/{subProjectName}', 'App\Http\Controllers\ProductionController@clientUnAssignedTab')->name('clientUnAssigned');
 Route::any('assignee_drop_down', 'App\Http\Controllers\ProductionController@assigneeDropdown');
 Route::any('projects_non_workable/{clientName}/{subProjectName}', 'App\Http\Controllers\ProductionController@clientNonWorkableTab')->name('clientNonWorkable');
+Route::any('ar_rebuttal/{clientName}/{subProjectName}', 'App\Http\Controllers\ProductionController@clientRebuttalTab')->name('clientRebuttalTab');
+Route::any('ar_rebuttal_update', 'App\Http\Controllers\ProductionController@arRebuttalUpdate');
 
 Route::group(['prefix' => 'qa_production'], function () {
     Route::any('qa_clients', 'App\Http\Controllers\QA\QAProductionController@clients')->name('qaClients');
@@ -87,6 +89,8 @@ Route::group(['prefix' => 'qa_production'], function () {
     Route::any('sampling_assignee', 'App\Http\Controllers\QA\QAProductionController@samplingAssignee');
     Route::any('qa_projects_unAssigned/{clientName}/{subProjectName}', 'App\Http\Controllers\QA\QAProductionController@clientUnAssignedTab')->name('qaClientUnAssigned');
     Route::any('assignee_drop_down', 'App\Http\Controllers\QA\QAProductionController@assigneeDropdown');
+    Route::any('qa_rebuttal/{clientName}/{subProjectName}', 'App\Http\Controllers\QA\QAProductionController@clientRebuttalTab')->name('clientRebuttalTab');
+    Route::any('qa_rebuttal_update', 'App\Http\Controllers\QA\QAProductionController@qaRebuttalUpdate');
 });
 
 

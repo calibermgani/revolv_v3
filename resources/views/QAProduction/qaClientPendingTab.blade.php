@@ -138,6 +138,27 @@ use Carbon\Carbon;
                                             </div>
                                         </div>
                                     @endif --}}
+                                    @if (
+                                        $loginEmpId == 'Admin' ||
+                                        strpos($empDesignation, 'Manager') !== false ||
+                                        strpos($empDesignation, 'VP') !== false ||
+                                        strpos($empDesignation, 'Leader') !== false ||
+                                        strpos($empDesignation, 'Team Lead') !== false ||
+                                        strpos($empDesignation, 'CEO') !== false ||
+                                        strpos($empDesignation, 'Vice') !== false)
+                                        <div class="wizard-step mb-0 eight" data-wizard-type="step">
+                                            <div class="wizard-wrapper py-2">
+                                                <div class="wizard-label p-2 mt-2">
+                                                    <div class="wizard-title" style="display: flex; align-items: center;">
+                                                        <h6 style="margin-right: 5px;">Rebuttal</h6>
+                                                        @include('CountVar.countRectangle', [
+                                                            'count' => $rebuttalCount,
+                                                        ])
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -2301,6 +2322,13 @@ use Carbon\Carbon;
             })
             $(document).on('click', '.seven', function() {
                 window.location.href = baseUrl + 'qa_production/qa_projects_auto_close/' + clientName + '/' +
+                    subProjectName +
+                    "?parent=" +
+                    getUrlVars()[
+                        "parent"] + "&child=" + getUrlVars()["child"];
+            })
+            $(document).on('click', '.eight', function() {
+                window.location.href = baseUrl + 'qa_production/qa_rebuttal/' + clientName + '/' +
                     subProjectName +
                     "?parent=" +
                     getUrlVars()[
