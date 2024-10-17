@@ -783,10 +783,10 @@
                                 if (value !== null) {
                                     $('#ar_manager_rebuttal_comments_label').css('display',
                                     'block');
-                                    $('#rework_reason').css('display', 'block');
+                                    $('#ar_manager_rebuttal_comments').css('display', 'block');
                                 } else {
                                     $('#ar_manager_rebuttal_comments_label').css('display', 'none');
-                                    $('#rework_reason').css('display', 'none');
+                                    $('#ar_manager_rebuttal_comments').css('display', 'none');
                                 }
                             }
                             $('input[name="parentId"]').val(clientData['parent_id']);
