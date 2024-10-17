@@ -18,8 +18,8 @@ class CreateQASubStatusesTable extends Migration
             $table->string('project_id')->nullable();
             $table->string('sub_project_id')->nullable();
             $table->string('status_code_id')->nullable();
-            $table->string('sub_status_code')->nullable();
-            $table->string('error_desc')->nullable();
+            $table->text('sub_status_code')->nullable();
+            $table->text('error_desc')->nullable();
             $table->enum('status',['Active','Inactive'])->default('Active');
             $table->string('added_by')->nullable();
             $table->timestamps();
