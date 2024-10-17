@@ -712,6 +712,11 @@ use Carbon\Carbon;
                                             statusName = val;
                                         }
                                     });
+                                    if(statusName == '') {
+                                        $('label[id="ar_status_label"]').css('display','none');
+                                    } else {
+                                        $('label[id="ar_status_label"]').css('display','block');
+                                    }
                                     $('label[id="ar_status_view"]').text(statusName);
                                }
                             if (header == 'ar_action_code') {
@@ -721,6 +726,11 @@ use Carbon\Carbon;
                                         subStatusName = val;
                                     }
                                 });
+                                  if(subStatusName == '') {
+                                    $('label[id="ar_action_label"]').css('display','none');
+                                } else {
+                                    $('label[id="ar_action_label"]').css('display','block');
+                                }
                                 $('label[id="ar_action_view"]').text(subStatusName);
 
                             }

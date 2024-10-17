@@ -487,7 +487,7 @@ use Carbon\Carbon;
                                                 </div>
                                             </div>
                                         </div>
-                                        <hr>
+                                      
                                         <div class="row mt-4" id="reworkNotesDiv">
                                             <div class="col-md-12">
                                                 <div class="form-group row">
@@ -622,7 +622,8 @@ use Carbon\Carbon;
         $(document).ready(function() {
             var qaSubStatusList = @json($qaSubStatusListVal);
             var qaStatusList = @json($qaStatusList);
-
+            var arStatusList = @json( $arStatusList);
+            var arActionList = @json($arActionListVal);
             function getUrlParam(param) {
                 const urlParams = new URLSearchParams(window.location.search);
                 return urlParams.get(param);
@@ -801,12 +802,43 @@ use Carbon\Carbon;
                                 });
                                 $('label[id="qa_sub_status_view"]').text(subStatusName);
                             }
+                            if (header == 'ar_status_code') {
+                                var statusName = '';
+                                    $.each(arStatusList, function(key, val) {
+                                        if (value == key) {
+                                            statusName = val;
+                                        }
+                                    });
+                                    if(statusName == '') {
+                                        $('label[id="ar_status_label"]').css('display','none');
+                                    } else {
+                                        $('label[id="ar_status_label"]').css('display','block');
+                                    }
+                                    $('label[id="ar_status_view"]').text(statusName);
+                               }
+                            if (header == 'ar_action_code') {
+                                var subStatusName = '';
+                                $.each(arActionList, function(key, val) {
+                                    if (value == key) {
+                                        subStatusName = val;
+                                    }
+                                });
+                                  if(subStatusName == '') {
+                                    $('label[id="ar_action_label"]').css('display','none');
+                                } else {
+                                    $('label[id="ar_action_label"]').css('display','block');
+                                }
+                                $('label[id="ar_action_view"]').text(subStatusName);
+
+                            }
                             if (header == 'QA_rework_comments') {
                                 $('label[id="qa_rework_comments_view"]').text(value);
                                 if (value !== '') {
                                     $('#reworkNotesDiv').css('display','block');
+                                    $('#qa_rework_comments_label').css('display','block');
                                 } else {
                                     $('#reworkNotesDiv').css('display','none');
+                                    $('#qa_rework_comments_label').css('display','none');
                                 }
                                 
                             }
