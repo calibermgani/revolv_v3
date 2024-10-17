@@ -1680,6 +1680,7 @@ class ProductionController extends Controller
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
                     });
+                    array_push($columnsHeader,'aging','aging_range');
                 }
                $modelName = Str::studly($table_name);
                $modelClass = "App\\Models\\" . $modelName;
