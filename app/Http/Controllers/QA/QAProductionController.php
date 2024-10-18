@@ -24,6 +24,7 @@ use App\Models\QASubStatus;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ManagerRebuttalMail;
 use App\Models\CCEmailIds;
+use App\Models\qaClassCatScope;
 
 ini_set('memory_limit', '1024M');
 class QAProductionController extends Controller
@@ -232,7 +233,10 @@ class QAProductionController extends Controller
                 $popupQAEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('user_type',  $dept)->where('field_type', 'editable')->where('field_type_3', 'popup_visible')->get();
                 $qaSubStatusListVal = Helpers::qaSubStatusList();
                 $arActionListVal = Helpers::arActionList();
-                return view('QAProduction/qaClientAssignedTab', compact('assignedProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','rebuttalCount'));
+                $qaClassificationVal = Helpers::qaClassification();
+                $qaCategoryVal = Helpers::qaCategory();
+                $qaScopeVal = Helpers::qaScope();
+                return view('QAProduction/qaClientAssignedTab', compact('assignedProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -316,7 +320,10 @@ class QAProductionController extends Controller
                 $popupQAEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('user_type',  $dept)->where('field_type', 'editable')->where('field_type_3', 'popup_visible')->get();
                 $qaSubStatusListVal =  Helpers::qaSubStatusList();
                 $arActionListVal = Helpers::arActionList();
-                return view('QAProduction/qaClientPendingTab', compact('pendingProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'existingCallerChartsWorkLogs', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount'));
+                $qaClassificationVal = Helpers::qaClassification();
+                $qaCategoryVal = Helpers::qaCategory();
+                $qaScopeVal = Helpers::qaScope();
+                return view('QAProduction/qaClientPendingTab', compact('pendingProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'existingCallerChartsWorkLogs', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -400,7 +407,10 @@ class QAProductionController extends Controller
                 $popupQAEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('user_type',  $dept)->where('field_type', 'editable')->where('field_type_3', 'popup_visible')->get();
                 $qaSubStatusListVal =  Helpers::qaSubStatusList();
                 $arActionListVal = Helpers::arActionList();
-                return view('QAProduction/qaClientOnholdTab', compact('holdProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'existingCallerChartsWorkLogs','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount'));
+                $qaClassificationVal = Helpers::qaClassification();
+                $qaCategoryVal = Helpers::qaCategory();
+                $qaScopeVal = Helpers::qaScope();
+                return view('QAProduction/qaClientOnholdTab', compact('holdProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'existingCallerChartsWorkLogs','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -483,7 +493,10 @@ class QAProductionController extends Controller
                 $qaStatusList = Helpers::qaStatusList();
                 $arStatusList = Helpers::arStatusList();
                 $arActionListVal = Helpers::arActionList();
-                return view('QAProduction/qaClientCompletedTab', compact('completedProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields','popupQAEditableFields','qaSubStatusListVal','qaStatusList','autoCloseCount','unAssignedCount','arStatusList','arActionListVal','rebuttalCount'));
+                $qaClassificationVal = Helpers::qaClassification();
+                $qaCategoryVal = Helpers::qaCategory();
+                $qaScopeVal = Helpers::qaScope();
+                return view('QAProduction/qaClientCompletedTab', compact('completedProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields','popupQAEditableFields','qaSubStatusListVal','qaStatusList','autoCloseCount','unAssignedCount','arStatusList','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -803,9 +816,9 @@ class QAProductionController extends Controller
 
                 if($datasRecord != null) {
                     $datasRecord->update($data);
-                    $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count']]);
+                    $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count'],'qa_classification' => $data['qa_classification'],'qa_category' => $data['qa_category'],'qa_scope' => $data['qa_scope']]);
                 } else {
-                    $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count']]);
+                    $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count'],'qa_classification' => $data['qa_classification'],'qa_category' => $data['qa_category'],'qa_scope' => $data['qa_scope']]);
                     $modelClass::create($data);
                 }
                 if($data['chart_status'] == "Revoke" &&  $datasRecord['coder_rework_status'] == "Rebuttal") {
@@ -953,11 +966,11 @@ class QAProductionController extends Controller
                     $data = array_diff_key($data, array_flip($fieldsToExclude));
                   $datasRecord->update($data);
                   $record = $originalModelClass::where('id', $data['parent_id'])->first();
-                  $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count']]);
+                  $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count'],'qa_classification' => $data['qa_classification'],'qa_category' => $data['qa_category'],'qa_scope' => $data['qa_scope']]);
                  } else {
                     $data['parent_id'] = $data['idValue'];
                     $record = $originalModelClass::where('id', $data['parent_id'])->first();
-                    $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count']] );
+                    $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count'],'qa_classification' => $data['qa_classification'],'qa_category' => $data['qa_category'],'qa_scope' => $data['qa_scope']] );
                     $modelClass::create($data);
                 }
                 if($data['chart_status'] == "Revoke" &&  $datasRecord['coder_rework_status'] == "Rebuttal") {
@@ -1128,7 +1141,10 @@ class QAProductionController extends Controller
                 $popupQAEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('user_type',  $dept)->where('field_type', 'editable')->where('field_type_3', 'popup_visible')->get();
                 $qaSubStatusListVal = Helpers::qaSubStatusList();
                 $arActionListVal = Helpers::arActionList();
-                return view('QAProduction/qaClientAutoClose', compact('autoCloseProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount'));
+                $qaClassificationVal = Helpers::qaClassification();
+                $qaCategoryVal = Helpers::qaCategory();
+                $qaScopeVal = Helpers::qaScope();
+                return view('QAProduction/qaClientAutoClose', compact('autoCloseProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -1277,7 +1293,10 @@ class QAProductionController extends Controller
                 $popupQAEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('user_type',  $dept)->where('field_type', 'editable')->where('field_type_3', 'popup_visible')->get();
                 $qaSubStatusListVal = Helpers::qaSubStatusList();
                 $arActionListVal = Helpers::arActionList();
-                return view('QAProduction/qaClientUnAssignedTab', compact('unAssignedProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount'));
+                $qaClassificationVal = Helpers::qaClassification();
+                $qaCategoryVal = Helpers::qaCategory();
+                $qaScopeVal = Helpers::qaScope();
+                return view('QAProduction/qaClientUnAssignedTab', compact('unAssignedProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -1338,6 +1357,7 @@ class QAProductionController extends Controller
                 $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                     return !in_array($column, $columnsToExclude);
                 });
+                array_push($columnsHeader,'aging','aging_range');
             }
            $modelName = Str::studly($table_name);
            $modelClass = "App\\Models\\" . $modelName;
@@ -1382,7 +1402,12 @@ class QAProductionController extends Controller
             $popupQAEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('user_type',  10)->where('field_type', 'editable')->where('field_type_3', 'popup_visible')->get();
             $qaSubStatusListVal = Helpers::qaSubStatusList();
             $qaStatusList = Helpers::qaStatusList();
-             return view('QAProduction/qaRebuttalTab',compact('rebuttalProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','existingCallerChartsWorkLogs','popUpHeader','popupNonEditableFields','popupEditableFields','popupQAEditableFields','qaSubStatusListVal','unAssignedCount','qaStatusList','rebuttalCount','autoCloseCount'));
+            $arStatusList = Helpers::arStatusList();
+            $arActionListVal = Helpers::arActionList();
+            $qaClassificationVal = Helpers::qaClassification();
+            $qaCategoryVal = Helpers::qaCategory();
+            $qaScopeVal = Helpers::qaScope();
+             return view('QAProduction/qaRebuttalTab',compact('rebuttalProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','existingCallerChartsWorkLogs','popUpHeader','popupNonEditableFields','popupEditableFields','popupQAEditableFields','qaSubStatusListVal','unAssignedCount','qaStatusList','rebuttalCount','autoCloseCount','arStatusList','arActionListVal','qaClassificationVal','qaCategoryVal','qaScopeVal'));
 
        } catch (\Exception $e) {
            log::debug($e->getMessage());
@@ -1392,38 +1417,81 @@ class QAProductionController extends Controller
    }
 }
 
- public function qaRebuttalUpdate(Request $request) {
-    if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
-        try {
-            $decodedProjectName = Helpers::encodeAndDecodeID($request->clientName, 'decode');
-            $decodedPracticeName =  $request->subProjectName == '--' ? NULL : Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
-            $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
-            $decodedsubProjectName = $decodedPracticeName == NULL ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
-            $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
-            $modelName = Str::studly($table_name);
-            $originalModelClass = "App\\Models\\" . $modelName;
-            $modelClass = "App\\Models\\" . $modelName.'Datas';
-            $datasRecord = $modelClass::where('parent_id', $request->parentId)->orderBy('id','desc')->first();
-            $record = $originalModelClass::where('id', $request->parentId)->first();
-            if($request->qa_manager_rebuttal_status == 'agree') {
-                $chargeStatus  = 'QA_Completed';
-                $qaErrorCount = 1;
-                $arErrorCount = $datasRecord['coder_error_count'];
-             } else {
-                 $chargeStatus =  'QA_Completed';
-                 $arErrorCount = $datasRecord['coder_error_count'] + 1;
-                 $qaErrorCount = NULL;
-             }
-            $datasRecord->update( ['chart_status' => $chargeStatus,'coder_error_count' => $arErrorCount,'qa_error_count' => $qaErrorCount,'qa_manager_rebuttal_status' => $request->qa_manager_rebuttal_status,'qa_manager_rebuttal_comments' => $request->qa_manager_rebuttal_comments] );
-            $record->update( ['chart_status' => $chargeStatus,'coder_error_count' => $arErrorCount,'qa_error_count' => $qaErrorCount,'qa_manager_rebuttal_status' => $request->qa_manager_rebuttal_status,'qa_manager_rebuttal_comments' => $request->qa_manager_rebuttal_comments] );
+    public function qaRebuttalUpdate(Request $request) {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+            try {
+                $decodedProjectName = Helpers::encodeAndDecodeID($request->clientName, 'decode');
+                $decodedPracticeName =  $request->subProjectName == '--' ? NULL : Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $decodedsubProjectName = $decodedPracticeName == NULL ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
+                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
+                $modelName = Str::studly($table_name);
+                $originalModelClass = "App\\Models\\" . $modelName;
+                $modelClass = "App\\Models\\" . $modelName.'Datas';
+                $datasRecord = $modelClass::where('parent_id', $request->parentId)->orderBy('id','desc')->first();
+                $record = $originalModelClass::where('id', $request->parentId)->first();
+                if($request->qa_manager_rebuttal_status == 'agree') {
+                    $chargeStatus  = 'QA_Completed';
+                    $qaErrorCount = 1;
+                    $arErrorCount = $datasRecord['coder_error_count'];
+                } else {
+                    $chargeStatus =  'QA_Completed';
+                    $arErrorCount = $datasRecord['coder_error_count'] + 1;
+                    $qaErrorCount = NULL;
+                }
+                $datasRecord->update( ['chart_status' => $chargeStatus,'coder_error_count' => $arErrorCount,'qa_error_count' => $qaErrorCount,'qa_manager_rebuttal_status' => $request->qa_manager_rebuttal_status,'qa_manager_rebuttal_comments' => $request->qa_manager_rebuttal_comments] );
+                $record->update( ['chart_status' => $chargeStatus,'coder_error_count' => $arErrorCount,'qa_error_count' => $qaErrorCount,'qa_manager_rebuttal_status' => $request->qa_manager_rebuttal_status,'qa_manager_rebuttal_comments' => $request->qa_manager_rebuttal_comments] );
 
-            return response()->json(['success' => true]);
-        } catch (\Exception $e) {
-            log::debug($e->getMessage());
+                return response()->json(['success' => true]);
+            } catch (\Exception $e) {
+                log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
         }
-    } else {
-        return redirect('/');
     }
-}
+
+    public static function qaClassCatScope(Request $request) {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+            try {
+                $data = qaClassCatScope::where('status_code_id', $request['status_code_id'])->where('sub_status_code_id', $request['sub_status_code_id'])->first();
+                $html = '<div class="col-md-4">                                
+                                <div class="form-group row">
+                                    <label class="col-md-12">
+                                       Classification
+                                    </label>    
+                                     <div class="col-md-10">
+                                     <input type="hidden" name="qa_classification" value='.$data->id.'>
+                                     <label style="background-color:#F3F3F3 !important">'.$data->qa_classification.'</label></div>                                
+                                </div>
+                        </div>
+                        <div class="col-md-4">                                
+                                <div class="form-group row">
+                                    <label class="col-md-12">
+                                       Category
+                                    </label>    
+                                     <div class="col-md-10">
+                                         <input type="hidden" name="qa_category" value='.$data->id.'>
+                                     <label style="background-color:#F3F3F3 !important">'.$data->qa_category.'</label></div>                                
+                                </div>
+                        </div>
+                        <div class="col-md-4">                                
+                                <div class="form-group row">
+                                    <label class="col-md-12">
+                                       Scope
+                                    </label>    
+                                     <div class="col-md-10">
+                                         <input type="hidden" name="qa_scope" value='.$data->id.'>
+                                     <label style="background-color:#F3F3F3 !important">'.$data->qa_scope.'</label></div>                                
+                                </div>
+                        </div>';
+                return response()->json(["success" => true,"html"=>$html]);
+            } catch (\Exception $e) {
+                log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
 
 }

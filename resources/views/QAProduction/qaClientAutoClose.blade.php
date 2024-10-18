@@ -292,7 +292,34 @@ use Carbon\Carbon;
 
                                                                     @endphp
                                                                     {{ $columnValue == null ? $columnValue :  $subStatusCode['sub_status_code'] }}
-                                                                @elseif ($columnName == 'aging')                                                                                  
+                                                                    @elseif ($columnName == 'qa_classification')
+                                                                        @php
+                                                                            if($columnValue != null) {
+                                                                            $qaClassification = App\Http\Helper\Admin\Helpers::qaClassificationById($columnValue);
+                                                                        } else {
+                                                                            $qaClassification = '';
+                                                                        }
+                                                                        @endphp
+                                                                        {{ $columnValue == null ? $columnValue :  $qaClassification['qa_classification'] }} 
+                                                                    @elseif ($columnName == 'qa_category')
+                                                                        @php
+                                                                            if($columnValue != null) {
+                                                                            $qaCategory = App\Http\Helper\Admin\Helpers::qaCategoryById($columnValue);
+                                                                        } else {
+                                                                            $qaCategory = '';
+                                                                        }
+                                                                        @endphp
+                                                                        {{ $columnValue == null ? $columnValue :  $qaCategory['qa_category'] }}
+                                                                    @elseif ($columnName == 'qa_scope')
+                                                                        @php
+                                                                            if($columnValue != null) {
+                                                                            $qaScope = App\Http\Helper\Admin\Helpers::qaScopeById($columnValue);
+                                                                        } else {
+                                                                            $qaScope = '';
+                                                                        }
+                                                                        @endphp
+                                                                        {{ $columnValue == null ? $columnValue :  $qaScope['qa_scope'] }}
+                                                                    @elseif ($columnName == 'aging')                                                                                  
                                                                     {{ $agingCount }}
                                                                 @elseif ($columnName == 'aging_range')
                                                                     {{ $agingRange }}
@@ -848,6 +875,7 @@ use Carbon\Carbon;
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="row" id="qa_class_cat_scope" ></div>
                                         <hr>
                                         <div class="row mt-4">
                                             <div class="col-md-12">
@@ -1243,6 +1271,9 @@ use Carbon\Carbon;
             var qaStatusList = @json( $qaStatusList);
             var arStatusList = @json( $arStatusList);
             var arActionList = @json($arActionListVal);
+            var qaClassification = @json($qaClassificationVal);
+            var qaCategory = @json($qaCategoryVal);
+            var qaScope = @json($qaScopeVal);
             var prevValues;
             $("#expandButton").click(function() {
                 var modalContent = $(".modal-content");
@@ -1804,6 +1835,7 @@ use Carbon\Carbon;
                             if (header == 'QA_sub_status_code') {
                                 statusVal = $('#status_val').val();
                                 subStatus(statusVal,value);
+                                classCatScope(statusVal,value);
                             }
                             if (header == 'coder_rework_status') {
                                 $('label[id="coder_rework_status"]').text(value);
@@ -1879,10 +1911,36 @@ use Carbon\Carbon;
                             opacity: 0.1,
                             message: 'Fetching...',
                         });
+                        $('#qa_class_cat_scope').html('');
                     subStatus(status_code_id,'');
                     KTApp.unblock('#myModal_status');
                 });
-
+                function classCatScope(status_code_id,sub_status_code_id){
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ url('qa_production/qa_class_cat_scope') }}",
+                        data: {
+                            status_code_id: status_code_id,
+                            sub_status_code_id: sub_status_code_id
+                        },
+                        success: function(res) {
+                            if(res.success == true){
+                              
+                               $('#qa_class_cat_scope').html(res.html);
+                            }                   
+                        }
+                    })
+                };
+                $(document).on('change', '#qa_sub_status', function() {
+                    var status_code_id = $('#qa_status').val();
+                    var sub_status_code_id = $(this).val();
+                    classCatScope(status_code_id,sub_status_code_id);                  
+                });
             $(document).on('click', '.clickable-view', function(e) {
                 $('#myModal_status').modal('hide');
                 var record_id = $(this).closest('tr').find('#table_id').text();
@@ -1993,6 +2051,11 @@ use Carbon\Carbon;
                                             statusName = val;
                                         }
                                     });
+                                    if(statusName == '') {
+                                        $('label[id="ar_status_label"]').css('display','none');
+                                    } else {
+                                        $('label[id="ar_status_label"]').css('display','block');
+                                    }
                                     $('label[id="ar_status_view"]').text(statusName);
                                }
                                 if (header == 'ar_action_code') {
@@ -2002,9 +2065,56 @@ use Carbon\Carbon;
                                             subStatusName = val;
                                         }
                                     });
+                                    if(subStatusName == '') {
+                                        $('label[id="ar_action_label"]').css('display','none');
+                                    } else {
+                                        $('label[id="ar_action_label"]').css('display','block');
+                                    }
                                     $('label[id="ar_action_view"]').text(subStatusName);
 
                                 }
+                                if (header == 'qa_classification') {
+                                var qa_classification = '';
+                                $.each(qaClassification, function(key, val) {      
+                                    if (value == key) {
+                                        qa_classification = val;
+                                    }
+                                });
+                                if(qa_classification == '') {
+                                    $('label[id="qa_classification_label"]').css('display','none');
+                                } else {
+                                    $('label[id="qa_classification_label"]').css('display','block');
+                                }
+                                $('label[id="qa_classification_view"]').text(qa_classification);
+                            }
+                            if (header == 'qa_category') {
+                                var qa_category = '';
+                                $.each(qaCategory, function(key, val) {      
+                                    if (value == key) {
+                                        qa_category = val;
+                                    }
+                                });
+                                if(qa_category == '') {
+                                    $('label[id="qa_category_label"]').css('display','none');
+                                } else {
+                                    $('label[id="qa_category_label"]').css('display','block');
+                                }
+                                $('label[id="qa_category_view"]').text(qa_category);
+                            }
+                            if (header == 'qa_scope') {
+                                var qa_scope = '';
+                                $.each(qaScope, function(key, val) {      
+                                    if (value == key) {
+                                        qa_scope = val;
+                                    }
+                                });
+                                if(qa_scope == '') {
+                                    $('label[id="qa_scope_label"]').css('display','none');
+                                } else {
+                                    $('label[id="qa_scope_label"]').css('display','block');
+                                }
+                                $('label[id="qa_scope_view"]').text(qa_scope);
+                            }
                                 if (header == 'coder_rework_status') {
                                    $('label[id="coder_rework_status_view"]').text(value);
                                     if (value !== null) {

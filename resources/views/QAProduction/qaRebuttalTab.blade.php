@@ -1,4 +1,7 @@
 @extends('layouts.app3')
+@php
+use Carbon\Carbon;
+@endphp
 @section('content')
     <div class="card card-custom custom-card">
         <div class="card-body p-0">
@@ -181,12 +184,17 @@
                             <tbody>
                                 @if (isset($rebuttalProjectDetails))
                                     @foreach ($rebuttalProjectDetails as $data)
+                                        @php
+                                            $arrayAttrributes = $data->getAttributes();
+                                            $arrayAttrributes['aging']= null; 
+                                            $arrayAttrributes['aging_range']= null;                                       
+                                        @endphp
                                         <tr>
                                             <td>
                                                 <button class="task-start clickable-view" title="View"><i
                                                         class="fa far fa-eye text-eye icon-circle1 mt-0"></i></button>
                                             </td>
-                                            @foreach ($data->getAttributes() as $columnName => $columnValue)
+                                            @foreach ($arrayAttrributes as $columnName => $columnValue)
                                                 @php
                                                     $columnsToExclude = [
                                                         'QA_emp_id',
@@ -215,6 +223,29 @@
                                                         'updated_at',
                                                         'deleted_at',
                                                     ];
+                                                    if(isset($arrayAttrributes['dos'])) {          
+                                                        $dosDate = Carbon::parse($arrayAttrributes['dos']);
+                                                        $currentDate = Carbon::now();
+                                                        $agingCount = $dosDate->diffInDays($currentDate);
+                                                        if ($agingCount <= 30) {
+                                                            $agingRange = '0-30';
+                                                        } elseif ($agingCount <= 60) {
+                                                            $agingRange ='31-60';
+                                                        } elseif ($agingCount <= 90) {
+                                                            $agingRange = '61-90';
+                                                        } elseif ($agingCount <= 120) {
+                                                            $agingRange = '91-120';
+                                                        } elseif ($agingCount <= 180) {
+                                                            $agingRange = '121-180';
+                                                        } elseif ($agingCount <= 365) {
+                                                            $agingRange = '181-365';
+                                                        } else {
+                                                            $agingRange = '365+';
+                                                        }
+                                                    } else {
+                                                        $agingCount = '--';
+                                                        $agingRange = '--';
+                                                    }
                                                 @endphp
                                                 @if (!in_array($columnName, $columnsToExclude))
                                                     @if ($columnName != 'id')
@@ -245,6 +276,37 @@
                                                                     }
                                                                 @endphp
                                                                 {{ $columnValue == null ? $columnValue : $subStatusCode['sub_status_code'] }}
+                                                            @elseif ($columnName == 'qa_classification')
+                                                                @php
+                                                                    if($columnValue != null) {
+                                                                    $qaClassification = App\Http\Helper\Admin\Helpers::qaClassificationById($columnValue);
+                                                                } else {
+                                                                    $qaClassification = '';
+                                                                }
+                                                                @endphp
+                                                                {{ $columnValue == null ? $columnValue :  $qaClassification['qa_classification'] }} 
+                                                            @elseif ($columnName == 'qa_category')
+                                                                @php
+                                                                    if($columnValue != null) {
+                                                                    $qaCategory = App\Http\Helper\Admin\Helpers::qaCategoryById($columnValue);
+                                                                } else {
+                                                                    $qaCategory = '';
+                                                                }
+                                                                @endphp
+                                                                {{ $columnValue == null ? $columnValue :  $qaCategory['qa_category'] }}
+                                                            @elseif ($columnName == 'qa_scope')
+                                                                @php
+                                                                    if($columnValue != null) {
+                                                                    $qaScope = App\Http\Helper\Admin\Helpers::qaScopeById($columnValue);
+                                                                } else {
+                                                                    $qaScope = '';
+                                                                }
+                                                                @endphp
+                                                                {{ $columnValue == null ? $columnValue :  $qaScope['qa_scope'] }}  
+                                                            @elseif ($columnName == 'aging')                                                                                  
+                                                                {{ $agingCount }}
+                                                              @elseif ($columnName == 'aging_range')
+                                                                  {{ $agingRange }}  
                                                             @else
                                                                 @if ($columnName == 'chart_status' && str_contains($columnValue, 'CE_'))
                                                                     {{ str_replace('CE_', '', $columnValue) }}
@@ -397,6 +459,26 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="row mt-4">
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-md-12" id="ar_status_label">
+                                                        Status Code
+                                                    </label>
+                                                    <label class="col-md-12 pop-non-edt-val" id="ar_status_view">
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-md-12" id="ar_action_label">
+                                                        Action Code
+                                                    </label>
+                                                    <label class="col-md-12 pop-non-edt-val" id="ar_action_view">
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <hr>
                                         <h6 class="title-h6">QA</h6>&nbsp;&nbsp;
                                         <div class="row mt-4">
@@ -419,7 +501,33 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group row">
+                                                    <label class="col-md-12" id="qa_classification_label">
+                                                        Classification
+                                                    </label>
+                                                    <label class="col-md-12 pop-non-edt-val" id="qa_classification_view"></label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group row">
+                                                    <label class="col-md-12" id="qa_category_label">
+                                                        Category
+                                                    </label>
+                                                    <label class="col-md-12 pop-non-edt-val" id="qa_category_view"></label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group row">
+                                                    <label class="col-md-12" id="qa_scope_label">
+                                                        Scope
+                                                    </label>
+                                                    <label class="col-md-12 pop-non-edt-val" id="qa_scope_view"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                       
                                         <div class="row mt-4" id="reworkNotesDiv">
                                             <div class="col-md-12">
                                                 <div class="form-group row">
@@ -558,7 +666,11 @@
         $(document).ready(function() {
             var qaSubStatusList = @json($qaSubStatusListVal);
             var qaStatusList = @json($qaStatusList);
-
+            var arStatusList = @json( $arStatusList);
+            var arActionList = @json($arActionListVal);
+            var qaClassification = @json($qaClassificationVal);
+            var qaCategory = @json($qaCategoryVal);
+            var qaScope = @json($qaScopeVal);
             function getUrlParam(param) {
                 const urlParams = new URLSearchParams(window.location.search);
                 return urlParams.get(param);
@@ -638,10 +750,38 @@
             }
             $(document).on('change', '#qa_status', function() {
                 var status_code_id = $(this).val();
+                $('#qa_class_cat_scope').html('');
                 subStatus(status_code_id, '');
             });
 
-
+             function classCatScope(status_code_id,sub_status_code_id){
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ url('qa_production/qa_class_cat_scope') }}",
+                        data: {
+                            status_code_id: status_code_id,
+                            sub_status_code_id: sub_status_code_id
+                        },
+                        success: function(res) {
+                            if(res.success == true){
+                              
+                               $('#qa_class_cat_scope').html(res.html);
+                            }                   
+                        }
+                    })
+                };
+                $(document).on('change', '#qa_sub_status', function() {
+                    // $('#qa_class_cat_scope').css('display', 'block');
+                    var status_code_id = $('#qa_status').val();
+                    var sub_status_code_id = $(this).val();
+                    classCatScope(status_code_id,sub_status_code_id);
+                  
+                });
             $(document).on('click', '.clickable-view', function(e) {
                 $('#myModal_status').modal('hide');
                 var record_id = $(this).closest('tr').find('#table_id').text();
@@ -737,12 +877,85 @@
                                 });
                                 $('label[id="qa_sub_status_view"]').text(subStatusName);
                             }
+                            if (header == 'ar_status_code') {
+                                var statusName = '';
+                                    $.each(arStatusList, function(key, val) {
+                                        if (value == key) {
+                                            statusName = val;
+                                        }
+                                    });
+                                    if(statusName == '') {
+                                        $('label[id="ar_status_label"]').css('display','none');
+                                    } else {
+                                        $('label[id="ar_status_label"]').css('display','block');
+                                    }
+                                    $('label[id="ar_status_view"]').text(statusName);
+                               }
+                            if (header == 'ar_action_code') {
+                                var subStatusName = '';
+                                $.each(arActionList, function(key, val) {
+                                    if (value == key) {
+                                        subStatusName = val;
+                                    }
+                                });
+                                if(subStatusName == '') {
+                                    $('label[id="ar_action_label"]').css('display','none');
+                                } else {
+                                    $('label[id="ar_action_label"]').css('display','block');
+                                }
+                                $('label[id="ar_action_view"]').text(subStatusName);
+
+                            }
+                            if (header == 'qa_classification') {
+                                var qa_classification = '';
+                                $.each(qaClassification, function(key, val) {      
+                                    if (value == key) {
+                                        qa_classification = val;
+                                    }
+                                });
+                                if(qa_classification == '') {
+                                    $('label[id="qa_classification_label"]').css('display','none');
+                                } else {
+                                    $('label[id="qa_classification_label"]').css('display','block');
+                                }
+                                $('label[id="qa_classification_view"]').text(qa_classification);
+                            }
+                            if (header == 'qa_category') {
+                                var qa_category = '';
+                                $.each(qaCategory, function(key, val) {      
+                                    if (value == key) {
+                                        qa_category = val;
+                                    }
+                                });
+                                if(qa_category == '') {
+                                    $('label[id="qa_category_label"]').css('display','none');
+                                } else {
+                                    $('label[id="qa_category_label"]').css('display','block');
+                                }
+                                $('label[id="qa_category_view"]').text(qa_category);
+                            }
+                            if (header == 'qa_scope') {
+                                var qa_scope = '';
+                                $.each(qaScope, function(key, val) {      
+                                    if (value == key) {
+                                        qa_scope = val;
+                                    }
+                                });
+                                if(qa_scope == '') {
+                                    $('label[id="qa_scope_label"]').css('display','none');
+                                } else {
+                                    $('label[id="qa_scope_label"]').css('display','block');
+                                }
+                                $('label[id="qa_scope_view"]').text(qa_scope);
+                            }
                             if (header == 'QA_rework_comments') {
                                 $('label[id="qa_rework_comments_view"]').text(value);
                                 if (value !== '') {
                                     $('#reworkNotesDiv').css('display','block');
+                                    $('#qa_rework_comments_label').css('display','block');
                                 } else {
                                     $('#reworkNotesDiv').css('display','none');
+                                    $('#qa_rework_comments_label').css('display','none');
                                 }
                             }
                             if (header == 'qa_manager_rebuttal_status') {

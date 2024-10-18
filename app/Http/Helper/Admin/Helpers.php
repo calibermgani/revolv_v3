@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Session;
 use GuzzleHttp\Client;
 use App\Models\ARStatusCodes;
 use App\Models\ARActionCodes;
+use App\Models\qaClassCatScope;
 
 class Helpers
 {
@@ -691,5 +692,35 @@ class Helpers
 		$data = ARActionCodes::where('status', 'Active')->where('id', $id)->first('action_code');
 		return $data;
 	}
+	public static function qaClassificationById($id)
+	{
+		$data = qaClassCatScope::where('status', 'Active')->where('id', $id)->first('qa_classification');
+		return $data;
+	}
+	public static function qaCategoryById($id)
+	{
+		$data = qaClassCatScope::where('status', 'Active')->where('id', $id)->first('qa_category');
+		return $data;
+	}
+	public static function qaScopeById($id)
+	{
+		$data = qaClassCatScope::where('status', 'Active')->where('id', $id)->first('qa_scope');
+		return $data;
+	}
+	public static function qaClassification()
+	{
+		$data = qaClassCatScope::where('status', 'Active')->pluck('qa_classification', 'id')->toArray();
+		return $data;
+	}
+	public static function qaCategory()
+	{
+		$data = qaClassCatScope::where('status', 'Active')->pluck('qa_category', 'id')->toArray();
+		return $data;
+	}
 
+	public static function qaScope()
+	{
+		$data = qaClassCatScope::where('status', 'Active')->pluck('qa_scope', 'id')->toArray();
+		return $data;
+	}
 }

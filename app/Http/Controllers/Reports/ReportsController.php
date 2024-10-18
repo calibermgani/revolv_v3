@@ -193,6 +193,27 @@ class ReportsController extends Controller
                                 $data;
                             }
                         }
+                        if ($header == 'qa_classification') {
+                            if ($data != '--') {
+                                $data = Helpers::qaClassificationById($data)['qa_classification'];
+                            } else {
+                                $data;
+                            }
+                        }
+                        if ($header == 'qa_category') {
+                            if ($data != '--') {
+                                $data = Helpers::qaCategoryById($data)['qa_category'];
+                            } else {
+                                $data;
+                            }
+                        }
+                        if ($header == 'qa_scope') {
+                            if ($data != '--') {
+                                $data = Helpers::qaScopeById($data)['qa_scope'];
+                            } else {
+                                $data;
+                            }
+                        }
 
                         if ($header === 'chart_status') {
                             //$data = str_replace('_', ' ', $row->{'record_status'});

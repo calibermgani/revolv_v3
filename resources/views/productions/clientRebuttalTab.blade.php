@@ -309,6 +309,33 @@ use Carbon\Carbon;
                                                                     }
                                                                 @endphp
                                                                 {{ $columnValue == null ? $columnValue : $subStatusCode['sub_status_code'] }}
+                                                            @elseif ($columnName == 'qa_classification')
+                                                                @php
+                                                                    if($columnValue != null) {
+                                                                        $qaClassification = App\Http\Helper\Admin\Helpers::qaClassificationById($columnValue);
+                                                                    } else {
+                                                                        $qaClassification = '';
+                                                                    }
+                                                                @endphp
+                                                                {{ $columnValue == null ? $columnValue :  $qaClassification['qa_classification'] }} 
+                                                            @elseif ($columnName == 'qa_category')
+                                                                @php
+                                                                    if($columnValue != null) {
+                                                                        $qaCategory = App\Http\Helper\Admin\Helpers::qaCategoryById($columnValue);
+                                                                    } else {
+                                                                        $qaCategory = '';
+                                                                    }
+                                                                @endphp
+                                                                {{ $columnValue == null ? $columnValue :  $qaCategory['qa_category'] }}
+                                                            @elseif ($columnName == 'qa_scope')
+                                                                @php
+                                                                    if($columnValue != null) {
+                                                                        $qaScope = App\Http\Helper\Admin\Helpers::qaScopeById($columnValue);
+                                                                    } else {
+                                                                        $qaScope = '';
+                                                                    }
+                                                                @endphp
+                                                                {{ $columnValue == null ? $columnValue :  $qaScope['qa_scope'] }}  
                                                             @elseif ($columnName == 'aging')                                                                                  
                                                                 {{ $agingCount }}
                                                             @elseif ($columnName == 'aging_range')
@@ -507,7 +534,32 @@ use Carbon\Carbon;
                                                 </div>
                                             </div>
                                         </div>
-                                      
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group row">
+                                                    <label class="col-md-12" id="qa_classification_label">
+                                                        Classification
+                                                    </label>
+                                                    <label class="col-md-12 pop-non-edt-val" id="qa_classification_view"></label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group row">
+                                                    <label class="col-md-12" id="qa_category_label">
+                                                        Category
+                                                    </label>
+                                                    <label class="col-md-12 pop-non-edt-val" id="qa_category_view"></label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group row">
+                                                    <label class="col-md-12" id="qa_scope_label">
+                                                        Scope
+                                                    </label>
+                                                    <label class="col-md-12 pop-non-edt-val" id="qa_scope_view"></label>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="row mt-4" id="reworkNotesDiv">
                                             <div class="col-md-12">
                                                 <div class="form-group row">
@@ -644,6 +696,9 @@ use Carbon\Carbon;
             var qaStatusList = @json($qaStatusList);
             var arStatusList = @json( $arStatusList);
             var arActionList = @json($arActionListVal);
+            var qaClassification = @json($qaClassificationVal);
+            var qaCategory = @json($qaCategoryVal);
+            var qaScope = @json($qaScopeVal);
             function getUrlParam(param) {
                 const urlParams = new URLSearchParams(window.location.search);
                 return urlParams.get(param);
@@ -850,6 +905,48 @@ use Carbon\Carbon;
                                 }
                                 $('label[id="ar_action_view"]').text(subStatusName);
 
+                            }
+                            if (header == 'qa_classification') {
+                                var qa_classification = '';
+                                $.each(qaClassification, function(key, val) {      
+                                    if (value == key) {
+                                        qa_classification = val;
+                                    }
+                                });
+                                if(qa_classification == '') {
+                                    $('label[id="qa_classification_label"]').css('display','none');
+                                } else {
+                                    $('label[id="qa_classification_label"]').css('display','block');
+                                }
+                                $('label[id="qa_classification_view"]').text(qa_classification);
+                            }
+                            if (header == 'qa_category') {
+                                var qa_category = '';
+                                $.each(qaCategory, function(key, val) {      
+                                    if (value == key) {
+                                        qa_category = val;
+                                    }
+                                });
+                                if(qa_category == '') {
+                                    $('label[id="qa_category_label"]').css('display','none');
+                                } else {
+                                    $('label[id="qa_category_label"]').css('display','block');
+                                }
+                                $('label[id="qa_category_view"]').text(qa_category);
+                            }
+                            if (header == 'qa_scope') {
+                                var qa_scope = '';
+                                $.each(qaScope, function(key, val) {      
+                                    if (value == key) {
+                                        qa_scope = val;
+                                    }
+                                });
+                                if(qa_scope == '') {
+                                    $('label[id="qa_scope_label"]').css('display','none');
+                                } else {
+                                    $('label[id="qa_scope_label"]').css('display','block');
+                                }
+                                $('label[id="qa_scope_view"]').text(qa_scope);
                             }
                             if (header == 'QA_rework_comments') {
                                 $('label[id="qa_rework_comments_view"]').text(value);
