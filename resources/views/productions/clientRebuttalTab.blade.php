@@ -454,6 +454,26 @@ use Carbon\Carbon;
                                             @endif
                                             @endforeach
                                             @endif
+                                            <div class="row mt-4">
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-md-12" id="ar_status_label">
+                                                            Status Code
+                                                        </label>
+                                                        <label class="col-md-12 pop-non-edt-val" id="ar_status_view">
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-md-12" id="ar_action_label">
+                                                            Action Code
+                                                        </label>
+                                                        <label class="col-md-12 pop-non-edt-val" id="ar_action_view">
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         <div class="row mt-4">
                                             <div class="col-md-6">
                                                 <div class="form-group row">
