@@ -2252,8 +2252,8 @@ use Carbon\Carbon;
                             $('#chart_status').text() == "Assigned" ? $('#qa_sub_status_label').css('display','none') : $('#qa_sub_status_label').css('display','block');
                             $('#chart_status').text() == "Assigned" ? $('#qa_status_view').css('display','none') : $('#qa_status_view').css('display','block');
                             $('#chart_status').text() == "Assigned" ? $('#qa_sub_status_view').css('display','none') : $('#qa_sub_status_view').css('display','block');
-                            $('#chart_status').text() == "Assigned" ? $('#qa_classification_label').css('display','none') : $('#qa_classification_label').css('display','block');
-                            $('#chart_status').text() == "Assigned" ? $('#qa_classification_view').css('display','none') : $('#qa_classification_view').css('display','block');
+                            // $('#chart_status').text() == "Assigned" ? $('#qa_classification_label').css('display','none') : $('#qa_classification_label').css('display','block');
+                            // $('#chart_status').text() == "Assigned" ? $('#qa_classification_view').css('display','none') : $('#qa_classification_view').css('display','block');
                             $('#chart_status').text() == "Assigned" ? $('#qa_category_label').css('display','none') : $('#qa_category_label').css('display','block');
                             $('#chart_status').text() == "Assigned" ? $('#qa_category_view').css('display','none') : $('#qa_category_view').css('display','block');
                             $('#chart_status').text() == "Assigned" ? $('#qa_scope_label').css('display','none') : $('#qa_scope_label').css('display','block');
@@ -2289,7 +2289,7 @@ use Carbon\Carbon;
                                     }
                                 });
                                 
-                                if(qa_classification == ' ') {
+                                if(qa_classification == '') {console.log(qa_classification,'qa_classification');
                                     $('label[id="qa_classification_label"]').css('display','none');
                                 } else {
                                     $('label[id="qa_classification_label"]').css('display','block');
