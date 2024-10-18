@@ -2160,12 +2160,12 @@ use Carbon\Carbon;
                             $('#chart_status').text() == "Assigned" ? $('#qa_sub_status_label').css('display','none') : $('#qa_sub_status_label').css('display','block');
                             $('#chart_status').text() == "Assigned" ? $('#qa_status_view').css('display','none') : $('#qa_status_view').css('display','block');
                             $('#chart_status').text() == "Assigned" ? $('#qa_sub_status_view').css('display','none') : $('#qa_sub_status_view').css('display','block');
-                            $('#chart_status').text() == "Assigned" ? $('#qa_classification_label').css('display','none') : $('#qa_classification_label').css('display','block');
-                            $('#chart_status').text() == "Assigned" ? $('#qa_classification_view').css('display','none') : $('#qa_classification_view').css('display','block');
-                            $('#chart_status').text() == "Assigned" ? $('#qa_category_label').css('display','none') : $('#qa_category_label').css('display','block');
-                            $('#chart_status').text() == "Assigned" ? $('#qa_category_view').css('display','none') : $('#qa_category_view').css('display','block');
-                            $('#chart_status').text() == "Assigned" ? $('#qa_scope_label').css('display','none') : $('#qa_scope_label').css('display','block');
-                            $('#chart_status').text() == "Assigned" ? $('#qa_scope_view').css('display','none') : $('#qa_scope_view').css('display','block');
+                            // $('#chart_status').text() == "Assigned" ? $('#qa_classification_label').css('display','none') : $('#qa_classification_label').css('display','block');
+                            // $('#chart_status').text() == "Assigned" ? $('#qa_classification_view').css('display','none') : $('#qa_classification_view').css('display','block');
+                            // $('#chart_status').text() == "Assigned" ? $('#qa_category_label').css('display','none') : $('#qa_category_label').css('display','block');
+                            // $('#chart_status').text() == "Assigned" ? $('#qa_category_view').css('display','none') : $('#qa_category_view').css('display','block');
+                            // $('#chart_status').text() == "Assigned" ? $('#qa_scope_label').css('display','none') : $('#qa_scope_label').css('display','block');
+                            // $('#chart_status').text() == "Assigned" ? $('#qa_scope_view').css('display','none') : $('#qa_scope_view').css('display','block');
 
                             if (header == 'QA_status_code') {
                                 var statusName = '';
@@ -2259,7 +2259,7 @@ use Carbon\Carbon;
                                 }
                                 if (header == 'coder_rework_status') {
                                    $('label[id="coder_rework_status_view"]').text(value);
-                                    if (value !== null) {
+                                   if (value !== null && value !== '') {
                                         $('#coder_rework_status_label_view').css('display','block');
                                         $('#coder_rework_status_view').css('display','block');
                                     } else {
@@ -2270,7 +2270,7 @@ use Carbon\Carbon;
                                 if (header == 'coder_rework_reason') {
 
                                     $('label[id="coder_rework_reason_view"]').text(value);
-                                    if (value !== null) {
+                                    if (value !== null && value !== '') {
                                         $('#coder_rework_reason_label_view').css('display','block');
                                         $('#coder_rework_reason_view').css('display','block');
                                         $('#hr_view').css('display','block');
@@ -2282,7 +2282,7 @@ use Carbon\Carbon;
                                 }
                                 if (header == 'QA_rework_comments') {
                                         $('label[id="QA_rework_comments_view"]').text(value);
-                                        if (value !== null) {
+                                        if (value !== null && value !== '') {
                                             $('#QA_rework_comments_label_view').css('display','block');
                                             $('#QA_rework_comments_view').css('display','block');
                                             $('#hr_view').css('display','block');

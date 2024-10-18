@@ -2355,7 +2355,7 @@ use Carbon\Carbon;
                                 }
                                 if (header == 'coder_rework_status') {
                                    $('label[id="coder_rework_status_view"]').text(value);
-                                    if (value !== null) {
+                                   if (value !== null && value !== '') {
                                         $('#coder_rework_status_label_view').css('display','block');
                                         $('#coder_rework_status_view').css('display','block');
                                     } else {
@@ -2366,7 +2366,7 @@ use Carbon\Carbon;
                                 if (header == 'coder_rework_reason') {
 
                                     $('label[id="coder_rework_reason_view"]').text(value);
-                                    if (value !== null) {
+                                    if (value !== null && value !== '') {
                                         $('#coder_rework_reason_label_view').css('display','block');
                                         $('#coder_rework_reason_view').css('display','block');
                                         $('#hr_view').css('display','block');
