@@ -2287,7 +2287,8 @@ use Carbon\Carbon;
                                     if (value == key) {
                                         qa_classification = val;
                                     }
-                                });
+                                });console.log(qa_classification,'qa_classification');
+                                
                                 if(qa_classification == '') {
                                     $('label[id="qa_classification_label"]').css('display','none');
                                 } else {
