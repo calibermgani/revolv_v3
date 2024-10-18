@@ -211,7 +211,7 @@ use Carbon\Carbon;
                 <div class="card-body py-0 px-7">
                     <input type="hidden" value={{ $clientName }} id="clientName">
                     <input type="hidden" value={{ $subProjectName }} id="subProjectName">
-                    <div class="table-responsive pt-5 pb-5">
+                    <div class="table-responsive pt-5">
                         <table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter"
                             id="client_assigned_list" data-order='[[ 0, "desc" ]]'>
                             <thead>
@@ -438,7 +438,14 @@ use Carbon\Carbon;
                             </tbody>
                         </table>
                     </div>
-                    {{$assignedProjectDetails->links()}}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="ml-3">
+                            Showing {{ $assignedProjectDetails->firstItem() != null ? $assignedProjectDetails->firstItem() : 0 }} to {{ $assignedProjectDetails->lastItem() != null ? $assignedProjectDetails->lastItem() : 0 }} of {{ $assignedProjectDetails->total() }} entries
+                        </div>
+                         <div>
+                            {{ $assignedProjectDetails->links() }}
+                        </div>
+                    </div>
                 </div>
 
                 <div class="modal fade modal-first" id="myModal_status" tabindex="-1" role="dialog"
