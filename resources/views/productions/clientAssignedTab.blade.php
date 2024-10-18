@@ -319,6 +319,7 @@ use Carbon\Carbon;
                                             </tbody>
                                         </table>
                                     </div>
+                                    {{$assignedProjectDetails->links()}}
                                 </div>
 
                                 <div class="modal fade modal-first" id="myModal_status" tabindex="-1" role="dialog"
@@ -920,7 +921,9 @@ use Carbon\Carbon;
     .modal-right .modal-content {
         border-radius: 5px;
     }
-
+nav{
+    float: right !important;
+}
 
 
 </style>
@@ -1103,7 +1106,9 @@ use Carbon\Carbon;
                 clientSide: true,
                 lengthChange: false,
                 searching: true,
-                pageLength: 20,
+                paging: false,
+                info: false,
+                // pageLength: 20,
                 scrollCollapse: true,
                 scrollX: true,
                 "initComplete": function(settings, json) {
