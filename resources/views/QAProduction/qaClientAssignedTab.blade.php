@@ -2378,7 +2378,7 @@ use Carbon\Carbon;
                                 }
                                 if (header == 'QA_rework_comments') {
                                         $('label[id="QA_rework_comments_view"]').text(value);
-                                        if (value !== null) {
+                                        if (value !== null && value !== '') {
                                             $('#QA_rework_comments_label_view').css('display','block');
                                             $('#QA_rework_comments_view').css('display','block');
                                             $('#hr_view').css('display','block');
