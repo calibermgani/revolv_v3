@@ -84,12 +84,12 @@ class ProjectAutomationController extends Controller
                     $procodeProjectsCurrent['duplicateCount'] = $duplicateCount;
                     $procodeProjectsCurrent['assignedCount'] = $assignedCount;
                     $procodeProjectsCurrent['unAssignedCount'] = $unAssignedCount;
-                    // $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'inventory exe file to mail id')->first();
-                    // $toMailId = explode(",", $toMail->cc_emails);
-                    $toMailId = "mgani@caliberfocus.com";
-                    $ccMailId = "vijayalaxmi@caliberfocus.com";
-                    // $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'inventory exe file')->first();
-                    // $ccMailId = explode(",", $ccMail->cc_emails);
+                    $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'inventory exe file to mail id')->first();
+                    $toMailId = explode(",", $toMail->cc_emails);
+                    // $toMailId = "mgani@caliberfocus.com";
+                    // $ccMailId = "vijayalaxmi@caliberfocus.com";
+                    $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'inventory exe file')->first();
+                    $ccMailId = explode(",", $ccMail->cc_emails);
 
                     $mailDate = Carbon::now()->format('m/d/Y');
                     $mailHeader = $prjoectName . " - Inventory Upload Successful - " . $mailDate;
