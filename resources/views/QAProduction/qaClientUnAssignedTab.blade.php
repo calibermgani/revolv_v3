@@ -402,6 +402,14 @@ use Carbon\Carbon;
                             </tbody>
                         </table>
                     </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="ml-3">
+                            Showing {{ $unAssignedProjectDetails->firstItem() != null ? $unAssignedProjectDetails->firstItem() : 0 }} to {{ $unAssignedProjectDetails->lastItem() != null ? $unAssignedProjectDetails->lastItem() : 0 }} of {{ $unAssignedProjectDetails->total() }} entries
+                        </div>
+                         <div>
+                            {{ $unAssignedProjectDetails->links() }}
+                        </div>
+                    </div>
                 </div>
 
                 <div class="modal fade modal-first" id="myModal_status" tabindex="-1" role="dialog"
@@ -1592,7 +1600,9 @@ use Carbon\Carbon;
                 clientSide: true,
                 lengthChange: false,
                 searching: true,
-                pageLength: 20,
+                paging: false,
+                info: false,
+                // pageLength: 20,
                 scrollCollapse: true,
                 scrollX: true,
                 "initComplete": function(settings, json) {
