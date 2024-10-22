@@ -293,7 +293,7 @@ class ProjectController extends Controller
                 return response()->json(['error' => 'API request failed'], $response->getStatusCode());
             }
             // $toMailId = $apiData['people_email'];
-            $toMailId = "mgani@caliberfocus.com";
+            $toMailId = "resolvsupport@annexmed.net";
             $reportingPerson = $apiData['reprting_person'];
             $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'project file not there')->first();
             $ccMailId = explode(",", $ccMail->cc_emails);
