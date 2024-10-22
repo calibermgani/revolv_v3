@@ -740,7 +740,7 @@ use Carbon\Carbon;
                                                 <div class="row mt-4">
                                                     <div class="col-md-6">
                                                         <div class="form-group row">
-                                                            <label class="col-md-12 required">
+                                                            <label class="col-md-12">
                                                                 Status Code
                                                             </label>
                                                             @php $arStatusList = App\Http\Helper\Admin\Helpers::arStatusList(); @endphp
@@ -764,7 +764,7 @@ use Carbon\Carbon;
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="form-group row">
-                                                            <label class="col-md-12 required">
+                                                            <label class="col-md-12">
                                                                 Action Code
                                                             </label>
                                                             @php $arActionList = []; @endphp
