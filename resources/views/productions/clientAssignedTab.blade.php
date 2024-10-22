@@ -1074,7 +1074,7 @@ nav{
                 else {
                     div.style.display = 'block';
                 }
-       });
+         });
 
             var countDigits = {{ strlen($assignedCount) }};
             var newWidth = 30 + (countDigits - 1) * 6;
