@@ -163,7 +163,113 @@ use Carbon\Carbon;
                 </div>
             </div>
             <div class="card card-custom custom-top-border">
-
+                <div><span type="button" id="filterExpandButton" class="float-right mr-8 mt-5">
+                    <i class="ki ki-arrow-down icon-nm"></i></span></div>
+                   
+                    <div class="card-body py-0 px-7" id="filter_section" style="display:none">
+                       
+                        @if (count($projectColSearchFields) > 0)
+                            @php $count = 0; @endphp
+                            @foreach ($projectColSearchFields as $key => $data)
+                                @php
+                                $decodedClientName = App\Http\Helper\Admin\Helpers::projectName($data->project_id)->project_name;
+                                $decodedsubProjectName = $data->sub_project_i == NULL ? 'project' :App\Http\Helper\Admin\Helpers::subProjectName($data->project_id,$data->sub_project_id);
+                                    $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
+                                    $modelName = Str::studly($table_name);
+                                    $modelClass = "App\\Models\\" .  $modelName;
+                                    $labelName = ucwords(str_replace(['_else_', '_'], ['/', ' '], $data->column_name));
+                                        $columnName = Str::lower(str_replace([' ', '/'], ['_', '_else_'], $data->column_name));
+                                    $inputType = $data->column_type; $options = null;
+                                if($inputType == 'select') {
+                                    $options = $modelClass::select($columnName)
+                                                ->distinct()
+                                                ->get()
+                                                ->pluck($columnName)
+                                                ->toArray();
+                                                $associativeOptions = [];
+                                                if ($options !== null) {
+                                                    foreach ($options as $option) {
+                                                        $option=trim($option);
+                                                        $associativeOptions[$option] = $option;
+                                                    }
+                                                }
+                                }
+                             $clientName = App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->project_id, 'encode');
+                             $subProjectName = $data->sub_project_id != null ? App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->sub_project_id, 'encode') : '--';
+                                @endphp
+                                 {!! Form::open([
+                                    'url' =>
+                                    url('qa_production/qa_projects_auto_close/' . $clientName . '/' . $subProjectName) .
+                                                    '?parent=' .
+                                                    request()->parent .
+                                                    '&child=' .
+                                                    request()->child,
+                                    'class' => 'form',
+                                    'id' => 'formSearch',
+                                    'enctype' => 'multipart/form-data',
+                                ]) !!}
+                                @csrf
+                               
+                            @if ($count % 4 == 0)
+                                    <div class="row mr-0 ml-0 mt-5">
+                                        @endif
+                                    <div class="col-md-3">
+                                        <div class="form-group row row_mar_bm">
+                                            <label
+                                                class="col-md-12">
+                                                {{ $labelName }}
+                                            </label>
+                                            <div class="col-md-10">
+                                                @if ($options == null)
+                                                    @if ($inputType != 'date_range')
+                                                        {!! Form::$inputType($columnName,isset($searchData) && !empty($searchData) ? $searchData[$columnName] : null, [
+                                                            'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val',
+                                                            'autocomplete' => 'none',
+                                                            'style' => 'cursor:pointer',
+                                                            'rows' => 3,
+                                                            'id' => $columnName,
+                                                        ]) !!}
+                                                    @else
+                                                        {!! Form::text($columnName, null, [
+                                                            'class' => 'form-control date_range daterange_' . $columnName . ' white-smoke pop-non-edt-val',
+                                                            'autocomplete' => 'none',
+                                                            'style' => 'cursor:pointer',
+                                                            'id' => 'date_range',                
+                                                        ]) !!}
+                                                    @endif
+                                                @else
+                                                    @if ($inputType == 'select')
+                                                        {!! Form::$inputType($columnName, ['' => '-- Select --'] + $associativeOptions, isset($searchData) && !empty($searchData) ? $searchData[$columnName] : null, [
+                                                            'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val select2',
+                                                            'autocomplete' => 'none',
+                                                        
+                                                            'id' => $columnName,                                                        
+                                                        ]) !!}
+                                                @endif
+                                                @endif
+                                            </div>
+                                        
+                                        
+                                        </div>
+                                    </div>
+                                    @php $count++; @endphp
+                                    @if ($count % 4 == 0 || $loop->last)
+                                    </div>
+                                @endif
+                            
+                            @endforeach
+                            <div class="form-footer" style="justify-content: center !important">                                      
+                                <button type="submit" class="btn  btn-white-black font-weight-bold"
+                                    id="filter_search">Search</button> &nbsp;&nbsp; <button class="btn btn-light-danger" id="filter_clear" tabindex="10" type="button">
+                                        <span>
+                                            <span>Clear</span>
+                                        </span>
+                                    </button>                        
+                            </div>
+                        @endif
+                    </div>
+              
+                    {!! Form::close() !!}
                 <div class="card-body py-0 px-7">
                     <input type="hidden" value={{ $clientName }} id="clientName">
                     <input type="hidden" value={{ $subProjectName }} id="subProjectName">
@@ -350,6 +456,14 @@ use Carbon\Carbon;
                                 @endif
                             </tbody>
                         </table>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="ml-3">
+                            Showing {{ $autoCloseProjectDetails->firstItem() != null ? $autoCloseProjectDetails->firstItem() : 0 }} to {{ $autoCloseProjectDetails->lastItem() != null ? $autoCloseProjectDetails->lastItem() : 0 }} of {{ $autoCloseProjectDetails->total() }} entries
+                        </div>
+                         <div>
+                            {{ $autoCloseProjectDetails->links() }}
+                        </div>
                     </div>
                 </div>
 
@@ -1267,6 +1381,16 @@ use Carbon\Carbon;
         $('.date_range').val('');
         var startTime_db;
         $(document).ready(function() {
+            $("#filterExpandButton").click(function() {
+                var div = document.getElementById('filter_section');
+                if (div.style.display !== 'none') {
+                    div.style.display = 'none';
+                }
+                else {
+                    div.style.display = 'block';
+                }
+            });
+            var indvidualSearchFieldsCount = Object.keys(@json($projectColSearchFields)).length;
             var qaSubStatusList = @json($qaSubStatusListVal);
             var qaStatusList = @json( $qaStatusList);
             var arStatusList = @json( $arStatusList);
@@ -1464,8 +1588,9 @@ use Carbon\Carbon;
                 ordering: true,
                 clientSide: true,
                 lengthChange: false,
-                searching: true,
-                pageLength: 20,
+                searching: indvidualSearchFieldsCount > 0 ? false : true,
+                paging: false,
+                info: false,
                 scrollCollapse: true,
                 scrollX: true,
                 "initComplete": function(settings, json) {
@@ -2618,7 +2743,13 @@ use Carbon\Carbon;
                 }
             })
 
-
+            $(document).on('click', '#filter_clear', function(e) {
+                window.location.href = baseUrl +'qa_production/qa_projects_auto_close/' + clientName + '/' + subProjectName +
+                    "?parent=" +
+                    getUrlVars()[
+                        "parent"] +
+                    "&child=" + getUrlVars()["child"];
+            })
 
             // Exclude fields you don't want to track
             var excludedFields = ['QA_rework_comments', 'chart_status','coder_rework_status','coder_rework_reason','QA_status_code','QA_sub_status_code','qa_hold_reason','	ce_hold_reason'];
