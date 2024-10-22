@@ -1088,7 +1088,8 @@ nav{
                 'height': newHeight + 'px'
             });
 
-
+            var indvidualSearchFieldsCount = Object.keys(@json($projectColSearchFields)).length;
+            
             var uniqueId = 0;
             $('.modal-body').on('click', '.add_more', function() {
                 uniqueId++;
@@ -1227,7 +1228,7 @@ nav{
                 ordering: true,
                 clientSide: true,
                 lengthChange: false,
-                searching: false,
+                searching: indvidualSearchFieldsCount > 0 ? false : true,
                 paging: false,
                 info: false,
                 // pageLength: 20,
