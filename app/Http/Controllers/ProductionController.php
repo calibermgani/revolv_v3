@@ -2038,7 +2038,7 @@ class ProductionController extends Controller
                         }
                     }
                 }
-                $exportResult = $query->where('chart_status', 'CE_Assigned')->get();
+                $exportResult = $query->where('chart_status', $request->chart_status)->get();
                 $exStatus = str_replace('CE_', '', $request['chart_status']);
                 $fields = [];
                 if (Schema::hasTable($table_name)) {
