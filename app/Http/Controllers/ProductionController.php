@@ -2024,7 +2024,7 @@ class ProductionController extends Controller
                 $modelClass = "App\\Models\\" . $modelName;
                 $query = $modelClass::query();
                 if($request['_token'] != null) {
-                    foreach ($request->except('_token', 'parent', 'child','clientName','subProjectName') as $key => $value) {
+                    foreach ($request->except('_token', 'parent', 'child','clientName','subProjectName','recordStatusVal') as $key => $value) {
                       
                         if (is_array($value)) {
                             $value = implode('_el_', $value);  
@@ -2038,8 +2038,14 @@ class ProductionController extends Controller
                         }
                     }
                 }
-                $exportResult = $query->where('chart_status', $request->chart_status)->whereNotNull('CE_emp_id')->get();
-                $exStatus = str_replace('CE_', '', $request['chart_status']);
+                if($request->recordStatusVal == "unassigned") {
+                    $exportResult = $query->where('chart_status', $request->chart_status)->whereNull('CE_emp_id')->get();
+                    $exStatus = 'Un'.str_replace('CE_', '', $request['chart_status']);
+                } else {
+                    $exportResult = $query->where('chart_status', $request->chart_status)->whereNotNull('CE_emp_id')->get();
+                    $exStatus = str_replace('CE_', '', $request['chart_status']);
+                }
+                
                 $fields = [];
                 if (Schema::hasTable($table_name)) {
                     $column_names = DB::select("DESCRIBE $table_name");
