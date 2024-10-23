@@ -143,7 +143,7 @@
                                             ->first();
                                     } else {
                                         $subProjectName = '--';
-                                    }dd($qaSamplingList,$data);
+                                    }
                                     $coderName =
                                         $data['coder_emp_id'] != null
                                             ? App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['coder_emp_id'])
