@@ -24,7 +24,7 @@ use App\Models\QualitySampling;
 use App\Models\ARActionCodes;
 use App\Models\ProjectColSearchConfig;
 use App\Exports\ProductionExport;
-use Maatwebsite\Excel\Facades\Excel;;
+use Maatwebsite\Excel\Facades\Excel;
 ini_set('memory_limit', '1024M');
 class ProductionController extends Controller
 {

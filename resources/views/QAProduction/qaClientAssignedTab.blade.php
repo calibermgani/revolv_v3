@@ -69,7 +69,11 @@ use Carbon\Carbon;
                                 <button type="button" class="btn text-white mr-3" style="background-color:#139AB3">SOP</button>
                                 </a>
                              </div>
-                            <div class="outside" href="javascript:void(0);"></div>
+                             <div class="d-flex align-items-center" id="export_div">
+                                <a class="btn btn-primary-export text-white ml-2" href="javascript:void(0);" id='assign_export'  style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
+                                </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></a>
+                            </div>
+                            {{-- <div class="outside" href="javascript:void(0);"></div> --}}
                         </div>
                     </div>
                 </div>
@@ -1807,21 +1811,21 @@ use Carbon\Carbon;
                     "search": '',
                     "searchPlaceholder": "   Search",
                 },
-                buttons: [{
-                    "extend": 'excel',
-                    "text": `<span data-dismiss="modal" data-toggle="tooltip" data-placement="left" data-original-title="Export" style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
-                             </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></span>`,
-                    "className": 'btn btn-primary-export text-white',
-                    "title": 'PROCODE',
-                    "filename": 'procode_qa_assigned_' + date,
-                    "exportOptions": {
-                        "columns": ':not(.notexport)'
-                    }
-                }],
-                dom: "B<'row'<'col-md-12'f><'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>"
+                // buttons: [{
+                //     "extend": 'excel',
+                //     "text": `<span data-dismiss="modal" data-toggle="tooltip" data-placement="left" data-original-title="Export" style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
+                //              </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></span>`,
+                //     "className": 'btn btn-primary-export text-white',
+                //     "title": 'PROCODE',
+                //     "filename": 'procode_qa_assigned_' + date,
+                //     "exportOptions": {
+                //         "columns": ':not(.notexport)'
+                //     }
+                // }],
+                dom: "<'row'<'col-md-12'f><'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>"
             })
-            table.buttons().container()
-                .appendTo('.outside');
+            // table.buttons().container()
+            //     .appendTo('.outside');
             $('.dataTables_filter').addClass('pull-left');
             var clientName = $('#clientName').val();
             var subProjectName = $('#subProjectName').val();
@@ -3900,6 +3904,59 @@ use Carbon\Carbon;
                                 "parent"] +
                             "&child=" + getUrlVars()["child"];
                     })
+                    $(document).on('click', '#assign_export', function(e) {
+                        var formData = $('#formSearch').serialize();
+                        var chartStatus = "CE_Completed";
+                        var recordStatusVal = "Assigned";
+                        formData += '&chart_status=' + chartStatus;
+                        formData += '&clientName=' + clientName;
+                        formData += '&subProjectName=' + subProjectName;
+                        formData += '&recordStatusVal=' + recordStatusVal;
+                         $.ajaxSetup({
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                                    'content')
+                            }
+                        });
+                        KTApp.block('#export_div', {
+                            overlayColor: '#000000',
+                            state: 'danger',
+                            opacity: 0.1,
+                            message: 'Fetching...',
+                        });
+                        $.ajax({
+                                url: "{{ url('qa_production/quality_export') }}",
+                                method: 'POST',
+                                data: formData,
+                                xhrFields: {
+                                    responseType: 'blob'  // This is crucial for downloading Excel
+                                },
+                                success: function(response, status, xhr) {  // Correct order of parameters
+                                    var filename = "";
+                                    var disposition = xhr.getResponseHeader('Content-Disposition');
+                                    if (disposition && disposition.indexOf('attachment') !== -1) {
+                                        var matches = /filename[^;=\n]*=([^;\n]*)/.exec(disposition);                            
+                                        if (matches != null && matches[1]) {
+                                            // Trim any extra spaces or quotes around the filename
+                                            filename = matches[1].trim().replace(/^"|"$/g, '');
+                                        }
+                                    }
+
+                                    var blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                                    var link = document.createElement('a');
+                                    link.href = window.URL.createObjectURL(blob);
+                                    link.download = filename || 'export.xlsx';
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                    KTApp.unblock('#export_div');
+                                },
+                                error: function(response) {
+                                    console.log('Error generating Excel file', response);
+                                }
+                        });
+
+            });
         })
 
         function updateTime() {

@@ -93,6 +93,7 @@ Route::group(['prefix' => 'qa_production'], function () {
     Route::any('qa_rebuttal/{clientName}/{subProjectName}', 'App\Http\Controllers\QA\QAProductionController@clientRebuttalTab')->name('clientRebuttalTab');
     Route::any('qa_rebuttal_update', 'App\Http\Controllers\QA\QAProductionController@qaRebuttalUpdate');
     Route::any('qa_class_cat_scope', 'App\Http\Controllers\QA\QAProductionController@qaClassCatScope');
+    Route::any('quality_export', 'App\Http\Controllers\ProductionController@qualityExport');
 });
 
 

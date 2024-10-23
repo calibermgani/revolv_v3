@@ -26,7 +26,8 @@ use App\Mail\ManagerRebuttalMail;
 use App\Models\CCEmailIds;
 use App\Models\qaClassCatScope;
 use App\Models\ProjectColSearchConfig;
-
+use App\Exports\ProductionExport;
+use Maatwebsite\Excel\Facades\Excel;
 ini_set('memory_limit', '1024M');
 class QAProductionController extends Controller
 {
@@ -1712,5 +1713,75 @@ class QAProductionController extends Controller
             return redirect('/');
         }
     }
-
+    public function qualityExport(Request $request) {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+            try {
+             
+                $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && 
+                Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
+                $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
+                $decodedProjectName = Helpers::encodeAndDecodeID($request->clientName, 'decode');
+                $decodedPracticeName = $request->subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName);
+                if($decodedsubProjectName != null &&  $decodedsubProjectName != 'project') {
+                    $decodedsubProjectName= $decodedsubProjectName->sub_project_name;
+                }
+                $subProjectId = $request->subProjectName == '--' ?  NULL : $decodedPracticeName;
+                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');   
+                $modelName = Str::studly($table_name);
+                $modelClass = "App\\Models\\" . $modelName;
+                $query = $modelClass::query();
+                if($request['_token'] != null) {
+                    foreach ($request->except('_token', 'parent', 'child','clientName','subProjectName','recordStatusVal') as $key => $value) {
+                      
+                        if (is_array($value)) {
+                            $value = implode('_el_', $value);  
+                        }
+                        if (is_numeric($value) || is_bool($value)) {
+                            $query->where($key, $value);  // Exact match for numeric/boolean
+                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                            $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
+                        } else { 
+                            $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
+                        }
+                    }
+                }
+                if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
+          
+                    if($request->recordStatusVal == "unassigned") {
+                        $exportResult = $query->whereIn('chart_status',[$request->chart_status,'QA_Inprocess'])->whereNull('QA_emp_id')->get();
+                        $exStatus = 'UnAssigned';
+                    } else if($request->recordStatusVal == "Assigned") {
+                        $exportResult = $query->whereIn('chart_status',[$request->chart_status,'QA_Inprocess'])->whereNotNull('QA_emp_id')->get();
+                        $exStatus = 'Assigned';
+                    } else {
+                        $exportResult = $query->where('chart_status',$request->chart_status)->get();
+                        $exStatus = str_replace('QA_', '', $request['chart_status']);
+                    }
+                } else if ($loginEmpId) {
+                    $exportResult = $query->whereIn('chart_status',[$request->chart_status,'QA_Inprocess'])->where('QA_emp_id',$loginEmpId)->get();
+                    $exStatus = str_replace('QA_', '', $request['chart_status']);
+                }
+                $fields = [];
+                if (Schema::hasTable($table_name)) {
+                    $column_names = DB::select("DESCRIBE $table_name");
+                    $columns = array_column($column_names, 'Field');
+                    $columnsToExclude = ['id','QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
+                    'coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers','ar_status_code','ar_action_code',
+                    'updated_at','created_at', 'deleted_at'];
+                    $fields = array_filter($columns, function ($column) use ($columnsToExclude) {
+                        return !in_array($column, $columnsToExclude);
+                    });
+                    array_push($fields,'aging','aging_range');
+                }
+              
+                return Excel::download(new ProductionExport($fields,$exportResult), 'Resolv_'.$exStatus.'_export.xlsx');
+                } catch (\Exception $e) {
+                    log::debug($e->getMessage());
+                }
+            } else {
+                return redirect('/');
+            }       
+    }
 }
