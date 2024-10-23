@@ -244,7 +244,13 @@
                                 sla_options +='<option value="' + key + '"' + (key === subproject_id ? 'selected="selected"' : '') +'>' + value+ '</option>';
 
                             });
-                            $('select[name="sub_project_id"]').html(sla_options);
+                            $('select[name="sub_project_id"]').html(sla_options); 
+                             var qa_id = $('#qa_id');
+                            var qa_percentage = $('#qa_percentage');
+                            var sub_project_id = $('#sub_project_list');
+                            qa_id.next('.select2').find(".select2-selection").css('border-color', '');
+                            qa_percentage.css('border-color', '');
+                            sub_project_id.next('.select2').find(".select2-selection").css('border-color', '');
 
                         },
                         error: function(jqXHR, exception) {}
@@ -331,7 +337,7 @@
                     var edit_coder_id = $('#edit_coder_id');
                     var record_id = $('#record_id').val();
                     var inputTypeValue = 0;
-                    if (edit_project_id.val() == '' || edit_qa_id.val() == '' || edit_qa_percentage.val() == '') {
+                    if (edit_project_id.val() == '' || edit_qa_id.val() == '' || edit_qa_percentage.val() == '' || edit_sub_project_id.val() == '') {
                         if (edit_project_id.val() == '') {
                             edit_project_id.next('.select2').find(".select2-selection").css('border-color', 'red');
                         } else {
@@ -346,6 +352,11 @@
                             edit_qa_percentage.css('border-color', 'red');
                         } else {
                             edit_qa_percentage.css('border-color', '');
+                        }
+                        if (edit_sub_project_id.val() == '' && subprojectCount != 0) {
+                            edit_sub_project_id.next('.select2').find(".select2-selection").css('border-color', 'red');
+                        } else {
+                            edit_sub_project_id.next('.select2').find(".select2-selection").css('border-color', '');
                         }
                         return false;
                     }
