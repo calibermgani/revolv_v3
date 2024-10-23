@@ -2038,7 +2038,7 @@ class ProductionController extends Controller
                         }
                     }
                 }
-                $exportResult = $query->where('chart_status', $request->chart_status)->get();
+                $exportResult = $query->where('chart_status', $request->chart_status)->whereNotNull('CE_emp_id')->get();
                 $exStatus = str_replace('CE_', '', $request['chart_status']);
                 $fields = [];
                 if (Schema::hasTable($table_name)) {
