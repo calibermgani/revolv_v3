@@ -2011,6 +2011,7 @@ class ProductionController extends Controller
              
                 $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && 
                 Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
+                $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                 $decodedProjectName = Helpers::encodeAndDecodeID($request->clientName, 'decode');
                 $decodedPracticeName = $request->subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
                 $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
@@ -2038,14 +2039,19 @@ class ProductionController extends Controller
                         }
                     }
                 }
-                if($request->recordStatusVal == "unassigned") {
-                    $exportResult = $query->where('chart_status', $request->chart_status)->whereNull('CE_emp_id')->get();
-                    $exStatus = 'Un'.str_replace('CE_', '', $request['chart_status']);
-                } else {
-                    $exportResult = $query->where('chart_status', $request->chart_status)->whereNotNull('CE_emp_id')->get();
+                if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
+          
+                    if($request->recordStatusVal == "unassigned") {
+                        $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->whereNull('CE_emp_id')->get();
+                        $exStatus = 'Un'.str_replace('CE_', '', $request['chart_status']);
+                    } else {
+                        $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->whereNotNull('CE_emp_id')->get();
+                        $exStatus = str_replace('CE_', '', $request['chart_status']);
+                    }
+                } else if ($loginEmpId) {
+                    $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->get();
                     $exStatus = str_replace('CE_', '', $request['chart_status']);
                 }
-                
                 $fields = [];
                 if (Schema::hasTable($table_name)) {
                     $column_names = DB::select("DESCRIBE $table_name");
