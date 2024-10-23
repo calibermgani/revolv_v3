@@ -41,7 +41,7 @@
         <div class="row"  style="margin-left: 1rem">
             <div class="col-md-6">
                 <div class="form-group row row_mar_bm">
-                    <label class="col-md-12 col-form-label">Coder</label>
+                    <label class="col-md-12 col-form-label">AR</label>
                     <div class="col-md-11">
                         {!! Form::select('coder_emp_id', $coderList, null, [
                             'class' => 'form-control kt_select2_coder',

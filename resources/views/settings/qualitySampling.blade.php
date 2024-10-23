@@ -47,7 +47,7 @@
                     </fieldset>
                 </div>
                 <div class="col-lg-2 mb-lg-0 mb-6">
-                    <label>Coder</label>
+                    <label>AR</label>
                     <fieldset class="form-group mb-1">
                         {!! Form::select('coder_emp_id', $coderList, null, [
                             'class' => 'form-control kt_select2_coder',
@@ -116,7 +116,7 @@
                         <tr>
                             <th>Project</th>
                             <th>Sub Project</th>
-                            <th>Coder</th>
+                            <th>AR</th>
                             <th>QA</th>
                             <th>Percentage</th>
                             <th>Priority</th>
