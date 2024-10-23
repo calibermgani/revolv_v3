@@ -201,6 +201,7 @@
         <script>
             $(document).ready(function() {
                 var qaSamplingList = @json($qaSamplingList);console.log(qaSamplingList.length,'ddd');
+                var subprojectCount;
                 $('#qa_sampling_table').DataTable({
                     processing: true,
                     lengthChange: false,
@@ -277,8 +278,8 @@
                     var qa_percentage = $('#qa_percentage');
                     var sub_project_id = $('#sub_project_list');
                     var coder_id = $('#coder_id');
-                    var inputTypeValue = 0;
-                    if (project_id.val() == '' || qa_id.val() == '' || qa_percentage.val() == '') {
+                     var inputTypeValue = 0;
+                    if (project_id.val() == '' || qa_id.val() == '' || qa_percentage.val() == '' || sub_project_id.val == "") {
                         if (project_id.val() == '') {
                             project_id.next('.select2').find(".select2-selection").css('border-color', 'red');
                         } else {
@@ -293,6 +294,11 @@
                             qa_percentage.css('border-color', 'red');
                         } else {
                             qa_percentage.css('border-color', '');
+                        }
+                        if (sub_project_id.val() == '' && subprojectCount != 0) {
+                            sub_project_id.next('.select2').find(".select2-selection").css('border-color', 'red');
+                        } else {
+                            sub_project_id.next('.select2').find(".select2-selection").css('border-color', '');
                         }
                         return false;
                     }
