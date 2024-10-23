@@ -251,6 +251,13 @@
                             qa_id.next('.select2').find(".select2-selection").css('border-color', '');
                             qa_percentage.css('border-color', '');
                             sub_project_id.next('.select2').find(".select2-selection").css('border-color', '');
+                            var edit_qa_id = $('#edit_qa_id');
+                            var edit_qa_percentage = $('#edit_qa_percentage');
+                            var edit_sub_project_id = $('#edit_sub_project_list');
+                            edit_qa_id.next('.select2').find(".select2-selection").css('border-color', '');
+                            edit_qa_percentage.css('border-color', '');
+                            edit_sub_project_id.next('.select2').find(".select2-selection").css('border-color', '');
+                           
 
                         },
                         error: function(jqXHR, exception) {}
