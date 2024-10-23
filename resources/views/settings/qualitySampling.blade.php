@@ -200,7 +200,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
         <script>
             $(document).ready(function() {
-                var qaSamplingList = @json($qaSamplingList);console.log(qaSamplingList.length,'ddd');
+                var qaSamplingList = @json($qaSamplingList);
                 var subprojectCount;
                 $('#qa_sampling_table').DataTable({
                     processing: true,
@@ -320,7 +320,8 @@
                             projectId = project_id.val() != '' ? project_id.val() : null;
                             subProjectId = sub_project_id.val() != '' ? sub_project_id.val() : null;
                             qaId = qa_id.val() != '' ? qa_id.val() : null;
-                            coderId = coder_id.val() != '' ? coder_id.val() : null;console.log(val,'val',(val.project_id),(val.sub_project_id),(val.qa_emp_id),(val.coder_emp_id),projectId,subProjectId,coderId,qaId);
+                            coderId = coder_id.val() != '' ? coder_id.val() : null;console.log(coderId,val.coder_emp_id);
+                            
                             if (projectId == val.project_id && subProjectId == val.sub_project_id && qaId == val.qa_emp_id && coderId == val.coder_emp_id) {
                                     js_notification('error', 'This Setting already exist!');
                                      inputTypeValue = 1;
@@ -330,7 +331,7 @@
                                 }
 
                         });
-                    }console.log(inputTypeValue,'inputTypeValue');
+                    }
                      if(inputTypeValue == 0) {
                          document.querySelector('#qa_sampling_form').submit();
                      }
@@ -367,12 +368,12 @@
                         }
                         return false;
                     }
-                        if(qaSamplingList.length > 0) {console.log(qaSamplingList,'qaSamplingList');
+                        if(qaSamplingList.length > 0) {
                             $.each(qaSamplingList, function(key, val) {
                                 projectId = edit_project_id.val() != '' ? edit_project_id.val() : null;
                                 subProjectId = edit_sub_project_id.val() != '' ? edit_sub_project_id.val() : null;
                                 qaId = edit_qa_id.val() != '' ? edit_qa_id.val() : null;
-                                coderId = edit_coder_id.val() != '' ? edit_coder_id.val() : null;console.log(val,'val',(val.project_id),(val.sub_project_id),(val.qa_emp_id),(val.coder_emp_id),projectId,subProjectId,coderId,qaId);
+                                coderId = edit_coder_id.val() != '' ? edit_coder_id.val() : null;
                                 if (projectId == val.project_id && subProjectId == val.sub_project_id && qaId == val.qa_emp_id && coderId == val.coder_emp_id && record_id != val.id) {
                                         js_notification('error', 'This Setting already exist!');
                                         inputTypeValue = 1;
@@ -382,7 +383,7 @@
                                     }
 
                             });
-                        }console.log(inputTypeValue,'inputTypeValue');
+                        }
                         if(inputTypeValue == 0) {
                             document.querySelector('#qa_sampling_update').submit();
                         }

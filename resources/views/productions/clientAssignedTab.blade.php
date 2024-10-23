@@ -17,40 +17,44 @@ use Carbon\Carbon;
                                 </div>
                                 <div class="col-md-6">
                                     <div class="row" style="justify-content: flex-end;margin-right:1.4rem">
-                                     @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)
-                                        <div class="col-lg-3 mb-lg-0 mb-6" id="assign_div">
-                                            <fieldset class="form-group mb-0 white-smoke-disabled">
-                                                {!! Form::select('assignee_name', ['' => '--Assignee--'] + $assignedDropDown, null, [
-                                                    'class' => 'form-control kt_select2_assignee',
-                                                    'id' => 'assigneeDropdown',
-                                                    'style' => 'width: 100%;',
-                                                    'disabled',
-                                                ]) !!}
-                                            </fieldset>
-                                        </div>
-                                    @endif
+                                        @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)
+                                            <div class="col-lg-3 mb-lg-0 mb-6" id="assign_div">
+                                                <fieldset class="form-group mb-0 white-smoke-disabled">
+                                                    {!! Form::select('assignee_name', ['' => '--Assignee--'] + $assignedDropDown, null, [
+                                                        'class' => 'form-control kt_select2_assignee',
+                                                        'id' => 'assigneeDropdown',
+                                                        'style' => 'width: 100%;',
+                                                        'disabled',
+                                                    ]) !!}
+                                                </fieldset>
+                                            </div>
+                                        @endif
                                         &nbsp;&nbsp;
-                                        <div>
-                                            @if ($popUpHeader != null)
-                                                    @php
-                                                            $clientNameDetails = App\Http\Helper\Admin\Helpers::projectName(
-                                                                $popUpHeader->project_id,
-                                                            );
-                                                            // $pdfName =  preg_replace('/[^A-Za-z0-9]/', '_',$clientNameDetails->project_name);
-                                                            $sopDetails = App\Models\SopDoc::where('project_id',$popUpHeader->project_id)->where('sub_project_id',$popUpHeader->sub_project_id)->latest()->first('sop_path');
-                                                    @endphp
-                                                    @else
-                                                    @php
-                                                        // $pdfName = '';
-                                                        $sopDetails = '';
-                                                    @endphp
-                                                @endif
-                                            {{-- <a href= {{ asset('/pdf_folder/'.$pdfName.'.pdf') }} target="_blank"> --}}
-                                                <a href= {{ isset($sopDetails) && isset($sopDetails->sop_path) ? asset($sopDetails->sop_path) : '#' }} target="_blank">
-                                            <button type="button" class="btn text-white mr-3" style="background-color:#139AB3">SOP</button>
-                                            </a>
-                                         </div>
-                                        <div class="outside" href="javascript:void(0);"></div>
+                                            <div>
+                                                @if ($popUpHeader != null)
+                                                        @php
+                                                                $clientNameDetails = App\Http\Helper\Admin\Helpers::projectName(
+                                                                    $popUpHeader->project_id,
+                                                                );
+                                                                // $pdfName =  preg_replace('/[^A-Za-z0-9]/', '_',$clientNameDetails->project_name);
+                                                                $sopDetails = App\Models\SopDoc::where('project_id',$popUpHeader->project_id)->where('sub_project_id',$popUpHeader->sub_project_id)->latest()->first('sop_path');
+                                                        @endphp
+                                                        @else
+                                                        @php
+                                                            // $pdfName = '';
+                                                            $sopDetails = '';
+                                                        @endphp
+                                                    @endif
+                                                {{-- <a href= {{ asset('/pdf_folder/'.$pdfName.'.pdf') }} target="_blank"> --}}
+                                                    <a href= {{ isset($sopDetails) && isset($sopDetails->sop_path) ? asset($sopDetails->sop_path) : '#' }} target="_blank">
+                                                <button type="button" class="btn text-white mr-3" style="background-color:#139AB3">SOP</button>
+                                                </a>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <a class="btn btn-primary-export text-white ml-2" href="javascript:void(0);" id='assign_export'  style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
+                                                </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></a>
+                                            </div>
+                                        {{-- <div class="outside" href="javascript:void(0);"></div> --}}
                                     </div>
                                 </div>
                           </div>
@@ -171,7 +175,7 @@ use Carbon\Carbon;
                             <div><span type="button" id="filterExpandButton" class="float-right mr-8 mt-5">
                                 <i class="ki ki-arrow-down icon-nm"></i></span></div>
                                
-                                <div class="card-body py-0 px-7" id="filter_section" style="display:none">
+                                <div class="card-body mr-8 ml-12" id="filter_section" style="display:none;border:1px solid #F3F3F3">
                                    
                                     @if (count($projectColSearchFields) > 0)
                                         @php $count = 0; @endphp
@@ -216,7 +220,7 @@ use Carbon\Carbon;
                                             @csrf
                                            
                                         @if ($count % 4 == 0)
-                                                <div class="row mr-0 ml-0 mt-5">
+                                                <div class="row mr-0 ml-0">
                                                     @endif
                                                 <div class="col-md-3">
                                                     <div class="form-group row row_mar_bm">
@@ -1058,6 +1062,7 @@ nav{
         $('.date_range').val('');
         var startTime_db;
         $(document).ready(function() {
+            var indvidualSearchFieldsCount = Object.keys(@json($projectColSearchFields)).length;
             $("#expandButton").click(function() {
                  var modalContent = $(".modal-content");
                 if (modalContent.width() === 800) {
@@ -1068,12 +1073,16 @@ nav{
          });
          $("#filterExpandButton").click(function() {
             var div = document.getElementById('filter_section');
+            if(indvidualSearchFieldsCount > 0) {
                 if (div.style.display !== 'none') {
                     div.style.display = 'none';
                 }
                 else {
                     div.style.display = 'block';
                 }
+            } else {
+                div.style.display = 'none';
+            }
          });
 
             var countDigits = {{ strlen($assignedCount) }};
@@ -1087,8 +1096,6 @@ nav{
                 'width': newWidth + 'px',
                 'height': newHeight + 'px'
             });
-
-            var indvidualSearchFieldsCount = Object.keys(@json($projectColSearchFields)).length;
             
             var uniqueId = 0;
             $('.modal-body').on('click', '.add_more', function() {
@@ -1241,18 +1248,19 @@ nav{
                     "search": '',
                     "searchPlaceholder": "   Search",
                 },
-                buttons: [{
-                    "extend": 'excel',
-                    "text": `<span data-dismiss="modal" data-toggle="tooltip" data-placement="left" data-original-title="Export" style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
-                             </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></span>`,
-                    "className": 'btn btn-primary-export text-white',
-                    "title": 'PROCODE',
-                    "filename": 'procode_assigned_'+date,
-                    "exportOptions": {
-                        "columns": ':not(.notexport)'// Exclude first two columns
-                    }
-                }],
-                dom: "B<'row'<'col-md-12'f><'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>"
+                // buttons: [{
+                //     "extend": 'excel',
+                //     "text": `<span data-dismiss="modal" data-toggle="tooltip" data-placement="left" data-original-title="Export" style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
+                //              </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></span>`,
+                //     "className": 'btn btn-primary-export text-white',
+                //     "title": 'PROCODE',
+                //     "filename": 'procode_assigned_'+date,
+                //     "exportOptions": {
+                //         "columns": ':not(.notexport)'// Exclude first two columns
+                //     }
+                // }],
+                // dom: "B<'row'<'col-md-12'f><'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>"
+                  dom: "<'row'<'col-md-12'f><'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>"
             })
             table.buttons().container()
                 .appendTo('.outside');
@@ -2197,7 +2205,52 @@ nav{
                         "parent"] +
                     "&child=" + getUrlVars()["child"];
             })
+            $(document).on('click', '#assign_export', function(e) {
+                var formData = $('#formSearch').serialize();
+                var chartStatus = "CE_Assigned";
+                formData += '&chart_status=' + chartStatus;
+                formData += '&clientName=' + clientName;
+                formData += '&subProjectName=' + subProjectName;
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                            'content')
+                    }
+                });
+                $.ajax({
+                    url: "{{ url('client_export') }}",
+                    method: 'POST',
+                    data: formData,
+                    xhrFields: {
+                        responseType: 'blob'  // This is crucial for downloading Excel
+                    },
+                    success: function(response, status, xhr) {  // Correct order of parameters
+                        var filename = "";
+                        var disposition = xhr.getResponseHeader('Content-Disposition');
+                        if (disposition && disposition.indexOf('attachment') !== -1) {
+                            var matches = /filename[^;=\n]*=([^;\n]*)/.exec(disposition);
+                            
+                            if (matches != null && matches[1]) {
+        // Trim any extra spaces or quotes around the filename
+        filename = matches[1].trim().replace(/^"|"$/g, '');
+    }
+                        }
 
+                        var blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                        var link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = filename || 'export.xlsx';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    },
+                    error: function(response) {
+                        console.log('Error generating Excel file', response);
+                    }
+                                });
+
+            });
+           
         })
 
         function updateTime() {

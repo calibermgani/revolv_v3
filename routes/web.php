@@ -70,6 +70,7 @@ Route::any('assignee_drop_down', 'App\Http\Controllers\ProductionController@assi
 Route::any('projects_non_workable/{clientName}/{subProjectName}', 'App\Http\Controllers\ProductionController@clientNonWorkableTab')->name('clientNonWorkable');
 Route::any('ar_rebuttal/{clientName}/{subProjectName}', 'App\Http\Controllers\ProductionController@clientRebuttalTab')->name('clientRebuttalTab');
 Route::any('ar_rebuttal_update', 'App\Http\Controllers\ProductionController@arRebuttalUpdate');
+Route::any('client_export', 'App\Http\Controllers\ProductionController@clientExport');
 
 Route::group(['prefix' => 'qa_production'], function () {
     Route::any('qa_clients', 'App\Http\Controllers\QA\QAProductionController@clients')->name('qaClients');
