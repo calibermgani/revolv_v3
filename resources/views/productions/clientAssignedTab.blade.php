@@ -1063,6 +1063,7 @@ nav{
         var startTime_db;
         $(document).ready(function() {
             var indvidualSearchFieldsCount = Object.keys(@json($projectColSearchFields)).length;
+            var resourceName = @json($resourceName);console.log('resourceName',resourceName);
             $("#expandButton").click(function() {
                  var modalContent = $(".modal-content");
                 if (modalContent.width() === 800) {
@@ -2205,8 +2206,7 @@ nav{
                         "parent"] +
                     "&child=" + getUrlVars()["child"];
             })
-            $(document).on('click', '#assign_export', function(e) {
-                var resourceName = @json($resourceName);
+            $(document).on('click', '#assign_export', function(e) {        
                 var formData = $('#formSearch').serialize();
                 var chartStatus = "CE_Assigned";
                 formData += '&chart_status=' + chartStatus;
