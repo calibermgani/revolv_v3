@@ -285,7 +285,7 @@ class ProductionController extends Controller
                         if (!empty($existingCallerChartsWorkLogs)) {
                             $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
                         }
-                       $assignedProjectDetails = $assignedProjectDetails->orderBy('id', 'ASC')->paginate(50);
+                       $assignedProjectDetails = $assignedProjectDetails->orderBy('id', 'ASC')->paginate(50);dd($assignedProjectDetails,$existingCallerChartsWorkLogs,$loginEmpId);
                        $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->count();
                        $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
