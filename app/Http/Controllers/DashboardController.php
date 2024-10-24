@@ -291,7 +291,7 @@ class DashboardController extends Controller
                 $assignedCounts = $completeCounts = $pendingCounts = $holdCounts = $reworkCounts = $totalCounts = $agingArr1 = $agingArr2 = $agingCount = $unAssignedCounts = [];
                 foreach ($models as $modelKey => $model) {
                     if (class_exists($model)) {
-                        $aCount = $model::where('chart_status', 'CE_Assigned')->whereNotNull('CE_emp_id')->whereBetween('invoke_date', [$startDate, $endDate])->count();
+                        $aCount = $model::whereIn('chart_status', ['CE_Assigned','CE_Inprocess'])->whereNotNull('CE_emp_id')->whereBetween('invoke_date', [$startDate, $endDate])->count();
                         $cCount = $model::where('chart_status', 'CE_Completed')->whereBetween('invoke_date', [$startDate, $endDate])->count();
                         $pCount = $model::where('chart_status', 'CE_Pending')->whereBetween('invoke_date', [$startDate, $endDate])->count();
                         $hCount = $model::where('chart_status', 'CE_Hold')->whereBetween('invoke_date', [$startDate, $endDate])->count();
