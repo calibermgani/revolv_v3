@@ -2059,7 +2059,6 @@ class ProductionController extends Controller
                     } else {
                         if($request->resourceName == 'null') {
                            $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->whereNotNull('CE_emp_id')->get();
-                           dd($request->resourceName,$exportResult);
                         } else {
                             $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->where('CE_emp_id',$request->resourceName)->get();
                         }
