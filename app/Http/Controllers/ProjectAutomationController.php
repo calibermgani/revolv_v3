@@ -126,7 +126,7 @@ class ProjectAutomationController extends Controller
     {
         try {
             $attributes = [
-                'office_keys' => isset($request->office_keys) && $request->office_keys != "NULL" ? $request->office_keys : NULL,
+                'office_keys' =>  NULL,
                 'worklist' => isset($request->worklist) && $request->worklist != "NULL" ? $request->worklist : NULL,
                 'insurance_balance' => isset($request->insurance_balance) && $request->insurance_balance != "NULL" ? $request->insurance_balance : NULL,
                 'past_due_days' => isset($request->past_due_days) && $request->past_due_days != "NULL" ? $request->past_due_days : NULL,
