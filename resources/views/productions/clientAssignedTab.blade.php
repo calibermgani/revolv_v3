@@ -2206,11 +2206,13 @@ nav{
                     "&child=" + getUrlVars()["child"];
             })
             $(document).on('click', '#assign_export', function(e) {
+                var resourceName = @json($resourceName);
                 var formData = $('#formSearch').serialize();
                 var chartStatus = "CE_Assigned";
                 formData += '&chart_status=' + chartStatus;
                 formData += '&clientName=' + clientName;
                 formData += '&subProjectName=' + subProjectName;
+                formData += '&resourceName=' + resourceName;
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
