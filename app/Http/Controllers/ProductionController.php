@@ -2057,11 +2057,11 @@ class ProductionController extends Controller
                         $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->whereNull('CE_emp_id')->get();
                         $exStatus = 'Un'.str_replace('CE_', '', $request['chart_status']);
                     } else {
-                        if($request->resourceName != null) {
+                        if($request->resourceName == null) {
                            $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->whereNotNull('CE_emp_id')->get();
                         } else {
                             $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->where('CE_emp_id',$request->resourceName)->get();
-                        }  dd($request->resourceName,$exportResult);
+                        } 
                         $exStatus = str_replace('CE_', '', $request['chart_status']);
                     }
                 } else if ($loginEmpId) {
