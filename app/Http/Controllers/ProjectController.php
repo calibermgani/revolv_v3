@@ -119,7 +119,7 @@ class ProjectController extends Controller
             $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y');
             // $yesterDayStartDate = $yesterday->startOfDay()->toDateTimeString();
             // $yesterDayEndDate = $yesterday->endOfDay()->toDateTimeString();
-            $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
+            $yesterDayStartDate = $yesterday->setTime(11, 0, 0)->toDateTimeString();
             $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString(); // 8 AM
 
             // $mailHeader = "Resolv Utilization Report for 06/07/2024";
