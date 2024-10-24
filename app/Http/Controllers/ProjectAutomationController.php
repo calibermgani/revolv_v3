@@ -13,8 +13,8 @@ use App\Models\CCEmailIds;
 use App\Mail\ProcodeInventoryExeFile;
 use App\Http\Helper\Admin\Helpers as Helpers;
 use App\Models\InventoryErrorLogs;
-use App\Models\OmsiProject;
-use App\Models\OmsiProjectDuplicates;
+use App\Models\OmsiAr;
+use App\Models\OmsiArDuplicates;
 use App\Models\NuAr;
 use App\Models\NuArDuplicates;
 use App\Models\ChsiAr;
@@ -142,9 +142,9 @@ class ProjectAutomationController extends Controller
                 'follow_up_action' => isset($request->follow_up_action) && $request->follow_up_action != "NULL" ? $request->follow_up_action : NULL,
             ];
 
-            $duplicateRecordExisting  =  OmsiProject::where($attributes)->exists();
+            $duplicateRecordExisting  =  OmsiAr::where($attributes)->exists();
             if (!$duplicateRecordExisting) {
-                    OmsiProject::insert([
+                OmsiAr::insert([
                         'office_keys' => isset($request->office_keys) && $request->slip != "NULL" ? $request->office_keys : NULL,
                         'worklist' => isset($request->worklist) && $request->worklist != "NULL" ? $request->worklist : NULL,
                         'insurance_balance' => isset($request->insurance_balance) && $request->insurance_balance != "NULL" ? $request->insurance_balance : NULL,
@@ -166,7 +166,7 @@ class ProjectAutomationController extends Controller
                     ]);
                         return response()->json(['message' => 'Record Inserted Successfully']);
             } else {
-                $duplicateRecord  =  OmsiProject::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                $duplicateRecord  =  OmsiAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
                 $duplicateRecord->update([
                         'office_keys' => isset($request->office_keys) && $request->slip != "NULL" ? $request->office_keys : NULL,
                         'worklist' => isset($request->worklist) && $request->worklist != "NULL" ? $request->worklist : NULL,
@@ -196,7 +196,7 @@ class ProjectAutomationController extends Controller
     public function onpointDuplicates(Request $request)
     {
         try {
-            OmsiProjectDuplicates::insert([
+            OmsiArDuplicates::insert([
                 'office_keys' => isset($request->office_keys) && $request->slip != "NULL" ? $request->office_keys : NULL,
                 'worklist' => isset($request->worklist) && $request->worklist != "NULL" ? $request->worklist : NULL,
                 'insurance_balance' => isset($request->insurance_balance) && $request->insurance_balance != "NULL" ? $request->insurance_balance : NULL,
