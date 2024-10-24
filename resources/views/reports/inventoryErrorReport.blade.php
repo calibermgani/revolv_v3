@@ -180,6 +180,9 @@
                     error: function(jqXHR, exception) {}
                 });
             });
+            $(document).on('click','#clear_submit_month',function(){
+                location.reload();
+            })
         });
     </script>
 @endpush
