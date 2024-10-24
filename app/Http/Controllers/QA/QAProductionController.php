@@ -1016,7 +1016,7 @@ class QAProductionController extends Controller
                 $callChartWorkLogExistingRecord = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
                 ->where('project_id', $decodedProjectName)
                 ->where('sub_project_id', $decodedPracticeName)
-                ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->first();
+                ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->first();dd( $callChartWorkLogExistingRecord);
                 if($callChartWorkLogExistingRecord && $callChartWorkLogExistingRecord != null) {
                     $start_time = Carbon::parse($callChartWorkLogExistingRecord->start_time);
                     $time_difference = $currentTime->diff($start_time);
