@@ -979,7 +979,7 @@ class QAProductionController extends Controller
                 }
 
                 if($datasRecord != null) {
-                    $datasRecord->update($data);
+                    $datasRecord->update($data);dd($data);
                     $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count'],'qa_classification' => $data['qa_classification'],'qa_category' => $data['qa_category'],'qa_scope' => $data['qa_scope']]);
                 } else {
                     $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count'],'qa_classification' => $data['qa_classification'],'qa_category' => $data['qa_category'],'qa_scope' => $data['qa_scope']]);
@@ -1012,7 +1012,7 @@ class QAProductionController extends Controller
                        Mail::to($toMailId)->cc($ccMailId)->send(new ManagerRebuttalMail($mailHeader, $mailBody, $reportingPerson));
                     }
                 }
-                 $currentTime = Carbon::now();dd( $data['parent_id'],$decodedProjectName,$decodedPracticeName,Session::get('loginDetails')['userDetail']['emp_id']);
+                 $currentTime = Carbon::now();
                 $callChartWorkLogExistingRecord = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
                 ->where('project_id', $decodedProjectName)
                 ->where('sub_project_id', $decodedPracticeName)
