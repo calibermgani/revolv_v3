@@ -322,7 +322,7 @@ class ProductionController extends Controller
                $popupEditableFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('field_type_3','popup_visible')->where('field_type','editable')->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->get();
                $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
-               return view('productions/clientAssignedTab',compact('assignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','assignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','searchData',' $resourceName'));
+               return view('productions/clientAssignedTab',compact('assignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','assignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','searchData','resourceName'));
            } catch (\Exception $e) {
                log::debug($e->getMessage());
            }
@@ -2057,7 +2057,6 @@ class ProductionController extends Controller
                         $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->whereNull('CE_emp_id')->get();
                         $exStatus = 'Un'.str_replace('CE_', '', $request['chart_status']);
                     } else {
-                        dd($request->resourceName);
                         if($request->resourceName != null) {
                            $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->whereNotNull('CE_emp_id')->get();
                         } else {
