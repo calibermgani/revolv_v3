@@ -2064,7 +2064,7 @@ class ProductionController extends Controller
                         }
                         $exStatus = str_replace('CE_', '', $request['chart_status']);
                     }
-                    dd($exportResult,$loginEmpId);
+                  
                 } else if ($loginEmpId) {
                     $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->get();
                     $exStatus = str_replace('CE_', '', $request['chart_status']);
@@ -2081,7 +2081,7 @@ class ProductionController extends Controller
                     });
                     array_push($fields,'aging','aging_range');
                 }
-           
+                dd($exportResult,$loginEmpId,$empDesignation);
                 return Excel::download(new ProductionExport($fields,$exportResult), 'Resolv_'.$exStatus.'_export.xlsx');
                 } catch (\Exception $e) {
                     log::debug($e->getMessage());
