@@ -2120,7 +2120,7 @@ class ProductionController extends Controller
                     });
                     array_push($fields,'aging','aging_range');
                 }
-                return Excel::download(new ProductionExport($fields,$exportResult), 'Resolv_'.$exStatus.'_export.xlsx');
+                return Excel::download(new ProductionExport($fields,$exportResult), 'Resolv_'.$exStatus.'_Export.xlsx');
                 } catch (\Exception $e) {
                     log::debug($e->getMessage());
                 }

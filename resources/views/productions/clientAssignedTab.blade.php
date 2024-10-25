@@ -2214,6 +2214,7 @@ nav{
                 formData += '&clientName=' + clientName;
                 formData += '&subProjectName=' + subProjectName;
                 formData += '&resourceName=' + resourceName;
+                formData += '&recordStatusVal=' + recordStatusVal;
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
