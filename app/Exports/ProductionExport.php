@@ -55,9 +55,9 @@ class ProductionExport implements FromCollection, WithHeadings
                 if (str_contains($record->{$field}, '-') && strtotime($record->{$field})) {
                     $exportRow[$headerField] = date('m/d/Y', strtotime($record->{$field}));
                 } else if ($field == 'chart_status' && str_contains($record->{$field}, 'CE_')) {
-                    $exportRow[$headerField] = 'AR'.str_replace('CE_', '', $record->{$field});
+                    $exportRow[$headerField] = 'AR '.str_replace('CE_', '', $record->{$field});
                 } else if ($field == 'chart_status' && str_contains($record->{$field}, 'QA_')) {
-                    $exportRow[$headerField] = 'QA'.str_replace('QA_', '', $record->{$field});
+                    $exportRow[$headerField] = 'QA '.str_replace('QA_', '', $record->{$field});
                 } else if ($field == 'aging') {
                     $exportRow[$headerField] = $agingCount;
                 } elseif ($field == 'aging_range') {
@@ -82,8 +82,12 @@ class ProductionExport implements FromCollection, WithHeadings
         return array_map(function ($field) {          
             if ($field == 'CE_emp_id') {
                 $field = 'AR_emp_id';
-            }else if($field == 'chart_status') {
-                $field = 'Charge Status';
+            } else if($field == 'chart_status') {
+                $field = 'charge_status';
+            } else if($field == 'coder_work_date') {
+                $field = 'ar_work_date';
+            } else if($field == 'coder_rework_status') {
+                $field = 'ar_rework_status';
             } 
             $headerField = ucwords(str_replace(['_else_', '_'], ['/', ' '], $field));
             // Convert the field name from snake_case to words with first letter capitalized
