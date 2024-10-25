@@ -2035,7 +2035,13 @@ class ProductionController extends Controller
                             }
                             $exStatus = str_replace('CE_', '', $request['chart_status']);
                         } else {
-                             $exportResult = $query->where('chart_status',$request->chart_status)->whereBetween('updated_at',[$startDate,$endDate])->get();
+                            if($request->chart_status == "Rebuttal") {
+                                $exportResult = $query->where('chart_status',$request->chart_status)->whereNull('ar_manager_rebuttal_status')->orWhere('ar_manager_rebuttal_status', '!=', 'agree')
+                                ->whereBetween('updated_at',[$startDate,$endDate])->get();
+                            } else {
+                                $exportResult = $query->where('chart_status',$request->chart_status)->whereBetween('updated_at',[$startDate,$endDate])->get();
+                            }
+                            
                              if(str_contains('CE_', '', $request['chart_status'])) {
                                 $exStatus = str_replace('CE_', '', $request['chart_status']);
                              } else if(str_contains('AR_', '', $request['chart_status'])) {
@@ -2052,7 +2058,12 @@ class ProductionController extends Controller
                        $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->get();
                        $exStatus = str_replace('CE_', '', $request['chart_status']);
                     } else {
-                        $exportResult = $query->where('chart_status',$request->chart_status)->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->get();
+                        if($request->chart_status == "Rebuttal") {
+                            $exportResult = $query->where('chart_status',$request->chart_status)->whereNull('ar_manager_rebuttal_status')->orWhere('ar_manager_rebuttal_status', '!=', 'agree')
+                            ->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->get();
+                        } else {
+                           $exportResult = $query->where('chart_status',$request->chart_status)->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->get();
+                        }
                         if(str_contains('CE_', '', $request['chart_status'])) {
                             $exStatus = str_replace('CE_', '', $request['chart_status']);
                          } else if(str_contains('AR_', '', $request['chart_status'])) {
