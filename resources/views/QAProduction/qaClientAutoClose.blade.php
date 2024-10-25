@@ -343,7 +343,7 @@ use Carbon\Carbon;
                                                 @php
                                                     $columnsToExclude = [
 
-                                                        'ce_hold_reason','qa_hold_reason','qa_work_status','QA_rework_comments','QA_required_sampling','QA_rework_comments','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
+                                                        'ce_hold_reason','qa_hold_reason','QA_rework_comments','QA_required_sampling','QA_rework_comments','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
                                                         'coder_rework_status',
                                                         'QA_status_code',
                                                         'QA_sub_status_code',
