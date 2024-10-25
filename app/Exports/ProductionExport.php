@@ -55,7 +55,9 @@ class ProductionExport implements FromCollection, WithHeadings
                 if (str_contains($record->{$field}, '-') && strtotime($record->{$field})) {
                     $exportRow[$headerField] = date('m/d/Y', strtotime($record->{$field}));
                 } else if ($field == 'chart_status' && str_contains($record->{$field}, 'CE_')) {
-                    $exportRow[$headerField] = str_replace('CE_', '', $record->{$field});
+                    $exportRow[$headerField] = 'AR'.str_replace('CE_', '', $record->{$field});
+                } else if ($field == 'chart_status' && str_contains($record->{$field}, 'QA_')) {
+                    $exportRow[$headerField] = 'QA'.str_replace('QA_', '', $record->{$field});
                 } else if ($field == 'aging') {
                     $exportRow[$headerField] = $agingCount;
                 } elseif ($field == 'aging_range') {
