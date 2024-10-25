@@ -346,11 +346,11 @@ use Carbon\Carbon;
                                                    @if ($columnValue == 'chart_status')
                                                     Charge Status
                                                     @elseif ($columnValue == 'CE_emp_id')
-                                                    ar_emp_id
+                                                    AR Emp Id
                                                     @elseif ($columnValue == 'coder_work_date')
-                                                    ar_work_date
+                                                    AR Work Date
                                                     @elseif ($columnValue == 'coder_rework_status')
-                                                    ar_rework_status
+                                                    AR rework Status
                                                     @else
                                                     {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
                                                     @endif
@@ -361,11 +361,11 @@ use Carbon\Carbon;
                                                         @if ($columnValue == 'chart_status')
                                                         Charge Status
                                                         @elseif ($columnValue == 'CE_emp_id')
-                                                        ar_emp_id
+                                                        AR Emp Id
                                                         @elseif ($columnValue == 'coder_work_date')
-                                                        ar_work_date
+                                                        AR Work Date
                                                         @elseif ($columnValue == 'coder_rework_status')
-                                                        ar_rework_status
+                                                        AR rework Status
                                                        @else
                                                          {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
                                                        @endif
