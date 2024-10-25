@@ -201,7 +201,7 @@ class QAProductionController extends Controller
                         $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','QA_Inprocess')->orderBy('id','desc')->pluck('record_id')->toArray();
                         $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('emp_id', $loginEmpId)->where('end_time', null)->whereIn('record_status', ['QA_Assigned','QA_Inprocess'])->orderBy('id', 'desc')->pluck('record_id')->toArray();
                         // $assignedProjectDetails = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling')->orderBy('id', 'ASC')->paginate(50);
-                        $assignedProjectDetails = $query->whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling');                        
+                        $assignedProjectDetails = $query->whereIn('chart_status',['CE_Completed','QA_Inprocess'])->whereNotNull('QA_emp_id')->where('qa_work_status','Sampling');                        
                         if (!empty($existingCallerChartsWorkLogs)) {
                             $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
                         }
@@ -1737,6 +1737,7 @@ class QAProductionController extends Controller
                     $decodedsubProjectName= $decodedsubProjectName->sub_project_name;
                 }
                 $subProjectId = $request->subProjectName == '--' ?  NULL : $decodedPracticeName;
+                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString();
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');   
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName;
@@ -1757,20 +1758,39 @@ class QAProductionController extends Controller
                     }
                 }
                 if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
-          
                     if($request->recordStatusVal == "unassigned") {
-                        $exportResult = $query->whereIn('chart_status',[$request->chart_status,'QA_Inprocess'])->whereNull('QA_emp_id')->get();
+                        $exportResult = $query->whereIn('chart_status',[$request->chart_status,'QA_Inprocess'])->whereNull('qa_work_status')->whereNull('QA_emp_id')->get();
                         $exStatus = 'UnAssigned';
                     } else if($request->recordStatusVal == "Assigned") {
-                        $exportResult = $query->whereIn('chart_status',[$request->chart_status,'QA_Inprocess'])->whereNotNull('QA_emp_id')->get();
+                        $exportResult = $query->whereIn('chart_status',[$request->chart_status,'QA_Inprocess'])->whereNotNull('QA_emp_id')->where('qa_work_status','Sampling')->get();
                         $exStatus = 'Assigned';
-                    } else {
-                        $exportResult = $query->where('chart_status',$request->chart_status)->get();
+                    } else if($request->recordStatusVal == "Auto_Close") {
+                        $exportResult = $query->where('qa_work_status','Auto_Close')->get();
+                        $exStatus = 'Auto_Close';
+                    }  else {
+                        $exportResult = $query->where('chart_status',$request->chart_status)->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->get();
                         $exStatus = str_replace('QA_', '', $request['chart_status']);
                     }
                 } else if ($loginEmpId) {
-                    $exportResult = $query->whereIn('chart_status',[$request->chart_status,'QA_Inprocess'])->where('QA_emp_id',$loginEmpId)->get();
-                    $exStatus = 'Assigned';
+                    if($request->recordStatusVal == "Assigned") {
+                        $exportResult = $query->whereIn('chart_status',[$request->chart_status,'QA_Inprocess'])->where('QA_emp_id',$loginEmpId)->where('qa_work_status','Sampling')->get();
+                        $exStatus = 'Assigned';
+                    } else if($request->recordStatusVal == "Auto_Close") {
+                        $exportResult = $query->where('qa_work_status','Auto_Close')->get();
+                        $exStatus = 'Auto_Close';
+                    } else {
+                        if($request->chart_status == "Rebuttal") {
+                            $exportResult = $query->where('chart_status',$request->chart_status)->where('ar_manager_rebuttal_status','agree')->where('QA_emp_id',$loginEmpId)
+                            ->whereBetween('updated_at',[$startDate,$endDate])->get();
+                        } else {
+                            $exportResult = $query->where('chart_status',$request->chart_status)->where('QA_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->get();
+                        }
+                        if(str_contains('QA_', '', $request['chart_status'])) {
+                           $exStatus = str_replace('QA_', '', $request['chart_status']);
+                        } else {
+                            $exStatus = $request['chart_status'];
+                        }
+                    }
                 }
                 $fields = [];
                 if (Schema::hasTable($table_name)) {
@@ -1785,7 +1805,7 @@ class QAProductionController extends Controller
                     array_push($fields,'aging','aging_range');
                 }
               
-                return Excel::download(new ProductionExport($fields,$exportResult), 'Resolv_'.$exStatus.'_export.xlsx');
+                return Excel::download(new ProductionExport($fields,$exportResult), 'Resolv_'.$exStatus.'_Export.xlsx');
                 } catch (\Exception $e) {
                     log::debug($e->getMessage());
                 }

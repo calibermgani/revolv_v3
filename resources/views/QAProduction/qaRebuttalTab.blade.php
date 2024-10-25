@@ -1275,6 +1275,56 @@ use Carbon\Carbon;
                     $('#qa_manager_rebuttal_comments').val('');
                 }
             })
+            $(document).on('click', '#assign_export', function(e) {
+                        var formData = $('#formSearch').serialize();
+                        var chartStatus = "Rebuttal";
+                        formData += '&chart_status=' + chartStatus;
+                        formData += '&clientName=' + clientName;
+                        formData += '&subProjectName=' + subProjectName;
+                        $.ajaxSetup({
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                                    'content')
+                            }
+                        });
+                        KTApp.block('#export_div', {
+                            overlayColor: '#000000',
+                            state: 'danger',
+                            opacity: 0.1,
+                            message: 'Fetching...',
+                        });
+                        $.ajax({
+                                url: "{{ url('qa_production/quality_export') }}",
+                                method: 'POST',
+                                data: formData,
+                                xhrFields: {
+                                    responseType: 'blob'  // This is crucial for downloading Excel
+                                },
+                                success: function(response, status, xhr) {  // Correct order of parameters
+                                    var filename = "";
+                                    var disposition = xhr.getResponseHeader('Content-Disposition');
+                                    if (disposition && disposition.indexOf('attachment') !== -1) {
+                                        var matches = /filename[^;=\n]*=([^;\n]*)/.exec(disposition);                            
+                                        if (matches != null && matches[1]) {
+                                            // Trim any extra spaces or quotes around the filename
+                                            filename = matches[1].trim().replace(/^"|"$/g, '');
+                                        }
+                                    }
+
+                                    var blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                                    var link = document.createElement('a');
+                                    link.href = window.URL.createObjectURL(blob);
+                                    link.download = filename || 'export.xlsx';
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                    KTApp.unblock('#export_div');
+                                },
+                                error: function(response) {
+                                    console.log('Error generating Excel file', response);
+                                }
+                        });
+                   });
         })
     </script>
 @endpush
