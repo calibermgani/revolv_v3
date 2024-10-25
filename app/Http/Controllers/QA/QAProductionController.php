@@ -1785,7 +1785,7 @@ class QAProductionController extends Controller
                         } else {
                             $exportResult = $query->where('chart_status',$request->chart_status)->where('QA_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->get();
                         }
-                        if(str_contains('QA_', '', $request['chart_status'])) {
+                        if(str_contains('QA_',$request['chart_status'])) {
                            $exStatus = str_replace('QA_', '', $request['chart_status']);
                         } else {
                             $exStatus = $request['chart_status'];
