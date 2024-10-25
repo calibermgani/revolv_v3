@@ -2209,6 +2209,7 @@ nav{
             $(document).on('click', '#assign_export', function(e) {        
                 var formData = $('#formSearch').serialize();
                 var chartStatus = "CE_Assigned";
+                var recordStatusVal = "assigned";
                 formData += '&chart_status=' + chartStatus;
                 formData += '&clientName=' + clientName;
                 formData += '&subProjectName=' + subProjectName;

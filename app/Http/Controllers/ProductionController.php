@@ -146,35 +146,6 @@ class ProductionController extends Controller
             return redirect('/');
         }
     }
-    // public function clientTabs($clientName) {
-    //     try {
-    //         $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
-    //         $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
-    //         $decodedClientName = Helpers::encodeAndDecodeID($clientName, 'decode');
-    //         $databaseConnection = Str::lower($decodedClientName);
-    //         Config::set('database.connections.mysql.database',$databaseConnection);
-
-    //         if ($loginEmpId && $loginEmpId == "Admin") {
-    //             $assignedProjectDetails = InventoryWound::where('status','CE_Inprocess')->orderBy('id','desc')->get();
-    //             $pendingProjectDetails = InventoryWound::where('status','CE_Pending')->orderBy('id','desc')->get();
-    //             $completedProjectDetails = InventoryWound::where('status','CE_Completed')->orderBy('id','desc')->get();
-    //             $holdProjectDetails = InventoryWound::where('status','CE_Hold')->orderBy('id','desc')->get();
-    //         } elseif ($loginEmpId) {
-    //             $assignedProjectDetails = InventoryWound::where('status','CE_Inprocess')->where('CE_emp_id',$loginEmpId)->orderBy('id','desc')->get();
-    //             $pendingProjectDetails = InventoryWound::where('status','CE_Pending')->where('CE_emp_id',$loginEmpId)->orderBy('id','desc')->get();
-    //             $completedProjectDetails = InventoryWound::where('status','CE_Completed')->where('CE_emp_id',$loginEmpId)->orderBy('id','desc')->get();
-    //             $holdProjectDetails = InventoryWound::where('status','CE_Hold')->where('CE_emp_id',$loginEmpId)->orderBy('id','desc')->get();
-    //         }
-    //         if ($loginEmpId == "Admin") {
-    //            $duplicateProjectDetails = InventoryWoundDuplicate::whereNotIn('status',['agree','dis_agree'])->orderBy('id','desc')->get();
-    //         } else {
-    //             $duplicateProjectDetails = [];
-    //         }
-    //         return view('productions/clientAssignedTab',compact('assignedProjectDetails','completedProjectDetails','holdProjectDetails','duplicateProjectDetails','databaseConnection'));
-    //     } catch (\Exception $e) {
-    //         log::debug($e->getMessage());
-    //     }
-    // }
     public function clientAssignedTab(Request $request,$clientName,$subProjectName) {
 
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
@@ -212,7 +183,7 @@ class ProductionController extends Controller
                     foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
                        $searchData[$key] = $value;
                         if (is_array($value)) {
-                            $value = implode('_el_', $value);  // If it's an array, handle it accordingly
+                            $value = implode('_el_', $value); 
                         }
 
                         // Assuming 'like' is needed for partial match searches (optional), adjust based on requirements
@@ -817,8 +788,6 @@ class ProductionController extends Controller
                     array_push($columnsHeader,'aging','aging_range');
                }
                $modelName = Str::studly($table_name);
-               //    $modelClassDuplcates = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',ucfirst($decodedClientName).ucfirst($decodedsubProjectName))."Duplicates";
-               //    $modelClass = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',ucfirst($decodedClientName).ucfirst($decodedsubProjectName));
                $modelClassDuplcates = "App\\Models\\" . $modelName."Duplicates";
                $modelClass = "App\\Models\\" .$modelName;
                $query = $modelClassDuplcates::query();
@@ -2032,6 +2001,7 @@ class ProductionController extends Controller
                     $decodedsubProjectName= $decodedsubProjectName->sub_project_name;
                 }
                 $subProjectId = $request->subProjectName == '--' ?  NULL : $decodedPracticeName;
+                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString();
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');   
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName;
@@ -2057,16 +2027,85 @@ class ProductionController extends Controller
                         $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->whereNull('CE_emp_id')->get();
                         $exStatus = 'Un'.str_replace('CE_', '', $request['chart_status']);
                     } else {
-                        if($request->resourceName == 'null') {
-                           $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->whereNotNull('CE_emp_id')->get();
+                        if($request->recordStatusVal == "assigned") {
+                            if($request->resourceName == 'null') {
+                              $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->whereNotNull('CE_emp_id')->get();
+                            } else {
+                                $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->where('CE_emp_id',$request->resourceName)->get();
+                            }
                         } else {
-                            $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->where('CE_emp_id',$request->resourceName)->get();
+                             $exportResult = $query->where('chart_status',$request->chart_status)->whereBetween('updated_at',[$startDate,$endDate])->get();
                         }
                         $exStatus = str_replace('CE_', '', $request['chart_status']);
                     }
                   
                 } else if ($loginEmpId) {
-                    $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->get();
+                    if($request->recordStatusVal == "assigned") {
+                       $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->get();
+                    } else {
+                        $exportResult = $query->where('chart_status',$request->chart_status)->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->get();
+                    }
+                    $exStatus = str_replace('CE_', '', $request['chart_status']);
+                }
+                $fields = [];
+                if (Schema::hasTable($table_name)) {
+                    $column_names = DB::select("DESCRIBE $table_name");
+                    $columns = array_column($column_names, 'Field');
+                    $columnsToExclude = ['id','QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
+                    'coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers','ar_status_code','ar_action_code',
+                    'updated_at','created_at', 'deleted_at'];
+                    $fields = array_filter($columns, function ($column) use ($columnsToExclude) {
+                        return !in_array($column, $columnsToExclude);
+                    });
+                    array_push($fields,'aging','aging_range');
+                }
+                return Excel::download(new ProductionExport($fields,$exportResult), 'Resolv_'.$exStatus.'_export.xlsx');
+                } catch (\Exception $e) {
+                    log::debug($e->getMessage());
+                }
+            } else {
+                return redirect('/');
+            }       
+    }
+    public function clientDuplicateExport(Request $request) {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+            try {
+             
+                $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && 
+                Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
+                $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
+                $decodedProjectName = Helpers::encodeAndDecodeID($request->clientName, 'decode');
+                $decodedPracticeName = $request->subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName);
+                if($decodedsubProjectName != null &&  $decodedsubProjectName != 'project') {
+                    $decodedsubProjectName= $decodedsubProjectName->sub_project_name;
+                }
+                $subProjectId = $request->subProjectName == '--' ?  NULL : $decodedPracticeName;
+                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString();
+                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');   
+                $modelName = Str::studly($table_name);
+                $modelClass = "App\\Models\\" . $modelName."Duplicates";
+                $query = $modelClass::query();
+                if($request['_token'] != null) {
+                    foreach ($request->except('_token', 'parent', 'child','clientName','subProjectName') as $key => $value) {                      
+                        if (is_array($value)) {
+                            $value = implode('_el_', $value);  
+                        }
+                        if (is_numeric($value) || is_bool($value)) {
+                            $query->where($key, $value);  // Exact match for numeric/boolean
+                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                            $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
+                        } else { 
+                            $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
+                        }
+                    }
+                }
+                if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
+                    $exportResult = $query->whereBetween('updated_at',[$startDate,$endDate])->get();                       
+                    $exStatus = str_replace('CE_', '', $request['chart_status']);                 
+                } else if ($loginEmpId) {
+                    $exportResult = $query->whereBetween('updated_at',[$startDate,$endDate])->where('CE_emp_id',$loginEmpId)->get();
                     $exStatus = str_replace('CE_', '', $request['chart_status']);
                 }
                 $fields = [];
