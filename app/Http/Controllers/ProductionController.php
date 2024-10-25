@@ -2041,10 +2041,9 @@ class ProductionController extends Controller
                             } else {
                                 $exportResult = $query->where('chart_status',$request->chart_status)->whereBetween('updated_at',[$startDate,$endDate])->get();
                             }
-                            dd(str_contains('CE_',$request['chart_status']),$request['chart_status']);
-                             if(str_contains('CE_',$request['chart_status'])) {
+                             if(str_contains($request['chart_status'], 'CE_')) {
                                 $exStatus = str_replace('CE_', '', $request['chart_status']);
-                             } else if(str_contains('AR_',$request['chart_status'])) {
+                             } else if(str_contains($request['chart_status'],'AR_')) {
                                 $exStatus = str_replace('AR_', '', $request['chart_status']);
                              } else {
                                 $exStatus = $request['chart_status'];
@@ -2064,9 +2063,9 @@ class ProductionController extends Controller
                         } else {
                            $exportResult = $query->where('chart_status',$request->chart_status)->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->get();
                         }
-                        if(str_contains('CE_', $request['chart_status'])) {
+                        if(str_contains($request['chart_status'],'CE_')) {
                             $exStatus = str_replace('CE_', '', $request['chart_status']);
-                         } else if(str_contains('AR_', $request['chart_status'])) {
+                         } else if(str_contains($request['chart_status'],'AR_')) {
                             $exStatus = str_replace('AR_', '', $request['chart_status']);
                          } else {
                             $exStatus = $request['chart_status'];

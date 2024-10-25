@@ -661,7 +661,7 @@ use Carbon\Carbon;
                         message: 'Fetching...',
                     });
                     $.ajax({
-                        url: "{{ url('client_export') }}",
+                        url: "{{ url('client_duplicate_xport') }}",
                         method: 'POST',
                         data: formData,
                         xhrFields: {
