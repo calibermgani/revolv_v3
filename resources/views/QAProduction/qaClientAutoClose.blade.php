@@ -290,7 +290,13 @@ use Carbon\Carbon;
                                             @if ($columnValue != 'id')
                                                 <th><input type="hidden" value={{ $columnValue }}>
                                                     @if ($columnValue == 'chart_status')
-                                                        Charge Status
+                                                    Charge Status
+                                                    @elseif ($columnValue == 'CE_emp_id')
+                                                    AR Emp Id
+                                                    @elseif ($columnValue == 'coder_work_date')
+                                                    AR Work Date
+                                                    @elseif ($columnValue == 'coder_rework_status')
+                                                    AR Rework Status
                                                     @else
                                                     {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
                                                     @endif
@@ -299,7 +305,13 @@ use Carbon\Carbon;
                                                 <th style="display:none" class='notexport'><input type="hidden"
                                                         value={{ $columnValue }}>
                                                         @if ($columnValue == 'chart_status')
-                                                            Charge Status
+                                                        Charge Status
+                                                        @elseif ($columnValue == 'CE_emp_id')
+                                                        AR Emp Id
+                                                        @elseif ($columnValue == 'coder_work_date')
+                                                        AR Work Date
+                                                        @elseif ($columnValue == 'coder_rework_status')
+                                                        AR Rework Status
                                                         @else
                                                             {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
                                                         @endif
@@ -335,7 +347,7 @@ use Carbon\Carbon;
                                                         'coder_rework_status',
                                                         'QA_status_code',
                                                         'QA_sub_status_code',
-                                                        'coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                                                        'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                                                         'created_at',
                                                         'updated_at',
                                                         'deleted_at',
