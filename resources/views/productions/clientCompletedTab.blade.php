@@ -949,7 +949,7 @@ use Carbon\Carbon;
                 $(document).on('click', '#assign_export', function(e) {   
                     var resourceName = null; 
                     var formData = $('#formSearch').serialize();
-                    var chartStatus = "CE_Assigned";
+                    var chartStatus = "CE_Completed";
                     formData += '&chart_status=' + chartStatus;
                     formData += '&clientName=' + clientName;
                     formData += '&subProjectName=' + subProjectName;
