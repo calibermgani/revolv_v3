@@ -343,17 +343,29 @@ use Carbon\Carbon;
                                         @foreach ($columnsHeader as $columnName => $columnValue)
                                             @if ($columnValue != 'id')
                                                 <th><input type="hidden" value={{ $columnValue }}>
-                                                  @if ($columnValue == 'chart_status')
+                                                   @if ($columnValue == 'chart_status')
                                                     Charge Status
-                                                  @else
-                                                   {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
-                                                  @endif
-                                                </th>
+                                                    @elseif ($columnValue == 'CE_emp_id')
+                                                    ar_emp_id
+                                                    @elseif ($columnValue == 'coder_work_date')
+                                                    ar_work_date
+                                                    @elseif ($columnValue == 'coder_rework_status')
+                                                    ar_rework_status
+                                                    @else
+                                                    {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
+                                                    @endif
+                                                    </th>
                                             @else
                                                 <th style="display:none" class='notexport'><input type="hidden"
                                                         value={{ $columnValue }}>
-                                                       @if ($columnValue == 'chart_status')
-                                                         Charge Status
+                                                        @if ($columnValue == 'chart_status')
+                                                        Charge Status
+                                                        @elseif ($columnValue == 'CE_emp_id')
+                                                        ar_emp_id
+                                                        @elseif ($columnValue == 'coder_work_date')
+                                                        ar_work_date
+                                                        @elseif ($columnValue == 'coder_rework_status')
+                                                        ar_rework_status
                                                        @else
                                                          {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
                                                        @endif
