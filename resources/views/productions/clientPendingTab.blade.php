@@ -36,7 +36,10 @@ use Carbon\Carbon;
                                             <button type="button" class="btn text-white mr-3" style="background-color:#139AB3">SOP</button>
                                             </a>
                                         </div>
-                                        <div class="outside float-right" href="javascript:void(0);"></div>
+                                        <div class="d-flex align-items-center" id="export_div">
+                                            <a class="btn btn-primary-export text-white ml-2" href="javascript:void(0);" id='assign_export'  style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
+                                            </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1057,13 +1060,11 @@ use Carbon\Carbon;
         $(document).ready(function() {
             var arStatusList = @json( $arStatusList);
             var arActionList = @json($arActionListVal);
-            // Function to parse URL parameters
             function getUrlParam(param) {
                 const urlParams = new URLSearchParams(window.location.search);
                 return urlParams.get(param);
             }
 
-            // Get the URL parameter dynamically
             const url = window.location.href;
             const startIndex = url.indexOf('projects_') + 'projects_'.length;
             const endIndex = url.indexOf('/', startIndex);
@@ -1085,13 +1086,12 @@ use Carbon\Carbon;
                 $('.' + clumnClassName).each(function() {
                     ids.push($(this).attr('id'));
                 });
-                var lastElement = ids[ids.length - 1];console.log(ids,'$(this)',clumnClassName,lastElement);
+                var lastElement = ids[ids.length - 1];
                 var lastId = lastElement.replace(new RegExp('^' + clumnClassName), '');
                 if (lastId) {
                     uniqueId=lastId;
                 }
                 uniqueId++;
-               // console.log(lastId, lastElement,ids,clumnClassName,'clumnClassName',$(this).closest('.form-group').find('.add_labelName').val(),$('.'+clumnClassName).closest('.row_mar_bm').find('.add_labelName').val());
                 var labelName =$('.'+clumnClassName).closest('.row_mar_bm').find('.add_labelName').val();
                 var columnName = $('.'+clumnClassName).closest('.row_mar_bm').find('.add_columnName').val();
                 var inputType = $('.'+clumnClassName).closest('.row_mar_bm').find('.add_inputtype').val();
@@ -1186,7 +1186,6 @@ use Carbon\Carbon;
                 }
 
                 var plusButton = '<i class="fa fa-plus add_more" id="' +'add_more_'+columnName +'"></i>';
-                // var minusButton = '<i class="fa fa-minus minus_button remove_more" id="' + uniqueId +'"></i>';
                 var newRow = '<div class="row mt-6" id="' + newElementId + '">' +
                     '<div class="col-md-10">' + newElement + '</div>' +
                     '<div  class="col-md-1 col-form-label text-lg-right pt-0 pb-4" style="margin-left: -1.3rem;">' +
@@ -1194,19 +1193,14 @@ use Carbon\Carbon;
                     '</div><div></div>' +
                     '</div>';
                 var modalBody = $('.'+clumnClassName).closest('.modal-content').find('.modal-body');
-
-
                 $(this).closest('.col-md-6').append(newRow);
                      elementToRemove = 'add_more_'+clumnClassName;
                                 $('#'+elementToRemove).remove();
                                 uniqueId = uniqueId-1;
-                                removeId = uniqueId == 0 ? clumnClassName : clumnClassName+ uniqueId;console.log(removeId,'removeId');
-                                //   $('#patient_name2').closest('.row_mar_bm').find('.col-md-1').append('<i class="fa fa-minus minus_button remove_more" id="' + uniqueId + '"></i>');
-                                if(uniqueId > 0) {
-                                  $('#'+lastElement).closest('.col-md-10').next('.col-md-1').append('<i class="fa fa-minus minus_button remove_more" id="'+removeId +'"></i>');
+                                removeId = uniqueId == 0 ? clumnClassName : clumnClassName+ uniqueId;
+                                 if(uniqueId > 0) {
+                                   $('#'+lastElement).closest('.col-md-10').next('.col-md-1').append('<i class="fa fa-minus minus_button remove_more" id="'+removeId +'"></i>');
                                 }
-
-
                 if (inputType === 'date_range') {
                     var newDateRangePicker = modalBody.find('#' + newElementId).find('.date_range');
                     newDateRangePicker.daterangepicker({
@@ -1222,11 +1216,7 @@ use Carbon\Carbon;
 
             $(document).on('click', '.remove_more', function() {
                 var uniqueId = $(this).attr('id');
-            //     if (isNaN(uniqueId)) {console.log(isNaN(uniqueId),uniqueId,'uniqueId');
-            //     $(this).remove();
-            //    $('#'+uniqueId).remove();
-            //     }
-                var elementId = 'dynamicElement_' + uniqueId;//console.log(uniqueId,'uniqueId',elementId);
+                var elementId = 'dynamicElement_' + uniqueId;
                 $('#' + elementId).remove();
             });
 
@@ -1235,7 +1225,6 @@ use Carbon\Carbon;
                 var day = d.getDate();
                 var date = (month < 10 ? '0' : '') + month + '-' +
                     (day < 10 ? '0' : '') + day + '-' + d.getFullYear();
-
             var table = $("#client_pending_list").DataTable({
                 // processing: true,
                 // lengthChange: false,
@@ -1268,18 +1257,7 @@ use Carbon\Carbon;
                     "search": '',
                     "searchPlaceholder": "   Search",
                 },
-                buttons: [{
-                    "extend": 'excel',
-                    "text": `<span data-dismiss="modal" data-toggle="tooltip" data-placement="left" data-original-title="Export" style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
-                             </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></span>`,
-                    "className": 'btn btn-primary-export text-white',
-                    "title": 'PROCODE',
-                    "filename": 'procode_pending_'+date,
-                    "exportOptions": {
-                        "columns": ':not(.notexport)'// Exclude first two columns
-                    }
-                }],
-                dom: "B<'row'<'col-md-12'f><'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>"
+                dom: "<'row'<'col-md-12'f><'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>"
             })
             table.buttons().container()
                 .appendTo('.outside');
@@ -1293,8 +1271,7 @@ use Carbon\Carbon;
                     var classArray = classes.split(' ');
                     var lastClass = classArray[classArray.length - 1];
                 }
-                // var record_id = $(this).closest('tr').find('td:eq(1)').text();
-                    var record_id =  $(this).closest('tr').find('#table_id').text();console.log(record_id,'record_id');
+                    var record_id =  $(this).closest('tr').find('#table_id').text();
                     var $row = $(this).closest('tr');
                     var tdCount = $row.find('td').length;
                     var thCount = tdCount - 1;
@@ -1335,192 +1312,166 @@ use Carbon\Carbon;
                         },
                     });
                     function handleClientPendData(clientData,headers) {
-
                         $.each(headers, function(index, header) {
                             value = clientData[header];
-                        //     if (header == 'annex_coder_trends') {
-                        //         if (/_el_/.test(value)) {
-                        //             var commentsValues = value.split('_el_');
-                        //             var commentsText = commentsValues.join('\n');
-                        //             $('textarea[name="annex_coder_trends"]').val(commentsText);
-                        //         } else {
-                        //             $('textarea[name="annex_coder_trends"]').val(value);
-                        //         }
-                        //    }
                             $('label[id="' + header + '"]').html("");
                             $('input[name="' + header + '[]"]').html("");
-                            if (/_el_/.test(value)) {
-                                elementToRemove = 'add_more_'+header;
-                                $('#'+elementToRemove).remove();
-                             //   console.log( $('.'+header).closest('.row_mar_bm').find('.col-md-1'),'col',header);
-                                // $('.' + header).closest('.row_mar_bm').find('.col-md-1').append('<i class="fa fa-minus minus_button remove_more" id="' + header + '"></i>');//initital row minus button
+                                if (/_el_/.test(value)) {
+                                    elementToRemove = 'add_more_'+header;
+                                    $('#'+elementToRemove).remove();
+                                    var values = value.split('_el_');
+                                    var optionsJson =  $('.'+header).closest('.dynamic-field').find('.add_options').val();
+                                    var optionsObject = optionsJson ? JSON.parse(optionsJson) : null;
+                                    var optionsArray = optionsObject ? Object.values(optionsObject) : null;
+                                    var addMandatory =  $('.'+header).closest('.dynamic-field').find('.add_mandatory').val();
+                                    var inputType;
+                                    $('select[name="' + header + '[]"]').val(values[0]).trigger('change');
+                                        $('textarea[name="' + header + '[]"]').val(values[0]);
+                                        if ($('input[name="' + header + '[]"][type="checkbox"]').length > 0) {
+                                            var checkboxValues = values[0].split(','); 
+                                            $('input[name="' + header + '[]"]').each(function() {
+                                                var checkboxValue = $(this).val(); 
+                                                var isChecked = checkboxValues.includes(checkboxValue);
+                                                $(this).prop('checked', isChecked);
+                                            });
+                                        } else if($('input[name="' + header + '"][type="radio"]').length > 0) {
 
-                                var values = value.split('_el_');
-                                var optionsJson =  $('.'+header).closest('.dynamic-field').find('.add_options').val();
-                                var optionsObject = optionsJson ? JSON.parse(optionsJson) : null;
-                                var optionsArray = optionsObject ? Object.values(optionsObject) : null;
-                                var addMandatory =  $('.'+header).closest('.dynamic-field').find('.add_mandatory').val();
-                                var inputType;
-                                $('select[name="' + header + '[]"]').val(values[0]).trigger('change');
-                                // $('input[name="' + header + '[]"]').val(values[0]);
-                                $('textarea[name="' + header + '[]"]').val(values[0]);//console.log($('.'+header).attr('type'),'valuesType');
-                                if ($('input[name="' + header + '[]"][type="checkbox"]').length > 0) {
-                                    var checkboxValues = values[0].split(','); // Split the string into an array of checkbox values
-                                    $('input[name="' + header + '[]"]').each(function() {
-                                        var checkboxValue = $(this).val(); //console.log(checkboxValue,checkboxValues,'checkboxValues');
-                                        var isChecked = checkboxValues.includes(checkboxValue);
-                                        $(this).prop('checked', isChecked);
-                                    });
-                                }else if($('input[name="' + header + '"][type="radio"]').length > 0) {
-
-                                    $('input[name="' + header + '"]').filter('[value="' + values[0] + '"]').prop(
-                                        'checked', true);
-                                } else {
-                                    $('input[name="' + header + '[]"]').val(values[0]);
-                                }
-
-
-                                    for (var i = 1; i < values.length; i++) {
-                                        var selectType;
-                                        var isLastValue = i === values.length - 1;
-                                        var newElementId =  'dynamicElement_' + header + i;
-                                        if ($('select[name="' + header + '[]"]').prop('tagName') != undefined) {
-                                                // Create a new <select> element
-                                                selectType = $('<select>', {
-                                                    name: header + '[]',
-                                                    class: 'form-control ' + header + ' white-smoke pop-non-edt-val',
-                                                    id: header + i,
-                                                    addMandatory
-                                                });
-
-                                                // Add an empty default option
-                                                selectType.append($('<option>', { value: '', text: '-- Select --' }));
-
-                                                // Add options from optionsArray
-                                                optionsArray.forEach(function(option) {
-                                                    selectType.append($('<option>', {
-                                                        value: option,
-                                                        text: option,
-                                                        selected: option == values[i]
-                                                    }));
-                                                });
-
-                                                // Append the select element to its parent
-                                                var selectWrapper = $('<div>', { class: 'col-md-10' }).append(selectType);
-                                                    if(i === values.length - 1) {
-                                                      var minusButton = $('<i>', { class: 'fa fa-plus add_more', id: 'add_more_'+header });
-                                                } else {
-                                                    var minusButton = $('<i>', { class: 'fa fa-minus minus_button remove_more', id: header+ i });
-                                                }
-                                                var colLabel = $('<div>', { class: 'col-md-1 col-form-label text-lg-right pt-0 pb-4', style: 'margin-left: -1.3rem;' }).append(minusButton);
-                                                var rowDiv = $('<div>', { class: 'row mt-4', id: newElementId}).append(selectWrapper, colLabel);
-                                                $('select[name="' + header + '[]"]').closest('.dynamic-field').append(rowDiv);
-
-                                            } else if ($('textarea[name="' + header + '[]"]').prop('nodeName') != undefined) {
-                                                    inputType =  '<textarea name="' + header + '[]" '+addMandatory+' class="form-control ' + header + ' white-smoke pop-non-edt-val mt-0" rows="3" id="' + header + i + '">' + values[i] + '</textarea>';
-                                                    if(i === values.length - 1) {
-                                                         var minusButton = '<i class="fa fa-plus add_more" id="' +'add_more_'+header +'"></i>';
-                                                } else {
-                                                    var minusButton = '<i class="fa fa-minus minus_button remove_more" id="'+header+ i +'"></i>';
-                                                }
-                                                    var span = '<div class="row mt-4" id="' + newElementId + '">' +
-                                                        '<div class="col-md-10">' + inputType + '</div><div class="col-md-1 col-form-label text-lg-right pt-0 pb-4" style="margin-left: -1.3rem;">' +
-                                                            minusButton +'</div><div></div></div>';
-                                                    $('textarea[name="' + header + '[]"]').closest('.dynamic-field').append(span);
-                                                } else if ($('input[name="' + header + '[]"][type="checkbox"]').length > 0 && Array.isArray(optionsArray)) {
-                                                        inputType = '<div class="form-group row">';
-                                                        optionsArray.forEach(function(option) {
-                                                            var checked = (values[i] && values[i].split(',').includes(option.toString())) ? 'checked' : '';
-                                                            inputType +=
-                                                                '<div class="col-md-6">' +
-                                                                '<div class="checkbox-inline mt-2">' +
-                                                                '<label class="checkbox pop-non-edt-val" style="word-break: break-all;" >' +
-                                                                '<input type="checkbox" name="' + header + '[]" value="' + option + '" '+addMandatory+' class="'+header +'" id="' +header + i + '" ' + checked + '>' + option +
-                                                                '<span></span>' +
-                                                                '</label>' +
-                                                                '</div>' +
-                                                                '</div>';
-                                                        });
-
-                                                        inputType += '</div>';
-                                                        if(i === values.length - 1) {
-                                                         var minusButton = '<i class="fa fa-plus add_more" id="' +'add_more_'+header +'"></i>';
-                                                        } else {
-                                                            var minusButton = '<i class="fa fa-minus minus_button remove_more" id="'+header+ i +'"></i>';
-                                                        }
-                                                        var span = '<div class="row mt-4" id="' + newElementId + '">' +
-                                                            '<div class="col-md-10">' + inputType + '</div><div  class="col-md-1 col-form-label text-lg-right pt-0 pb-4" style="margin-left: -1.3rem;">' +
-                                                                minusButton + '</div><div></div></div>';
-
-                                                        $('input[name="' + header + '[]"]').closest('.dynamic-field').append(span);
-                                            } else if ($('input[name="' + header + '"][type="radio"]').length > 0 && Array.isArray(optionsArray)) {
-                                                        inputType = '<div class="form-group row">';
-                                                        optionsArray.forEach(function(option) {
-                                                            var checked = (values[i] && values[i].split(',').includes(option.toString())) ? 'checked' : '';
-                                                            inputType +=
-                                                                '<div class="col-md-6">' +
-                                                                '<div class="radio-inline mt-2">' +
-                                                                '<label class="radio pop-non-edt-val" style="word-break: break-all;" >' +
-                                                                '<input type="radio" name="' + header + '_' + i +'" '+addMandatory+'  class="'+header +'" value="' + option + '" id="' +
-                                                                    header + i + '" ' + checked + '>' + option +
-                                                                '<span></span>' +
-                                                                '</label>' +
-                                                                '</div>' +
-                                                                '</div>';
-                                                        });
-
-                                                        inputType += '</div>';
-                                                        if(i === values.length - 1) {//console.log(i,values.length - 1,'length');
-                                                         var minusButton = '<i class="fa fa-plus add_more" id="' +'add_more_'+header +'"></i>';
-                                                        } else {
-                                                            var minusButton = '<i class="fa fa-minus minus_button remove_more" id="'+header+ i +'"></i>';
-                                                        }
-                                                        var span = '<div class="row mt-4" id="' + newElementId + '">' +
-                                                            '<div class="col-md-10">' + inputType + '</div><div  class="col-md-1 col-form-label text-lg-right pt-0 pb-4" style="margin-left: -1.3rem;">' +
-                                                                minusButton + '</div><div></div></div>';
-                                                        $('input[name="' + header + '"]').closest('.dynamic-field').append(span);
-                                            } else {
-                                                var fieldType =  $('.'+header).attr('type');
-                                                var classes = $('.'+header).attr('class');
-                                                var classArray = classes.split(' ');
-                                                var dateRangeClass = '';
-                                                for (var j = 0; j < classArray.length; j++) {
-                                                    if (classArray[j] === 'date_range') {
-                                                        dateRangeClass = classArray[j];
-                                                        break;
-                                                    }
-                                                }
-                                                console.log(fieldType,'fieldType',header,dateRangeClass,values);
-                                                if(dateRangeClass == 'date_range') { console.log(fieldType,'fieldType daterange',header,dateRangeClass,values,i);
-
-                                                  inputType = '<input type="'+fieldType+'" name="' + header +'[]" '+addMandatory+' class="form-control date_range ' + header + ' white-smoke pop-non-edt-val" autocomplete="none" style="cursor:pointer" value="' + values[i] + '" id="' +header + i + '">';
-                                                    if(i === values.length - 1) {
-                                                            var minusButton = '<i class="fa fa-plus add_more" id="' +'add_more_'+header +'"></i>';
-                                                    } else {
-                                                        var minusButton = '<i class="fa fa-minus minus_button remove_more" id="'+ header+ i +'"></i>';
-                                                    }
-                                                }
-                                                else {
-                                                    inputType = '<input type="'+fieldType+'" name="' + header +'[]" '+addMandatory+' class="form-control ' + header + ' white-smoke pop-non-edt-val"  value="' + values[i] + '" id="' +header + i + '">';
-                                                    if(i === values.length - 1) {
-                                                            var minusButton = '<i class="fa fa-plus add_more" id="' +'add_more_'+header +'"></i>';
-                                                    } else {
-                                                        var minusButton = '<i class="fa fa-minus minus_button remove_more" id="'+ header+ i +'"></i>';
-                                                    }
-                                                }
-
-                                                var span = '<div class="row mt-4"  id="' +newElementId+ '">' +
-                                                    '<div class="col-md-10">'+ inputType +'</div><div  class="col-md-1 col-form-label text-lg-right pt-0 pb-4" style="margin-left: -1.3rem;">' +
-                                                        minusButton +'</div><div></div></div>';
-                                                    $('input[name="' + header + '[]"]').closest('.dynamic-field').append(span);
+                                            $('input[name="' + header + '"]').filter('[value="' + values[0] + '"]').prop(
+                                                'checked', true);
+                                        } else {
+                                            $('input[name="' + header + '[]"]').val(values[0]);
                                         }
-                                    }
-                                    $('.date_range').daterangepicker({
-                                        autoUpdateInput: false,
-                                    }).on('apply.daterangepicker', function(ev, picker) {
-                                        $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
-                                    }).attr("autocomplete", "off");
+                                        for (var i = 1; i < values.length; i++) {
+                                            var selectType;
+                                            var isLastValue = i === values.length - 1;
+                                            var newElementId =  'dynamicElement_' + header + i;
+                                                if ($('select[name="' + header + '[]"]').prop('tagName') != undefined) {
+                                                        selectType = $('<select>', {
+                                                            name: header + '[]',
+                                                            class: 'form-control ' + header + ' white-smoke pop-non-edt-val',
+                                                            id: header + i,
+                                                            addMandatory
+                                                        });
+                                                        selectType.append($('<option>', { value: '', text: '-- Select --' }));
+                                                        optionsArray.forEach(function(option) {
+                                                            selectType.append($('<option>', {
+                                                                value: option,
+                                                                text: option,
+                                                                selected: option == values[i]
+                                                            }));
+                                                        });
 
+                                                        var selectWrapper = $('<div>', { class: 'col-md-10' }).append(selectType);
+                                                            if(i === values.length - 1) {
+                                                            var minusButton = $('<i>', { class: 'fa fa-plus add_more', id: 'add_more_'+header });
+                                                        } else {
+                                                            var minusButton = $('<i>', { class: 'fa fa-minus minus_button remove_more', id: header+ i });
+                                                        }
+                                                        var colLabel = $('<div>', { class: 'col-md-1 col-form-label text-lg-right pt-0 pb-4', style: 'margin-left: -1.3rem;' }).append(minusButton);
+                                                        var rowDiv = $('<div>', { class: 'row mt-4', id: newElementId}).append(selectWrapper, colLabel);
+                                                        $('select[name="' + header + '[]"]').closest('.dynamic-field').append(rowDiv);
+
+                                                } else if ($('textarea[name="' + header + '[]"]').prop('nodeName') != undefined) {
+                                                        inputType =  '<textarea name="' + header + '[]" '+addMandatory+' class="form-control ' + header + ' white-smoke pop-non-edt-val mt-0" rows="3" id="' + header + i + '">' + values[i] + '</textarea>';
+                                                        if(i === values.length - 1) {
+                                                            var minusButton = '<i class="fa fa-plus add_more" id="' +'add_more_'+header +'"></i>';
+                                                        } else {
+                                                            var minusButton = '<i class="fa fa-minus minus_button remove_more" id="'+header+ i +'"></i>';
+                                                        }
+                                                            var span = '<div class="row mt-4" id="' + newElementId + '">' +
+                                                                '<div class="col-md-10">' + inputType + '</div><div class="col-md-1 col-form-label text-lg-right pt-0 pb-4" style="margin-left: -1.3rem;">' +
+                                                                    minusButton +'</div><div></div></div>';
+                                                            $('textarea[name="' + header + '[]"]').closest('.dynamic-field').append(span);
+                                                } else if ($('input[name="' + header + '[]"][type="checkbox"]').length > 0 && Array.isArray(optionsArray)) {
+                                                            inputType = '<div class="form-group row">';
+                                                            optionsArray.forEach(function(option) {
+                                                                var checked = (values[i] && values[i].split(',').includes(option.toString())) ? 'checked' : '';
+                                                                inputType +=
+                                                                    '<div class="col-md-6">' +
+                                                                    '<div class="checkbox-inline mt-2">' +
+                                                                    '<label class="checkbox pop-non-edt-val" style="word-break: break-all;" >' +
+                                                                    '<input type="checkbox" name="' + header + '[]" value="' + option + '" '+addMandatory+' class="'+header +'" id="' +header + i + '" ' + checked + '>' + option +
+                                                                    '<span></span>' +
+                                                                    '</label>' +
+                                                                    '</div>' +
+                                                                    '</div>';
+                                                            });
+
+                                                            inputType += '</div>';
+                                                            if(i === values.length - 1) {
+                                                            var minusButton = '<i class="fa fa-plus add_more" id="' +'add_more_'+header +'"></i>';
+                                                            } else {
+                                                                var minusButton = '<i class="fa fa-minus minus_button remove_more" id="'+header+ i +'"></i>';
+                                                            }
+                                                            var span = '<div class="row mt-4" id="' + newElementId + '">' +
+                                                                '<div class="col-md-10">' + inputType + '</div><div  class="col-md-1 col-form-label text-lg-right pt-0 pb-4" style="margin-left: -1.3rem;">' +
+                                                                    minusButton + '</div><div></div></div>';
+
+                                                            $('input[name="' + header + '[]"]').closest('.dynamic-field').append(span);
+                                                } else if ($('input[name="' + header + '"][type="radio"]').length > 0 && Array.isArray(optionsArray)) {
+                                                            inputType = '<div class="form-group row">';
+                                                            optionsArray.forEach(function(option) {
+                                                                var checked = (values[i] && values[i].split(',').includes(option.toString())) ? 'checked' : '';
+                                                                inputType +=
+                                                                    '<div class="col-md-6">' +
+                                                                    '<div class="radio-inline mt-2">' +
+                                                                    '<label class="radio pop-non-edt-val" style="word-break: break-all;" >' +
+                                                                    '<input type="radio" name="' + header + '_' + i +'" '+addMandatory+'  class="'+header +'" value="' + option + '" id="' +
+                                                                        header + i + '" ' + checked + '>' + option +
+                                                                    '<span></span>' +
+                                                                    '</label>' +
+                                                                    '</div>' +
+                                                                    '</div>';
+                                                            });
+
+                                                            inputType += '</div>';
+                                                            if(i === values.length - 1) {
+                                                            var minusButton = '<i class="fa fa-plus add_more" id="' +'add_more_'+header +'"></i>';
+                                                            } else {
+                                                                var minusButton = '<i class="fa fa-minus minus_button remove_more" id="'+header+ i +'"></i>';
+                                                            }
+                                                            var span = '<div class="row mt-4" id="' + newElementId + '">' +
+                                                                '<div class="col-md-10">' + inputType + '</div><div  class="col-md-1 col-form-label text-lg-right pt-0 pb-4" style="margin-left: -1.3rem;">' +
+                                                                    minusButton + '</div><div></div></div>';
+                                                            $('input[name="' + header + '"]').closest('.dynamic-field').append(span);
+                                                } else {
+                                                    var fieldType =  $('.'+header).attr('type');
+                                                    var classes = $('.'+header).attr('class');
+                                                    var classArray = classes.split(' ');
+                                                    var dateRangeClass = '';
+                                                    for (var j = 0; j < classArray.length; j++) {
+                                                        if (classArray[j] === 'date_range') {
+                                                            dateRangeClass = classArray[j];
+                                                            break;
+                                                        }
+                                                    }
+                                                    if(dateRangeClass == 'date_range') {
+                                                        inputType = '<input type="'+fieldType+'" name="' + header +'[]" '+addMandatory+' class="form-control date_range ' + header + ' white-smoke pop-non-edt-val" autocomplete="none" style="cursor:pointer" value="' + values[i] + '" id="' +header + i + '">';
+                                                            if(i === values.length - 1) {
+                                                                    var minusButton = '<i class="fa fa-plus add_more" id="' +'add_more_'+header +'"></i>';
+                                                            } else {
+                                                                var minusButton = '<i class="fa fa-minus minus_button remove_more" id="'+ header+ i +'"></i>';
+                                                            }
+                                                    }
+                                                    else {
+                                                        inputType = '<input type="'+fieldType+'" name="' + header +'[]" '+addMandatory+' class="form-control ' + header + ' white-smoke pop-non-edt-val"  value="' + values[i] + '" id="' +header + i + '">';
+                                                        if(i === values.length - 1) {
+                                                                var minusButton = '<i class="fa fa-plus add_more" id="' +'add_more_'+header +'"></i>';
+                                                        } else {
+                                                            var minusButton = '<i class="fa fa-minus minus_button remove_more" id="'+ header+ i +'"></i>';
+                                                        }
+                                                    }
+                                                    var span = '<div class="row mt-4"  id="' +newElementId+ '">' +
+                                                        '<div class="col-md-10">'+ inputType +'</div><div  class="col-md-1 col-form-label text-lg-right pt-0 pb-4" style="margin-left: -1.3rem;">' +
+                                                            minusButton +'</div><div></div></div>';
+                                                        $('input[name="' + header + '[]"]').closest('.dynamic-field').append(span);
+                                                }
+                                        }
+                                        $('.date_range').daterangepicker({
+                                            autoUpdateInput: false,
+                                        }).on('apply.daterangepicker', function(ev, picker) {
+                                            $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+                                        }).attr("autocomplete", "off");
 
                                 } else if ($('input[name="' + header + '[]"]').is(':checkbox') && value !== null) {
                                     var checkboxValues = value.split(',');
@@ -1571,8 +1522,6 @@ use Carbon\Carbon;
 
                     }
             });
-
-
             $(document).on('click', '.clickable-view', function(e) {
                 $('#myModal_status').modal('hide');
                     // var record_id = $(this).closest('tr').find('td:eq(0)').text();
@@ -1688,8 +1637,7 @@ use Carbon\Carbon;
                                     '</option>';
                             });
                             $('select[name="ar_action_code"]').html(sla_options);
-                            // $('select[name="QA_sub_status_code"]').val(12).change();
-                            if (value) {
+                             if (value) {
                                 $('select[name="ar_action_code"]').val(value);
                             }
                         },
@@ -1708,7 +1656,6 @@ use Carbon\Carbon;
                     KTApp.unblock('#myModal_status');
                 });
             $(document).on('click', '.sop_click', function(e) {
-                console.log('sop modal');
                 $('#myModal_sop').modal('show');
             });
                 $('#myModal_sop').on('shown.bs.modal', function () {
@@ -1784,9 +1731,8 @@ use Carbon\Carbon;
 
                     $('input[type="checkbox"]').each(function() {
                         var groupName = $(this).attr("id");
-                        var mandatory = $(this).prop('required');console.log(mandatory,'mandatory');
-                        console.log(groupName, 'chckkkkkkkk');
-                        if($(this).attr("name") !== 'check[]' && $(this).attr("name") !== undefined) {
+                        var mandatory = $(this).prop('required');
+                         if($(this).attr("name") !== 'check[]' && $(this).attr("name") !== undefined) {
                             if ($('input[type="checkbox"][id="' + groupName + '"]:checked').length === 0) {
                                 if ($('input[type="checkbox"][id="' + groupName + '"]:checked').length ===
                                     0 && mandatory === true) {
@@ -1820,7 +1766,6 @@ use Carbon\Carbon;
                                     inclass.each(function(element) {
 
                                         var label_id = $(this).attr('id');
-                                        console.log(label_id, 'label_id',$('#' + label_id).val(),$(this).val());
                                         if ($(this).val() == '') {
                                             if ($(this).val() == '') {
                                                 e.preventDefault();
@@ -1832,19 +1777,6 @@ use Carbon\Carbon;
                                             }
                                             return false;
                                         }
-
-                                        //     if(label_id.substring(0, 3) == "cpt") {
-                                        //         var textValue = $(this).val();
-                                        //         if(textValue.length < 4) {
-                                        //             js_notification('error',"The CPT value must be at least 4 characters long" );
-                                        //         }
-                                        //    }
-                                        //     if(label_id.substring(0, 3) == "icd") {
-                                        //         var textValue = $(this).val();
-                                        //         if(textValue.length < 3 || textValue.length > 7) {
-                                        //             js_notification('error', "The ICD value must be between 3 and 7 characters long" );
-                                        //         }
-                                        //     }
                                     });
                                 }
                             });
@@ -1856,7 +1788,7 @@ use Carbon\Carbon;
 
                     $('input[type="radio"]:checked').each(function() {
                         var fieldName = $(this).attr('class');
-                        var fieldValue = $(this).val();console.log(fieldName,fieldValue,'fieldName');
+                        var fieldValue = $(this).val();
                         if (!fieldValuesByFieldName[fieldName]) {
                             fieldValuesByFieldName[fieldName] = [];
                         }
@@ -1988,196 +1920,58 @@ use Carbon\Carbon;
                             "parent"] +
                         "&child=" + getUrlVars()["child"];
                 })
-                // function handleBlurEvent(clientClass, annexClass) {
-                //     var clientInf = $(clientClass).val().split(',').map(value => value.trim()); // Trimming spaces
-                //     var annexInf = $(annexClass).val().split(',').map(value => value.trim()); // Trimming spaces
-                //     let notesMap = {};
-                //     var previousValue = [];
-                //     var processedText = clientClass.replace('.', '').toUpperCase();
-                //     var annexInfMap = {};
-                //     var notes = $('.annex_coder_trends').val().trim();
+                $(document).on('click', '#assign_export', function(e) {   
+                    var resourceName = null; 
+                    var formData = $('#formSearch').serialize();
+                    var chartStatus = "CE_Pending";
+                    formData += '&chart_status=' + chartStatus;
+                    formData += '&clientName=' + clientName;
+                    formData += '&subProjectName=' + subProjectName;
+                    formData += '&resourceName=' + resourceName;
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                                'content')
+                        }
+                    });
+                    KTApp.block('#export_div', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Fetching...',
+                    });
+                    $.ajax({
+                            url: "{{ url('client_export') }}",
+                            method: 'POST',
+                            data: formData,
+                            xhrFields: {
+                                responseType: 'blob'  
+                            },
+                            success: function(response, status, xhr) {  
+                                var filename = "";
+                                var disposition = xhr.getResponseHeader('Content-Disposition');
+                                if (disposition && disposition.indexOf('attachment') !== -1) {
+                                    var matches = /filename[^;=\n]*=([^;\n]*)/.exec(disposition);                            
+                                    if (matches != null && matches[1]) {
+                                        filename = matches[1].trim().replace(/^"|"$/g, '');
+                                    }
+                                }
 
-                //     annexInf.forEach(function (value, index) {
-                //         annexInfMap[value] = (annexInfMap[value] || 0)+1 ;
-                //     });
-                
-                //     for (var i = 0; i < clientInf.length; i++) {
-                //         if (annexInf[i] !== undefined && annexInf[i] !== '') {console.log(clientInf,'clientInf');
-                //             if (clientInf[0] !== '' && clientInf[i] !== annexInf[i]) {
-                //                 if (clientInf[i].includes('-') && annexInf[i].includes('-')) {
-                //                     var clientParts = clientInf[i].split('-');
-                //                     var annexParts = annexInf[i].split('-');
-                //                     const clientPart0 = clientParts[0].trim(); 
-                //                     const annexPart0 = annexParts[0].trim(); 
-                //                     const part1 = clientParts[1].trim(); 
-                //                     const part2 = annexParts[1].trim(); console.log(part1, part2,'changed to',clientInf[0]);
-                //                     if(part1 != part2) {
-                //                         notesMap[part1] = processedText + ' - modifier ' +  part1 + ' changed to ' +  part2 + ' belongs to ' +  clientPart0;
-                //                     } else {
-                //                         var noteLines =  notes.split('\n');
-                //                         for (var j = 0; j < noteLines.length; j++) {
-                //                                 if(noteLines[j].includes(processedText)){
-                //                                     if(noteLines[j].includes(processedText + ' - ' + part1)) {
-                //                                     } else {
-                //                                         noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                //                                         notes = noteLines;                                         
-                //                                     }                                   
-                //                                 }
-                //                         }
-                //                     }
-                //                     if(clientPart0 != annexPart0) {
-                //                         notesMap[clientInf[i]] = processedText + ' - ' + clientPart0 + ' changed to ' + annexPart0;
-                //                     }
-                //                 } else  if (clientInf[i].includes('-') && !annexInf[i].includes('-')) {
-                //                     var clientParts = clientInf[i].split('-');
-                //                     const client1 = clientParts[0].trim(); 
-                //                     const annex1 =annexInf[i].trim(); 
-                //                     const cpart1 = clientParts[1].trim(); 
-                //                     notesMap[cpart1] = processedText + ' - modifier ' +  cpart1 + ' removed belongs to ' + client1;
-                //                     if(client1 != annex1) {
-                //                         notesMap[clientInf[i]] = processedText + ' - ' + client1 + ' changed to ' + annex1;
-                //                     }
-                //                 } else if (!clientInf[i].includes('-') && annexInf[i].includes('-')) {
-                //                     var parts = annexInf[i].split('-');
-                //                     const client2 = clientInf[i].trim(); 
-                //                     const annex2 = parts[0].trim();
-                //                     const apart1 = parts[0].trim(); 
-                //                     const apart2 = parts[1].trim(); 
-                //                     notesMap[apart1] = processedText + ' - modifier ' +  parts[1] + ' added to ' +  client2;
-                //                     if(client2 != annex2) {
-                //                         notesMap[clientInf[i]] = processedText + ' - ' + client2 + ' changed to ' + annex2;
-                //                     }
-                //                 } else {
-                //                     notesMap[clientInf[i]] = processedText + ' - ' + clientInf[i] + ' changed to ' + annexInf[i];
-                //                 }
-                //                 previousValue[clientInf[i]] = processedText + ' - ' + clientInf[i];
-                //                 var noteLines =  notes.split('\n');
-                //                 for (var j = 0; j < noteLines.length; j++) {
-                //                         if(noteLines[j].includes(processedText)){
-                //                             if(noteLines[j].includes(processedText + ' - ' + clientInf[i])) {
-                //                             } else {
-                //                                 noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                //                                 notes = noteLines;
-                                            
-                //                             }
-                //                             // if(noteLines[j].includes(processedText + ' - ' + annexInf[i]) + 'added') {
-                                            
-                //                             // } else {
-                                        
-                //                             //     noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                //                             //     notes = noteLines;
-                                            
-                //                             // }
+                                var blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                                var link = document.createElement('a');
+                                link.href = window.URL.createObjectURL(blob);
+                                link.download = filename || 'export.xlsx';
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                KTApp.unblock('#export_div');
+                            },
+                            error: function(response) {
+                                console.log('Error generating Excel file', response);
+                            }
+                      });
 
-                //                         }
-                //                 }
-                //             } else {
-                //                 var lines = notes.split('\n');
-                //                 var matchedLine = lines.find(line => line.includes(processedText + ' - ' + annexInf[i]));
-                //                 if (matchedLine) {
-                //                     notes = lines.filter(line => line !== matchedLine).join('\n');
-                //                 }
-                //                 var noteLines =  notes.split('\n');
-                //                 for (var j = 0; j < noteLines.length; j++) {
-                //                         if(noteLines[j].includes(processedText)){
-                //                             if(noteLines[j].includes(processedText + ' - ' + clientInf[i])) {
-                //                             } else {
-                //                                 noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                //                                 notes = noteLines;
-                                            
-                //                             }
-                //                         }
-                //                 }
-                //             }
-                //             if (annexInfMap[annexInf[i]] > 0) {
-                //                 annexInfMap[annexInf[i]]--;
-                //                 if (annexInfMap[annexInf[i]] === 0) {
-                //                     delete annexInfMap[annexInf[i]];
-                //                 }
-                //             }
-                        
-                //         } else {
-                //             if(annexInf.length > 1 && annexInf[0] == ''){
-                //                 notesMap[clientInf[i]] = processedText + ' - ' + clientInf[i] + ' removed';
-                //             } else if(annexInf[0] !== '') {
-                //                 notesMap[clientInf[i]] = processedText + ' - ' + clientInf[i] + ' removed';
-                //             } else {
-                //                 var lines = notes.split('\n');
-                //                 for (var j = 0; j < lines.length; j++) {
-                //                     var matchedLine = lines.find(line => line.includes(processedText )); 
-                //                         notes = lines.filter(line => line !== matchedLine).join('\n');
-                //                 }
-                //             }
-                //             previousValue[clientInf[i]] = processedText + ' - ' + clientInf[i];
-                        
-                //         }
-                //     }
-                
-                //     for (var key in annexInfMap) {
-                //         if (annexInfMap.hasOwnProperty(key) && annexInfMap[key] > 0) {
-                //             if(key && (clientInf[0] !== '')) {
-                //                 notesMap[key] = processedText + ' - ' + key + ' added';
-                //                 var lines = notes.split('\n');
-                //                 var matchedLine = lines.find(line => line.includes(notesMap[key]));
-                //                 if (matchedLine) {
-                //                     notes = lines.filter(line => line !== matchedLine).join('\n');
-                //                 }
-                //             }
-                //         } 
-                //     }
-
-                //     // Convert notesMap to a single string in the order of clientInf
-                //     clientInf.forEach(function (value) {
-                //         if (notesMap[value]) {
-                //             if (notes.includes(previousValue[value])) {
-                //                 var lines = notes.split('\n');
-                //                 var matchedLine = lines.find(line => line.includes(previousValue[value]));
-                //                 if (matchedLine !== undefined) {
-                //                     notes = notes.replace(matchedLine, notesMap[value]);
-                //                 } else {
-                //                     notes += '\n' + notesMap[value];
-                //                 }
-                //             } else {
-                //                 if (notes === "") {
-                //                     notes += notesMap[value];
-                //                 } else {
-                //                     notes += '\n' + notesMap[value];
-                //                 }
-                //             }
-                //             delete notesMap[value];
-                //         }
-                //     });
-
-                //     // Add remaining notes for new additions
-                //     for (var key in notesMap) {
-                //         if (notesMap.hasOwnProperty(key)) {
-                //             notes += '\n' + notesMap[key];
-                //         }
-                //     }
-                
-                //     let noteLines1 = notes.trim().split('\n');
-                //     let uniqueNotes = Array.from(new Set(noteLines1));
-                //     let finalNotes = uniqueNotes.join('\n');
-                //     $('.annex_coder_trends').val(finalNotes);
-                // }
-
-                // $('.am_cpt').on('blur', function () {
-                //     handleBlurEvent('.cpt', '.am_cpt');
-                // });
-
-                // $('.am_icd').on('blur', function () {
-                //     handleBlurEvent('.icd', '.am_icd');
-                // });
-                // function toggleCoderTrends() {
-                //     var hasAMFields = $('.am_cpt').length > 0 || $('.am_icd').length > 0;
-                //     if (hasAMFields) {
-                //         $('.trends_div').show();
-                //     } else {
-                //         $('.trends_div').hide();
-                //     }
-                // }
-                // toggleCoderTrends();
-            
+                });
         })
 
         function updateTime() {

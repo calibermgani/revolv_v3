@@ -2033,19 +2033,35 @@ class ProductionController extends Controller
                             } else {
                                 $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->where('CE_emp_id',$request->resourceName)->get();
                             }
+                            $exStatus = str_replace('CE_', '', $request['chart_status']);
                         } else {
                              $exportResult = $query->where('chart_status',$request->chart_status)->whereBetween('updated_at',[$startDate,$endDate])->get();
+                             if(str_contains('CE_', '', $request['chart_status'])) {
+                                $exStatus = str_replace('CE_', '', $request['chart_status']);
+                             } else if(str_contains('AR_', '', $request['chart_status'])) {
+                                $exStatus = str_replace('AR_', '', $request['chart_status']);
+                             } else {
+                                $exStatus = $request['chart_status'];
+                             }
                         }
-                        $exStatus = str_replace('CE_', '', $request['chart_status']);
+                       
                     }
                   
                 } else if ($loginEmpId) {
                     if($request->recordStatusVal == "assigned") {
                        $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->get();
+                       $exStatus = str_replace('CE_', '', $request['chart_status']);
                     } else {
                         $exportResult = $query->where('chart_status',$request->chart_status)->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->get();
+                        if(str_contains('CE_', '', $request['chart_status'])) {
+                            $exStatus = str_replace('CE_', '', $request['chart_status']);
+                         } else if(str_contains('AR_', '', $request['chart_status'])) {
+                            $exStatus = str_replace('AR_', '', $request['chart_status']);
+                         } else {
+                            $exStatus = $request['chart_status'];
+                         }
                     }
-                    $exStatus = str_replace('CE_', '', $request['chart_status']);
+                    
                 }
                 $fields = [];
                 if (Schema::hasTable($table_name)) {
@@ -2103,10 +2119,8 @@ class ProductionController extends Controller
                 }
                 if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
                     $exportResult = $query->whereBetween('updated_at',[$startDate,$endDate])->get();                       
-                    $exStatus = str_replace('CE_', '', $request['chart_status']);                 
                 } else if ($loginEmpId) {
                     $exportResult = $query->whereBetween('updated_at',[$startDate,$endDate])->where('CE_emp_id',$loginEmpId)->get();
-                    $exStatus = str_replace('CE_', '', $request['chart_status']);
                 }
                 $fields = [];
                 if (Schema::hasTable($table_name)) {
@@ -2120,7 +2134,7 @@ class ProductionController extends Controller
                     });
                     array_push($fields,'aging','aging_range');
                 }
-                return Excel::download(new ProductionExport($fields,$exportResult), 'Resolv_'.$exStatus.'_Export.xlsx');
+                return Excel::download(new ProductionExport($fields,$exportResult), 'Resolv_Duplicate_Records_Export.xlsx');
                 } catch (\Exception $e) {
                     log::debug($e->getMessage());
                 }

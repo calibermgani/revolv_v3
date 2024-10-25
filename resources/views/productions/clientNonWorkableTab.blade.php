@@ -44,7 +44,10 @@ use Carbon\Carbon;
                                             <button type="button" class="btn text-white mr-3" style="background-color:#139AB3">SOP</button>
                                             </a>
                                          </div>
-                                        <div class="outside float-right"  href="javascript:void(0);"></div>
+                                         <div class="d-flex align-items-center" id="export_div">
+                                            <a class="btn btn-primary-export text-white ml-2" href="javascript:void(0);" id='assign_export'  style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
+                                            </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></a>
+                                        </div>
                                     </div>
                             </div>
                         </div>
@@ -739,18 +742,7 @@ use Carbon\Carbon;
                     "search": '',
                     "searchPlaceholder": "   Search",
                 },
-                buttons: [{
-                    "extend": 'excel',
-                    "text": `<span data-dismiss="modal" data-toggle="tooltip" data-placement="left" data-original-title="Export" style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
-                             </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></span>`,
-                    "className": 'btn btn-primary-export text-white',
-                    "title": 'PROCODE',
-                    "filename": 'procode_completed_'+date,
-                    "exportOptions": {
-                        "columns": ':not(.notexport)'// Exclude first two columns
-                    }
-                }],
-                dom: "B<'row'<'col-md-12'f><'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>"
+                dom: "<'row'<'col-md-12'f><'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>"
             })
             table.buttons().container()
                 .appendTo('.outside');
@@ -759,9 +751,7 @@ use Carbon\Carbon;
                 var clientName = $('#clientName').val();
                 var subProjectName = $('#subProjectName').val();
                 $(document).on('click', '.clickable-view', function(e) {
-                    // var record_id = $(this).closest('tr').find('td:eq(0)').text();
-                    // var record_id = $(this).closest('tr').find('td:eq(1)').text();
-                    var record_id =  $(this).closest('tr').find('#table_id').text();console.log(record_id,'record_id');
+                    var record_id =  $(this).closest('tr').find('#table_id').text();
                     var $row = $(this).closest('tr');
                     var tdCount = $row.find('td').length;
                     var thCount = tdCount - 1;
@@ -800,8 +790,6 @@ use Carbon\Carbon;
                         },
                     });
                     function handleClientData(clientData,headers) {
-                        console.log(clientData, 'clientData',headers,clientData.id);
-
                     $.each(headers, function(index, header) {
                         value = clientData[header];
                         $('label[id="' + header + '"]').html("");
@@ -809,22 +797,13 @@ use Carbon\Carbon;
                         var values = value.split('_el_');
                         var formattedDatas = [];
                         values.forEach(function(data, index) {
-                            // if (data.includes('-')) {
-                            //     var formattedData = formatDate(data);
-                            // } else {
-                            //     var formattedData = data;
-                            // }
-                            // var span = $('<span>').addClass('date-label').text(formattedData);
                             var circle = $('<span>').addClass('circle');
                             var span = $('<span>').addClass('date-label').text(data);
                                 span.prepend(circle);
                                    formattedDatas.push(span);
-                        }); console.log(formattedDatas,'formattedDatas');
+                        });
                         formattedDatas.forEach(function(span, index) {
-
-                            $('label[id="' + header + '"]').append(span);
-                            // Add comma after each span except the last one
-
+                            $('label[id="' + header + '"]').append(span);                      
                         });
                     } else {
                         if (header === 'chart_status' && value.includes('CE_')) {
@@ -858,8 +837,6 @@ use Carbon\Carbon;
                         var formattedDatas = parts[1] + '/' + parts[2] + '/' + parts[0];
                         return formattedDatas;
                     }
-                        // $('label[id="' + header + '"]').text(value);
-                    console.log("Index: " + index + ", Value: " + header,value);
                   });
 
                }
@@ -916,7 +893,6 @@ use Carbon\Carbon;
             })
 
             $(document).on('click', '#sop_click', function(e) {
-                console.log('sop modal');
                 $('#myModal_sop').modal('show');
             });
                 $('#myModal_sop').on('shown.bs.modal', function () {
@@ -933,6 +909,57 @@ use Carbon\Carbon;
                             "parent"] +
                         "&child=" + getUrlVars()["child"];
                 })
+                $(document).on('click', '#assign_export', function(e) {   
+                    var resourceName = null; 
+                    var formData = $('#formSearch').serialize();
+                    var chartStatus = "AR_non_workable";
+                    formData += '&chart_status=' + chartStatus;
+                    formData += '&clientName=' + clientName;
+                    formData += '&subProjectName=' + subProjectName;
+                    formData += '&resourceName=' + resourceName;
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                                'content')
+                        }
+                    });
+                    KTApp.block('#export_div', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Fetching...',
+                    });
+                    $.ajax({
+                            url: "{{ url('client_export') }}",
+                            method: 'POST',
+                            data: formData,
+                            xhrFields: {
+                                responseType: 'blob'  
+                            },
+                            success: function(response, status, xhr) {  
+                                var filename = "";
+                                var disposition = xhr.getResponseHeader('Content-Disposition');
+                                if (disposition && disposition.indexOf('attachment') !== -1) {
+                                    var matches = /filename[^;=\n]*=([^;\n]*)/.exec(disposition);                            
+                                    if (matches != null && matches[1]) {
+                                        filename = matches[1].trim().replace(/^"|"$/g, '');
+                                    }
+                                }
+
+                                var blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                                var link = document.createElement('a');
+                                link.href = window.URL.createObjectURL(blob);
+                                link.download = filename || 'export.xlsx';
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                KTApp.unblock('#export_div');
+                            },
+                            error: function(response) {
+                                console.log('Error generating Excel file', response);
+                            }
+                      });
+                });
         })
     </script>
 @endpush
