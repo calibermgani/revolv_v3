@@ -77,7 +77,12 @@ class ProductionExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         // Convert field names to headers with capitalized first letters of each word
-        return array_map(function ($field) {
+        return array_map(function ($field) {          
+            if ($field == 'CE_emp_id') {
+                $field = 'AR_emp_id';
+            }else if($field == 'chart_status') {
+                $field = 'Charge Status';
+            } 
             $headerField = ucwords(str_replace(['_else_', '_'], ['/', ' '], $field));
             // Convert the field name from snake_case to words with first letter capitalized
             return $headerField;
