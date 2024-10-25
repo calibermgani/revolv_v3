@@ -772,7 +772,7 @@ use Carbon\Carbon;
                 $(document).on('click', '.clickable-view', function(e) {
                     // var record_id = $(this).closest('tr').find('td:eq(0)').text();
                     // var record_id = $(this).closest('tr').find('td:eq(1)').text();
-                    var record_id =  $(this).closest('tr').find('#table_id').text();console.log(record_id,'record_id');
+                    var record_id =  $(this).closest('tr').find('#table_id').text();
                     var $row = $(this).closest('tr');
                     var tdCount = $row.find('td').length;
                     var thCount = tdCount - 1;
@@ -811,8 +811,6 @@ use Carbon\Carbon;
                         },
                     });
                     function handleClientData(clientData,headers) {
-                        console.log(clientData, 'clientData',headers,clientData.id);
-
                     $.each(headers, function(index, header) {
                         value = clientData[header];
                         $('label[id="' + header + '"]').html("");
@@ -830,7 +828,7 @@ use Carbon\Carbon;
                             var span = $('<span>').addClass('date-label').text(data);
                                 span.prepend(circle);
                                    formattedDatas.push(span);
-                        }); console.log(formattedDatas,'formattedDatas');
+                        });
                         formattedDatas.forEach(function(span, index) {
 
                             $('label[id="' + header + '"]').append(span);
@@ -880,7 +878,6 @@ use Carbon\Carbon;
                         return formattedDatas;
                     }
                         // $('label[id="' + header + '"]').text(value);
-                    console.log("Index: " + index + ", Value: " + header,value);
                   });
 
                }
@@ -936,7 +933,6 @@ use Carbon\Carbon;
                         "parent"] + "&child=" + getUrlVars()["child"];
             })
             $(document).on('click', '#sop_click', function(e) {
-                console.log('sop modal');
                 $('#myModal_sop').modal('show');
             });
                 $('#myModal_sop').on('shown.bs.modal', function () {
