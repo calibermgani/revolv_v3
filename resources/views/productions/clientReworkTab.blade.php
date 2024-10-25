@@ -298,6 +298,7 @@ use Carbon\Carbon;
                                                     @elseif ($columnValue == 'coder_work_date')
                                                     AR Work Date
                                                     @elseif ($columnValue == 'coder_rework_status')
+                                                    AR Rework Status
                                                     @else
                                                       {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
                                                     @endif

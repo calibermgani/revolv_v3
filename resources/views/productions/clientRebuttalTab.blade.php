@@ -304,7 +304,13 @@ use Carbon\Carbon;
                                             @if ($columnValue != 'id')
                                                 <th><input type="hidden" value={{ $columnValue }}>
                                                     @if ($columnValue == 'chart_status')
-                                                        Charge Status
+                                                    Charge Status
+                                                    @elseif ($columnValue == 'CE_emp_id')
+                                                    AR Emp Id
+                                                    @elseif ($columnValue == 'coder_work_date')
+                                                    AR Work Date
+                                                    @elseif ($columnValue == 'coder_rework_status')
+                                                    AR Rework Status
                                                     @else
                                                         {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
                                                     @endif
@@ -312,8 +318,14 @@ use Carbon\Carbon;
                                             @else
                                                 <th style="display:none" class='notexport'><input type="hidden"
                                                         value={{ $columnValue }}>
-                                                    @if ($columnValue == 'chart_status')
+                                                        @if ($columnValue == 'chart_status')
                                                         Charge Status
+                                                        @elseif ($columnValue == 'CE_emp_id')
+                                                        AR Emp Id
+                                                        @elseif ($columnValue == 'coder_work_date')
+                                                        AR Work Date
+                                                        @elseif ($columnValue == 'coder_rework_status')
+                                                        AR Rework Status
                                                     @else
                                                         {{ ucwords(str_replace(['_else_', '_'], ['/', ' '], $columnValue)) }}
                                                     @endif
