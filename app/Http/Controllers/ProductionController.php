@@ -1093,11 +1093,13 @@ class ProductionController extends Controller
                 $data['start_time'] = $currentTime->format('Y-m-d H:i:s');
                 $data['record_status'] = $modelClass::where('id',$data['record_id'])->pluck('chart_status')->toArray()[0];//dd($data,$modelClass);
                 // $existingRecordId = CallerChartsWorkLogs::where('record_id',$data['record_id'])->where('record_status',"CE_Assigned")->first();
-                $existingRecordId = CallerChartsWorkLogs::where('project_id', $data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('record_id',$data['record_id'])->where('record_status',$data['record_status'])->where('end_time',NULL)->first();
+                $existingRecordId = CallerChartsWorkLogs::where('project_id', $data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('record_id',$data['record_id'])
+                ->where('record_status',$data['record_status'])->where('end_time',NULL)->first();
 
-                if(empty($existingRecordId) || !isset($existingRecordId->start_time) || $existingRecordId->start_time == null) {
-                    $startTimeVal = $data['start_time'];
-                    $save_flag = CallerChartsWorkLogs::create($data);
+                // if(empty($existingRecordId) || !isset($existingRecordId->start_time) || $existingRecordId->start_time == null) {
+                if (!$existingRecordId) {
+                        $save_flag = CallerChartsWorkLogs::create($data);
+                        $startTimeVal = $data['start_time'];          
                 } else {
                     $startTimeVal = $existingRecordId->start_time;
                     $save_flag = 1;
