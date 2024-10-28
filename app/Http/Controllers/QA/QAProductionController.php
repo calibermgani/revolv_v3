@@ -909,6 +909,7 @@ class QAProductionController extends Controller
                 $data['QA_rework_comments']=$data['QA_rework_comments'] != null ? str_replace("\r\n", '_el_', $data['QA_rework_comments']) : $data['QA_rework_comments'];
                 $data['QA_rework_comments'] = preg_replace('/(_el_){2,}/', '_el_', $data['QA_rework_comments']);
                 $data['QA_comments_count'] = $data['QA_rework_comments'] != null ? count(explode('_el_', $data['QA_rework_comments'])) : 0;
+                $data['qa_work_date'] = NULL;
                 if($data['chart_status'] == "QA_Completed") {
                     $data['qa_work_date'] = Carbon::now()->format('Y-m-d');
                 }
@@ -981,9 +982,9 @@ class QAProductionController extends Controller
                 if($datasRecord != null) {
                     $datasRecord->update($data);
                     $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count'],
-                    'qa_classification' => $data['qa_classification'],'qa_category' => $data['qa_category'],'qa_scope' => $data['qa_scope']]);
+                    'qa_classification' => $data['qa_classification'],'qa_category' => $data['qa_category'],'qa_scope' => $data['qa_scope'],'qa_work_date' => $data['qa_work_date']]);
                 } else {
-                    $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count'],'qa_classification' => $data['qa_classification'],'qa_category' => $data['qa_category'],'qa_scope' => $data['qa_scope']]);
+                    $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count'],'qa_classification' => $data['qa_classification'],'qa_category' => $data['qa_category'],'qa_scope' => $data['qa_scope'],'qa_work_date' => $data['qa_work_date']]);
                     $modelClass::create($data);
                 }
                 if($data['chart_status'] == "Revoke" &&  $datasRecord['coder_rework_status'] == "Rebuttal") {
@@ -1060,6 +1061,7 @@ class QAProductionController extends Controller
                 $data['QA_rework_comments']=$data['QA_rework_comments'] != null ? str_replace("\r\n", '_el_', $data['QA_rework_comments']) : $data['QA_rework_comments'];
                 $data['QA_rework_comments'] = preg_replace('/(_el_){2,}/', '_el_', $data['QA_rework_comments']);
                 $data['QA_comments_count'] = $data['QA_rework_comments'] != null ? count(explode('_el_', $data['QA_rework_comments'])) : 0;
+                $data['qa_work_date'] = NULL;
                 if($data['chart_status'] == "QA_Completed") {
                     $data['qa_work_date'] = Carbon::now()->format('Y-m-d');
                 }
@@ -1131,11 +1133,11 @@ class QAProductionController extends Controller
                     $data = array_diff_key($data, array_flip($fieldsToExclude));
                   $datasRecord->update($data);
                   $record = $originalModelClass::where('id', $data['parent_id'])->first();
-                  $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count'],'qa_classification' => $data['qa_classification'],'qa_category' => $data['qa_category'],'qa_scope' => $data['qa_scope']]);
+                  $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count'],'qa_classification' => $data['qa_classification'],'qa_category' => $data['qa_category'],'qa_scope' => $data['qa_scope'],'qa_work_date' => $data['qa_work_date']]);
                  } else {
                     $data['parent_id'] = $data['idValue'];
                     $record = $originalModelClass::where('id', $data['parent_id'])->first();
-                    $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count'],'qa_classification' => $data['qa_classification'],'qa_category' => $data['qa_category'],'qa_scope' => $data['qa_scope']] );
+                    $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count'],'qa_classification' => $data['qa_classification'],'qa_category' => $data['qa_category'],'qa_scope' => $data['qa_scope'],'qa_work_date' => $data['qa_work_date']] );
                     $modelClass::create($data);
                 }
                 if($data['chart_status'] == "Revoke" &&  $datasRecord['coder_rework_status'] == "Rebuttal") {
@@ -1220,6 +1222,7 @@ class QAProductionController extends Controller
                     $column_names = DB::select("DESCRIBE $table_name");
                     $columns = array_column($column_names, 'Field');
                     $columnsToExclude = ['ce_hold_reason','qa_hold_reason','qa_work_status','QA_rework_comments','QA_required_sampling','QA_rework_comments','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date', 'coder_rework_status','QA_status_code','QA_sub_status_code',
+                    'qa_classification','qa_category','qa_scope',
                     'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                     'updated_at', 'created_at', 'deleted_at'];
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
