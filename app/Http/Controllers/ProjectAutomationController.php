@@ -863,16 +863,9 @@ class ProjectAutomationController extends Controller
             $attributes = [
                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                'enc_no' => isset($request->enc_no) && $request->enc_no != "NULL" ? $request->enc_no : NULL,
                 'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
-                'phone_number' => isset($request->phone_number) && $request->phone_number != "NULL" ? $request->phone_number : NULL,
-                'member_id' => isset($request->member_id) && $request->member_id != "NULL" ? $request->member_id : NULL,
-                'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
-                'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
                 'ins1_amt' => isset($request->ins1_amt) && $request->ins1_amt != "NULL" ? $request->ins1_amt : NULL,
-                'line_amt' => isset($request->line_amt) && $request->line_amt != "NULL" ? $request->line_amt : NULL,
-                'rendering_provider' => isset($request->rendering_provider) && $request->rendering_provider != "NULL" ? $request->rendering_provider : NULL
-            ];
+               ];
 
             $duplicateRecordExisting  =  AsopAr::where($attributes)->exists();
             if (!$duplicateRecordExisting) {
