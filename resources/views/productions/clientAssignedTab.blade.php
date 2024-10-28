@@ -2210,7 +2210,7 @@ nav{
             }
 
             // Call function on page load
-            toggleCoderTrends();
+            //toggleCoderTrends(); //trends feature disabled
             $(document).on('click', '#filter_clear', function(e) {
                 window.location.href = baseUrl + 'projects_assigned/' + clientName + '/' + subProjectName +
                     "?parent=" +

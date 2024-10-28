@@ -719,7 +719,7 @@ use Carbon\Carbon;
                                                                                         $data->field_type_2 == 'mandatory' && ($data->input_type_editable == 2 || $data->input_type_editable == 3) ? 'required' : '',
                                                                                         ($data->input_type_editable == 2 || $data->input_type_editable == 3) ? '' : 'readonly'
                                                                                     ]) !!}
-                                                                                    @if($columnName == "am_cpt" || $columnName == "am_icd") 
+                                                                                    {{-- @if($columnName == "am_cpt" || $columnName == "am_icd") 
                                                                                      {!! Form::$inputType($columnName.'_hidden' . '[]', null, [
                                                                                         'class' => 'form-control ' . $columnName.'_hidden' . ' white-smoke pop-non-edt-val',
                                                                                         'autocomplete' => 'none',
@@ -729,7 +729,7 @@ use Carbon\Carbon;
                                                                                         $data->field_type_2 == 'mandatory' && ($data->input_type_editable == 2 || $data->input_type_editable == 3) ? 'required' : '',
                                                                                         ($data->input_type_editable == 2 || $data->input_type_editable == 3) ? '' : 'readonly'
                                                                                     ]) !!}
-                                                                                    @endif
+                                                                                    @endif --}}
                                                                                 @else
                                                                                     {!! Form::text($columnName . '[]', null, [
                                                                                         'class' => 'form-control date_range daterange_' . $columnName . ' white-smoke pop-non-edt-val',
@@ -3908,7 +3908,7 @@ use Carbon\Carbon;
                             $('.trends_div').hide();
                         }
                     }
-                    toggleCoderTrends();
+                    // toggleCoderTrends();
                     $(document).on('click', '#filter_clear', function(e) {
                         window.location.href = baseUrl + 'qa_production/qa_projects_assigned/' + clientName + '/' + subProjectName +
                             "?parent=" +

@@ -27,6 +27,8 @@ use App\Models\MatcAr;
 use App\Models\MatcArDuplicates;
 use App\Models\GchsAr;
 use App\Models\GchsArDuplicates;
+use App\Models\AsopAr;
+use App\Models\AsopArDuplicates;
 class ProjectAutomationController extends Controller
 {
 
@@ -855,6 +857,198 @@ class ProjectAutomationController extends Controller
         }
     }
 
+    public function arthritisSportsOrthopeadicsPCAr(Request $request)
+    {
+        try {
+            $attributes = [
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'enc_no' => isset($request->enc_no) && $request->enc_no != "NULL" ? $request->enc_no : NULL,
+                'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
+                'phone_number' => isset($request->phone_number) && $request->phone_number != "NULL" ? $request->phone_number : NULL,
+                'member_id' => isset($request->member_id) && $request->member_id != "NULL" ? $request->member_id : NULL,
+                'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                'ins1_amt' => isset($request->ins1_amt) && $request->ins1_amt != "NULL" ? $request->ins1_amt : NULL,
+                'line_amt' => isset($request->line_amt) && $request->line_amt != "NULL" ? $request->line_amt : NULL,
+                'rendering_provider' => isset($request->rendering_provider) && $request->rendering_provider != "NULL" ? $request->rendering_provider : NULL
+            ];
+
+            $duplicateRecordExisting  =  AsopAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                AsopAr::insert([
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'enc_no' => isset($request->enc_no) && $request->enc_no != "NULL" ? $request->enc_no : NULL,
+                        'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
+                        'phone_number' => isset($request->phone_number) && $request->phone_number != "NULL" ? $request->phone_number : NULL,
+                        'member_id' => isset($request->member_id) && $request->member_id != "NULL" ? $request->member_id : NULL,
+                        'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                        'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                        'ins1_amt' => isset($request->ins1_amt) && $request->ins1_amt != "NULL" ? $request->ins1_amt : NULL,
+                        'line_amt' => isset($request->line_amt) && $request->line_amt != "NULL" ? $request->line_amt : NULL,
+                        'rendering_provider' => isset($request->rendering_provider) && $request->rendering_provider != "NULL" ? $request->rendering_provider : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  AsopAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                if ($duplicateRecord) {
+                    $duplicateRecord->update([
+                            'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'enc_no' => isset($request->enc_no) && $request->enc_no != "NULL" ? $request->enc_no : NULL,
+                            'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
+                            'phone_number' => isset($request->phone_number) && $request->phone_number != "NULL" ? $request->phone_number : NULL,
+                            'member_id' => isset($request->member_id) && $request->member_id != "NULL" ? $request->member_id : NULL,
+                            'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                            'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                            'ins1_amt' => isset($request->ins1_amt) && $request->ins1_amt != "NULL" ? $request->ins1_amt : NULL,
+                            'line_amt' => isset($request->line_amt) && $request->line_amt != "NULL" ? $request->line_amt : NULL,
+                            'rendering_provider' => isset($request->rendering_provider) && $request->rendering_provider != "NULL" ? $request->rendering_provider : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function arthritisSportsOrthopeadicsPCArDuplicates(Request $request)
+    {
+        try {
+            AsopArDuplicates::insert([
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'enc_no' => isset($request->enc_no) && $request->enc_no != "NULL" ? $request->enc_no : NULL,
+                'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
+                'phone_number' => isset($request->phone_number) && $request->phone_number != "NULL" ? $request->phone_number : NULL,
+                'member_id' => isset($request->member_id) && $request->member_id != "NULL" ? $request->member_id : NULL,
+                'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                'ins1_amt' => isset($request->ins1_amt) && $request->ins1_amt != "NULL" ? $request->ins1_amt : NULL,
+                'line_amt' => isset($request->line_amt) && $request->line_amt != "NULL" ? $request->line_amt : NULL,
+                'rendering_provider' => isset($request->rendering_provider) && $request->rendering_provider != "NULL" ? $request->rendering_provider : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+    // public function rapidCityMedicalCenterAr(Request $request)
+    // {
+    //     try {
+    //         $attributes = [
+    //             'payer_group' => isset($request->payer_group) && $request->payer_group != "NULL" ? $request->payer_group : NULL,
+    //             'claim_no' => isset($request->claim_no) && $request->claim_no != "NULL" ? $request->claim_no : NULL,
+    //             'facility_name' => isset($request->facility_name) && $request->facility_name != "NULL" ? $request->facility_name : NULL,
+    //             'facility_place_of_service' => isset($request->facility_place_of_service) && $request->facility_place_of_service != "NULL" ? $request->facility_place_of_service : NULL,
+    //             'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,
+    //             'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+    //             'claim_date' => isset($request->claim_date) && $request->claim_date != "NULL" ? $request->claim_date : NULL,
+    //             'service_date' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
+    //             'last_modified_date' => isset($request->last_modified_date) && $request->last_modified_date != "NULL" ? $request->last_modified_date : NULL,
+    //             'latest_transfer_date' => isset($request->latest_transfer_date) && $request->latest_transfer_date != "NULL" ? $request->latest_transfer_date : NULL,
+    //             'last_claim_status_change_date' => isset($request->last_claim_status_change_date) && $request->last_claim_status_change_date != "NULL" ? $request->last_claim_status_change_date : NULL,
+    //             'last_submission_date' => isset($request->last_submission_date) && $request->last_submission_date != "NULL" ? $request->last_submission_date : NULL,
+    //             'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
+    //             'current_claim_status' => isset($request->current_claim_status) && $request->current_claim_status != "NULL" ? $request->current_claim_status : NULL,
+    //             'claim_status_code_description' => isset($request->claim_status_code_description) && $request->claim_status_code_description != "NULL" ? $request->claim_status_code_description : NULL,
+    //             'appointment_el_servicing_provider' => isset($request->appointment_el_servicing_provider) && $request->appointment_el_servicing_provider != "NULL" ? $request->appointment_el_servicing_provider : NULL,
+    //             'rendering_provider_name' => isset($request->rendering_provider_name) && $request->rendering_provider_name !== "NULL" ? $request->rendering_provider_name : NULL,
+    //             'collection_status' => isset($request->collection_status) && $request->collection_status !== "NULL" ? $request->collection_status : NULL,
+    //             'collection_cycle' => isset($request->collection_cycle) && $request->collection_cycle !== "NULL" ? $request->collection_cycle : NULL,
+    //             'claim_amount' => isset($request->claim_amount) && $request->claim_amount !== "NULL" ? $request->claim_amount : NULL,
+    //             'total_balance' => isset($request->total_balance) && $request->total_balance !== "NULL" ? $request->total_balance : NULL,
+    //         ];
+
+    //         $duplicateRecordExisting  =  GchsAr::where($attributes)->exists();
+    //         if (!$duplicateRecordExisting) {
+    //             GchsAr::insert([
+    //                     'member_id' => isset($request->member_id) && $request->member_id != "NULL" ? $request->member_id : NULL,
+    //                     'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,
+    //                     'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
+    //                     'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+    //                     'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+    //                     'procedures' => isset($request->procedures) && $request->procedures != "NULL" ? $request->procedures : NULL,
+    //                     'charge_amount' => isset($request->charge_amount) && $request->charge_amount != "NULL" ? $request->charge_amount : NULL,
+    //                     'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL,
+    //                     'value_bucket' => isset($request->value_bucket) && $request->value_bucket != "NULL" ? $request->value_bucket : NULL,
+    //                     'plan' => isset($request->plan) && $request->plan != "NULL" ? $request->plan : NULL,
+    //                     'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+    //                     'diagnosis' => isset($request->diagnosis) && $request->diagnosis != "NULL" ? $request->diagnosis : NULL,
+    //                     'invoke_date' => date('Y-m-d'),
+    //                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+    //                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+    //                     'chart_status' => "CE_Assigned",
+    //                 ]);
+    //                     return response()->json(['message' => 'Record Inserted Successfully']);
+    //         } else {
+    //             $duplicateRecord  =  GchsAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+    //             if ($duplicateRecord) {
+    //                 $duplicateRecord->update([
+    //                         'member_id' => isset($request->member_id) && $request->member_id != "NULL" ? $request->member_id : NULL,
+    //                         'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,
+    //                         'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
+    //                         'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+    //                         'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+    //                         'procedures' => isset($request->procedures) && $request->procedures != "NULL" ? $request->procedures : NULL,
+    //                         'charge_amount' => isset($request->charge_amount) && $request->charge_amount != "NULL" ? $request->charge_amount : NULL,
+    //                         'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL,
+    //                         'value_bucket' => isset($request->value_bucket) && $request->value_bucket != "NULL" ? $request->value_bucket : NULL,
+    //                         'plan' => isset($request->plan) && $request->plan != "NULL" ? $request->plan : NULL,
+    //                         'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+    //                         'diagnosis' => isset($request->diagnosis) && $request->diagnosis != "NULL" ? $request->diagnosis : NULL,
+    //                         'invoke_date' => date('Y-m-d'),
+    //                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+    //                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+    //                         'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+    //                 ]);
+    //             }
+    //             return response()->json(['message' => 'Existing Record Updated Successfully']);
+    //         }
+    //     } catch (\Exception $e) {
+    //         $e->getMessage();
+    //     }
+    // }
+    // public function rapidCityMedicalCenterArDuplicates(Request $request)
+    // {
+    //     try {
+    //         GchsArDuplicates::insert([
+    //             'member_id' => isset($request->member_id) && $request->member_id != "NULL" ? $request->member_id : NULL,
+    //             'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,
+    //             'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
+    //             'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+    //             'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+    //             'procedures' => isset($request->procedures) && $request->procedures != "NULL" ? $request->procedures : NULL,
+    //             'charge_amount' => isset($request->charge_amount) && $request->charge_amount != "NULL" ? $request->charge_amount : NULL,
+    //             'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL,
+    //             'value_bucket' => isset($request->value_bucket) && $request->value_bucket != "NULL" ? $request->value_bucket : NULL,
+    //             'plan' => isset($request->plan) && $request->plan != "NULL" ? $request->plan : NULL,
+    //             'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+    //             'diagnosis' => isset($request->diagnosis) && $request->diagnosis != "NULL" ? $request->diagnosis : NULL,
+    //             'invoke_date' => date('Y-m-d'),
+    //             'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+    //             'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+    //             'chart_status' => "CE_Assigned",
+    //         ]);
+    //         return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+    //     } catch (\Exception $e) {
+    //         $e->getMessage();
+    //     }
+    // }
 
 
 

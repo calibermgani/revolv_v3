@@ -33,43 +33,6 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('inventory_exe_file', 'App\Http\Controllers\ProjectAutomationController@inventoryExeFile');
     Route::any('saco_river_medical_group_duplicate', 'App\Http\Controllers\ProjectAutomationController@sacoRiverMedicalGroupDuplicates');
     Route::any('project_error_mail', 'App\Http\Controllers\ProjectController@projectErrorMail');
-    Route::any('sioux_land_mental_health_duplicate', 'App\Http\Controllers\ProjectAutomationController@siouxlandMentalHealthDuplicates');
-    Route::any('cancer_care_specialist_ip_duplicate', 'App\Http\Controllers\ProjectAutomationController@cancerCareSpecialistIPDuplicates');
-    Route::any('cancer_care_specialist_op', 'App\Http\Controllers\ProjectAutomationController@cancerCareSpecialistOP');
-    Route::any('cancer_care_specialist_op_duplicate', 'App\Http\Controllers\ProjectAutomationController@cancerCareSpecialistOPDuplicates');
-    Route::any('cancer_care_specialist_pic', 'App\Http\Controllers\ProjectAutomationController@cancerCareSpecialistPIC');
-    Route::any('cancer_care_specialist_pic_duplicate', 'App\Http\Controllers\ProjectAutomationController@cancerCareSpecialistPICDuplicates');
-    Route::any('tallahassee_orthopedic_clinic_claim_edits', 'App\Http\Controllers\ProjectAutomationController@TallahasseeOrthopedicClinicClaimEdits');
-    Route::any('tallahassee_orthopedic_clinic_claim_edits_duplicate', 'App\Http\Controllers\ProjectAutomationController@TallahasseeOrthopedicClinicClaimEditsDuplicates');
-    Route::any('tallahassee_orthopedic_clinic_denial', 'App\Http\Controllers\ProjectAutomationController@TallahasseeOrthopedicClinicDenail');
-    Route::any('tallahassee_orthopedic_clinic_denial_duplicate', 'App\Http\Controllers\ProjectAutomationController@TallahasseeOrthopedicClinicDenialDuplicates');
-    Route::any('chestnut_health_systems_inc_em_op', 'App\Http\Controllers\ProjectAutomationController@chestnutHealthSystemsIncEmOp');
-    Route::any('chestnut_health_systems_inc_em_op_duplicates', 'App\Http\Controllers\ProjectAutomationController@chestnutHealthSystemsIncEmOpDuplicates');
-    Route::any('restoration_healthcare_em_op', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareEmOp');
-    Route::any('restoration_healthcare_em_op_duplicates', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareEmOpDuplicates');
-    Route::any('restoration_healthcare_iv_infusion', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareIvInfusion');
-    Route::any('restoration_healthcare_iv_infusion_duplicates', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareIvInfusionDuplicates');
-    Route::any('ashe_memorial_hospital_ancillary', 'App\Http\Controllers\ProjectAutomationController@asheMemorialHospitalAncillary');
-    Route::any('ashe_memorial_hospital_ancillary_duplicates', 'App\Http\Controllers\ProjectAutomationController@asheMemorialHospitalAncillaryDuplicates');
-    Route::any('ashe_memorial_hospital_ed', 'App\Http\Controllers\ProjectAutomationController@asheMemorialHospitalEd');
-    Route::any('ashe_memorial_hospital_ed_duplicates', 'App\Http\Controllers\ProjectAutomationController@asheMemorialHospitalEdDuplicates');
-    Route::any('ashe_memorial_hospital_sds', 'App\Http\Controllers\ProjectAutomationController@asheMemorialHospitalSds');
-    Route::any('ashe_memorial_hospital_sds_duplicates', 'App\Http\Controllers\ProjectAutomationController@asheMemorialHospitalSdsDuplicates');
-    Route::any('Kwb_pathology_associates_pathology', 'App\Http\Controllers\ProjectAutomationController@KwbPathologyAssociatesPathology');
-    Route::any('Kwb_pathology_associates_pathology_duplicates', 'App\Http\Controllers\ProjectAutomationController@KwbPathologyAssociatesPathologyDuplicates');
-    Route::any('prine_health_em_op', 'App\Http\Controllers\ProjectAutomationController@prineHealthEmOp');
-    Route::any('prine_health_em_op_duplicates', 'App\Http\Controllers\ProjectAutomationController@prineHealthEmOpDuplicates');
-    Route::any('prine_health_surgery', 'App\Http\Controllers\ProjectAutomationController@prineHealthSurgery');
-    Route::any('prine_health_surgery_duplicates', 'App\Http\Controllers\ProjectAutomationController@prineHealthSurgeryDuplicates');
-    Route::any('restoration_healthcare_op_denial', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareOpDenial');
-    Route::any('restoration_healthcare_op_denial_duplicates', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareOpDenialDuplicates');
-    Route::any('restoration_healthcare_op_rejection', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareOpRejection');
-    Route::any('restoration_healthcare_op_rejection_duplicates', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareOpRejectionDuplicates');
-    Route::any('restoration_healthcare_iv_denial', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareIvDenial');
-    Route::any('restoration_healthcare_iv_denial_duplicates', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareIvDenialDuplicates');
-    Route::any('restoration_healthcare_iv_rejection', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareIvRejection');
-    Route::any('restoration_healthcare_iv_rejection_duplicates', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareIvRejectionDuplicates');
-
     // Resolve Route Files
     Route::any('onpoint', 'App\Http\Controllers\ProjectAutomationController@onpoint');
     Route::any('onpoint_duplicate', 'App\Http\Controllers\ProjectAutomationController@onpointDuplicates');
@@ -85,6 +48,9 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('matc_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@maryvilleAddictionTreatmentCenterArDuplicates');    
     Route::any('gchs_ar', 'App\Http\Controllers\ProjectAutomationController@greenClinicHealthSystemAr');
     Route::any('gchs_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@greenClinicHealthSystemArDuplicates');
-
+    Route::any('arthritis_sports_orthopeadics_pc_ar', 'App\Http\Controllers\ProjectAutomationController@arthritisSportsOrthopeadicsPCAr');
+    Route::any('arthritis_sports_orthopeadics_pc_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@arthritisSportsOrthopeadicsPCArDuplicates');
+    // Route::any('rapid_city_medical_center_ar', 'App\Http\Controllers\ProjectAutomationController@rapidCityMedicalCenterAr');
+    // Route::any('rapid_city_medical_center_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@rapidCityMedicalCenterArDuplicates');
 
 });
