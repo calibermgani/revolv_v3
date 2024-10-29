@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
 use App\Models\InventoryErrorLogs;
-
+use Carbon\Carbon;
 class ReportsController extends Controller
 {
     public function reporstIndex(){
@@ -146,6 +146,8 @@ class ReportsController extends Controller
                 }//dd($client_data);
                 // if (count($client_data) > 0) {
                 $body_info = '<table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter" id="report_list"><thead><tr>';
+                $additionalValues = ['aging','aging_range'];
+                $checkedValues = array_merge($checkedValues, $additionalValues);
                 $checkedValues[] = 'work_hours';
                 foreach ($checkedValues as $key => $header) {
                     if ($header == 'chart_status') {
@@ -285,7 +287,35 @@ class ReportsController extends Controller
                                 $data = $data;
                             }
                         }
-                       
+                        if ($header === 'dos') {
+                            $dosDate = Carbon::parse($row->{'dos'});
+                            $currentDate = Carbon::now();
+                            $agingCount = $dosDate->diffInDays($currentDate);
+                            if ($agingCount <= 30) {
+                                $agingRange = '0-30';
+                            } elseif ($agingCount <= 60) {
+                                $agingRange ='31-60';
+                            } elseif ($agingCount <= 90) {
+                                $agingRange = '61-90';
+                            } elseif ($agingCount <= 120) {
+                                $agingRange = '91-120';
+                            } elseif ($agingCount <= 180) {
+                                $agingRange = '121-180';
+                            } elseif ($agingCount <= 365) {
+                                $agingRange = '181-365';
+                            } else {
+                            $agingRange = '365+';
+                            }
+                        } else {
+                            $agingCount = '--';
+                            $agingRange = '--';
+                        }
+                        if ($header === 'aging') {
+                            $data = $agingCount;
+                        }
+                        if ($header === 'aging_range') {
+                            $data = $agingRange;
+                        }
                         $body_info .= '<td class="wrap-text">' . $data . '</td>';
                     }
                     $body_info .= '</tr>';
