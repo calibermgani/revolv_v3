@@ -308,10 +308,7 @@ class ReportsController extends Controller
                             } else {
                             $agingRange = '365+';
                             }
-                        } else {
-                            $agingCount = '--';
-                            $agingRange = '--';
-                        }
+                        } 
                         if ($header === 'aging') {
                             $data = $agingCount;
                         }
