@@ -181,7 +181,7 @@ class ReportsController extends Controller
                  
                     $body_info .= '<tr>';
                     foreach ($checkedValues as $header) {
-                        $data = isset($row->{$header}) && !empty($row->{$header}) ? $row->{$header} : "--";   $type = gettype($row->{'dos'});dd($row->{$header},$type ,$data);
+                        $data = isset($row->{$header}) && !empty($row->{$header}) ? $row->{$header} : "--";  
                         if ($header == 'QA_status_code') {
                             if ($data != '--') {
                                 $data = Helpers::qaStatusById($data)['status_code'];
@@ -290,6 +290,7 @@ class ReportsController extends Controller
                         }
                        
                         if ($header === 'dos') {
+                            $type = gettype($row->{'dos'});dd($row->{$header},$type ,$data);
                             $data = $data != '--' ? date('m/d/y',strtotime($data)) : '--';
                             $dosDate = Carbon::parse($row->{'dos'});
                             $currentDate = Carbon::now();
