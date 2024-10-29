@@ -50,7 +50,7 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('gchs_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@greenClinicHealthSystemArDuplicates');
     Route::any('arthritis_sports_orthopeadics_pc_ar', 'App\Http\Controllers\ProjectAutomationController@arthritisSportsOrthopeadicsPCAr');
     Route::any('arthritis_sports_orthopeadics_pc_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@arthritisSportsOrthopeadicsPCArDuplicates');
-    // Route::any('rapid_city_medical_center_ar', 'App\Http\Controllers\ProjectAutomationController@rapidCityMedicalCenterAr');
-    // Route::any('rapid_city_medical_center_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@rapidCityMedicalCenterArDuplicates');
+    Route::any('rapid_city_medical_center_ar', 'App\Http\Controllers\ProjectAutomationController@rapidCityMedicalCenterAr');
+    Route::any('rapid_city_medical_center_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@rapidCityMedicalCenterArDuplicates');
 
 });
