@@ -317,9 +317,9 @@ class ReportsController extends Controller
                         if ($header === 'aging_range') {
                             $data = $agingRange;
                         }
-                        if ($type === 'Date') {
-                            $data = date('m/d/y',strtotime($data));
-                       }
+                    //     if ($type === 'Date') {
+                    //         $data = date('m/d/y',strtotime($data));
+                    //    }
                         $body_info .= '<td class="wrap-text">' . $data . '</td>';
                     }
                     $body_info .= '</tr>';
