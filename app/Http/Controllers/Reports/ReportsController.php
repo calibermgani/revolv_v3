@@ -148,7 +148,7 @@ class ReportsController extends Controller
                 $body_info = '<table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter" id="report_list"><thead><tr>';
                 $additionalValues = ['aging','aging_range'];
                 $checkedValues = array_merge($checkedValues, $additionalValues);
-                $checkedValues[] = 'work_hours';
+                $checkedValues[] = 'work_hours'; $agingCount = $agingRange = null;
                 foreach ($checkedValues as $key => $header) {
                     if ($header == 'chart_status') {
                         $body_info .= '<th>Charge Status </th>';
@@ -287,7 +287,7 @@ class ReportsController extends Controller
                                 $data = $data;
                             }
                         }
-                        $agingCount = $agingRange = null;
+                       
                         if ($header === 'dos') {
                             $dosDate = Carbon::parse($row->{'dos'});
                             $currentDate = Carbon::now();
