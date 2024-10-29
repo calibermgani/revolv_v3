@@ -181,7 +181,7 @@ class ReportsController extends Controller
                  
                     $body_info .= '<tr>';
                     foreach ($checkedValues as $header) {
-                        $data = isset($row->{$header}) && !empty($row->{$header}) ? $row->{$header} : "--";   $type = gettype($row->{$header});dd($type,$row->{$header});
+                        $data = isset($row->{$header}) && !empty($row->{$header}) ? $row->{$header} : "--";   $type = gettype($row->{'dos'});dd($row->{$header},$type ,$data);
                         if ($header == 'QA_status_code') {
                             if ($data != '--') {
                                 $data = Helpers::qaStatusById($data)['status_code'];
@@ -316,6 +316,9 @@ class ReportsController extends Controller
                         if ($header === 'aging_range') {
                             $data = $agingRange;
                         }
+                        if ($type === 'Date') {
+                            $data = date('m/d/y',strtotime($data));
+                       }
                         $body_info .= '<td class="wrap-text">' . $data . '</td>';
                     }
                     $body_info .= '</tr>';
