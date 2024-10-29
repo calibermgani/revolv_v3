@@ -289,6 +289,7 @@ class ReportsController extends Controller
                         }
                        
                         if ($header === 'dos') {
+                            $data = $data != '--' ? date('m/d/y',strtotime($data)) : '--';
                             $dosDate = Carbon::parse($row->{'dos'});
                             $currentDate = Carbon::now();
                             $agingCount = $dosDate->diffInDays($currentDate);
@@ -307,7 +308,10 @@ class ReportsController extends Controller
                             } else {
                             $agingRange = '365+';
                             }
-                        } 
+                        } else {
+                            $agingCount = '--';
+                            $agingRange = '--';
+                        }
                         if ($header === 'aging') {
                             $data = $agingCount;
                         }
