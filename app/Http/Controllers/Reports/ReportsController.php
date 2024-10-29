@@ -178,10 +178,10 @@ class ReportsController extends Controller
                 $body_info .= '</tr></thead><tbody>';
 
                 foreach ($client_data as $row) {
-                    $type = gettype($row);dd($type,$row);
+                 
                     $body_info .= '<tr>';
                     foreach ($checkedValues as $header) {
-                        $data = isset($row->{$header}) && !empty($row->{$header}) ? $row->{$header} : "--";
+                        $data = isset($row->{$header}) && !empty($row->{$header}) ? $row->{$header} : "--";   $type = gettype($row->{$header});dd($type,$row->{$header});
                         if ($header == 'QA_status_code') {
                             if ($data != '--') {
                                 $data = Helpers::qaStatusById($data)['status_code'];
