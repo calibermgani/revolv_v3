@@ -290,7 +290,7 @@ class ReportsController extends Controller
                         if ($header === 'dos') {
                             $dosDate = Carbon::parse($row->{'dos'});
                             $currentDate = Carbon::now();
-                            $agingCount = $dosDate->diffInDays($currentDate);
+                            $agingCount = $dosDate->diffInDays($currentDate);dd( $agingCount);
                             if ($agingCount <= 30) {
                                 $agingRange = '0-30';
                             } elseif ($agingCount <= 60) {
