@@ -178,6 +178,7 @@ class ReportsController extends Controller
                 $body_info .= '</tr></thead><tbody>';
 
                 foreach ($client_data as $row) {
+                    $type = gettype($row);dd($type,$row);
                     $body_info .= '<tr>';
                     foreach ($checkedValues as $header) {
                         $data = isset($row->{$header}) && !empty($row->{$header}) ? $row->{$header} : "--";
