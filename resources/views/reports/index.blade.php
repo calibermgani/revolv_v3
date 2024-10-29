@@ -329,7 +329,7 @@
                 $('.header_columns').find('input[type="checkbox"]:checked').each(function() {
                     checkedValues.push($(this).val());
                 });
-                KTApp.block('#headers_modal', {
+                KTApp.block('#reportModal', {
                     overlayColor: '#000000',
                     state: 'danger',
                     opacity: 0.1,
@@ -401,7 +401,7 @@
                                                             dom: "<'row'<'col-md-6 text-left'f><'col-md-6 text-right'B>>" + "<'row'<'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>",
                                                         })
                                                         table.buttons().container().appendTo($('.dataTables_wrapper .col-md-6.text-right'));
-                                                        KTApp.unblock('#headers_modal');
+                                                        KTApp.unblock('#reportModal');
                                                     }else{
 
                                                     }
@@ -456,7 +456,7 @@
                                                 dom: "<'row'<'col-md-6 text-left'f><'col-md-6 text-right'B>>" + "<'row'<'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>",
                                             })
                                             table.buttons().container().appendTo($('.dataTables_wrapper .col-md-6.text-right'));
-                                            KTApp.unblock('#headers_modal');
+                                            KTApp.unblock('#reportModal');
                                         }else{
 
                                         }
