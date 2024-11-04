@@ -103,12 +103,12 @@ class ProjectController extends Controller
             $loginEmpId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null ? Session::get('loginDetails')['userDetail']['emp_id'] : "";
             // $toMailId = ["elanchezhian@annexmed.net", "fabian@annexmed.com", "ushashree@annexmed.com"];
             // $ccMailId = ["mgani@caliberfocus.com"];
-            $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'project work mail to mail id')->first();
-            $toMailId = $toMail != null ? explode(",", $toMail->cc_emails) : null;
-            $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'project work mail cc mail id')->first();
-            $ccMailId = $ccMail != null ? explode(",", $ccMail->cc_emails) : null;
-            // $toMailId = ["vijayalaxmi@caliberfocus.com"];
-            // $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+            // $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'project work mail to mail id')->first();
+            // $toMailId = $toMail != null ? explode(",", $toMail->cc_emails) : null;
+            // $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'project work mail cc mail id')->first();
+            // $ccMailId = $ccMail != null ? explode(",", $ccMail->cc_emails) : null;
+            $toMailId = ["vijayalaxmi@caliberfocus.com"];
+            $ccMailId = ["vijayalaxmi@caliberfocus.com"];
             $yesterday = Carbon::yesterday();
             $today = Carbon::today();
             if ($yesterday->isSaturday()) {
@@ -129,6 +129,7 @@ class ProjectController extends Controller
             foreach ($projects as $project) {
                 $prjName =  Helpers::projectName($project["id"]) != null ? Helpers::projectName($project["id"])->project_name : null;//dd($prjName);
                 if ($prjName !== null) {
+                    $totalAR = $this->getProjectTotalARCount($prjName);
                     if (count($project["subprject_name"]) > 0) {
                         foreach ($project["subprject_name"] as $key => $subProject) {
                             // $table_name = Str::slug((Str::lower($project["client_name"]) . '_' . Str::lower($subProject)), '_');
@@ -159,6 +160,9 @@ class ProjectController extends Controller
                         $prjoectsPending[$key]['Coder'] = $cCount;
                         $prjoectsPending[$key]['QA'] = $qCount;
                         // $prjoectsPending[$key]['Balance'] = $pCount;
+                        $productionARCount = $model::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Completed')->count();
+                        $prjoectsPending[$key]['total_ar'] = $totalAR;
+                        
                     }
                 }           
            }
@@ -399,5 +403,26 @@ class ProjectController extends Controller
         }
         Log::info('Project Error Details: ' . print_r($project_information, true));
         return response()->json(["message" => "Error Mail Sent by Resolv"]);
+    }
+    public function getProjectTotalARCount($project_id)
+    {
+        try {
+            $payload = [
+                'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                'project_id' => $project_id,
+            ];
+            $client = new Client(['verify' => false]);
+            $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_total_ar_list', [
+                'json' => $payload,
+            ]);
+            if ($response->getStatusCode() == 200) {
+                $data = json_decode($response->getBody(), true);
+            } else {
+                return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+            }
+            return $data['clientList'];
+        } catch (\Exception $e) {
+            Log::debug($e->getMessage());
+        }
     }
 }
