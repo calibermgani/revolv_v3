@@ -130,6 +130,7 @@ class ProjectController extends Controller
                 $prjName =  Helpers::projectName($project["id"]) != null ? Helpers::projectName($project["id"])->project_name : null;//dd($prjName);
                 if ($prjName !== null) {
                     $totalAR = $this->getProjectTotalARCount($prjName);
+                    $totalQA = $this->getProjectTotalQACount($prjName);
                     if (count($project["subprject_name"]) > 0) {
                         foreach ($project["subprject_name"] as $key => $subProject) {
                             // $table_name = Str::slug((Str::lower($project["client_name"]) . '_' . Str::lower($subProject)), '_');
@@ -162,6 +163,7 @@ class ProjectController extends Controller
                         // $prjoectsPending[$key]['Balance'] = $pCount;
                         $productionARCount = $model::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Completed')->count();
                         $prjoectsPending[$key]['total_ar'] = $totalAR;
+                        $prjoectsPending[$key]['total_qa'] = $totalQA;
                         
                     }
                 }           
@@ -413,6 +415,35 @@ class ProjectController extends Controller
             ];
             $client = new Client(['verify' => false]);
             $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_total_ar_list', [
+                'json' => $payload,
+            ]);
+            if ($response->getStatusCode() == 200) {
+                $data = json_decode($response->getBody(), true);
+            } else {
+                return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+            }
+            return $data['clientList'];
+        } catch (\Exception $e) {
+            Log::debug($e->getMessage());
+        }
+    }
+/*************  ✨ Codeium Command ⭐  *************/
+    /**
+     * Get total QA count of a project
+     *
+     * @param int $project_id
+     * @return array
+     */
+/******  0ffef14c-67fa-4255-bc42-a0fefc8f0740  *******/
+    public function getProjectTotalQACount($project_id)
+    {
+        try {
+            $payload = [
+                'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                'client_id' => $project_id,
+            ];
+            $client = new Client(['verify' => false]);
+            $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_total_qa_list', [
                 'json' => $payload,
             ]);
             if ($response->getStatusCode() == 200) {
