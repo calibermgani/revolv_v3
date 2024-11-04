@@ -233,9 +233,9 @@ use Carbon\Carbon;
                                                         <label
                                                             class="col-md-12">
                                                             @if(str_contains($labelName, 'Coder '))
-                                                             {{ str_replace('Coder ', 'AR ', $labelName) }}
+                                                              {{ str_replace('Coder ', 'AR ', $labelName) }}
                                                             @else
-                                                             {{ $labelName }}
+                                                              {{ $labelName }}
                                                             @endif
                                                         </label>
                                                         <div class="col-md-10">
