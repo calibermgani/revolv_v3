@@ -129,8 +129,7 @@ class ProjectController extends Controller
             foreach ($projects as $project) {
                 $prjName =  Helpers::projectName($project["id"]) != null ? Helpers::projectName($project["id"])->project_name : null;//dd($prjName);
                 if ($prjName !== null) {
-                    $totalAR = $this->getProjectTotalARCount($prjName);
-                    $totalQA = $this->getProjectTotalQACount($prjName);
+                  
                     if (count($project["subprject_name"]) > 0) {
                         foreach ($project["subprject_name"] as $key => $subProject) {
                             // $table_name = Str::slug((Str::lower($project["client_name"]) . '_' . Str::lower($subProject)), '_');
@@ -151,6 +150,8 @@ class ProjectController extends Controller
                 }
                 $assignedCounts = $coderCompleteCounts = $pendingCounts = $QACounts  = $prjoectsPending = [];
                 foreach ($models as $key => $model) {
+                    $totalAR = $this->getProjectTotalARCount($prjName);dd($totalAR,$prjName);
+                    $totalQA = $this->getProjectTotalQACount($prjName);
                     if (class_exists($model)) {
                         $aCount = $model::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Assigned')->count();
                         $cCount = $model::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Completed')->count();
