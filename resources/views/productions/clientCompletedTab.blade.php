@@ -232,7 +232,11 @@ use Carbon\Carbon;
                                                     <div class="form-group row row_mar_bm">
                                                         <label
                                                             class="col-md-12">
-                                                            {{ $labelName }}
+                                                            @if(str_contains($labelName, 'coder_'))
+                                                             {{ str_replace('coder_', 'AR_', $labelName) }}
+                                                            @else
+                                                             {{ $labelName }}
+                                                            @endif
                                                         </label>
                                                         <div class="col-md-10">
                                                             @if ($options == null)
