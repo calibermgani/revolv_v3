@@ -210,7 +210,7 @@ use Carbon\Carbon;
                                                             }
                                             }
                                          $clientName = App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->project_id, 'encode');
-                                         $subProjectName = $data->sub_project_id != null ? App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->sub_project_id, 'encode') : '--';dd($searchData,$projectColSearchFields);
+                                         $subProjectName = $data->sub_project_id != null ? App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->sub_project_id, 'encode') : '--';
                                             @endphp
                                              {!! Form::open([
                                                 'url' =>
