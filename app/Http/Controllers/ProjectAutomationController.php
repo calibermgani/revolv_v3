@@ -1038,7 +1038,7 @@ class ProjectAutomationController extends Controller
      {
          try {
              $attributes = [
-                 'claim' => isset($request->claim) && $request->officclaime_keys != "NULL" ? $request->claim : NULL,
+                 'claims' => isset($request->claim) && $request->officclaime_keys != "NULL" ? $request->claim : NULL,
                  'dos' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
                  'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
                  'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
@@ -1046,7 +1046,7 @@ class ProjectAutomationController extends Controller
                  'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
                  'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                  'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
-                 'pmts_else_adjs' => isset($request->pmts_else_adjs) && $request->pmts_else_adjs != "NULL" ? $request->pmts_else_adjs : NULL,
+                 'pmts_adjs' => isset($request->pmts_else_adjs) && $request->pmts_else_adjs != "NULL" ? $request->pmts_else_adjs : NULL,
                  'adjustment' => isset($request->adjustment) && $request->adjustment != "NULL" ? $request->adjustment : NULL,
                  'withheld' => isset($request->withheld) && $request->withheld != "NULL" ? $request->withheld : NULL,                
                  'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
@@ -1059,16 +1059,17 @@ class ProjectAutomationController extends Controller
              $duplicateRecordExisting  =  RmcAr::where($attributes)->exists();
              if (!$duplicateRecordExisting) {
                 RmcAr::insert([
-                        'claim' => isset($request->claim) && $request->officclaime_keys != "NULL" ? $request->claim : NULL,
+                        'claims' => isset($request->claim) && $request->officclaime_keys != "NULL" ? $request->claim : NULL,
                         'dos' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
                         'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
                         'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                         'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
-                        'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,                        
+                        'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                         'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
-                        'pmts_else_adjs' => isset($request->pmts_else_adjs) && $request->pmts_else_adjs != "NULL" ? $request->pmts_else_adjs : NULL,
+                        'pmts_adjs' => isset($request->pmts_else_adjs) && $request->pmts_else_adjs != "NULL" ? $request->pmts_else_adjs : NULL,
                         'adjustment' => isset($request->adjustment) && $request->adjustment != "NULL" ? $request->adjustment : NULL,
-                        'withheld' => isset($request->withheld) && $request->withheld != "NULL" ? $request->withheld : NULL,                       
+                        'withheld' => isset($request->withheld) && $request->withheld != "NULL" ? $request->withheld : NULL,                
                         'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
                         'visit_type' => isset($request->visit_type) && $request->visit_type != "NULL" ? $request->visit_type : NULL,
                         'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
@@ -1084,16 +1085,17 @@ class ProjectAutomationController extends Controller
                  $duplicateRecord  =  RmcAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
                  if ($duplicateRecord) {
                      $duplicateRecord->update([
-                            'claim' => isset($request->claim) && $request->officclaime_keys != "NULL" ? $request->claim : NULL,
+                            'claims' => isset($request->claim) && $request->officclaime_keys != "NULL" ? $request->claim : NULL,
                             'dos' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
                             'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
                             'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                             'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
-                            'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,                            
+                            'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                            'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                             'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
-                            'pmts_else_adjs' => isset($request->pmts_else_adjs) && $request->pmts_else_adjs != "NULL" ? $request->pmts_else_adjs : NULL,
+                            'pmts_adjs' => isset($request->pmts_else_adjs) && $request->pmts_else_adjs != "NULL" ? $request->pmts_else_adjs : NULL,
                             'adjustment' => isset($request->adjustment) && $request->adjustment != "NULL" ? $request->adjustment : NULL,
-                            'withheld' => isset($request->withheld) && $request->withheld != "NULL" ? $request->withheld : NULL,                           
+                            'withheld' => isset($request->withheld) && $request->withheld != "NULL" ? $request->withheld : NULL,                
                             'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
                             'visit_type' => isset($request->visit_type) && $request->visit_type != "NULL" ? $request->visit_type : NULL,
                             'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
@@ -1117,7 +1119,7 @@ class ProjectAutomationController extends Controller
      {
          try {
             RmcAr::insert([
-                'claim' => isset($request->claim) && $request->officclaime_keys != "NULL" ? $request->claim : NULL,
+                'claims' => isset($request->claim) && $request->officclaime_keys != "NULL" ? $request->claim : NULL,
                 'dos' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
                 'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
                 'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
