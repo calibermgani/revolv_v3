@@ -1039,7 +1039,7 @@ class ProjectAutomationController extends Controller
          try {
              $attributes = [
                  'claim' => isset($request->claim) && $request->officclaime_keys != "NULL" ? $request->claim : NULL,
-                 'service_date' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
+                 'dos' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
                  'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
                  'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                  'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
@@ -1060,7 +1060,7 @@ class ProjectAutomationController extends Controller
              if (!$duplicateRecordExisting) {
                 RmcAr::insert([
                         'claim' => isset($request->claim) && $request->officclaime_keys != "NULL" ? $request->claim : NULL,
-                        'service_date' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
+                        'dos' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
                         'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
                         'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                         'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
@@ -1085,7 +1085,7 @@ class ProjectAutomationController extends Controller
                  if ($duplicateRecord) {
                      $duplicateRecord->update([
                             'claim' => isset($request->claim) && $request->officclaime_keys != "NULL" ? $request->claim : NULL,
-                            'service_date' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
+                            'dos' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
                             'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
                             'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                             'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
@@ -1118,7 +1118,7 @@ class ProjectAutomationController extends Controller
          try {
             RmcAr::insert([
                 'claim' => isset($request->claim) && $request->officclaime_keys != "NULL" ? $request->claim : NULL,
-                'service_date' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
+                'dos' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
                 'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
                 'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                 'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
