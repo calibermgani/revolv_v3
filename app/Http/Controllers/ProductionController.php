@@ -590,7 +590,9 @@ class ProductionController extends Controller
                         } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                         } else {
-                            $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
+                            if($value != null) {
+                              $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
+                            }
                         }
                     }
                 }
