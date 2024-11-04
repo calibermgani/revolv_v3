@@ -586,10 +586,11 @@ class ProductionController extends Controller
                         if (is_numeric($value) || is_bool($value)) {
                             $query->where($key, $value);  // Exact match for numeric/boolean
                         } elseif ($this->isDate($value)) {  // Check if it's a date
-                         
                             $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
                         } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
+                        } else {
+                            $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
                         }
                     }
                 }
