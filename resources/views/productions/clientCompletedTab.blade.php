@@ -193,7 +193,7 @@ use Carbon\Carbon;
                                                 $modelName = Str::studly($table_name);
                                                 $modelClass = "App\\Models\\" .  $modelName;
                                                 $labelName = ucwords(str_replace(['_else_', '_'], ['/', ' '], $data->column_name));
-                                                    $columnName = Str::lower(str_replace([' ', '/'], ['_', '_else_'], $data->column_name));
+                                                $columnName = Str::lower(str_replace([' ', '/'], ['_', '_else_'], $data->column_name));
                                                 $inputType = $data->column_type; $options = null;
                                             if($inputType == 'select') {
                                                 $options = $modelClass::select($columnName)
@@ -232,8 +232,8 @@ use Carbon\Carbon;
                                                     <div class="form-group row row_mar_bm">
                                                         <label
                                                             class="col-md-12">
-                                                            @if(str_contains($labelName, 'coder_'))
-                                                             {{ str_replace('coder_', 'AR_', $labelName) }}
+                                                            @if(str_contains($labelName, 'Coder '))
+                                                             {{ str_replace('Coder ', 'AR ', $labelName) }}
                                                             @else
                                                              {{ $labelName }}
                                                             @endif
