@@ -2156,4 +2156,8 @@ class ProductionController extends Controller
                 return redirect('/');
             }       
     }
+    protected function isDate($value) {
+        return strtotime($value) ? true : false;
+    }
+    
 }
