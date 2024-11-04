@@ -588,10 +588,11 @@ class ProductionController extends Controller
                         } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                         } else {
+                            dd($request->all());
                             $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
                         }
                     }
-                }dd($request->all(),$query->get());
+                }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
               
                $completedProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
