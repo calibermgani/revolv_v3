@@ -409,7 +409,7 @@ class ProjectController extends Controller
         try {
             $payload = [
                 'token' => '1a32e71a46317b9cc6feb7388238c95d',
-                'project_id' => $project_id,
+                'client_id' => $project_id,
             ];
             $client = new Client(['verify' => false]);
             $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_total_ar_list', [
