@@ -422,19 +422,11 @@ class ProjectController extends Controller
             } else {
                 return response()->json(['error' => 'API request failed'], $response->getStatusCode());
             }
-            return $data['clientList'];
+            return $data['totalArCount'];
         } catch (\Exception $e) {
             Log::debug($e->getMessage());
         }
     }
-/*************  ✨ Codeium Command ⭐  *************/
-    /**
-     * Get total QA count of a project
-     *
-     * @param int $project_id
-     * @return array
-     */
-/******  0ffef14c-67fa-4255-bc42-a0fefc8f0740  *******/
     public function getProjectTotalQACount($project_id)
     {
         try {
@@ -451,7 +443,7 @@ class ProjectController extends Controller
             } else {
                 return response()->json(['error' => 'API request failed'], $response->getStatusCode());
             }
-            return $data['clientList'];
+            return $data['totalQACount'];
         } catch (\Exception $e) {
             Log::debug($e->getMessage());
         }
