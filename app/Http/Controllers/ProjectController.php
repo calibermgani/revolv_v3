@@ -150,9 +150,9 @@ class ProjectController extends Controller
                 }
                 $assignedCounts = $coderCompleteCounts = $pendingCounts = $QACounts  = $prjoectsPending = [];
                 foreach ($models as $key => $model) {
-                    $totalAR = $this->getProjectTotalARCount($prjName);dd($totalAR,$prjName);
-                    $totalQA = $this->getProjectTotalQACount($prjName);
-                    if (class_exists($model)) {
+                     if (class_exists($model)) {
+                        $totalAR = $this->getProjectTotalARCount($prjName);dd($totalAR,$prjName);
+                        $totalQA = $this->getProjectTotalQACount($prjName);    
                         $aCount = $model::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Assigned')->count();
                         $cCount = $model::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Completed')->count();
                         $qCount = $model::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'QA_Completed')->count();
