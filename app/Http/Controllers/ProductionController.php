@@ -585,16 +585,16 @@ class ProductionController extends Controller
                         // Assuming 'like' is needed for partial match searches (optional), adjust based on requirements
                         if (is_numeric($value) || is_bool($value)) {
                             $query->where($key, $value);  // Exact match for numeric/boolean
+                        } elseif ($this->isDate($value)) {  // Check if it's a date
+                            $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
                         } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                         } else {
-                            dd($request->all());
                             $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
                         }
                     }
                 }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
-              
                $completedProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
                if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
                    if (class_exists($modelClass)) {
