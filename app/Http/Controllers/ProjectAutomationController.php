@@ -1038,8 +1038,8 @@ class ProjectAutomationController extends Controller
      {
          try {
              $attributes = [
-                 'claims' => isset($request->claim) && $request->officclaime_keys != "NULL" ? $request->claim : NULL,
-                 'dos' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
+                 'claims' => isset($request->claims) && $request->claims != "NULL" ? $request->claims : NULL,
+                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
                  'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
                  'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                  'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
@@ -1058,12 +1058,12 @@ class ProjectAutomationController extends Controller
              $duplicateRecordExisting  =  RmcAr::where($attributes)->exists();
              if (!$duplicateRecordExisting) {
                 RmcAr::insert([
-                        'claims' => isset($request->claim) && $request->officclaime_keys != "NULL" ? $request->claim : NULL,
-                        'dos' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
+                        'claims' => isset($request->claims) && $request->claims != "NULL" ? $request->claims : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
                         'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
                         'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                         'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
-                        'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,                        
+                        'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,                
                         'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
                         'pmts_adjs' => isset($request->pmts_else_adjs) && $request->pmts_else_adjs != "NULL" ? $request->pmts_else_adjs : NULL,
                         'adjustment' => isset($request->adjustment) && $request->adjustment != "NULL" ? $request->adjustment : NULL,
@@ -1083,12 +1083,12 @@ class ProjectAutomationController extends Controller
                  $duplicateRecord  =  RmcAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
                  if ($duplicateRecord) {
                      $duplicateRecord->update([
-                            'claims' => isset($request->claim) && $request->officclaime_keys != "NULL" ? $request->claim : NULL,
-                            'dos' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
+                            'claims' => isset($request->claims) && $request->claims != "NULL" ? $request->claims : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
                             'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
                             'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                             'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
-                            'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,                           
+                            'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,                
                             'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
                             'pmts_adjs' => isset($request->pmts_else_adjs) && $request->pmts_else_adjs != "NULL" ? $request->pmts_else_adjs : NULL,
                             'adjustment' => isset($request->adjustment) && $request->adjustment != "NULL" ? $request->adjustment : NULL,
@@ -1116,21 +1116,21 @@ class ProjectAutomationController extends Controller
      {
          try {
             RmcAr::insert([
-                'claims' => isset($request->claim) && $request->officclaime_keys != "NULL" ? $request->claim : NULL,
-                'dos' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,
-                'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
-                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
-                'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
-                'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,                
-                'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
-                'pmts_adjs' => isset($request->pmts_else_adjs) && $request->pmts_else_adjs != "NULL" ? $request->pmts_else_adjs : NULL,
-                'adjustment' => isset($request->adjustment) && $request->adjustment != "NULL" ? $request->adjustment : NULL,
-                'withheld' => isset($request->withheld) && $request->withheld != "NULL" ? $request->withheld : NULL,               
-                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
-                'visit_type' => isset($request->visit_type) && $request->visit_type != "NULL" ? $request->visit_type : NULL,
-                'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
-                'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
-                'guarantor_name' => isset($request->guarantor_name) && $request->guarantor_name != "NULL" ? $request->guarantor_name : NULL,
+                 'claims' => isset($request->claims) && $request->claims != "NULL" ? $request->claims : NULL,
+                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                 'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
+                 'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                 'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                 'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,                
+                 'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                 'pmts_adjs' => isset($request->pmts_else_adjs) && $request->pmts_else_adjs != "NULL" ? $request->pmts_else_adjs : NULL,
+                 'adjustment' => isset($request->adjustment) && $request->adjustment != "NULL" ? $request->adjustment : NULL,
+                 'withheld' => isset($request->withheld) && $request->withheld != "NULL" ? $request->withheld : NULL,                
+                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                 'visit_type' => isset($request->visit_type) && $request->visit_type != "NULL" ? $request->visit_type : NULL,
+                 'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                 'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                 'guarantor_name' => isset($request->guarantor_name) && $request->guarantor_name != "NULL" ? $request->guarantor_name : NULL,
                  'invoke_date' => date('Y-m-d'),
                  'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                  'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
