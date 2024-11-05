@@ -424,7 +424,7 @@ class ProjectController extends Controller
                 $data = json_decode($response->getBody(), true);
             } else {
                 return response()->json(['error' => 'API request failed'], $response->getStatusCode());
-            }
+            }dd($data['totalArCount']);
             return $data['totalArCount'];
         } catch (\Exception $e) {
             Log::debug($e->getMessage());
