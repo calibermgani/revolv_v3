@@ -33,6 +33,8 @@ use App\Models\RcmAr;
 use App\Models\RcmArDuplicates;
 use App\Models\RmcAr;
 use App\Models\RmcArDuplicates;
+use App\Models\AopsAr;
+use App\Models\AopsArDuplicates;
 
 class ProjectAutomationController extends Controller
 {
