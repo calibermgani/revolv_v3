@@ -164,7 +164,7 @@ class ProjectController extends Controller
                         // $prjoectsPending[$key]['Balance'] = $pCount;
                         // $productionARCount = $model::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Completed')->count();
                         $prjoectsPending[$key]['total_ar'] = $project["id"] != null ? $this->getProjectTotalARCount($project["id"]) : null;
-                        $prjoectsPending[$key]['total_qa'] = $project["id"] != null ? $this->getProjectTotalQACount($project["id"]) : null;
+                        $prjoectsPending[$key]['total_qa'] = $project["id"] != null ?$project["id"] : null;
                         
                     }
                 }           
