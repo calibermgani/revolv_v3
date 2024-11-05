@@ -434,8 +434,7 @@ class ProjectController extends Controller
             $payload = [
                 'token' => '1a32e71a46317b9cc6feb7388238c95d',
                 'client_id' => $project_id,
-            ];
-            
+            ];            
             // Retry 3 times, with a 2-second delay between each attempt
             $data = retry(3, function () use ($payload) {
                 $client = new Client(['verify' => false]);
