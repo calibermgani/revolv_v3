@@ -14,6 +14,8 @@ use App\Http\Helper\Admin\Helpers as Helpers;
 use Illuminate\Support\Facades\DB;
 use App\Models\SubMenuPermission;
 use App\Models\SubMenu;
+use App\Models\EmployeeLogin;
+use Carbon\Carbon;
 
 class LoginController extends Controller
 {
@@ -88,7 +90,17 @@ class LoginController extends Controller
                         //->where('sub_menu_permissions.parent_id',1)
                         ->orderBy('sub_menu_order', 'ASC')->get();
                     Session::put('SubmenuListByuser', $SubmenuListByuser);
+                    $Emp_Login = new EmployeeLogin;
+                    $is_existing_login = EmployeeLogin::where('user_id',$userId)->where('login_date',Carbon::today()->format('Y-m-d'))->count();
+                    if($is_existing_login == 0){
+                        $in_time = Carbon::now()->setTimezone('Asia/Kolkata')->format('H:i:s');
+                        $Emp_Login->user_id =  $userId;
+                        $Emp_Login->in_time = $in_time;
+                        $Emp_Login->login_date = Carbon::today()->format('Y-m-d');     
+                        $Emp_Login->save();                     
+                    }
             }
+            
             return response()->json(['success' => true]);
         } catch (Exception $e) {
             log::debug($e->getMessage());
@@ -96,6 +108,22 @@ class LoginController extends Controller
     }
     public function logout(Request $request) {
         try {
+            if (Session::get('loginDetails') &&  Session::get('loginDetails')['userInfo'] && Session::get('loginDetails')['userInfo']['user_id'] !=null) {
+                $userId = Session::get('loginDetails')['userInfo']['user_id'];
+                $is_existing_login = EmployeeLogin::where('user_id',$userId)->where('login_date',Carbon::today()->format('Y-m-d'))->first();
+                if(!empty($is_existing_login)) {
+                    $out_time = Carbon::now()->setTimezone('Asia/Kolkata')->format('H:i:s');
+                    $logout_date = Carbon::today()->format('Y-m-d');
+                    $duration = (new Carbon($out_time))->diff(new Carbon($is_existing_login->in_time))->format('%H:%I:%S');
+                    EmployeeLogin::where('id', $is_existing_login->id)
+                    ->where('login_date', $logout_date)
+                    ->update([
+                    'out_time' => $out_time,
+                    'duration'=>$duration,
+                    'logout_date' =>$logout_date,
+                    ]);
+                }
+           }
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
