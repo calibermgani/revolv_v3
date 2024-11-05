@@ -80,10 +80,8 @@
                     <td colspan="4" style="text-align: center; padding: 5px;">--No Records--</td>
                 </tr>
                 @endif
-
             </tbody>
         </table>
-        <p>Thanks</p>
         <br>
         @include('emails.emailFooter')
     </div>
