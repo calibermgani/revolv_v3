@@ -246,8 +246,10 @@ class ProjectController extends Controller
                                 });
                             })
                             ->groupBy('CE_emp_id')
+                            ->select('CE_emp_id') // Select only the grouped column
                             ->get() // Get the distinct CE_emp_id records first
                             ->count(); // Then count the number of records
+                            
                             
                             dd(DB::getQueryLog());
 
