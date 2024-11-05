@@ -259,7 +259,7 @@ class ProjectController extends Controller
                                 'Coder' => $cCount,
                                 'QA' => $qCount,
                                 'total_ar' => $totalARDetails['totalArCount'],
-                                'total_qa' => $this->getProjectTotalQACount($project['id']),
+                                'total_qa' => $totalQADetails['totalQACount'],
                                 'prodcution_ar' => $productionARCount,
                                 'prodcution_qa' => $productionQACount,
                                 'logged_resolv_ar' => $loggedResolvAR,
