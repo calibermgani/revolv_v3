@@ -164,12 +164,11 @@ class ProjectController extends Controller
                         // $prjoectsPending[$key]['Balance'] = $pCount;
                         // $productionARCount = $model::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Completed')->count();
                         $prjoectsPending[$key]['total_ar'] = $this->getProjectTotalARCount($clientIds[$key]);
-                        $prjoectsPending[$key]['total_qa'] =$clientIds[$key] != null ? $clientIds[$key] : null;
-                        Log::debug('Project ID: ' . $clientIds[$key] . ' Total AR: ' . $prjoectsPending[$key]['total_ar']);
+                        $prjoectsPending[$key]['total_qa'] =$this->getProjectTotalQACount($clientIds[$key]);;
                     }  
                 }    
            }
-            $mailBody = $prjoectsPending;dd($mailBody);
+            $mailBody = $prjoectsPending;
             Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday));
             Log::info('ProjectWorkMail executed successfully.');
         } catch (\Exception $e) {
@@ -467,19 +466,30 @@ class ProjectController extends Controller
             $payload = [
                 'token' => '1a32e71a46317b9cc6feb7388238c95d',
                 'client_id' => $project_id,
-            ];
-            $client = new Client(['verify' => false]);
-            $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_total_qa_list', [
-                'json' => $payload,
-            ]);
-            if ($response->getStatusCode() == 200) {
-                $data = json_decode($response->getBody(), true);
+            ];            
+            // Retry 3 times, with a 2-second delay between each attempt
+            $data = retry(3, function () use ($payload) {
+                $client = new Client(['verify' => false]);
+                $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_total_qa_list', [
+                    'json' => $payload,
+                ]);
+                
+                if ($response->getStatusCode() == 200) {
+                    return json_decode($response->getBody(), true);
+                } else {
+                    throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+                }
+            }, 2000); // 2000ms delay
+
+            if (isset($data['totalQACount'])) {
+                return $data['totalQACount'];
             } else {
-                return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+                Log::error('totalQACount not found in API response.');
+                return null;
             }
-            return $data['totalQACount'];
         } catch (\Exception $e) {
-            Log::debug($e->getMessage());
+            Log::error('Error in getProjectTotalARCount: ' . $e->getMessage());
+            return null;
         }
     }
 }
