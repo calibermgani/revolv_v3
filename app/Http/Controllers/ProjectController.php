@@ -223,12 +223,13 @@ class ProjectController extends Controller
                             ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','AR_non_workable','Revoke'])
                             ->whereIn('coder_work_date',[$today,$yesterday])
                             ->groupBy('CE_emp_id')->count();
-                            $productionARCount = $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today) {
+                            $productionARCount = $modelClass::select('CE_emp_id')
+                            ->where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today) {
                                 // First part: filter based on updated_at and chart_status in the given time range
                                 $query->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
                                       ->whereIn('chart_status', ['CE_Inprocess', 'CE_Pending', 'CE_Completed', 'CE_Clarification', 'CE_Hold', 'AR_non_workable', 'Revoke']);
-                        
-                                // Second part: add condition for `CE_Completed` status with coder_work_date as yesterday or today
+                                
+                                // Second part: add condition for CE_Completed status with coder_work_date as yesterday or today
                                 $query->orWhere(function ($subQuery) use ($yesterday, $today) {
                                     $subQuery->where('chart_status', 'CE_Completed')
                                              ->whereDate('coder_work_date', $yesterday)
@@ -236,7 +237,7 @@ class ProjectController extends Controller
                                 });
                             })
                             ->groupBy('CE_emp_id')
-                            ->count();                        
+                            ->count();
                             
                             $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
                             ->whereIn('chart_status', ['QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
