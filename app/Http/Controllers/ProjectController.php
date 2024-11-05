@@ -224,7 +224,7 @@ class ProjectController extends Controller
                             // ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','AR_non_workable','Revoke'])
                             // ->whereIn('coder_work_date',[$today,$yesterday])
                             // ->groupBy('CE_emp_id')->count();
-                            DB::enableQueryLog();
+                            // DB::enableQueryLog();
                             $productionARCount =  $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today) {
                                 // First part: filter based on updated_at and chart_status in the given time range
                                 $query->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
@@ -251,7 +251,7 @@ class ProjectController extends Controller
                             ->count(); // Then count the number of records
                             
                             
-                            dd(DB::getQueryLog());
+                            // dd(DB::getQueryLog());
 
                             $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
                             ->whereIn('chart_status', ['QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
