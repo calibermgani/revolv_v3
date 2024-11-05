@@ -169,10 +169,10 @@ class ProjectController extends Controller
                         $prjoectsPending[$key]['total_qa'] =$clientIds[$key] != null ? $clientIds[$key] : null;
                         
                     }
-                }           
-           }dd($prjoectsPending );
-            $mailBody = $prjoectsPending;
-            Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday));
+                }    dd($prjoectsPending );       
+           }
+            // $mailBody = $prjoectsPending;
+            // Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday));
             Log::info('ProjectWorkMail executed successfully.');
         } catch (\Exception $e) {
             Log::error('Error in ProjectWorkMail: ' . $e->getMessage());
@@ -424,7 +424,7 @@ class ProjectController extends Controller
                 $data = json_decode($response->getBody(), true);
             } else {
                 return response()->json(['error' => 'API request failed'], $response->getStatusCode());
-            }dd($data['totalArCount']);
+            }
             return $data['totalArCount'];
         } catch (\Exception $e) {
             Log::debug($e->getMessage());
