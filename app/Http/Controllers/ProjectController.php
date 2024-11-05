@@ -138,6 +138,7 @@ class ProjectController extends Controller
                             $modelClass = "App\\Models\\" . $modelName;
                             $models[] = $modelClass;
                             $prjoectName[] = $project["client_name"] . '-' . $subProject;
+                            $clientIds[] = $project["id"];
                         }
                     } else {
                         $subProjectText = "project";
@@ -146,9 +147,10 @@ class ProjectController extends Controller
                         $modelClass = "App\\Models\\" . $modelName;
                         $models[] = $modelClass;
                         $prjoectName[] = $project["client_name"];
+                        $clientIds[] = $project["id"];
                     }
                 }
-                $assignedCounts = $coderCompleteCounts = $pendingCounts = $QACounts  = $prjoectsPending = [];
+                $prjoectsPending = [];
                 foreach ($models as $key => $model) {
                      if (class_exists($model)) {
                         // $totalAR = $project["id"] != null ? $this->getProjectTotalARCount($project["id"]) : null;
@@ -163,8 +165,8 @@ class ProjectController extends Controller
                         $prjoectsPending[$key]['QA'] = $qCount;
                         // $prjoectsPending[$key]['Balance'] = $pCount;
                         // $productionARCount = $model::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Completed')->count();
-                        $prjoectsPending[$key]['total_ar'] = $project["id"] != null ? $this->getProjectTotalARCount($project["id"]) : null;
-                        $prjoectsPending[$key]['total_qa'] = $project["id"] != null ?$project["id"] : null;
+                        $prjoectsPending[$key]['total_ar'] = $project["id"] != null ? $this->getProjectTotalARCount($clientIds[$key]) : null;
+                        $prjoectsPending[$key]['total_qa'] = $project["id"] != null ? $clientIds[$key] : null;
                         
                     }
                 }           
