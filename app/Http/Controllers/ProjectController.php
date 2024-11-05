@@ -149,10 +149,10 @@ class ProjectController extends Controller
                         $prjoectName[] = $project["client_name"];
                         $clientIds[] = $project["id"];
                     }
-                }   dd($clientIds,$prjoectName,$models );    
+                }  
                 $prjoectsPending = [];
                 foreach ($models as $key => $model) {
-                     if (class_exists($model)) {
+                     if (class_exists($model)) { dd($clientIds,$prjoectName,$models );    
                         // $totalAR = $project["id"] != null ? $this->getProjectTotalARCount($project["id"]) : null;
                         // $totalQA = $project["id"] != null ? $this->getProjectTotalQACount($project["id"]) : null;    
                         $aCount = $model::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Assigned')->count();
