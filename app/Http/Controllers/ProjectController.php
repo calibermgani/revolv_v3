@@ -182,7 +182,7 @@ class ProjectController extends Controller
         try {
             Log::info('Executing ProjectWorkMail logic.');
             $loginEmpId = Session::get('loginDetails')['userDetail']['emp_id'] ?? "";    
-            $toMailId = ["vijayalaxmi@caliberfocus.com"];
+            $toMailId = ["mgani@caliberfocus.com"];
             $ccMailId = ["vijayalaxmi@caliberfocus.com"];
     
             // Set date ranges based on yesterday's date, skipping weekends.
