@@ -66,11 +66,11 @@
                             <td style="text-align: center;padding: 5px;">{{ $data['Chats'] == 0 ? 'No' : 'Yes' }}</td>
                             <td style="text-align: center;padding: 5px;">{{ $data['total_ar']}}</td>
                             <td style="text-align: center;padding: 5px;">0</td>
-                            <td style="text-align: center;padding: 5px;">0</td>
+                            <td style="text-align: center;padding: 5px;">{{$data['prodcution_ar']}}</td>
                             <td style="text-align: center;padding: 5px;">{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder']}}</td>
                             <td style="text-align: center;padding: 5px;">{{$data['total_qa']}}</td>
                             <td style="text-align: center;padding: 5px;">0</td>
-                            <td style="text-align: center;padding: 5px;">0</td>
+                            <td style="text-align: center;padding: 5px;">{{$data['prodcution_qa']}}</td>
                             <td style="text-align: center;padding: 5px;">{{ $data['QA'] == 0 ? 'No Activity' : $data['QA']}}</td>
                             {{-- <td style="text-align: left;padding: 5px;">{{ $data['Balance'] }}</td> --}}
                         </tr>
