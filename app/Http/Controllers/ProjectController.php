@@ -170,7 +170,7 @@ class ProjectController extends Controller
                         
                     }
                 }           
-           }dd($prjoectsPending );
+           }
             $mailBody = $prjoectsPending;
             Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday));
             Log::info('ProjectWorkMail executed successfully.');
