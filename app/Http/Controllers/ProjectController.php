@@ -225,14 +225,20 @@ class ProjectController extends Controller
                             // ->whereIn('coder_work_date',[$today,$yesterday])
                             // ->groupBy('CE_emp_id')->count();
                             DB::enableQueryLog();
-
-
-                            $productionARCount = $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today) {
+                            $productionARCount =  $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today) {
                                 // First part: filter based on updated_at and chart_status in the given time range
                                 $query->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                                      ->whereIn('chart_status', ['CE_Inprocess', 'CE_Pending', 'CE_Completed', 'CE_Clarification', 'CE_Hold', 'AR_non_workable', 'Revoke']);
-                        
-                                // Second part: add condition for `CE_Completed` status with coder_work_date as yesterday or today
+                                      ->whereIn('chart_status', [
+                                          'CE_Inprocess', 
+                                          'CE_Pending', 
+                                          'CE_Completed', 
+                                          'CE_Clarification', 
+                                          'CE_Hold', 
+                                          'AR_non_workable', 
+                                          'Revoke'
+                                      ]);
+                                
+                                // Second part: add condition for CE_Completed status with coder_work_date as yesterday or today
                                 $query->orWhere(function ($subQuery) use ($yesterday, $today) {
                                     $subQuery->where('chart_status', 'CE_Completed')
                                              ->whereDate('coder_work_date', $yesterday)
@@ -240,7 +246,9 @@ class ProjectController extends Controller
                                 });
                             })
                             ->groupBy('CE_emp_id')
-                            ->count();                        
+                            ->get() // Get the distinct CE_emp_id records first
+                            ->count(); // Then count the number of records
+                            
                             dd(DB::getQueryLog());
 
                             $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
