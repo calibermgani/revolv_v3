@@ -20,6 +20,7 @@ use App\Mail\ProcodeProjectError;
 use App\Models\InventoryErrorLogs;
 use App\Http\Helper\Admin\Helpers as Helpers;
 use Illuminate\Support\Facades\DB;
+use App\Models\EmployeeLogin;
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
@@ -243,15 +244,26 @@ class ProjectController extends Controller
                             $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
                             ->whereIn('chart_status', ['QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
                             ->groupBy('QA_emp_id')->count();
+                            $totalARDetails = $this->getProjectTotalARCount($project['id']);
+                             $totalQADetails = $this->getProjectTotalQACount($project['id']);
+                            $loggedResolvAR = 0;$loggedResolvQA=0;
+                            foreach($totalARDetails['totalArList'] as $key => $arList){
+                                $loggedResolvAR += EmployeeLogin::where('user_id',$arList['assigned_people'])->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
+                            }
+                            foreach($totalQADetails['totalQAList'] as $key => $qaList){
+                                $loggedResolvQA += EmployeeLogin::where('user_id',$qaList['assigned_people'])->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
+                            }
                             $projectData[] = [
                                 'project' => $project['client_name'] . '-' . $subProject,
                                 'Chats' => $aCount,
                                 'Coder' => $cCount,
                                 'QA' => $qCount,
-                                'total_ar' => $this->getProjectTotalARCount($project['id']),
+                                'total_ar' => $totalARDetails['totalArCount'],
                                 'total_qa' => $this->getProjectTotalQACount($project['id']),
                                 'prodcution_ar' => $productionARCount,
                                 'prodcution_qa' => $productionQACount,
+                                'logged_resolv_ar' => $loggedResolvAR,
+                                'logged_resolv_qa' => $loggedResolvQA,
                             ];
                         }
                     }
@@ -518,13 +530,13 @@ class ProjectController extends Controller
                     throw new \Exception('API request failed with status: ' . $response->getStatusCode());
                 }
             }, 2000);
-
-            if (isset($data['totalArCount'])) {
-                return $data['totalArCount'];
-            } else {
-                Log::error('totalArCount not found in API response.');
-                return null;
-            }
+            return $data;
+            // if (isset($data['totalArCount'])) {
+            //     return $data;
+            // } else {
+            //     Log::error('totalArCount not found in API response.');
+            //     return null;
+            // }
         } catch (\Exception $e) {
             Log::error('Error in getProjectTotalARCount: ' . $e->getMessage());
             return null;
@@ -551,13 +563,13 @@ class ProjectController extends Controller
                     throw new \Exception('API request failed with status: ' . $response->getStatusCode());
                 }
             }, 2000); // 2000ms delay
-
-            if (isset($data['totalQACount'])) {
-                return $data['totalQACount'];
-            } else {
-                Log::error('totalQACount not found in API response.');
-                return null;
-            }
+            return $data;
+            // if (isset($data['totalQACount'])) {
+            //     return $data['totalQACount'];
+            // } else {
+            //     Log::error('totalQACount not found in API response.');
+            //     return null;
+            // }
         } catch (\Exception $e) {
             Log::error('Error in getProjectTotalARCount: ' . $e->getMessage());
             return null;
