@@ -168,8 +168,8 @@ class ProjectController extends Controller
                         $prjoectsPending[$key]['total_ar'] = $this->getProjectTotalARCount($clientIds[$key]);
                         $prjoectsPending[$key]['total_qa'] =$clientIds[$key] != null ? $clientIds[$key] : null;
                         
-                    }
-                }    dd($prjoectsPending );       
+                    } dd($prjoectsPending );      
+                }    
            }
             // $mailBody = $prjoectsPending;
             // Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday));
