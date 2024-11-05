@@ -149,7 +149,7 @@ class ProjectController extends Controller
                         $prjoectName[] = $project["client_name"];
                         $clientIds[] = $project["id"];
                     }
-                }
+                }   dd($clientIds,$prjoectName );    
                 $prjoectsPending = [];
                 foreach ($models as $key => $model) {
                      if (class_exists($model)) {
