@@ -164,11 +164,11 @@ class ProjectController extends Controller
                         // $prjoectsPending[$key]['Balance'] = $pCount;
                         $productionARCount = $model::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Completed')->count();
                         $prjoectsPending[$key]['total_ar'] = $totalAR;
-                        $prjoectsPending[$key]['total_qa'] = $totalQA;dd($totalAR,$project["id"],$model,$prjoectsPending );
+                        $prjoectsPending[$key]['total_qa'] = $totalQA;
                         
                     }
                 }           
-           }
+           }dd($prjoectsPending );
             $mailBody = $prjoectsPending;
             Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday));
             Log::info('ProjectWorkMail executed successfully.');
