@@ -167,8 +167,8 @@ class ProjectController extends Controller
                         $prjoectsPending[$key]['total_qa'] = $project["id"] != null ? $this->getProjectTotalQACount($project["id"]) : null;
                         
                     }
-                }           dd($prjoectsPending );
-           }
+                }           
+           }dd($prjoectsPending );
             $mailBody = $prjoectsPending;
             Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday));
             Log::info('ProjectWorkMail executed successfully.');
