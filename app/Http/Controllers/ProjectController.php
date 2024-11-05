@@ -153,8 +153,6 @@ class ProjectController extends Controller
                 $prjoectsPending = [];
                 foreach ($models as $key => $model) {
                      if (class_exists($model)) { 
-                        // $totalAR = $project["id"] != null ? $this->getProjectTotalARCount($project["id"]) : null;
-                        // $totalQA = $project["id"] != null ? $this->getProjectTotalQACount($project["id"]) : null;    
                         $aCount = $model::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Assigned')->count();
                         $cCount = $model::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Completed')->count();
                         $qCount = $model::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'QA_Completed')->count();
@@ -167,7 +165,7 @@ class ProjectController extends Controller
                         // $productionARCount = $model::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Completed')->count();
                         $prjoectsPending[$key]['total_ar'] = $this->getProjectTotalARCount($clientIds[$key]);
                         $prjoectsPending[$key]['total_qa'] =$clientIds[$key] != null ? $clientIds[$key] : null;
-                        
+                        Log::debug('Project ID: ' . $clientIds[$key] . ' Total AR: ' . $prjoectsPending[$key]['total_ar']);
                     }  
                 }    
            }
