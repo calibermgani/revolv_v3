@@ -152,7 +152,7 @@ class ProjectController extends Controller
                 }  
                 $prjoectsPending = [];
                 foreach ($models as $key => $model) {
-                     if (class_exists($model)) { dd($clientIds,$prjoectName,$models );    
+                     if (class_exists($model)) { 
                         // $totalAR = $project["id"] != null ? $this->getProjectTotalARCount($project["id"]) : null;
                         // $totalQA = $project["id"] != null ? $this->getProjectTotalQACount($project["id"]) : null;    
                         $aCount = $model::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Assigned')->count();
@@ -167,12 +167,12 @@ class ProjectController extends Controller
                         // $productionARCount = $model::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Completed')->count();
                         $prjoectsPending[$key]['total_ar'] = $this->getProjectTotalARCount($clientIds[$key]);
                         $prjoectsPending[$key]['total_qa'] =$clientIds[$key] != null ? $clientIds[$key] : null;
-                        dd($prjoectsPending,$clientIds,$prjoectName );    
+                        
                     }  
                 }    
            }
-            // $mailBody = $prjoectsPending;
-            // Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday));
+            $mailBody = $prjoectsPending;dd($mailBody);
+            Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday));
             Log::info('ProjectWorkMail executed successfully.');
         } catch (\Exception $e) {
             Log::error('Error in ProjectWorkMail: ' . $e->getMessage());
