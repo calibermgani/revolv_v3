@@ -151,8 +151,8 @@ class ProjectController extends Controller
                 $assignedCounts = $coderCompleteCounts = $pendingCounts = $QACounts  = $prjoectsPending = [];
                 foreach ($models as $key => $model) {
                      if (class_exists($model)) {
-                        $totalAR = $this->getProjectTotalARCount($project["id"]);
-                        $totalQA = $this->getProjectTotalQACount($project["id"]);    
+                        // $totalAR = $project["id"] != null ? $this->getProjectTotalARCount($project["id"]) : null;
+                        // $totalQA = $project["id"] != null ? $this->getProjectTotalQACount($project["id"]) : null;    
                         $aCount = $model::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Assigned')->count();
                         $cCount = $model::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Completed')->count();
                         $qCount = $model::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'QA_Completed')->count();
@@ -162,13 +162,13 @@ class ProjectController extends Controller
                         $prjoectsPending[$key]['Coder'] = $cCount;
                         $prjoectsPending[$key]['QA'] = $qCount;
                         // $prjoectsPending[$key]['Balance'] = $pCount;
-                        $productionARCount = $model::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Completed')->count();
-                        $prjoectsPending[$key]['total_ar'] = $totalAR;
-                        $prjoectsPending[$key]['total_qa'] = $totalQA;
+                        // $productionARCount = $model::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->where('chart_status', 'CE_Completed')->count();
+                        $prjoectsPending[$key]['total_ar'] = $project["id"] != null ? $this->getProjectTotalARCount($project["id"]) : null;
+                        $prjoectsPending[$key]['total_qa'] = $project["id"] != null ? $this->getProjectTotalQACount($project["id"]) : null;
                         
                     }
-                }           
-           }dd($prjoectsPending );
+                }           dd($prjoectsPending );
+           }
             $mailBody = $prjoectsPending;
             Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday));
             Log::info('ProjectWorkMail executed successfully.');
