@@ -407,27 +407,61 @@ class ProjectController extends Controller
         Log::info('Project Error Details: ' . print_r($project_information, true));
         return response()->json(["message" => "Error Mail Sent by Resolv"]);
     }
+    // public function getProjectTotalARCount($project_id)
+    // {
+    //     try {
+    //         $payload = [
+    //             'token' => '1a32e71a46317b9cc6feb7388238c95d',
+    //             'client_id' => $project_id,
+    //         ];
+    //         $client = new Client(['verify' => false]);
+    //         $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_total_ar_list', [
+    //             'json' => $payload,
+    //         ]);
+    //         if ($response->getStatusCode() == 200) {
+    //             $data = json_decode($response->getBody(), true);
+    //         } else {
+    //             return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+    //         }
+    //         return $data['totalArCount'];
+    //     } catch (\Exception $e) {
+    //         Log::debug($e->getMessage());
+    //     }
+    // }
     public function getProjectTotalARCount($project_id)
-    {
+   {
         try {
             $payload = [
                 'token' => '1a32e71a46317b9cc6feb7388238c95d',
                 'client_id' => $project_id,
             ];
-            $client = new Client(['verify' => false]);
-            $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_total_ar_list', [
-                'json' => $payload,
-            ]);
-            if ($response->getStatusCode() == 200) {
-                $data = json_decode($response->getBody(), true);
+            
+            // Retry 3 times, with a 2-second delay between each attempt
+            $data = retry(3, function () use ($payload) {
+                $client = new Client(['verify' => false]);
+                $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_total_ar_list', [
+                    'json' => $payload,
+                ]);
+                
+                if ($response->getStatusCode() == 200) {
+                    return json_decode($response->getBody(), true);
+                } else {
+                    throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+                }
+            }, 2000); // 2000ms delay
+
+            if (isset($data['totalArCount'])) {
+                return $data['totalArCount'];
             } else {
-                return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+                Log::error('totalArCount not found in API response.');
+                return null;
             }
-            return $data['totalArCount'];
         } catch (\Exception $e) {
-            Log::debug($e->getMessage());
+            Log::error('Error in getProjectTotalARCount: ' . $e->getMessage());
+            return null;
         }
     }
+
     public function getProjectTotalQACount($project_id)
     {
         try {
