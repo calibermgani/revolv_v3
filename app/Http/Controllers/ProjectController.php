@@ -241,9 +241,15 @@ class ProjectController extends Controller
                             ->select('CE_emp_id') 
                             ->get() 
                             ->count(); 
+                            // $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                            // ->whereIn('chart_status', ['QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])->whereNotNull('QA_emp_id')
+                            // ->groupBy('QA_emp_id')->count();
                             $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                            ->whereIn('chart_status', ['QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])->whereNotNull('QA_emp_id')
-                            ->groupBy('QA_emp_id')->count();
+                                ->whereIn('chart_status', ['QA_Assigned', 'QA_Inprocess', 'QA_Pending', 'QA_Completed', 'QA_Clarification', 'QA_Hold'])
+                                ->whereNotNull('QA_emp_id')
+                                ->distinct('QA_emp_id') // Get distinct QA_emp_id values
+                                ->count('QA_emp_id'); // Count distinct QA_emp_id values
+
                             $totalARDetails = $this->getProjectTotalARCount($project['id']);
                              $totalQADetails = $this->getProjectTotalQACount($project['id']);
                             $loggedResolvAR = 0;$loggedResolvQA=0;
