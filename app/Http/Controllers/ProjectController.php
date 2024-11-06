@@ -247,8 +247,8 @@ class ProjectController extends Controller
                             $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
                                 ->whereIn('chart_status', ['QA_Assigned', 'QA_Inprocess', 'QA_Pending', 'QA_Completed', 'QA_Clarification', 'QA_Hold'])
                                 ->whereNotNull('QA_emp_id')
-                                ->distinct('QA_emp_id') // Get distinct QA_emp_id values
-                                ->count('QA_emp_id'); // Count distinct QA_emp_id values
+                                ->distinct('QA_emp_id')
+                                ->count('QA_emp_id'); 
 
                             $totalARDetails = $this->getProjectTotalARCount($project['id']);
                              $totalQADetails = $this->getProjectTotalQACount($project['id']);
@@ -277,7 +277,6 @@ class ProjectController extends Controller
     
                 return $projectData;
             });
-    dd($prjoectsPending);
             $mailBody = $prjoectsPending->toArray();
             Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday));
     
