@@ -35,6 +35,8 @@ use App\Models\RmcAr;
 use App\Models\RmcArDuplicates;
 use App\Models\AopsAr;
 use App\Models\AopsArDuplicates;
+use App\Models\NaAr;
+use App\Models\NaArDuplicates;
 
 class ProjectAutomationController extends Controller
 {
@@ -1304,7 +1306,7 @@ class ProjectAutomationController extends Controller
  public function NeurologyAssociatesARDuplicates(Request $request)
      {
          try {
-            NaAr::insert([
+            NaArDuplicates::insert([
                 'claims' => isset($request->claims) && $request->claims != "NULL" ? $request->claims : NULL,
                 'atb' => isset($request->atb) && $request->atb != "NULL" ? $request->atb : NULL,                
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
