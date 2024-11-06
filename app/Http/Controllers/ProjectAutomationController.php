@@ -1236,6 +1236,7 @@ class ProjectAutomationController extends Controller
              'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
              'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
              'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+             'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
             
              
          ];
