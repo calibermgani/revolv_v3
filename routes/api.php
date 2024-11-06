@@ -54,6 +54,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('rapid_city_medical_center_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@rapidCityMedicalCenterArDuplicates');
     Route::any('rhea_medical_center_ar', 'App\Http\Controllers\ProjectAutomationController@rheaMedicalCentre');
     Route::any('rhea_medical_center_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@rheaMedicalCentreARDuplicates');
+    Route::any('associates_of_plastic_surgery_ar', 'App\Http\Controllers\ProjectAutomationController@AssociatesofPlasticSurgeryAR');
+    Route::any('associates_of_plastic_surgery_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@AssociatesofPlasticSurgeryARDuplicates');
     
     
 

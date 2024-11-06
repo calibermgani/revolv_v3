@@ -33,6 +33,8 @@ use App\Models\RcmAr;
 use App\Models\RcmArDuplicates;
 use App\Models\RmcAr;
 use App\Models\RmcArDuplicates;
+use App\Models\AopsAr;
+use App\Models\AopsArDuplicates;
 
 class ProjectAutomationController extends Controller
 {
@@ -1141,6 +1143,86 @@ class ProjectAutomationController extends Controller
              $e->getMessage();
          }
      }
+
+
+     // Associates of Plastic Surgery
+
+     public function AssociatesofPlasticSurgeryAR(Request $request)
+     {
+         try {
+             $attributes = [
+                 'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                 'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                 'total_ba' => isset($request->total_ba) && $request->total_ba != "NULL" ? $request->total_ba : NULL,
+                
+                 
+             ];
+ 
+             $duplicateRecordExisting  =  AopsAr::where($attributes)->exists();
+             if (!$duplicateRecordExisting) {
+                AopsAr::insert([
+                    'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                    'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'total_ba' => isset($request->total_ba) && $request->total_ba != "NULL" ? $request->total_ba : NULL,
+                    'change_in_ar' => isset($request->change_in_ar) && $request->change_in_ar != "NULL" ? $request->change_in_ar : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                     ]);
+                         return response()->json(['message' => 'Record Inserted Successfully']);
+             } else {
+                 $duplicateRecord  =  AopsAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                 if ($duplicateRecord) {
+                     $duplicateRecord->update([
+                    'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                    'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'total_ba' => isset($request->total_ba) && $request->total_ba != "NULL" ? $request->total_ba : NULL,
+                    'change_in_ar' => isset($request->change_in_ar) && $request->change_in_ar != "NULL" ? $request->change_in_ar : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                    'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                     ]);
+                 }
+                 return response()->json(['message' => 'Existing Record Updated Successfully']);
+             }
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     } 
+     
+     public function AssociatesofPlasticSurgeryARDuplicates(Request $request)
+     {
+         try {
+            AopsAr::insert([
+                'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                'total_ba' => isset($request->total_ba) && $request->total_ba != "NULL" ? $request->total_ba : NULL,
+                'change_in_ar' => isset($request->change_in_ar) && $request->change_in_ar != "NULL" ? $request->change_in_ar : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+             ]);
+             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+
 
 
 
