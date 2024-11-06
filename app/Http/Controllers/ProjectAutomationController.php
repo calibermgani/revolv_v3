@@ -1224,8 +1224,112 @@ class ProjectAutomationController extends Controller
      }
 
 
+ // Neurology Associates
 
 
+ public function NeurologyAssociatesAR(Request $request)
+ {
+     try {
+         $attributes = [
+             'claims' => isset($request->claims) && $request->claims != "NULL" ? $request->claims : NULL,
+             'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+             'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+             'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+             'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+            
+             
+         ];
+
+         $duplicateRecordExisting  =  NaAr::where($attributes)->exists();
+         if (!$duplicateRecordExisting) {
+            NaAr::insert([
+                'claims' => isset($request->claims) && $request->claims != "NULL" ? $request->claims : NULL,
+                'atb' => isset($request->atb) && $request->atb != "NULL" ? $request->atb : NULL,                
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
+                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                'pmts_adjs' => isset($request->pmts_adjs) && $request->pmts_adjs != "NULL" ? $request->pmts_adjs : NULL,
+                'adjustment' => isset($request->adjustment) && $request->adjustment != "NULL" ? $request->adjustment : NULL,
+                'withheld' => isset($request->withheld) && $request->withheld != "NULL" ? $request->withheld : NULL,
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                'visit_type' => isset($request->visit_type) && $request->visit_type != "NULL" ? $request->visit_type : NULL,
+                'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                'guarantor_name' => isset($request->guarantor_name) && $request->guarantor_name != "NULL" ? $request->guarantor_name : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+                 ]);
+                     return response()->json(['message' => 'Record Inserted Successfully']);
+         } else {
+             $duplicateRecord  =  NaAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+             if ($duplicateRecord) {
+                 $duplicateRecord->update([
+                'claims' => isset($request->claims) && $request->claims != "NULL" ? $request->claims : NULL,
+                'atb' => isset($request->atb) && $request->atb != "NULL" ? $request->atb : NULL,                
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
+                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                'pmts_adjs' => isset($request->pmts_adjs) && $request->pmts_adjs != "NULL" ? $request->pmts_adjs : NULL,
+                'adjustment' => isset($request->adjustment) && $request->adjustment != "NULL" ? $request->adjustment : NULL,
+                'withheld' => isset($request->withheld) && $request->withheld != "NULL" ? $request->withheld : NULL,
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                'visit_type' => isset($request->visit_type) && $request->visit_type != "NULL" ? $request->visit_type : NULL,
+                'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                'guarantor_name' => isset($request->guarantor_name) && $request->guarantor_name != "NULL" ? $request->guarantor_name : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+                'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                 ]);
+             }
+             return response()->json(['message' => 'Existing Record Updated Successfully']);
+         }
+     } catch (\Exception $e) {
+         $e->getMessage();
+     }
+ } 
+
+
+ public function NeurologyAssociatesARDuplicates(Request $request)
+     {
+         try {
+            NaAr::insert([
+                'claims' => isset($request->claims) && $request->claims != "NULL" ? $request->claims : NULL,
+                'atb' => isset($request->atb) && $request->atb != "NULL" ? $request->atb : NULL,                
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
+                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                'pmts_adjs' => isset($request->pmts_adjs) && $request->pmts_adjs != "NULL" ? $request->pmts_adjs : NULL,
+                'adjustment' => isset($request->adjustment) && $request->adjustment != "NULL" ? $request->adjustment : NULL,
+                'withheld' => isset($request->withheld) && $request->withheld != "NULL" ? $request->withheld : NULL,
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                'visit_type' => isset($request->visit_type) && $request->visit_type != "NULL" ? $request->visit_type : NULL,
+                'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                'guarantor_name' => isset($request->guarantor_name) && $request->guarantor_name != "NULL" ? $request->guarantor_name : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+             ]);
+             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
 
 
 }
