@@ -271,7 +271,7 @@ class ProjectController extends Controller
     
                 return $projectData;
             });
-    
+    dd($prjoectsPending);
             $mailBody = $prjoectsPending->toArray();
             Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday));
     
