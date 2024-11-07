@@ -50,7 +50,7 @@
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Logged Resolv - AR</th>
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Production Users - AR</th>
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">AR</th>
-                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Total QA</th>
+                    {{-- <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Total QA</th> --}}
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Logged Resolv - QA</th>
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Production - QA</th>
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">QA</th>
@@ -68,7 +68,7 @@
                             <td style="text-align: center;padding: 5px;">{{ $data['logged_resolv_ar']}}</td>
                             <td style="text-align: center;padding: 5px;">{{$data['prodcution_ar']}}</td>
                             <td style="text-align: center;padding: 5px;">{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder']}}</td>
-                            <td style="text-align: center;padding: 5px;">{{$data['total_qa']}}</td>
+                            {{-- <td style="text-align: center;padding: 5px;">{{$data['total_qa']}}</td> --}}
                             <td style="text-align: center;padding: 5px;">{{ $data['logged_resolv_qa']}}</td>
                             <td style="text-align: center;padding: 5px;">{{$data['prodcution_qa']}}</td>
                             <td style="text-align: center;padding: 5px;">{{ $data['QA'] == 0 ? 'No Activity' : $data['QA']}}</td>
