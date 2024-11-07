@@ -239,6 +239,7 @@ class ProjectController extends Controller
                                 });
                             })
                             ->groupBy('CE_emp_id')
+                            ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate])  // Adding the HAVING clause for the updated_at condition
                             ->select('CE_emp_id') 
                             ->get() 
                             ->count(); 
@@ -589,18 +590,11 @@ class ProjectController extends Controller
             $toMailId = ["vijayalaxmi@caliberfocus.com"];
             $ccMailId = ["vijayalaxmi@caliberfocus.com"];
     
-            // Set date ranges based on yesterday's date, skipping weekends.
-            $yesterday = Carbon::yesterday();
-            if ($yesterday->isSaturday()) {
-                $yesterday = $yesterday->subDay(1); // Friday
-            } elseif ($yesterday->isSunday()) {
-                $yesterday = $yesterday->subDay(2); // Friday
-            }
-    
-            $today = Carbon::today();
+             $today = Carbon::now();
+             $oneHourBefore = $today->copy()->subHour();
             $mailHeader = "Resolv Project Hourly Report";
-            $yesterDayStartDate = $yesterday->setTime(11, 0, 0)->toDateTimeString();
-            $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
+            $toDayStartDate = $today->toDateTimeString();
+            $toDayEndDate = $today->toDateTimeString();
     
             $projects = collect($this->getProjects());
             $startHour = 17; // 5 PM
@@ -615,7 +609,7 @@ class ProjectController extends Controller
                 $timeSlots[] = $start->format('h:i A') . ' to ' . $end->format('h:i A');
             }
             // Prepare batch data collection.
-            $prjoectsPending = $projects->flatMap(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday) {
+            $prjoectsPending = $projects->flatMap(function ($project) use ($toDayStartDate, $toDayEndDate) {
                 $projectData = [];
                 $prjName = Helpers::projectName($project['id'])->project_name ?? null;
     
@@ -627,7 +621,7 @@ class ProjectController extends Controller
                         $modelClass = "App\\Models\\" . Str::studly($tableName);
     
                         if (class_exists($modelClass)) {
-                            $hourlyCount = $modelClass::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
+                            $hourlyCount = $modelClass::whereBetween('updated_at', [$toDayStartDate, $toDayEndDate])
                                         ->where('chart_status', 'CE_Completed')->count();
                            
                             $projectData[] = [
