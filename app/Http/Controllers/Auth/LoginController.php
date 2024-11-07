@@ -95,16 +95,16 @@ class LoginController extends Controller
                     $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
                     $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
                     $Emp_Login = new EmployeeLogin;
-                    $is_existing_login = EmployeeLogin::where('user_id',$userId)
-                    ->whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
-                    ->count();
-                    if($is_existing_login == 0){
+                    // $is_existing_login = EmployeeLogin::where('user_id',$userId)
+                    // ->whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
+                    // ->count();
+                    // if($is_existing_login == 0){
                         $in_time = Carbon::now()->setTimezone('Asia/Kolkata')->format('H:i:s');
                         $Emp_Login->user_id =  $userId;
                         $Emp_Login->in_time = $in_time;
                         $Emp_Login->login_date = Carbon::today()->format('Y-m-d');     
                         $Emp_Login->save();                     
-                    }
+                    // }
             }
             
             return response()->json(['success' => true]);
@@ -120,7 +120,8 @@ class LoginController extends Controller
                 $today = Carbon::today();
                 $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
                 $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
-                $is_existing_login = EmployeeLogin::where('user_id',$userId)->whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])->first();
+                // $is_existing_login = EmployeeLogin::where('user_id',$userId)->whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])->first();
+                $is_existing_login = EmployeeLogin::where('user_id',$userId)->orderby('id','desc')->first();
                 if(!empty($is_existing_login)) {
                     $out_time = Carbon::now()->setTimezone('Asia/Kolkata')->format('H:i:s');
                     $logout_date = Carbon::today()->format('Y-m-d');
