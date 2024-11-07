@@ -627,7 +627,7 @@ class ProjectController extends Controller
                            
                             $projectData[] = [
                                 'project' => $project['client_name'] . '-' . $subProject,
-                                'hourlyCount' => $hourlyCount.$toDayStartDate.$toDayEndDate
+                                'hourlyCount' => $hourlyCount."st".$toDayStartDate."et".$toDayEndDate
                             
                             ];
                         }
