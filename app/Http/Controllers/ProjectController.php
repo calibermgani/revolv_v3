@@ -592,8 +592,7 @@ class ProjectController extends Controller
     
             $today = Carbon::now();
             $oneHourBefore = $today->copy()->subHour();
-            $mailHeader = "Resolv Project Hourly Report";
-            $toDayStartDate = $today->toDateTimeString();
+            $toDayStartDate = $oneHourBefore->toDateTimeString();
             $toDayEndDate = $today->toDateTimeString();
     
             $projects = collect($this->getProjects());
