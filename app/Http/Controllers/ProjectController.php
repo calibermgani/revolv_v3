@@ -598,12 +598,12 @@ class ProjectController extends Controller
             }
     
             $today = Carbon::today();
-            $mailHeader = "Resolv Project Hourly Report for " . $yesterday->format('m/d/Y');
+            $mailHeader = "Resolv Project Hourly Report";
             $yesterDayStartDate = $yesterday->setTime(11, 0, 0)->toDateTimeString();
             $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
     
             $projects = collect($this->getProjects());
-            $startHour = 18; // 6 PM
+            $startHour = 17; // 5 PM
             $endHour = 5;    // 5 AM (next day)
     
             // Generate time slots array
@@ -642,7 +642,7 @@ class ProjectController extends Controller
                 return $projectData;
             });
             $mailBody = $prjoectsPending->toArray();
-            Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $timeSlots));
+            Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $timeSlots, $today));
     
             Log::info('ProjectHourlyMail executed successfully.');
         } catch (\Exception $e) {
