@@ -590,10 +590,9 @@ class ProjectController extends Controller
             $toMailId = ["mgani@caliberfocus.com"];
             $ccMailId = ["mgani@caliberfocus.com"];
     
-             $today = Carbon::now();
-             $oneHourBefore = $today->copy()->subHour();
-            $mailHeader = "Resolv Project Hourly Report";
-            $toDayStartDate = $today->toDateTimeString();
+            $today = Carbon::now();
+            $oneHourBefore = $today->copy()->subHour();
+            $toDayStartDate = $oneHourBefore->toDateTimeString();
             $toDayEndDate = $today->toDateTimeString();
     
             $projects = collect($this->getProjects());
@@ -609,30 +608,33 @@ class ProjectController extends Controller
                 $timeSlots[] = $start->format('h:i A') . ' to ' . $end->format('h:i A');
             }
             // Prepare batch data collection.
-            $prjoectsPending = $projects->flatMap(function ($project) use ($toDayStartDate, $toDayEndDate) {
+            $startDateTime = Carbon::yesterday()->setTime(17, 0, 0); // 5:00 PM yesterday
+            $endDateTime = Carbon::today()->setTime(6, 0, 0);        // 6:00 AM today
+            
+            // Adjust your data query to filter records within this date and time range
+            $prjoectsPending = $projects->flatMap(function ($project) use ($startDateTime, $endDateTime) {
                 $projectData = [];
                 $prjName = Helpers::projectName($project['id'])->project_name ?? null;
-    
+            
                 if ($prjName !== null) {
                     $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
-    
+            
                     foreach ($subProjects as $subProject) {
                         $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
                         $modelClass = "App\\Models\\" . Str::studly($tableName);
-    
+            
                         if (class_exists($modelClass)) {
-                            $hourlyCount = $modelClass::whereBetween('updated_at', [$toDayStartDate, $toDayEndDate])
+                            $hourlyCount = $modelClass::whereBetween('updated_at', [$startDateTime, $endDateTime])
                                         ->where('chart_status', 'CE_Completed')->count();
                            
                             $projectData[] = [
                                 'project' => $project['client_name'] . '-' . $subProject,
                                 'hourlyCount' => $hourlyCount
-                            
                             ];
                         }
                     }
                 }
-    
+            
                 return $projectData;
             });
             $mailBody = $prjoectsPending->toArray();
