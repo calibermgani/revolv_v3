@@ -599,61 +599,44 @@ class ProjectController extends Controller
     
             $projects = collect($this->getProjects());
             $startHour = 17; // 5 PM
-            $endHour = 6;    // 6 AM (next day)
-            $today = Carbon::now();
-            
-            // Create a start and end datetime object for the time range
-            $startDateTime = Carbon::yesterday()->setTime($startHour, 0);
-            $endDateTime = Carbon::today()->setTime($endHour, 0);
-            
+            $endHour = 5;    // 5 AM (next day)
+    
             // Generate time slots array
             $timeSlots = [];
-            $current = $startDateTime->copy();
-            
-            while ($current->lessThan($endDateTime)) {
-                $next = $current->copy()->addHour();
-                $timeSlots[] = $current->format('h:i A') . ' to ' . $next->format('h:i A');
-                $current->addHour();
+            for ($hour = $startHour; $hour <= $endHour + 24; $hour++) {
+                $currentHour = $hour % 24;
+                $start = Carbon::createFromTime($currentHour);
+                $end = Carbon::createFromTime(($currentHour + 1) % 24);
+                $timeSlots[] = $start->format('h:i A') . ' to ' . $end->format('h:i A');
             }
-            
             // Prepare batch data collection.
-            $projectsPending = $projects->flatMap(function ($project) use ($timeSlots, $startDateTime, $endDateTime) {
+            $prjoectsPending = $projects->flatMap(function ($project) use ($toDayStartDate, $toDayEndDate) {
                 $projectData = [];
                 $prjName = Helpers::projectName($project['id'])->project_name ?? null;
-            
+    
                 if ($prjName !== null) {
                     $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
-            
+    
                     foreach ($subProjects as $subProject) {
                         $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
                         $modelClass = "App\\Models\\" . Str::studly($tableName);
-            
+    
                         if (class_exists($modelClass)) {
-                            foreach ($timeSlots as $slot) {
-                                list($start, $end) = explode(' to ', $slot);
-            
-                                // Parse times into datetime objects
-                                $startDateTimeSlot = Carbon::parse($start);
-                                $endDateTimeSlot = Carbon::parse($end);
-            
-                                $hourlyCount = $modelClass::whereBetween('updated_at', [$startDateTimeSlot, $endDateTimeSlot])
-                                            ->where('chart_status', 'CE_Completed')->count();
-                               
-                                $projectData[] = [
-                                    'project' => $project['client_name'] . '-' . $subProject,
-                                    'timeSlot' => $slot,
-                                    'hourlyCount' => $hourlyCount
-                                ];
-                            }
+                            $hourlyCount = $modelClass::whereBetween('updated_at', [$toDayStartDate, $toDayEndDate])
+                                        ->where('chart_status', 'CE_Completed')->count();
+                           
+                            $projectData[] = [
+                                'project' => $project['client_name'] . '-' . $subProject,
+                                'hourlyCount' => $hourlyCount
+                            
+                            ];
                         }
                     }
                 }
-            
+    
                 return $projectData;
             });
-            
-            // Prepare email body with project data and time slots
-            $mailBody = $projectsPending->toArray();
+            $mailBody = $prjoectsPending->toArray();
             Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $timeSlots, $today));
     
             Log::info('ProjectHourlyMail executed successfully.');
