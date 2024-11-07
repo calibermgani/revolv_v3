@@ -608,33 +608,30 @@ class ProjectController extends Controller
                 $timeSlots[] = $start->format('h:i A') . ' to ' . $end->format('h:i A');
             }
             // Prepare batch data collection.
-            $startDateTime = Carbon::yesterday()->setTime(17, 0, 0); // 5:00 PM yesterday
-            $endDateTime = Carbon::today()->setTime(6, 0, 0);        // 6:00 AM today
-            
-            // Adjust your data query to filter records within this date and time range
-            $prjoectsPending = $projects->flatMap(function ($project) use ($startDateTime, $endDateTime) {
+            $prjoectsPending = $projects->flatMap(function ($project) use ($toDayStartDate, $toDayEndDate) {
                 $projectData = [];
                 $prjName = Helpers::projectName($project['id'])->project_name ?? null;
-            
+    
                 if ($prjName !== null) {
                     $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
-            
+    
                     foreach ($subProjects as $subProject) {
                         $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
                         $modelClass = "App\\Models\\" . Str::studly($tableName);
-            
+    
                         if (class_exists($modelClass)) {
-                            $hourlyCount = $modelClass::whereBetween('updated_at', [$startDateTime, $endDateTime])
+                            $hourlyCount = $modelClass::whereBetween('updated_at', [$toDayStartDate, $toDayEndDate])
                                         ->where('chart_status', 'CE_Completed')->count();
                            
                             $projectData[] = [
                                 'project' => $project['client_name'] . '-' . $subProject,
                                 'hourlyCount' => $hourlyCount
+                            
                             ];
                         }
                     }
                 }
-            
+    
                 return $projectData;
             });
             $mailBody = $prjoectsPending->toArray();
