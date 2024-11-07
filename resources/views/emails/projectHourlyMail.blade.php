@@ -37,8 +37,8 @@
             <p>Hello Team, </p>
         </h4> --}}
     @php
-    $today = \Carbon\Carbon::now()->setTime(17, 0); // 17:00 is 5 PM in 24-hour format
-    $formattedDate = $today->format('m/d/Y h:i A');
+    $today1 = \Carbon\Carbon::now()->setTime(17, 0); // 17:00 is 5 PM in 24-hour format
+    $formattedDate = $today1->format('m/d/Y h:i A');
     @endphp
         <p>Hello Team - Find below the Resolv  Hourly report for {{$formattedDate->format('m/d/Y h:i A')}}</p>
         {{-- <p>Please find below the daily update for the production inventory : 06/07/2024</p> --}}
