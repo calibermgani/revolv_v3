@@ -608,7 +608,7 @@ class ProjectController extends Controller
                 $start = Carbon::createFromTime($currentHour);
                 $end = Carbon::createFromTime(($currentHour + 1) % 24);
                 $timeSlots[] = $start->format('h:i A') . ' to ' . $end->format('h:i A');
-            }
+            
             // Prepare batch data collection.
             $prjoectsPending = $projects->flatMap(function ($project) use ($toDayStartDate, $toDayEndDate) {
                 $projectData = [];
@@ -636,6 +636,7 @@ class ProjectController extends Controller
     
                 return $projectData;
             });
+        }
             $mailBody = $prjoectsPending->toArray();
             Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $timeSlots, $today));
     
