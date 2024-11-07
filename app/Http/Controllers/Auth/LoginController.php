@@ -94,8 +94,12 @@ class LoginController extends Controller
                     $today = Carbon::today();
                     $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
                     $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
+                    $todayStartDate = $today->setTime(8, 0, 0)->toDateTimeString(); 
                     $Emp_Login = new EmployeeLogin;
-                    $is_existing_login = EmployeeLogin::where('user_id',$userId)->whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
+                    $is_existing_login = EmployeeLogin::where('user_id',$userId)
+                    // ->whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
+                    ->where('created_at', '>=', $todayStartDate)
+                    ->count();
                     if($is_existing_login == 0){
                         $in_time = Carbon::now()->setTimezone('Asia/Kolkata')->format('H:i:s');
                         $Emp_Login->user_id =  $userId;
@@ -118,7 +122,11 @@ class LoginController extends Controller
                 $today = Carbon::today();
                 $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
                 $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
-                $is_existing_login = EmployeeLogin::where('user_id',$userId)->whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])->first();
+                $todayStartDate = $today->setTime(8, 0, 0)->toDateTimeString(); 
+                $is_existing_login = EmployeeLogin::where('user_id',$userId)
+                // ->whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
+                ->where('created_at', '>=', $todayStartDate)
+                ->first();
                 if(!empty($is_existing_login)) {
                     $out_time = Carbon::now()->setTimezone('Asia/Kolkata')->format('H:i:s');
                     $logout_date = Carbon::today()->format('Y-m-d');
