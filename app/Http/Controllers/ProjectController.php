@@ -587,8 +587,8 @@ class ProjectController extends Controller
         try {
             Log::info('Executing Project Hourly Mail logic.');
             $loginEmpId = Session::get('loginDetails')['userDetail']['emp_id'] ?? "";    
-            $toMailId = ["vijayalaxmi@caliberfocus.com"];
-            $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+            $toMailId = ["mgani@caliberfocus.com"];
+            $ccMailId = ["mgani@caliberfocus.com"];
     
              $today = Carbon::now();
              $oneHourBefore = $today->copy()->subHour();
