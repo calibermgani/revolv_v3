@@ -25,6 +25,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('project:workmail')->everyFiveMinutes();
         $schedule->command('project:holdrecords')->dailyAt('10:00');
         $schedule->command('project:inventory')->everyFiveMinutes();
+        $schedule->command('project:hourlymail')->everyFiveMinutes();
     }
 
     /**

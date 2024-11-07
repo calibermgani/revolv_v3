@@ -21,6 +21,7 @@ use App\Models\InventoryErrorLogs;
 use App\Http\Helper\Admin\Helpers as Helpers;
 use Illuminate\Support\Facades\DB;
 use App\Models\EmployeeLogin;
+use App\Mail\ProjectHourlyMail;
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
@@ -517,7 +518,7 @@ class ProjectController extends Controller
         return response()->json(["message" => "Error Mail Sent by Resolv"]);
     }
     public function getProjectTotalARCount($project_id)
-   {
+    {
         try {
             $payload = [
                 'token' => '1a32e71a46317b9cc6feb7388238c95d',
@@ -578,6 +579,75 @@ class ProjectController extends Controller
         } catch (\Exception $e) {
             Log::error('Error in getProjectTotalARCount: ' . $e->getMessage());
             return null;
+        }
+    }
+    public function projectHourlyMail()
+    {
+        try {
+            Log::info('Executing Project Hourly Mail logic.');
+            $loginEmpId = Session::get('loginDetails')['userDetail']['emp_id'] ?? "";    
+            $toMailId = ["vijayalaxmi@caliberfocus.com"];
+            $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+    
+            // Set date ranges based on yesterday's date, skipping weekends.
+            $yesterday = Carbon::yesterday();
+            if ($yesterday->isSaturday()) {
+                $yesterday = $yesterday->subDay(1); // Friday
+            } elseif ($yesterday->isSunday()) {
+                $yesterday = $yesterday->subDay(2); // Friday
+            }
+    
+            $today = Carbon::today();
+            $mailHeader = "Resolv Project Hourly Report for " . $yesterday->format('m/d/Y');
+            $yesterDayStartDate = $yesterday->setTime(11, 0, 0)->toDateTimeString();
+            $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
+    
+            $projects = collect($this->getProjects());
+            $startHour = 18; // 6 PM
+            $endHour = 5;    // 5 AM (next day)
+    
+            // Generate time slots array
+            $timeSlots = [];
+            for ($hour = $startHour; $hour <= $endHour + 24; $hour++) {
+                $currentHour = $hour % 24;
+                $start = Carbon::createFromTime($currentHour);
+                $end = Carbon::createFromTime(($currentHour + 1) % 24);
+                $timeSlots[] = $start->format('h:i A') . ' to ' . $end->format('h:i A');
+            }
+            // Prepare batch data collection.
+            $prjoectsPending = $projects->flatMap(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday) {
+                $projectData = [];
+                $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+    
+                if ($prjName !== null) {
+                    $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
+    
+                    foreach ($subProjects as $subProject) {
+                        $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
+                        $modelClass = "App\\Models\\" . Str::studly($tableName);
+    
+                        if (class_exists($modelClass)) {
+                            $hourlyCount = $modelClass::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                        ->where('chart_status', 'CE_Completed')->count();
+                           
+                            $projectData[] = [
+                                'project' => $project['client_name'] . '-' . $subProject,
+                                'hourlyCount' => $hourlyCount
+                            
+                            ];
+                        }
+                    }
+                }
+    
+                return $projectData;
+            });
+            $mailBody = $prjoectsPending->toArray();
+            Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $timeSlots));
+    
+            Log::info('ProjectHourlyMail executed successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
+            Log::debug($e->getMessage());
         }
     }
 }
