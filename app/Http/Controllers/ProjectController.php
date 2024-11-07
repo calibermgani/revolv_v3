@@ -589,6 +589,8 @@ class ProjectController extends Controller
             $loginEmpId = Session::get('loginDetails')['userDetail']['emp_id'] ?? "";    
             $toMailId = ["mgani@caliberfocus.com"];
             $ccMailId = ["mgani@caliberfocus.com"];
+
+            $mailHeader = "Resolv Project Hourly Report - Trail";
     
             $today = Carbon::now();
             $oneHourBefore = $today->copy()->subHour();
