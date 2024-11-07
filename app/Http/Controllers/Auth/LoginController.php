@@ -92,7 +92,7 @@ class LoginController extends Controller
                     Session::put('SubmenuListByuser', $SubmenuListByuser);
                     $yesterday = Carbon::yesterday();            
                     $today = Carbon::today();
-                    $yesterDayStartDate = $yesterday->setTime(11, 0, 0)->toDateTimeString();
+                    $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
                     $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
                     $Emp_Login = new EmployeeLogin;
                     $is_existing_login = EmployeeLogin::where('user_id',$userId)->whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
@@ -116,7 +116,7 @@ class LoginController extends Controller
                 $userId = Session::get('loginDetails')['userInfo']['user_id'];
                 $yesterday = Carbon::yesterday();            
                 $today = Carbon::today();
-                $yesterDayStartDate = $yesterday->setTime(11, 0, 0)->toDateTimeString();
+                $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
                 $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
                 $is_existing_login = EmployeeLogin::where('user_id',$userId)->whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])->first();
                 if(!empty($is_existing_login)) {
