@@ -265,7 +265,7 @@ class ProjectController extends Controller
                                 $loggedResolvAR =  EmployeeLogin::where('user_id', $arList['assigned_people'])
                                                     ->whereBetween('updated_at', [$yesterday5PM, $tomorrow9AM])
                                                     ->distinct('user_id')
-                                                    ->count('user_id');
+                                                    ->count();
                             }
                             foreach($totalQADetails['totalQAList'] as $key => $qaList){
                                 $loggedResolvQA += EmployeeLogin::where('user_id',$qaList['assigned_people'])->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
