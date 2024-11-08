@@ -199,6 +199,9 @@ class ProjectController extends Controller
             $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y');
             $yesterDayStartDate = $yesterday->setTime(11, 0, 0)->toDateTimeString();
             $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
+
+            $yesterday5PM = Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
+            $tomorrow9AM = Carbon::tomorrow()->setTime(9, 0); 
     
             $projects = collect($this->getProjects());
     
@@ -256,7 +259,13 @@ class ProjectController extends Controller
                              $totalQADetails = $this->getProjectTotalQACount($project['id']);
                             $loggedResolvAR = 0;$loggedResolvQA=0;
                             foreach($totalARDetails['totalArList'] as $key => $arList){
-                                $loggedResolvAR += EmployeeLogin::where('user_id',$arList['assigned_people'])->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
+                                $yesterday5PM = Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
+                                $tomorrow9AM = Carbon::tomorrow()->setTime(9, 0); 
+                                //$loggedResolvAR += EmployeeLogin::where('user_id',$arList['assigned_people'])->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
+                                $loggedResolvAR =  EmployeeLogin::where('user_id', $arList['assigned_people'])
+                                                    ->whereBetween('updated_at', [$yesterday5PM, $tomorrow9AM])
+                                                    ->distinct('user_id')
+                                                    ->count('user_id');
                             }
                             foreach($totalQADetails['totalQAList'] as $key => $qaList){
                                 $loggedResolvQA += EmployeeLogin::where('user_id',$qaList['assigned_people'])->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
