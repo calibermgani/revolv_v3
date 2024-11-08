@@ -184,8 +184,11 @@ class ProjectController extends Controller
         try {
             Log::info('Executing ProjectWorkMail logic.');
             $loginEmpId = Session::get('loginDetails')['userDetail']['emp_id'] ?? "";    
-            $toMailId = ["mgani@caliberfocus.com"];
-            $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+            //$toMailId = ["mgani@caliberfocus.com"];
+            $toMailId = ["elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","radhika@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com","devanathan@annexmed.net"];
+            $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net"];
+
+
     
             // Set date ranges based on yesterday's date, skipping weekends.
             $yesterday = Carbon::yesterday();
@@ -196,7 +199,7 @@ class ProjectController extends Controller
             }
     
             $today = Carbon::today();
-            $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y');
+            $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y')." - Trail";
             $yesterDayStartDate = $yesterday->setTime(11, 0, 0)->toDateTimeString();
             $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
 
@@ -259,7 +262,7 @@ class ProjectController extends Controller
                              $totalQADetails = $this->getProjectTotalQACount($project['id']);
                             $loggedResolvAR = 0;$loggedResolvQA=0;
 
-                            Log::error('Total Users: ' . print_r($totalARDetails['totalArList'], true));
+                           // Log::error('Total Users: ' . print_r($totalARDetails['totalArList'], true));
 
                             foreach($totalARDetails['totalArList'] as $key => $arList){
                                 $yesterday5PM = "2024-11-07 17:00:00"; //Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
@@ -269,7 +272,7 @@ class ProjectController extends Controller
                                                     ->whereBetween('updated_at', [$yesterday5PM, $tomorrow9AM])
                                                     ->distinct('user_id')
                                                     ->count();
-                                Log::error('Total Users Time'.$tomorrow9AM);
+                                //Log::error('Total Users Time'.$tomorrow9AM);
                            
 
 
