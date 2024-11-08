@@ -196,7 +196,7 @@ class ProjectController extends Controller
             }
     
             $today = Carbon::today();
-            $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y')-"Trail";
+            $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y');
             $yesterDayStartDate = $yesterday->setTime(11, 0, 0)->toDateTimeString();
             $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
 
@@ -266,6 +266,10 @@ class ProjectController extends Controller
                                                     ->whereBetween('updated_at', [$yesterday5PM, $tomorrow9AM])
                                                     ->distinct('user_id')
                                                     ->count();
+
+                              Log::error('AR Users'.$arList['assigned_people']);
+
+                              
                             }
                             foreach($totalQADetails['totalQAList'] as $key => $qaList){
                                 $loggedResolvQA += EmployeeLogin::where('user_id',$qaList['assigned_people'])->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
@@ -275,8 +279,7 @@ class ProjectController extends Controller
                                 'Chats' => $aCount,
                                 'Coder' => $cCount,
                                 'QA' => $qCount,
-                               /*  'total_ar' => $totalARDetails['totalArCount']."-".$arList['assigned_people'], */
-                                'total_ar' => $arList['assigned_people'],
+                                'total_ar' => $totalARDetails['totalArCount'],
                                 'total_qa' => $totalQADetails['totalQACount'],
                                 'prodcution_ar' => $productionARCount,
                                 'prodcution_qa' => $productionQACount,
