@@ -269,7 +269,7 @@ class ProjectController extends Controller
                                                     ->whereBetween('updated_at', [$yesterday5PM, $tomorrow9AM])
                                                     ->distinct('user_id')
                                                     ->count();
-                                Log::error('Total Users Time'.$yesterday5PM." --".$tomorrow9AM);
+                                Log::error('Total Users Time'.$tomorrow9AM);
                            
 
 
