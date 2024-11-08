@@ -196,7 +196,7 @@ class ProjectController extends Controller
             }
     
             $today = Carbon::today();
-            $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y');
+            $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y')-"Trail";
             $yesterDayStartDate = $yesterday->setTime(11, 0, 0)->toDateTimeString();
             $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
 
