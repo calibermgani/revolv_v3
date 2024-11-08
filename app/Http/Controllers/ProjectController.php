@@ -619,14 +619,20 @@ class ProjectController extends Controller
             $projects = collect($this->getProjects());
             $startHour = 17; // 5 PM
             $endHour = 5;    // 5 AM (next day)
+            $yesterday = Carbon::yesterday();
     
             // Generate time slots array
             $timeSlots = [];
             for ($hour = $startHour; $hour <= $endHour + 24; $hour++) {
                 $currentHour = $hour % 24;
-                $start = Carbon::createFromTime($currentHour);
-                $end = Carbon::createFromTime(($currentHour + 1) % 24);
-                $timeSlots[] = $start->format('h:i A') . ' to ' . $end->format('h:i A');
+
+                // Determine if the time slot should use yesterday's date
+                $date = ($currentHour < 17 && $currentHour >= 0) ? $yesterday : $today;
+
+                $start = Carbon::createFromTime($currentHour)->setDate($date->year, $date->month, $date->day);
+                $end = Carbon::createFromTime(($currentHour + 1) % 24)->setDate($date->year, $date->month, $date->day);
+
+                $timeSlots[] = $start->format('Y-m-d h:i A') . ' to ' . $end->format('Y-m-d h:i A');
                 Log::error('Start And End Hours ' .$start."---".$end);
             
                 // Prepare batch data collection.
