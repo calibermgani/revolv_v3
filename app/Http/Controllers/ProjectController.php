@@ -275,7 +275,8 @@ class ProjectController extends Controller
                                 'Chats' => $aCount,
                                 'Coder' => $cCount,
                                 'QA' => $qCount,
-                                'total_ar' => $totalARDetails['totalArCount']."-".$arList['assigned_people'],
+                               /*  'total_ar' => $totalARDetails['totalArCount']."-".$arList['assigned_people'], */
+                                'total_ar' => $arList['assigned_people'],
                                 'total_qa' => $totalQADetails['totalQACount'],
                                 'prodcution_ar' => $productionARCount,
                                 'prodcution_qa' => $productionQACount,
