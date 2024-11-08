@@ -259,7 +259,7 @@ class ProjectController extends Controller
                              $totalQADetails = $this->getProjectTotalQACount($project['id']);
                             $loggedResolvAR = 0;$loggedResolvQA=0;
 
-                            Log::error('Total Users'.$totalARDetails['totalArList']);
+                            Log::error('Total Users: ' . print_r($totalARDetails['totalArList'], true));
 
                             foreach($totalARDetails['totalArList'] as $key => $arList){
                                 $yesterday5PM = Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
