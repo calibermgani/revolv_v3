@@ -258,6 +258,9 @@ class ProjectController extends Controller
                             $totalARDetails = $this->getProjectTotalARCount($project['id']);
                              $totalQADetails = $this->getProjectTotalQACount($project['id']);
                             $loggedResolvAR = 0;$loggedResolvQA=0;
+
+                            Log::error('Total Users'.$totalARDetails['totalArList']);
+
                             foreach($totalARDetails['totalArList'] as $key => $arList){
                                 $yesterday5PM = Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
                                 $tomorrow9AM = Carbon::tomorrow()->setTime(9, 0); 
@@ -266,8 +269,8 @@ class ProjectController extends Controller
                                                     ->whereBetween('updated_at', [$yesterday5PM, $tomorrow9AM])
                                                     ->distinct('user_id')
                                                     ->count();
-
-                              Log::error('AR Users'.$arList['assigned_people']);
+                                Log::error('Total Users Time'.$yesterday5PM." --".$tomorrow9AM);
+                           
 
 
                             }
