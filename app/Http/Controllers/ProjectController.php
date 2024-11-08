@@ -630,7 +630,7 @@ class ProjectController extends Controller
                 Log::error('Start And End Hours ' .$start."---".$end);
             
                 // Prepare batch data collection.
-                $prjoectsPending = $projects->flatMap(function ($project) use ($toDayStartDate, $toDayEndDate) {
+                $prjoectsPending = $projects->flatMap(function ($project) use ($start, $end) {
                 $projectData = [];
                 $prjName = Helpers::projectName($project['id'])->project_name ?? null;
     
@@ -642,7 +642,7 @@ class ProjectController extends Controller
                         $modelClass = "App\\Models\\" . Str::studly($tableName);
     
                         if (class_exists($modelClass)) {
-                            $hourlyCount = $modelClass::whereBetween('updated_at', [$toDayStartDate, $toDayEndDate])
+                            $hourlyCount = $modelClass::whereBetween('updated_at', [$start, $end])
                                         ->where('chart_status', 'CE_Completed')->count();
                            
                             $projectData[] = [
