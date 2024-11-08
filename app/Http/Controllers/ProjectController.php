@@ -262,14 +262,14 @@ class ProjectController extends Controller
                                 $yesterday5PM = Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
                                 $tomorrow9AM = Carbon::tomorrow()->setTime(9, 0); 
                                 //$loggedResolvAR += EmployeeLogin::where('user_id',$arList['assigned_people'])->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
-                                $loggedResolvAR =  EmployeeLogin::where('user_id', $arList['assigned_people'])
+                                $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
                                                     ->whereBetween('updated_at', [$yesterday5PM, $tomorrow9AM])
                                                     ->distinct('user_id')
                                                     ->count();
 
                               Log::error('AR Users'.$arList['assigned_people']);
 
-                              
+
                             }
                             foreach($totalQADetails['totalQAList'] as $key => $qaList){
                                 $loggedResolvQA += EmployeeLogin::where('user_id',$qaList['assigned_people'])->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
