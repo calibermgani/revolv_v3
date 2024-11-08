@@ -273,9 +273,9 @@ class ProjectController extends Controller
                             $projectData[] = [
                                 'project' => $project['client_name'] . '-' . $subProject,
                                 'Chats' => $aCount,
-                                'Coder' => $cCount.$arList['assigned_people'],
+                                'Coder' => $cCount,
                                 'QA' => $qCount,
-                                'total_ar' => $totalARDetails['totalArCount'],
+                                'total_ar' => $totalARDetails['totalArCount']."-".$arList['assigned_people'],
                                 'total_qa' => $totalQADetails['totalQACount'],
                                 'prodcution_ar' => $productionARCount,
                                 'prodcution_qa' => $productionQACount,
