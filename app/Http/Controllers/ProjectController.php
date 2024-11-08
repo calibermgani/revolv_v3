@@ -627,9 +627,10 @@ class ProjectController extends Controller
                 $start = Carbon::createFromTime($currentHour);
                 $end = Carbon::createFromTime(($currentHour + 1) % 24);
                 $timeSlots[] = $start->format('h:i A') . ' to ' . $end->format('h:i A');
+                Log::error('Start And End Hours ' .$start."---".$end);
             
-            // Prepare batch data collection.
-            $prjoectsPending = $projects->flatMap(function ($project) use ($toDayStartDate, $toDayEndDate) {
+                // Prepare batch data collection.
+                $prjoectsPending = $projects->flatMap(function ($project) use ($toDayStartDate, $toDayEndDate) {
                 $projectData = [];
                 $prjName = Helpers::projectName($project['id'])->project_name ?? null;
     
