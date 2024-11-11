@@ -184,8 +184,11 @@ class ProjectController extends Controller
         try {
             Log::info('Executing ProjectWorkMail logic.');
             $loginEmpId = Session::get('loginDetails')['userDetail']['emp_id'] ?? "";    
-            $toMailId = ["mgani@caliberfocus.com"];
-            $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+            //$toMailId = ["mgani@caliberfocus.com"];
+            $toMailId = ["elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","radhika@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com","devanathan@annexmed.net"];
+            $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net"];
+
+
     
             // Set date ranges based on yesterday's date, skipping weekends.
             $yesterday = Carbon::yesterday();
@@ -196,9 +199,12 @@ class ProjectController extends Controller
             }
     
             $today = Carbon::today();
-            $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y');
+            $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y')." - Trail";
             $yesterDayStartDate = $yesterday->setTime(11, 0, 0)->toDateTimeString();
             $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
+
+            $yesterday5PM = Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
+            $tomorrow9AM = Carbon::tomorrow()->setTime(9, 0); 
     
             $projects = collect($this->getProjects());
     
@@ -255,8 +261,21 @@ class ProjectController extends Controller
                             $totalARDetails = $this->getProjectTotalARCount($project['id']);
                              $totalQADetails = $this->getProjectTotalQACount($project['id']);
                             $loggedResolvAR = 0;$loggedResolvQA=0;
+
+                           // Log::error('Total Users: ' . print_r($totalARDetails['totalArList'], true));
+
                             foreach($totalARDetails['totalArList'] as $key => $arList){
-                                $loggedResolvAR += EmployeeLogin::where('user_id',$arList['assigned_people'])->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
+                                $yesterday5PM = "2024-11-07 17:00:00"; //Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
+                                $tomorrow9AM = "2024-11-08 09:00:00"; //Carbon::tomorrow()->setTime(9, 0); 
+                                //$loggedResolvAR += EmployeeLogin::where('user_id',$arList['assigned_people'])->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
+                                $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
+                                                    ->whereBetween('updated_at', [$yesterday5PM, $tomorrow9AM])
+                                                    ->distinct('user_id')
+                                                    ->count();
+                                //Log::error('Total Users Time'.$tomorrow9AM);
+                           
+
+
                             }
                             foreach($totalQADetails['totalQAList'] as $key => $qaList){
                                 $loggedResolvQA += EmployeeLogin::where('user_id',$qaList['assigned_people'])->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
@@ -589,27 +608,35 @@ class ProjectController extends Controller
             $loginEmpId = Session::get('loginDetails')['userDetail']['emp_id'] ?? "";    
             $toMailId = ["mgani@caliberfocus.com"];
             $ccMailId = ["mgani@caliberfocus.com"];
+
+            $mailHeader = "Resolv Project Hourly Report - Trail";
     
-             $today = Carbon::now();
-             $oneHourBefore = $today->copy()->subHour();
-            $mailHeader = "Resolv Project Hourly Report";
-            $toDayStartDate = $today->toDateTimeString();
+            $today = Carbon::now();
+            $oneHourBefore = $today->copy()->subHour();
+            $toDayStartDate = $oneHourBefore->toDateTimeString();
             $toDayEndDate = $today->toDateTimeString();
     
             $projects = collect($this->getProjects());
             $startHour = 17; // 5 PM
             $endHour = 5;    // 5 AM (next day)
+            $yesterday = Carbon::yesterday();
     
             // Generate time slots array
             $timeSlots = [];
             for ($hour = $startHour; $hour <= $endHour + 24; $hour++) {
                 $currentHour = $hour % 24;
-                $start = Carbon::createFromTime($currentHour);
-                $end = Carbon::createFromTime(($currentHour + 1) % 24);
-                $timeSlots[] = $start->format('h:i A') . ' to ' . $end->format('h:i A');
-            }
-            // Prepare batch data collection.
-            $prjoectsPending = $projects->flatMap(function ($project) use ($toDayStartDate, $toDayEndDate) {
+
+                // Determine if the time slot should use yesterday's date
+                $date = ($currentHour < 17 && $currentHour >= 0) ? $yesterday : $today;
+
+                $start = Carbon::createFromTime($currentHour)->setDate($date->year, $date->month, $date->day);
+                $end = Carbon::createFromTime(($currentHour + 1) % 24)->setDate($date->year, $date->month, $date->day);
+
+                $timeSlots[] = $start->format('Y-m-d h:i A') . ' to ' . $end->format('Y-m-d h:i A');
+                Log::error('Start And End Hours ' .$start."---".$end);
+            
+                // Prepare batch data collection.
+                $prjoectsPending = $projects->flatMap(function ($project) use ($start, $end) {
                 $projectData = [];
                 $prjName = Helpers::projectName($project['id'])->project_name ?? null;
     
@@ -621,7 +648,7 @@ class ProjectController extends Controller
                         $modelClass = "App\\Models\\" . Str::studly($tableName);
     
                         if (class_exists($modelClass)) {
-                            $hourlyCount = $modelClass::whereBetween('updated_at', [$toDayStartDate, $toDayEndDate])
+                            $hourlyCount = $modelClass::whereBetween('updated_at', [$start, $end])
                                         ->where('chart_status', 'CE_Completed')->count();
                            
                             $projectData[] = [
@@ -635,6 +662,7 @@ class ProjectController extends Controller
     
                 return $projectData;
             });
+        }
             $mailBody = $prjoectsPending->toArray();
             Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $timeSlots, $today));
     
