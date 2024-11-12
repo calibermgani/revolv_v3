@@ -37,6 +37,8 @@ use App\Models\AopsAr;
 use App\Models\AopsArDuplicates;
 use App\Models\NaAr;
 use App\Models\NaArDuplicates;
+use App\Models\LuAr;
+use App\Models\LuArDuplicates;
 
 class ProjectAutomationController extends Controller
 {
@@ -449,7 +451,7 @@ class ProjectAutomationController extends Controller
                 'trans_id' => isset($request->trans_id) && $request->trans_id != "NULL" ? $request->trans_id : NULL,
                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,
+                // 'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,
                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
                 'perf_doctor_name' => isset($request->perf_doctor_name) && $request->perf_doctor_name != "NULL" ? $request->perf_doctor_name : NULL,
                 'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,
@@ -465,7 +467,7 @@ class ProjectAutomationController extends Controller
                         'trans_id' => isset($request->trans_id) && $request->trans_id != "NULL" ? $request->trans_id : NULL,
                         'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
                         'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                        'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,
+                        // 'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,
                         'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
                         'perf_doctor_name' => isset($request->perf_doctor_name) && $request->perf_doctor_name != "NULL" ? $request->perf_doctor_name : NULL,
                         'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,
@@ -486,7 +488,7 @@ class ProjectAutomationController extends Controller
                             'trans_id' => isset($request->trans_id) && $request->trans_id != "NULL" ? $request->trans_id : NULL,
                             'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
                             'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                            'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,
+                            // 'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,
                             'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
                             'perf_doctor_name' => isset($request->perf_doctor_name) && $request->perf_doctor_name != "NULL" ? $request->perf_doctor_name : NULL,
                             'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,
@@ -513,7 +515,7 @@ class ProjectAutomationController extends Controller
                 'trans_id' => isset($request->trans_id) && $request->trans_id != "NULL" ? $request->trans_id : NULL,
                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,
+                // 'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,
                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
                 'perf_doctor_name' => isset($request->perf_doctor_name) && $request->perf_doctor_name != "NULL" ? $request->perf_doctor_name : NULL,
                 'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,
@@ -1334,5 +1336,97 @@ class ProjectAutomationController extends Controller
          }
      }
 
-
+/*************  ✨ Codeium Command ⭐  *************/
+        /**
+         * Store a newly created resource in storage.
+/******  55baa038-4444-4675-86d5-c8357e15ea32  *******/
+     public function leakUrologyAR(Request $request)
+     {
+         try {
+             $attributes = [
+                 'claim_no' => isset($request->claim_no) && $request->claim_no != "NULL" ? $request->claim_no : NULL,
+                 'unique_id_no' => isset($request->unique_id_no) && $request->unique_id_no != "NULL" ? $request->unique_id_no : NULL,
+                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                 'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                 'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                 'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                 'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                 'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                 'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                 'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL               
+             ];
+ 
+             $duplicateRecordExisting  =  LuAr::where($attributes)->exists();
+             if (!$duplicateRecordExisting) {
+                   LuAr::insert([
+                        'claim_no' => isset($request->claim_no) && $request->claim_no != "NULL" ? $request->claim_no : NULL,
+                        'unique_id_no' => isset($request->unique_id_no) && $request->unique_id_no != "NULL" ? $request->unique_id_no : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                        'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                        'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                        'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                        'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                        'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                        'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                     ]);
+                         return response()->json(['message' => 'Record Inserted Successfully']);
+             } else {
+                 $duplicateRecord  =  LuAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                 if ($duplicateRecord) {
+                     $duplicateRecord->update([
+                        'claim_no' => isset($request->claim_no) && $request->claim_no != "NULL" ? $request->claim_no : NULL,
+                        'unique_id_no' => isset($request->unique_id_no) && $request->unique_id_no != "NULL" ? $request->unique_id_no : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                        'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                        'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                        'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                        'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                        'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                        'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                     ]);
+                 }
+                 return response()->json(['message' => 'Existing Record Updated Successfully']);
+             }
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+     public function leakUrologyARDuplicates(Request $request)
+     {
+         try {
+            LuArDuplicates::insert([
+                'claim_no' => isset($request->claim_no) && $request->claim_no != "NULL" ? $request->claim_no : NULL,
+                'unique_id_no' => isset($request->unique_id_no) && $request->unique_id_no != "NULL" ? $request->unique_id_no : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+             ]);
+             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
 }
