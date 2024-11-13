@@ -39,6 +39,8 @@ use App\Models\NaAr;
 use App\Models\NaArDuplicates;
 use App\Models\LuAr;
 use App\Models\LuArDuplicates;
+use App\Models\BmrhcAr;
+use App\Models\BmrhcArDuplicates;
 
 class ProjectAutomationController extends Controller
 {
@@ -1415,6 +1417,172 @@ class ProjectAutomationController extends Controller
                 'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
                 'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
                 'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+             ]);
+             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+
+     public function BostonMountainRuralHealthCenterAR(Request $request)
+     {
+         try {
+             $attributes = [
+                 'claim_status_category' => isset($request->claim_status_category) && $request->claim_status_category != "NULL" ? $request->claim_status_category : NULL,
+                 'claim_status' => isset($request->claim_status) && $request->claim_status != "NULL" ? $request->claim_status : NULL,
+                 'claim_no' => isset($request->claim_no) && $request->claim_no != "NULL" ? $request->claim_no : NULL,
+                 'claim_date' => isset($request->claim_date) && $request->claim_date != "NULL" ? $request->claim_date : NULL,
+                 'atb' => isset($request->atb) && $request->atb != "NULL" ? $request->atb : NULL,
+                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                 'latest_transfer_date' => isset($request->latest_transfer_date) && $request->latest_transfer_date != "NULL" ? $request->latest_transfer_date : NULL,
+                 'claim_status_change_date' => isset($request->claim_status_change_date) && $request->claim_status_change_date != "NULL" ? $request->claim_status_change_date : NULL,
+                 'modified_date' => isset($request->modified_date) && $request->modified_date != "NULL" ? $request->modified_date : NULL,
+                 'notes' => isset($request->notes) && $request->notes != "NULL" ? $request->notes : NULL,
+                 'staff_member' => isset($request->staff_member) && $request->staff_member != "NULL" ? $request->staff_member : NULL,    
+                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,              
+                 'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,       
+                 'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,      
+                 'payer_group_name' => isset($request->payer_group_name) && $request->payer_group_name != "NULL" ? $request->payer_group_name : NULL,       
+                 'payer_class' => isset($request->payer_class) && $request->payer_class != "NULL" ? $request->payer_class : NULL,       
+                 'facility_name' => isset($request->facility_name) && $request->facility_name != "NULL" ? $request->facility_name : NULL,      
+                 'facility_group_name' => isset($request->facility_group_name) && $request->facility_group_name != "NULL" ? $request->facility_group_name : NULL,       
+                 'facility_place_of_service' => isset($request->facility_place_of_service) && $request->facility_place_of_service != "NULL" ? $request->facility_place_of_service : NULL ,      
+                 'department_name' => isset($request->department_name) && $request->department_name != "NULL" ? $request->department_name : NULL ,     
+                 'rendering_provider_name' => isset($request->rendering_provider_name) && $request->rendering_provider_name != "NULL" ? $request->rendering_provider_name : NULL,       
+                 'appointment_provider_name' => isset($request->appointment_provider_name) && $request->appointment_provider_name != "NULL" ? $request->appointment_provider_name : NULL,       
+                 'additional_provider_1_name' => isset($request->additional_provider_1_name) && $request->additional_provider_1_name != "NULL" ? $request->additional_provider_1_name : NULL,       
+                 'additional_provider_2_name' => isset($request->additional_provider_2_name) && $request->additional_provider_2_name != "NULL" ? $request->additional_provider_2_name : NULL,       
+                 'pay_to_else_billing_provider' => isset($request->pay_to_else_billing_provider) && $request->pay_to_else_billing_provider != "NULL" ? $request->pay_to_else_billing_provider : NULL,       
+                 'resource_provider_name' => isset($request->resource_provider_name) && $request->resource_provider_name != "NULL" ? $request->resource_provider_name : NULL,       
+                 'supervising_provider_name' => isset($request->supervising_provider_name) && $request->supervising_provider_name != "NULL" ? $request->supervising_provider_name : NULL,       
+                 'claim_amount' => isset($request->claim_amount) && $request->claim_amount != "NULL" ? $request->claim_amount : NULL,
+                 'collected' => isset($request->collected) && $request->collected != "NULL" ? $request->collected : NULL,
+                 'total_balance' => isset($request->total_balance) && $request->total_balance != "NULL" ? $request->total_balance : NULL
+             ];
+ 
+             $duplicateRecordExisting  =  BmrhcAr::where($attributes)->exists();
+             if (!$duplicateRecordExisting) {
+                   BmrhcAr::insert([
+                        'claim_status_category' => isset($request->claim_status_category) && $request->claim_status_category != "NULL" ? $request->claim_status_category : NULL,
+                        'claim_status' => isset($request->claim_status) && $request->claim_status != "NULL" ? $request->claim_status : NULL,
+                        'claim_no' => isset($request->claim_no) && $request->claim_no != "NULL" ? $request->claim_no : NULL,
+                        'claim_date' => isset($request->claim_date) && $request->claim_date != "NULL" ? $request->claim_date : NULL,
+                        'atb' => isset($request->atb) && $request->atb != "NULL" ? $request->atb : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'latest_transfer_date' => isset($request->latest_transfer_date) && $request->latest_transfer_date != "NULL" ? $request->latest_transfer_date : NULL,
+                        'claim_status_change_date' => isset($request->claim_status_change_date) && $request->claim_status_change_date != "NULL" ? $request->claim_status_change_date : NULL,
+                        'modified_date' => isset($request->modified_date) && $request->modified_date != "NULL" ? $request->modified_date : NULL,
+                        'notes' => isset($request->notes) && $request->notes != "NULL" ? $request->notes : NULL,
+                        'staff_member' => isset($request->staff_member) && $request->staff_member != "NULL" ? $request->staff_member : NULL,    
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,              
+                        'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,       
+                        'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,      
+                        'payer_group_name' => isset($request->payer_group_name) && $request->payer_group_name != "NULL" ? $request->payer_group_name : NULL,       
+                        'payer_class' => isset($request->payer_class) && $request->payer_class != "NULL" ? $request->payer_class : NULL,       
+                        'facility_name' => isset($request->facility_name) && $request->facility_name != "NULL" ? $request->facility_name : NULL,      
+                        'facility_group_name' => isset($request->facility_group_name) && $request->facility_group_name != "NULL" ? $request->facility_group_name : NULL,       
+                        'facility_place_of_service' => isset($request->facility_place_of_service) && $request->facility_place_of_service != "NULL" ? $request->facility_place_of_service : NULL ,      
+                        'department_name' => isset($request->department_name) && $request->department_name != "NULL" ? $request->department_name : NULL ,     
+                        'rendering_provider_name' => isset($request->rendering_provider_name) && $request->rendering_provider_name != "NULL" ? $request->rendering_provider_name : NULL,       
+                        'appointment_provider_name' => isset($request->appointment_provider_name) && $request->appointment_provider_name != "NULL" ? $request->appointment_provider_name : NULL,       
+                        'additional_provider_1_name' => isset($request->additional_provider_1_name) && $request->additional_provider_1_name != "NULL" ? $request->additional_provider_1_name : NULL,       
+                        'additional_provider_2_name' => isset($request->additional_provider_2_name) && $request->additional_provider_2_name != "NULL" ? $request->additional_provider_2_name : NULL,       
+                        'pay_to_else_billing_provider' => isset($request->pay_to_else_billing_provider) && $request->pay_to_else_billing_provider != "NULL" ? $request->pay_to_else_billing_provider : NULL,       
+                        'resource_provider_name' => isset($request->resource_provider_name) && $request->resource_provider_name != "NULL" ? $request->resource_provider_name : NULL,       
+                        'supervising_provider_name' => isset($request->supervising_provider_name) && $request->supervising_provider_name != "NULL" ? $request->supervising_provider_name : NULL,       
+                        'claim_amount' => isset($request->claim_amount) && $request->claim_amount != "NULL" ? $request->claim_amount : NULL,
+                        'collected' => isset($request->collected) && $request->collected != "NULL" ? $request->collected : NULL,
+                        'total_balance' => isset($request->total_balance) && $request->total_balance != "NULL" ? $request->total_balance : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                     ]);
+                         return response()->json(['message' => 'Record Inserted Successfully']);
+             } else {
+                 $duplicateRecord  =  BmrhcAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                 if ($duplicateRecord) {
+                     $duplicateRecord->update([
+                    'claim_status_category' => isset($request->claim_status_category) && $request->claim_status_category != "NULL" ? $request->claim_status_category : NULL,
+                    'claim_status' => isset($request->claim_status) && $request->claim_status != "NULL" ? $request->claim_status : NULL,
+                    'claim_no' => isset($request->claim_no) && $request->claim_no != "NULL" ? $request->claim_no : NULL,
+                    'claim_date' => isset($request->claim_date) && $request->claim_date != "NULL" ? $request->claim_date : NULL,
+                    'atb' => isset($request->atb) && $request->atb != "NULL" ? $request->atb : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'latest_transfer_date' => isset($request->latest_transfer_date) && $request->latest_transfer_date != "NULL" ? $request->latest_transfer_date : NULL,
+                    'claim_status_change_date' => isset($request->claim_status_change_date) && $request->claim_status_change_date != "NULL" ? $request->claim_status_change_date : NULL,
+                    'modified_date' => isset($request->modified_date) && $request->modified_date != "NULL" ? $request->modified_date : NULL,
+                    'notes' => isset($request->notes) && $request->notes != "NULL" ? $request->notes : NULL,
+                    'staff_member' => isset($request->staff_member) && $request->staff_member != "NULL" ? $request->staff_member : NULL,    
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,              
+                    'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,       
+                    'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,      
+                    'payer_group_name' => isset($request->payer_group_name) && $request->payer_group_name != "NULL" ? $request->payer_group_name : NULL,       
+                    'payer_class' => isset($request->payer_class) && $request->payer_class != "NULL" ? $request->payer_class : NULL,       
+                    'facility_name' => isset($request->facility_name) && $request->facility_name != "NULL" ? $request->facility_name : NULL,      
+                    'facility_group_name' => isset($request->facility_group_name) && $request->facility_group_name != "NULL" ? $request->facility_group_name : NULL,       
+                    'facility_place_of_service' => isset($request->facility_place_of_service) && $request->facility_place_of_service != "NULL" ? $request->facility_place_of_service : NULL ,      
+                    'department_name' => isset($request->department_name) && $request->department_name != "NULL" ? $request->department_name : NULL ,     
+                    'rendering_provider_name' => isset($request->rendering_provider_name) && $request->rendering_provider_name != "NULL" ? $request->rendering_provider_name : NULL,       
+                    'appointment_provider_name' => isset($request->appointment_provider_name) && $request->appointment_provider_name != "NULL" ? $request->appointment_provider_name : NULL,       
+                    'additional_provider_1_name' => isset($request->additional_provider_1_name) && $request->additional_provider_1_name != "NULL" ? $request->additional_provider_1_name : NULL,       
+                    'additional_provider_2_name' => isset($request->additional_provider_2_name) && $request->additional_provider_2_name != "NULL" ? $request->additional_provider_2_name : NULL,       
+                    'pay_to_else_billing_provider' => isset($request->pay_to_else_billing_provider) && $request->pay_to_else_billing_provider != "NULL" ? $request->pay_to_else_billing_provider : NULL,       
+                    'resource_provider_name' => isset($request->resource_provider_name) && $request->resource_provider_name != "NULL" ? $request->resource_provider_name : NULL,       
+                    'supervising_provider_name' => isset($request->supervising_provider_name) && $request->supervising_provider_name != "NULL" ? $request->supervising_provider_name : NULL,       
+                    'claim_amount' => isset($request->claim_amount) && $request->claim_amount != "NULL" ? $request->claim_amount : NULL,
+                    'collected' => isset($request->collected) && $request->collected != "NULL" ? $request->collected : NULL,
+                    'total_balance' => isset($request->total_balance) && $request->total_balance != "NULL" ? $request->total_balance : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                     ]);
+                 }
+                 return response()->json(['message' => 'Existing Record Updated Successfully']);
+             }
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+     public function BostonMountainRuralHealthCenterARDuplicates(Request $request)
+     {
+         try {
+            BmrhcArDuplicates::insert([
+                 'claim_status_category' => isset($request->claim_status_category) && $request->claim_status_category != "NULL" ? $request->claim_status_category : NULL,
+                 'claim_status' => isset($request->claim_status) && $request->claim_status != "NULL" ? $request->claim_status : NULL,
+                 'claim_no' => isset($request->claim_no) && $request->claim_no != "NULL" ? $request->claim_no : NULL,
+                 'claim_date' => isset($request->claim_date) && $request->claim_date != "NULL" ? $request->claim_date : NULL,
+                 'atb' => isset($request->atb) && $request->atb != "NULL" ? $request->atb : NULL,
+                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                 'latest_transfer_date' => isset($request->latest_transfer_date) && $request->latest_transfer_date != "NULL" ? $request->latest_transfer_date : NULL,
+                 'claim_status_change_date' => isset($request->claim_status_change_date) && $request->claim_status_change_date != "NULL" ? $request->claim_status_change_date : NULL,
+                 'modified_date' => isset($request->modified_date) && $request->modified_date != "NULL" ? $request->modified_date : NULL,
+                 'notes' => isset($request->notes) && $request->notes != "NULL" ? $request->notes : NULL,
+                 'staff_member' => isset($request->staff_member) && $request->staff_member != "NULL" ? $request->staff_member : NULL,    
+                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,              
+                 'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,       
+                 'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,      
+                 'payer_group_name' => isset($request->payer_group_name) && $request->payer_group_name != "NULL" ? $request->payer_group_name : NULL,       
+                 'payer_class' => isset($request->payer_class) && $request->payer_class != "NULL" ? $request->payer_class : NULL,       
+                 'facility_name' => isset($request->facility_name) && $request->facility_name != "NULL" ? $request->facility_name : NULL,      
+                 'facility_group_name' => isset($request->facility_group_name) && $request->facility_group_name != "NULL" ? $request->facility_group_name : NULL,       
+                 'facility_place_of_service' => isset($request->facility_place_of_service) && $request->facility_place_of_service != "NULL" ? $request->facility_place_of_service : NULL ,      
+                 'department_name' => isset($request->department_name) && $request->department_name != "NULL" ? $request->department_name : NULL ,     
+                 'rendering_provider_name' => isset($request->rendering_provider_name) && $request->rendering_provider_name != "NULL" ? $request->rendering_provider_name : NULL,       
+                 'appointment_provider_name' => isset($request->appointment_provider_name) && $request->appointment_provider_name != "NULL" ? $request->appointment_provider_name : NULL,       
+                 'additional_provider_1_name' => isset($request->additional_provider_1_name) && $request->additional_provider_1_name != "NULL" ? $request->additional_provider_1_name : NULL,       
+                 'additional_provider_2_name' => isset($request->additional_provider_2_name) && $request->additional_provider_2_name != "NULL" ? $request->additional_provider_2_name : NULL,       
+                 'pay_to_else_billing_provider' => isset($request->pay_to_else_billing_provider) && $request->pay_to_else_billing_provider != "NULL" ? $request->pay_to_else_billing_provider : NULL,       
+                 'resource_provider_name' => isset($request->resource_provider_name) && $request->resource_provider_name != "NULL" ? $request->resource_provider_name : NULL,       
+                 'supervising_provider_name' => isset($request->supervising_provider_name) && $request->supervising_provider_name != "NULL" ? $request->supervising_provider_name : NULL,       
+                 'claim_amount' => isset($request->claim_amount) && $request->claim_amount != "NULL" ? $request->claim_amount : NULL,
+                 'collected' => isset($request->collected) && $request->collected != "NULL" ? $request->collected : NULL,
+                 'total_balance' => isset($request->total_balance) && $request->total_balance != "NULL" ? $request->total_balance : NULL,
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
