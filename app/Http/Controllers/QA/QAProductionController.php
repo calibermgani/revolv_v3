@@ -177,7 +177,7 @@ class QAProductionController extends Controller
                             }
                         }
                     }
-                }dd($query);
+                }//dd($query);
                 $modelClassDatas = "App\\Models\\" . $modelName . 'Datas';
                 $assignedProjectDetails = collect();
                 $assignedDropDown = [];
