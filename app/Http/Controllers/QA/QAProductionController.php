@@ -177,7 +177,7 @@ class QAProductionController extends Controller
                             }
                         }
                     }
-                }//dd($query);
+                }
                 $modelClassDatas = "App\\Models\\" . $modelName . 'Datas';
                 $assignedProjectDetails = collect();
                 $assignedDropDown = [];
@@ -1851,5 +1851,8 @@ class QAProductionController extends Controller
             } else {
                 return redirect('/');
             }       
+    }
+    protected function isDate($value) {
+        return strtotime($value) ? true : false;
     }
 }
