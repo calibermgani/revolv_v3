@@ -156,18 +156,18 @@ class QAProductionController extends Controller
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName;
                 $query = $modelClass::query();
-                $searchData = [];
+                $searchData = [];   
                 if($request['_token'] != null) {
-                     foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
-                        $searchData[$key] = $value;
-                         if (is_array($value)) {
-                             $value = implode('_el_', $value);  // If it's an array, handle it accordingly
-                         }
- 
-                         // Assuming 'like' is needed for partial match searches (optional), adjust based on requirements
-                         if (is_numeric($value) || is_bool($value)) {
-                             $query->where($key, $value);  // Exact match for numeric/boolean
-                         } elseif ($this->isDate($value)) {  // Check if it's a date
+                    foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
+                       $searchData[$key] = $value;
+                        if (is_array($value)) {
+                            $value = implode('_el_', $value); 
+                        }
+
+                        // Assuming 'like' is needed for partial match searches (optional), adjust based on requirements
+                        if (is_numeric($value) || is_bool($value)) {
+                            $query->where($key, $value);  // Exact match for numeric/boolean
+                        } elseif ($this->isDate($value)) {  // Check if it's a date
                             $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
                         } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
@@ -176,8 +176,8 @@ class QAProductionController extends Controller
                               $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
                             }
                         }
-                     }
-                 }
+                    }
+                }
                 $modelClassDatas = "App\\Models\\" . $modelName . 'Datas';
                 $assignedProjectDetails = collect();
                 $assignedDropDown = [];
@@ -198,7 +198,7 @@ class QAProductionController extends Controller
                 // } else {
                 //     $qasamplingDetails = QualitySampling::where('project_id',$decodedProjectName)->where('sub_project_id',$decodedPracticeName)->first();//dd($qasamplingDetails,$decodedProjectName,$decodedPracticeName,'else');
                 // }
-
+             
                 if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
                     if (class_exists($modelClass)) {
                         $modelClassDuplcates = "App\\Models\\" . $modelName . 'Duplicates';
@@ -266,7 +266,7 @@ class QAProductionController extends Controller
                     } else {
                         return redirect()->back();
                        }
-                }
+                }//dd($assignedProjectDetails);
                 $popUpHeader = formConfiguration::groupBy(['project_id', 'sub_project_id'])
                     ->where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)
                     ->select('project_id', 'sub_project_id')
@@ -1851,5 +1851,8 @@ class QAProductionController extends Controller
             } else {
                 return redirect('/');
             }       
+    }
+    protected function isDate($value) {
+        return strtotime($value) ? true : false;
     }
 }

@@ -704,7 +704,7 @@ use Carbon\Carbon;
                                                                         @endforeach
                                                                     @endif
                                                                     
-                                                                    <div class="row mt-4 trends_div">
+                                                                    {{-- <div class="row mt-4 trends_div">
                                                                         <div class="col-md-12">
                                                                             <div class="form-group row">
                                                                                 <label class="col-md-12">
@@ -716,7 +716,7 @@ use Carbon\Carbon;
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
+                                                                    </div> --}}
                                                                     <div class="row mt-4">
                                                                         <div class="col-md-6">
                                                                             <div class="form-group row">
