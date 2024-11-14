@@ -43,7 +43,8 @@ use App\Models\BmrhcAr;
 use App\Models\BmrhcArDuplicates;
 use App\Models\CarsAr;
 use App\Models\CarsArDuplicates;
-
+use App\Models\NmNcgGottengerAr;
+use App\Models\NmNcgGottengerArDuplicates;
 class ProjectAutomationController extends Controller
 {
 
@@ -1667,6 +1668,120 @@ class ProjectAutomationController extends Controller
                 'ins_mem_id' => isset($request->ins_mem_id) && $request->ins_mem_id != "NULL" ? $request->ins_mem_id : NULL,
                 'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+             ]);
+             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+
+     public function NcgMedicalNcgGottengerAR(Request $request)
+     {
+         try {
+             $attributes = [
+                 'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                 'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
+                 'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,
+                 'unqi_1' => isset($request->unqi_1) && $request->unqi_1 != "NULL" ? $request->unqi_1 : NULL,
+                 'duplicate' => isset($request->duplicate) && $request->duplicate != "NULL" ? $request->duplicate : NULL,
+                 'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
+                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                 'cpt_else_mod' => isset($request->cpt_else_mod) && $request->cpt_else_mod != "NULL" ? $request->cpt_else_mod : NULL,   
+                 'dx_code' => isset($request->dx_code) && $request->dx_code != "NULL" ? $request->dx_code : NULL,  
+                 'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt : NULL,  
+                 'last_datebilled' => isset($request->last_datebilled) && $request->last_datebilled != "NULL" ? $request->last_datebilled : NULL,  
+                 'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL,  
+                 'value_bucket' => isset($request->value_bucket) && $request->value_bucket != "NULL" ? $request->value_bucket : NULL,  
+                 'payer_mix' => isset($request->payer_mix) && $request->payer_mix != "NULL" ? $request->payer_mix : NULL,  
+                 'insurance_plan' => isset($request->insurance_plan) && $request->insurance_plan != "NULL" ? $request->insurance_plan : NULL,  
+                 'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->date_touched : NULL,  
+             ];
+ 
+             $duplicateRecordExisting  =  NmNcgGottengerAr::where($attributes)->exists();
+             if (!$duplicateRecordExisting) {
+                NmNcgGottengerAr::insert([
+                    'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                    'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
+                    'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,
+                    'unqi_1' => isset($request->unqi_1) && $request->unqi_1 != "NULL" ? $request->unqi_1 : NULL,
+                    'duplicate' => isset($request->duplicate) && $request->duplicate != "NULL" ? $request->duplicate : NULL,
+                    'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'cpt_else_mod' => isset($request->cpt_else_mod) && $request->cpt_else_mod != "NULL" ? $request->cpt_else_mod : NULL,   
+                    'dx_code' => isset($request->dx_code) && $request->dx_code != "NULL" ? $request->dx_code : NULL,  
+                    'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt : NULL,  
+                    'last_datebilled' => isset($request->last_datebilled) && $request->last_datebilled != "NULL" ? $request->last_datebilled : NULL,  
+                    'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL,  
+                    'value_bucket' => isset($request->value_bucket) && $request->value_bucket != "NULL" ? $request->value_bucket : NULL,  
+                    'payer_mix' => isset($request->payer_mix) && $request->payer_mix != "NULL" ? $request->payer_mix : NULL,  
+                    'insurance_plan' => isset($request->insurance_plan) && $request->insurance_plan != "NULL" ? $request->insurance_plan : NULL,  
+                    'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->date_touched : NULL,  
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                     ]);
+                         return response()->json(['message' => 'Record Inserted Successfully']);
+             } else {
+                 $duplicateRecord  =  NmNcgGottengerAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                 if ($duplicateRecord) {
+                     $duplicateRecord->update([
+                        'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                        'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
+                        'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,
+                        'unqi_1' => isset($request->unqi_1) && $request->unqi_1 != "NULL" ? $request->unqi_1 : NULL,
+                        'duplicate' => isset($request->duplicate) && $request->duplicate != "NULL" ? $request->duplicate : NULL,
+                        'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'cpt_else_mod' => isset($request->cpt_else_mod) && $request->cpt_else_mod != "NULL" ? $request->cpt_else_mod : NULL,   
+                        'dx_code' => isset($request->dx_code) && $request->dx_code != "NULL" ? $request->dx_code : NULL,  
+                        'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt : NULL,  
+                        'last_datebilled' => isset($request->last_datebilled) && $request->last_datebilled != "NULL" ? $request->last_datebilled : NULL,  
+                        'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL,  
+                        'value_bucket' => isset($request->value_bucket) && $request->value_bucket != "NULL" ? $request->value_bucket : NULL,  
+                        'payer_mix' => isset($request->payer_mix) && $request->payer_mix != "NULL" ? $request->payer_mix : NULL,  
+                        'insurance_plan' => isset($request->insurance_plan) && $request->insurance_plan != "NULL" ? $request->insurance_plan : NULL,  
+                        'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->date_touched : NULL,  
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                     ]);
+                 }
+                 return response()->json(['message' => 'Existing Record Updated Successfully']);
+             }
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+     public function NcgMedicalNcgGottengerARDuplicates(Request $request)
+     {
+         try {
+            NmNcgGottengerArDuplicates::insert([
+                'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
+                'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,
+                'unqi_1' => isset($request->unqi_1) && $request->unqi_1 != "NULL" ? $request->unqi_1 : NULL,
+                'duplicate' => isset($request->duplicate) && $request->duplicate != "NULL" ? $request->duplicate : NULL,
+                'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'cpt_else_mod' => isset($request->cpt_else_mod) && $request->cpt_else_mod != "NULL" ? $request->cpt_else_mod : NULL,   
+                'dx_code' => isset($request->dx_code) && $request->dx_code != "NULL" ? $request->dx_code : NULL,  
+                'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt : NULL,  
+                'last_datebilled' => isset($request->last_datebilled) && $request->last_datebilled != "NULL" ? $request->last_datebilled : NULL,  
+                'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL,  
+                'value_bucket' => isset($request->value_bucket) && $request->value_bucket != "NULL" ? $request->value_bucket : NULL,  
+                'payer_mix' => isset($request->payer_mix) && $request->payer_mix != "NULL" ? $request->payer_mix : NULL,  
+                'insurance_plan' => isset($request->insurance_plan) && $request->insurance_plan != "NULL" ? $request->insurance_plan : NULL,  
+                'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->date_touched : NULL,  
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
