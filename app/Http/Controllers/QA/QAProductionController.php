@@ -156,7 +156,7 @@ class QAProductionController extends Controller
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName;
                 $query = $modelClass::query();
-                $searchData = [];dd($request->all(),$empDesignation);
+                $searchData = [];
                 if($request['_token'] != null) {
                      foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
                         $searchData[$key] = $value;
@@ -245,7 +245,7 @@ class QAProductionController extends Controller
                 } elseif ($loginEmpId) {
                     if (class_exists($modelClass)) {
                         // $assignedProjectDetails = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling')->where('QA_emp_id', $loginEmpId)->orderBy('id', 'ASC')->paginate(50);//dd($assignedProjectDetails);
-                        $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','QA_Inprocess')->orderBy('id','desc')->pluck('record_id')->toArray();
+                        $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','QA_Inprocess')->orderBy('id','desc')->pluck('record_id')->toArray();dd($request->all(),$existingCallerChartsWorkLogsInprocess);
                         $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('emp_id', $loginEmpId)->where('end_time', null)->whereIn('record_status', ['QA_Assigned','QA_Inprocess'])->orderBy('id', 'desc')->pluck('record_id')->toArray();
                         $assignedProjectDetails = $query->whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling')->where('QA_emp_id',$loginEmpId);
                         if (!empty($existingCallerChartsWorkLogs)) {
