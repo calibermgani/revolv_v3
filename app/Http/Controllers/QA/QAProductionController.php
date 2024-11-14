@@ -156,7 +156,7 @@ class QAProductionController extends Controller
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName;
                 $query = $modelClass::query();
-                $searchData = [];dd($request->all());
+                $searchData = [];dd($request->all(),$empDesignation);
                 if($request['_token'] != null) {
                      foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
                         $searchData[$key] = $value;
