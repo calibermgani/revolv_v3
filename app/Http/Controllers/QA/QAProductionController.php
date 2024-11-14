@@ -156,10 +156,10 @@ class QAProductionController extends Controller
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName;
                 $query = $modelClass::query();
-                $searchData = [];   dd($request->all(),$loginEmpId,$modelClass);
+                $searchData = [];   
                 if($request['_token'] != null) {
                      foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
-                        $searchData[$key] = $value;
+                        $searchData[$key] = $value;dd($request->all(),$loginEmpId,$modelClass,$searchData);
                          if (is_array($value)) {
                              $value = implode('_el_', $value);  // If it's an array, handle it accordingly
                          }
