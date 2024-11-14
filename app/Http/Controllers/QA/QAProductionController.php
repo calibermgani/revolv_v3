@@ -266,7 +266,7 @@ class QAProductionController extends Controller
                     } else {
                         return redirect()->back();
                        }
-                }dd($assignedProjectDetails);
+                }//dd($assignedProjectDetails);
                 $popUpHeader = formConfiguration::groupBy(['project_id', 'sub_project_id'])
                     ->where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)
                     ->select('project_id', 'sub_project_id')
