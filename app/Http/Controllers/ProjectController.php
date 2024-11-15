@@ -184,9 +184,10 @@ class ProjectController extends Controller
         try {
             Log::info('Executing ProjectWorkMail logic.');
             $loginEmpId = Session::get('loginDetails')['userDetail']['emp_id'] ?? "";    
-            //$toMailId = ["mgani@caliberfocus.com"];
-            $toMailId = ["elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","radhika@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com","devanathan@annexmed.net"];
-            $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net"];
+            $toMailId = ["vijayalaxmi@caliberfocus.com"];
+            $ccMailId = ["mgani@caliberfocus.com"];
+            // $toMailId = ["elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","radhika@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com","devanathan@annexmed.net"];
+            // $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net"];
 
 
     
@@ -200,7 +201,7 @@ class ProjectController extends Controller
     
             $today = Carbon::today();
             $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y')." - Trail";
-            $yesterDayStartDate = $yesterday->setTime(11, 0, 0)->toDateTimeString();
+            $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
             $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
 
             $yesterday5PM = Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
@@ -280,7 +281,10 @@ class ProjectController extends Controller
 
                             }
                             foreach($totalQADetails['totalQAList'] as $key => $qaList){
-                                $loggedResolvQA += EmployeeLogin::where('user_id',$qaList['assigned_people'])->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
+                                $loggedResolvQA += EmployeeLogin::where('user_id',$qaList['assigned_people'])
+                                ->whereBetween('updated_at', [$yesterday5PM, $tomorrow9AM])
+                                ->distinct('user_id')
+                                ->count();
                             }
                             $projectData[] = [
                                 'project' => $project['client_name'] . '-' . $subProject,
