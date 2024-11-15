@@ -269,7 +269,7 @@ class ProjectController extends Controller
 
                             foreach($totalARDetails['totalArList'] as $key => $arList){
                                $yesterday5PM = "2024-11-08 17:00:00"; //Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
-                                $tomorrow9AM = "2024-11-15 09:00:00"; //Carbon::tomorrow()->setTime(9, 0); 
+                                $tomorrow9AM = "2024-11-09 09:00:00"; //Carbon::tomorrow()->setTime(9, 0); 
                                 // $yesterday5PM = Carbon::yesterday()->setTime(17, 0); 
                                 // $tomorrow9AM =  Carbon::tomorrow()->setTime(9, 0);
                                 //$loggedResolvAR += EmployeeLogin::where('user_id',$arList['assigned_people'])->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
