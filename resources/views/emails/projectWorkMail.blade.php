@@ -37,7 +37,7 @@
             <p>Hello Team, </p>
         </h4> --}}
 
-        <p>Hello Team - Find below the Resolv utilization report for 2024-11-12</p>
+        <p>Hello Team - Find below the Resolv utilization report for 2024-11-13</p>
         {{-- <p>Please find below the daily update for the production inventory : 06/07/2024</p> --}}
        
         <table class="table" border="1" style="border-collapse: collapse">
