@@ -200,13 +200,15 @@ class ProjectController extends Controller
             }
     
             $today = Carbon::today();
-            $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y')." - Trail";
-            $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
-            $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
+            // $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y')." - Trail";
+            // $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
+            // $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
 
             $yesterday5PM = Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
             $tomorrow9AM = Carbon::tomorrow()->setTime(9, 0); 
-    
+            $mailHeader = "Resolv Utilization Report for 2024-11-08 - Trail";
+            $yesterDayStartDate = "2024-11-08 17:00:00";
+            $yesterDayEndDate = "2024-11-09 09:00:00";
             $projects = collect($this->getProjects());
     
             // Prepare batch data collection.
