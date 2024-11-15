@@ -184,10 +184,9 @@ class ProjectController extends Controller
         try {
             Log::info('Executing ProjectWorkMail logic.');
             $loginEmpId = Session::get('loginDetails')['userDetail']['emp_id'] ?? "";    
-            $toMailId = ["vijayalaxmi@caliberfocus.com"];
-            $ccMailId = ["mgani@caliberfocus.com"];
-            // $toMailId = ["elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","radhika@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com","devanathan@annexmed.net"];
-            // $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net"];
+            //$toMailId = ["mgani@caliberfocus.com"];
+            $toMailId = ["elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","radhika@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com","devanathan@annexmed.net"];
+            $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net"];
 
 
     
