@@ -184,10 +184,9 @@ class ProjectController extends Controller
         try {
             Log::info('Executing ProjectWorkMail logic.');
             $loginEmpId = Session::get('loginDetails')['userDetail']['emp_id'] ?? "";    
-            $toMailId = ["mgani@caliberfocus.com"];
-            $ccMailId = ["margaretmary@annexmed.net"];
-            // $toMailId = ["elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","radhika@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com","devanathan@annexmed.net"];
-            // $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net"];
+            //$toMailId = ["mgani@caliberfocus.com"];
+            $toMailId = ["elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","radhika@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com","devanathan@annexmed.net"];
+            $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net"];
 
 
     
@@ -200,15 +199,13 @@ class ProjectController extends Controller
             }
     
             $today = Carbon::today();
-            // $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y')." - Trail";
-            // $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
-            // $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
+            $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y')." - Trail";
+            $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
+            $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
 
             $yesterday5PM = Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
             $tomorrow9AM = Carbon::tomorrow()->setTime(9, 0); 
-            $mailHeader = "Resolv Utilization Report for 2024-11-14 - Trail";
-            $yesterDayStartDate = "2024-11-14 17:00:00";
-            $yesterDayEndDate = "2024-11-15 09:00:00";
+    
             $projects = collect($this->getProjects());
     
             // Prepare batch data collection.
@@ -268,10 +265,10 @@ class ProjectController extends Controller
                            // Log::error('Total Users: ' . print_r($totalARDetails['totalArList'], true));
 
                             foreach($totalARDetails['totalArList'] as $key => $arList){
-                               $yesterday5PM = "2024-11-14 17:00:00"; //Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
-                                $tomorrow9AM = "2024-11-15 09:00:00"; //Carbon::tomorrow()->setTime(9, 0); 
-                                // $yesterday5PM = Carbon::yesterday()->setTime(17, 0); 
-                                // $tomorrow9AM =  Carbon::tomorrow()->setTime(9, 0);
+                               // $yesterday5PM = "2024-11-07 17:00:00"; //Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
+                                //$tomorrow9AM = "2024-11-08 09:00:00"; //Carbon::tomorrow()->setTime(9, 0); 
+                                $yesterday5PM = Carbon::yesterday()->setTime(17, 0); 
+                                $tomorrow9AM =  Carbon::tomorrow()->setTime(9, 0);
                                 //$loggedResolvAR += EmployeeLogin::where('user_id',$arList['assigned_people'])->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
                                 $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
                                                     ->whereBetween('updated_at', [$yesterday5PM, $tomorrow9AM])
