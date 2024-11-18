@@ -724,21 +724,19 @@ class ProjectController extends Controller
                 ];
             }
             
-            // Determine current time
+            // Determine the current time and filter relevant slots
             $currentTime = Carbon::now();
-            
-            // Find current slot index
-            $currentSlotIndex = collect($timeSlots)->search(function ($slot) use ($currentTime) {
-                return $currentTime->between($slot['start'], $slot['end']);
+    
+            // Filter slots from 9 AM to the current time
+            $slotsToProcess = collect($timeSlots)->filter(function ($slot) use ($currentTime) {
+                return $slot['start']->greaterThanOrEqualTo(Carbon::today()->setHour(9))
+                    && $slot['end']->lessThanOrEqualTo($currentTime);
             });
-            
-            // Get only the previous slot and current slot
-            $slotsToProcess = collect([$timeSlots[$currentSlotIndex - 1] ?? null, $timeSlots[$currentSlotIndex] ?? null])->filter();
-            
+    
             // Initialize headers and bodies
             $headers = [];
             $mailBody = [];
-            
+    
             // Fetch project data for each slot
             foreach ($slotsToProcess as $slot) {
                 $headers[] = $slot['header'];
@@ -781,5 +779,6 @@ class ProjectController extends Controller
             Log::debug($e->getMessage());
         }
     }
+    
     
     }
