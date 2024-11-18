@@ -653,7 +653,7 @@ class ProjectController extends Controller
             }
             
             // Prepare header and fetch data for the current slot
-            $header = $currentSlot['header'];
+            $header[] = $currentSlot['header'];
             $toDayStartDate = $currentSlot['start'];
             $toDayEndDate = $currentSlot['end'];
             
