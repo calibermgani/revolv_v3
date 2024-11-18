@@ -629,7 +629,7 @@ class ProjectController extends Controller
             for ($hour = $startHour; $hour <= $endHour + 24; $hour++) {
                 $currentHour = $hour % 24;
                 $start = Carbon::createFromTime($currentHour);
-                $end = Carbon::createFromTime(($currentHour + 1) % 24);
+                $end = Carbon::createFromTime(($currentHour + 1) % 24);dd($start,$end,$currentHour);
                 $timeSlots[] = $start->format('y-m-d h:i A') . ' to ' . $end->format('y-m-d h:i A');
             }
             // Prepare batch data collection.
