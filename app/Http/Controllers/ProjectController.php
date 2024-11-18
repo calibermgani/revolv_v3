@@ -687,8 +687,8 @@ class ProjectController extends Controller
             // Prepare mail body
             $mailBody = $prjoectsPending->toArray();
             
-         dd($mailBody, $timeSlots);
-            Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $timeSlots, $today));
+        //  dd($mailBody, $timeSlots);
+            Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $header, $today));
 
             Log::info('ProjectHourlyMail executed successfully.');
         } catch (\Exception $e) {
