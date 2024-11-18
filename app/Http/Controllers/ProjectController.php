@@ -614,12 +614,7 @@ class ProjectController extends Controller
             $toMailId = ["vijayalaxmi@caliberfocus.com"];
             $ccMailId = ["vijayalaxmi@caliberfocus.com"];
 
-             $today = Carbon::now();
-             $oneHourBefore = $today->copy()->subHour();
-            $mailHeader = "Resolv Project Hourly Report";
-            // $toDayStartDate = $today->toDateTimeString();
-            // $toDayEndDate = $today->toDateTimeString();
-
+            $mailHeader = "Resolv Project Hourly Report";        
             $projects = collect($this->getProjects());
             $startHour = 9; // 9 AM
             $endHour = 5;   // 5 AM (next day)
