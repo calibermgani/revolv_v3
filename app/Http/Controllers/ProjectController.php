@@ -606,6 +606,95 @@ class ProjectController extends Controller
             return null;
         }
     }
+    // public function projectHourlyMail()
+    // {
+    //     try {
+    //         Log::info('Executing Project Hourly Mail logic.'); 
+    //         $toMailId = ["vijayalaxmi@caliberfocus.com"];
+    //         $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+    //         $mailHeader = "Resolv Project Hourly Report";        
+    //         $projects = collect($this->getProjects());
+    //         $startHour = 9; // 9 AM
+    //         $endHour = 5;   // 5 AM (next day)
+            
+    //         // Generate time slots array
+    //         $timeSlots = [];
+    //         $startDate = Carbon::today(); // Get today's date
+            
+    //         for ($hour = $startHour; $hour <= $endHour + 24; $hour++) {
+    //             $currentHour = $hour % 24; // Wrap around after 23
+    //             $currentDate = $startDate->copy()->addDays(intval($hour / 24)); // Adjust date for next day
+    //             $start = Carbon::createFromTime($currentHour, 0, 0, $currentDate->timezone)
+    //                           ->setDate($currentDate->year, $currentDate->month, $currentDate->day);
+    //             $end = $start->copy()->addHour(); // End is 1 hour after start
+            
+    //             $timeSlots[] = [
+    //                 'start' => $start,
+    //                 'end' => $end,
+    //                 'header' => $start->format('m/d/Y h:i A') . ' to ' . $end->format('m/d/Y h:i A'),
+    //             ];
+    //         }
+            
+    //         // Determine current and previous slots
+    //         $currentTime = Carbon::now();
+            
+    //         // Find current slot
+    //         $currentSlotIndex = collect($timeSlots)->search(function ($slot) use ($currentTime) {
+    //             return $currentTime->between($slot['start'], $slot['end']);
+    //         });
+            
+    //         // Get current slot and previous slot (if available)
+    //         $currentSlot = $timeSlots[$currentSlotIndex] ?? null;
+    //         $previousSlot = $timeSlots[$currentSlotIndex - 1] ?? null;
+            
+    //         // Collect data for both slots
+    //         $slotsToProcess = collect([$previousSlot, $currentSlot])->filter();
+            
+    //         // Initialize headers and bodies
+    //         $headers = [];
+    //         $mailBody = [];
+            
+    //         // Fetch project data for each slot
+    //         foreach ($slotsToProcess as $slot) {
+    //             $headers[] = $slot['header'];
+    //             $startDate = $slot['start'];
+    //             $endDate = $slot['end'];
+            
+    //             $slotData = $projects->flatMap(function ($project) use ($startDate, $endDate) {
+    //                 $projectData = [];
+    //                 $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+            
+    //                 if ($prjName !== null) {
+    //                     $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
+            
+    //                     foreach ($subProjects as $subProject) {
+    //                         $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
+    //                         $modelClass = "App\\Models\\" . Str::studly($tableName);
+            
+    //                         if (class_exists($modelClass)) {
+    //                             $hourlyCount = $modelClass::whereBetween('updated_at', [$startDate, $endDate])
+    //                                         ->where('chart_status', 'CE_Completed')->count();
+            
+    //                             $projectData[] = [
+    //                                 'project' => $project['client_name'] . '-' . $subProject,
+    //                                 'hourlyCount' => $hourlyCount
+    //                             ];
+    //                         }
+    //                     }
+    //                 }            
+    //                 return $projectData;
+    //             });            
+    //             $mailBody = $slotData->toArray();
+    //         }
+    //         $today=carbon::now();
+    //         Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $headers, $today));
+
+    //         Log::info('ProjectHourlyMail executed successfully.');
+    //     } catch (\Exception $e) {
+    //         Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
+    //         Log::debug($e->getMessage());
+    //     }
+    // }
     public function projectHourlyMail()
     {
         try {
@@ -635,20 +724,16 @@ class ProjectController extends Controller
                 ];
             }
             
-            // Determine current and previous slots
+            // Determine current time
             $currentTime = Carbon::now();
             
-            // Find current slot
+            // Find current slot index
             $currentSlotIndex = collect($timeSlots)->search(function ($slot) use ($currentTime) {
                 return $currentTime->between($slot['start'], $slot['end']);
             });
             
-            // Get current slot and previous slot (if available)
-            $currentSlot = $timeSlots[$currentSlotIndex] ?? null;
-            $previousSlot = $timeSlots[$currentSlotIndex - 1] ?? null;
-            
-            // Collect data for both slots
-            $slotsToProcess = collect([$previousSlot, $currentSlot])->filter();
+            // Get only the previous slot and current slot
+            $slotsToProcess = collect([$timeSlots[$currentSlotIndex - 1] ?? null, $timeSlots[$currentSlotIndex] ?? null])->filter();
             
             // Initialize headers and bodies
             $headers = [];
@@ -683,17 +768,18 @@ class ProjectController extends Controller
                         }
                     }            
                     return $projectData;
-                });            
-                $mailBody = $slotData->toArray();
+                });
+            
+                $mailBody = array_merge($mailBody, $slotData->toArray());
             }
             $today=carbon::now();
-            Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $headers, $today));
-
+            // Send mail
+            Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $headers,$today));
             Log::info('ProjectHourlyMail executed successfully.');
         } catch (\Exception $e) {
             Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
             Log::debug($e->getMessage());
         }
     }
-
+    
     }
