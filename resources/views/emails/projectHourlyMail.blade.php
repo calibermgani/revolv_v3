@@ -57,10 +57,6 @@
 
                 @if (isset($mailBody) && count($mailBody) > 0)
                     @foreach ($mailBody as $data)
-                    @php
-                    dd($data);
-@endphp
-
                         <tr>
                             <td style="text-align: center;padding: 5px;">{{ $data['project'] }}</td>
                             @foreach ($timeSlots as $timeSlot)
