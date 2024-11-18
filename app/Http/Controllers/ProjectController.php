@@ -611,8 +611,8 @@ class ProjectController extends Controller
         try {
             Log::info('Executing Project Hourly Mail logic.');
             $loginEmpId = Session::get('loginDetails')['userDetail']['emp_id'] ?? "";    
-            $toMailId = ["mgani@caliberfocus.com"];
-            $ccMailId = ["mgani@caliberfocus.com"];
+            $toMailId = ["vijayalaxmi@caliberfocus.com"];
+            $ccMailId = ["vijayalaxmi@caliberfocus.com"];
 
             $mailHeader = "Resolv Project Hourly Report - Trail";
     
