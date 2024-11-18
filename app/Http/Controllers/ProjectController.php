@@ -621,8 +621,8 @@ class ProjectController extends Controller
             // $toDayEndDate = $today->toDateTimeString();
 
             $projects = collect($this->getProjects());
-            $startHour = 9; // 5 PM
-            $endHour = 5;    // 5 AM (next day)
+            $startHour = 9; // 9 AM
+            $endHour = 5;   // 5 AM (next day)
             
             // Generate time slots array
             $timeSlots = [];
@@ -642,50 +642,59 @@ class ProjectController extends Controller
                 ];
             }
             
-            // Determine current time slot
+            // Determine current and previous slots
             $currentTime = Carbon::now();
-            $currentSlot = collect($timeSlots)->first(function ($slot) use ($currentTime) {
+            
+            // Find current slot
+            $currentSlotIndex = collect($timeSlots)->search(function ($slot) use ($currentTime) {
                 return $currentTime->between($slot['start'], $slot['end']);
             });
             
-            if (!$currentSlot) {
-                dd('No matching time slot found for the current time.');
-            }
+            // Get current slot and previous slot (if available)
+            $currentSlot = $timeSlots[$currentSlotIndex] ?? null;
+            $previousSlot = $timeSlots[$currentSlotIndex - 1] ?? null;
             
-            // Prepare header and fetch data for the current slot
-            $header[] = $currentSlot['header'];
-            $toDayStartDate = $currentSlot['start'];
-            $toDayEndDate = $currentSlot['end'];
+            // Collect data for both slots
+            $slotsToProcess = collect([$previousSlot, $currentSlot])->filter();
             
-            // Fetch project data for the current time slot
-            $prjoectsPending = $projects->flatMap(function ($project) use ($toDayStartDate, $toDayEndDate) {
-                $projectData = [];
-                $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+            // Initialize headers and bodies
+            $headers = [];
+            $mailBody = [];
             
-                if ($prjName !== null) {
-                    $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
+            // Fetch project data for each slot
+            foreach ($slotsToProcess as $slot) {
+                $headers[] = $slot['header'];
+                $startDate = $slot['start'];
+                $endDate = $slot['end'];
             
-                    foreach ($subProjects as $subProject) {
-                        $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
-                        $modelClass = "App\\Models\\" . Str::studly($tableName);
+                $slotData = $projects->flatMap(function ($project) use ($startDate, $endDate) {
+                    $projectData = [];
+                    $prjName = Helpers::projectName($project['id'])->project_name ?? null;
             
-                        if (class_exists($modelClass)) {
-                            $hourlyCount = $modelClass::whereBetween('updated_at', [$toDayStartDate, $toDayEndDate])
-                                        ->where('chart_status', 'CE_Completed')->count();
+                    if ($prjName !== null) {
+                        $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
             
-                            $projectData[] = [
-                                'project' => $project['client_name'] . '-' . $subProject,
-                                'hourlyCount' => $hourlyCount
-                            ];
+                        foreach ($subProjects as $subProject) {
+                            $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
+                            $modelClass = "App\\Models\\" . Str::studly($tableName);
+            
+                            if (class_exists($modelClass)) {
+                                $hourlyCount = $modelClass::whereBetween('updated_at', [$startDate, $endDate])
+                                            ->where('chart_status', 'CE_Completed')->count();
+            
+                                $projectData[] = [
+                                    'project' => $project['client_name'] . '-' . $subProject,
+                                    'hourlyCount' => $hourlyCount
+                                ];
+                            }
                         }
                     }
-                }
             
-                return $projectData;
-            });
+                    return $projectData;
+                });
             
-            // Prepare mail body
-            $mailBody = $prjoectsPending->toArray();
+                $mailBody[] = $slotData->toArray();
+            }
             
         //  dd($mailBody, $timeSlots,$header);
             Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $header, $today));
