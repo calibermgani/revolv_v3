@@ -609,11 +609,9 @@ class ProjectController extends Controller
     public function projectHourlyMail()
     {
         try {
-            Log::info('Executing Project Hourly Mail logic.');
-            $loginEmpId = Session::get('loginDetails')['userDetail']['emp_id'] ?? "";    
+            Log::info('Executing Project Hourly Mail logic.'); 
             $toMailId = ["vijayalaxmi@caliberfocus.com"];
             $ccMailId = ["vijayalaxmi@caliberfocus.com"];
-
             $mailHeader = "Resolv Project Hourly Report";        
             $projects = collect($this->getProjects());
             $startHour = 9; // 9 AM
@@ -683,11 +681,9 @@ class ProjectController extends Controller
                                 ];
                             }
                         }
-                    }
-            
+                    }            
                     return $projectData;
-                });
-            
+                });            
                 $mailBody = $slotData->toArray();
             }
         
