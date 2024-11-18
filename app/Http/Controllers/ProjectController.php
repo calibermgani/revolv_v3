@@ -623,15 +623,24 @@ class ProjectController extends Controller
             $projects = collect($this->getProjects());
             $startHour = 17; // 5 PM
             $endHour = 5;    // 5 AM (next day)
-
+            
             // Generate time slots array
             $timeSlots = [];
+            $startDate = Carbon::today(); // Get today's date
+            
             for ($hour = $startHour; $hour <= $endHour + 24; $hour++) {
-                $currentHour = $hour % 24;
-                $start = Carbon::createFromTime($currentHour);
-                $end = Carbon::createFromTime(($currentHour + 1) % 24);dd($start,$end,$currentHour);
-                $timeSlots[] = $start->format('y-m-d h:i A') . ' to ' . $end->format('y-m-d h:i A');
+                $currentHour = $hour % 24; // Wrap around after 23
+                $currentDate = $startDate->copy()->addDays(intval($hour / 24)); // Adjust date for next day
+                $start = Carbon::createFromTime($currentHour, 0, 0, $currentDate->timezone)
+                              ->setDate($currentDate->year, $currentDate->month, $currentDate->day);
+                $end = $start->copy()->addHour(); // End is 1 hour after start
+            
+                $timeSlots[] = $start->format('Y-m-d h:i A') . ' to ' . $end->format('Y-m-d h:i A');
             }
+            
+            // Output the time slots
+            dd($timeSlots);
+            
             // Prepare batch data collection.
             $prjoectsPending = $projects->flatMap(function ($project) use ($toDayStartDate, $toDayEndDate) {
                 $projectData = [];
