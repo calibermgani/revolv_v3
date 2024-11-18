@@ -617,8 +617,8 @@ class ProjectController extends Controller
              $today = Carbon::now();
              $oneHourBefore = $today->copy()->subHour();
             $mailHeader = "Resolv Project Hourly Report";
-            $toDayStartDate = $today->toDateTimeString();
-            $toDayEndDate = $today->toDateTimeString();
+            // $toDayStartDate = $today->toDateTimeString();
+            // $toDayEndDate = $today->toDateTimeString();
 
             $projects = collect($this->getProjects());
             $startHour = 10; // 5 PM
@@ -687,7 +687,7 @@ class ProjectController extends Controller
             // Prepare mail body
             $mailBody = $prjoectsPending->toArray();
             
-         
+         dd($mailBody, $timeSlots);
             Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $timeSlots, $today));
 
             Log::info('ProjectHourlyMail executed successfully.');
