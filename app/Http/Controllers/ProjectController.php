@@ -638,7 +638,7 @@ class ProjectController extends Controller
                 $timeSlots[] = [
                     'start' => $start,
                     'end' => $end,
-                    'header' => $start->format('Y-m-d h:i A') . ' to ' . $end->format('Y-m-d h:i A'),
+                    'header' => $start->format('m/d/Y h:i A') . ' to ' . $end->format('m/d/Y h:i A'),
                 ];
             }
             
@@ -665,7 +665,7 @@ class ProjectController extends Controller
             foreach ($slotsToProcess as $slot) {
                 $headers[] = $slot['header'];
                 $startDate = $slot['start'];
-                $endDate = $slot['end'];dd($startDate,$endDate);
+                $endDate = $slot['end'];
             
                 $slotData = $projects->flatMap(function ($project) use ($startDate, $endDate) {
                     $projectData = [];
