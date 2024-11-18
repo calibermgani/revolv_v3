@@ -700,7 +700,7 @@ class ProjectController extends Controller
         try {
             Log::info('Executing Project Hourly Mail logic.'); 
             $toMailId = ["vijayalaxmi@caliberfocus.com"];
-            $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+            $ccMailId = ["mgani@caliberfocus.com"];
             $mailHeader = "Resolv Project Hourly Report";        
             $projects = collect($this->getProjects());
             $startHour = 9; // 9 AM
