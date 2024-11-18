@@ -703,7 +703,7 @@ class ProjectController extends Controller
             $ccMailId = ["mgani@caliberfocus.com"];
             $mailHeader = "Resolv Project Hourly Report";        
             $projects = collect($this->getProjects());
-            $startHour = 9; // 9 AM
+            $startHour = 17; // 17 PM
             $endHour = 5;   // 5 AM (next day)
             
             // Generate time slots array
