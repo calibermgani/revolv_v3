@@ -618,7 +618,7 @@ class ProjectController extends Controller
              $oneHourBefore = $today->copy()->subHour();
             $mailHeader = "Resolv Project Hourly Report";
             $toDayStartDate = $today->toDateTimeString();
-            $toDayEndDate = $today->toDateTimeString();
+            $toDayEndDate = $today->toDateTimeString();dd($toDayStartDate,$toDayEndDate);
 
             $projects = collect($this->getProjects());
             $startHour = 17; // 5 PM
