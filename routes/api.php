@@ -70,8 +70,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('ncg_medical_ncg_hudson_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgHudsonARDuplicates');
     Route::any('ncg_medical_ncg_hsc_ar', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgHscAR');
     Route::any('ncg_medical_ncg_hsc_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgHscARDuplicates');
-    Route::any('ncg_medical_ncg_psss_ar', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgPscAR');
-    Route::any('ncg_medical_ncg_psss_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgPscARDuplicates');
+    Route::any('ncg_medical_ncg_psssf_ar', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgPsssfAR');
+    Route::any('ncg_medical_ncg_psssf_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgPsssfARDuplicates');
     
     
 

@@ -49,6 +49,8 @@ use App\Models\NmNcgHudsonAr;
 use App\Models\NmNcgHudsonArDuplicates;
 use App\Models\NmNcgHscAr;
 use App\Models\NmNcgHscArDuplicates;
+use App\Models\NmNcgPsssf;
+use App\Models\NmNcgPsssfDuplicates;
 
 class ProjectAutomationController extends Controller
 {
@@ -2026,11 +2028,12 @@ class ProjectAutomationController extends Controller
          }
      }
 
-     public function NcgMedicalNcgPscAR(Request $request)
+     public function NcgMedicalNcgPsssfAR(Request $request)
      {
          try {
              $attributes = [
                  'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                 'insurance_no' => isset($request->insurance_no) && $request->insurance_no != "NULL" ? $request->insurance_no : NULL,
                  'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
                  'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,
                  'unqi_1' => isset($request->unqi_1) && $request->unqi_1 != "NULL" ? $request->unqi_1 : NULL,
@@ -2049,10 +2052,11 @@ class ProjectAutomationController extends Controller
                  'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->date_touched : NULL,  
              ];
  
-             $duplicateRecordExisting  =  NmNcgHscAr::where($attributes)->exists();
+             $duplicateRecordExisting  =  NmNcgPsssf::where($attributes)->exists();
              if (!$duplicateRecordExisting) {
-                NmNcgHscAr::insert([
+                NmNcgPsssf::insert([
                     'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                    'insurance_no' => isset($request->insurance_no) && $request->insurance_no != "NULL" ? $request->insurance_no : NULL,
                     'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
                     'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,
                     'unqi_1' => isset($request->unqi_1) && $request->unqi_1 != "NULL" ? $request->unqi_1 : NULL,
@@ -2076,10 +2080,11 @@ class ProjectAutomationController extends Controller
                      ]);
                          return response()->json(['message' => 'Record Inserted Successfully']);
              } else {
-                 $duplicateRecord  =  NmNcgHscAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                 $duplicateRecord  =  NmNcgPsssf::where($attributes)->where('chart_status',"CE_Assigned")->first();
                  if ($duplicateRecord) {
                      $duplicateRecord->update([
                         'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                        'insurance_no' => isset($request->insurance_no) && $request->insurance_no != "NULL" ? $request->insurance_no : NULL,
                         'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
                         'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,
                         'unqi_1' => isset($request->unqi_1) && $request->unqi_1 != "NULL" ? $request->unqi_1 : NULL,
@@ -2108,11 +2113,12 @@ class ProjectAutomationController extends Controller
              $e->getMessage();
          }
      }
-     public function NcgMedicalNcgPscARDuplicates(Request $request)
+     public function NcgMedicalNcgPsssfARDuplicates(Request $request)
      {
          try {
-            NmNcgHscArDuplicates::insert([
+            NmNcgPsssfDuplicates::insert([
                 'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                'insurance_no' => isset($request->insurance_no) && $request->insurance_no != "NULL" ? $request->insurance_no : NULL,
                 'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
                 'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,
                 'unqi_1' => isset($request->unqi_1) && $request->unqi_1 != "NULL" ? $request->unqi_1 : NULL,
