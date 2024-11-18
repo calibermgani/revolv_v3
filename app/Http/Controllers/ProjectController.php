@@ -686,7 +686,7 @@ class ProjectController extends Controller
                 });            
                 $mailBody = $slotData->toArray();
             }
-        
+            $today=carbon::now();
             Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $headers, $today));
 
             Log::info('ProjectHourlyMail executed successfully.');
