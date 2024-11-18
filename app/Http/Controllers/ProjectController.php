@@ -614,34 +614,26 @@ class ProjectController extends Controller
             $toMailId = ["vijayalaxmi@caliberfocus.com"];
             $ccMailId = ["vijayalaxmi@caliberfocus.com"];
 
-            $mailHeader = "Resolv Project Hourly Report - Trail";
-    
-            $today = Carbon::now();
-            $oneHourBefore = $today->copy()->subHour();
-            $toDayStartDate = $oneHourBefore->toDateTimeString();
+             $today = Carbon::now();
+             $oneHourBefore = $today->copy()->subHour();
+            $mailHeader = "Resolv Project Hourly Report";
+            $toDayStartDate = $today->toDateTimeString();
             $toDayEndDate = $today->toDateTimeString();
-    
+
             $projects = collect($this->getProjects());
             $startHour = 17; // 5 PM
             $endHour = 5;    // 5 AM (next day)
-            $yesterday = Carbon::yesterday();
-    
+
             // Generate time slots array
             $timeSlots = [];
             for ($hour = $startHour; $hour <= $endHour + 24; $hour++) {
                 $currentHour = $hour % 24;
-
-                // Determine if the time slot should use yesterday's date
-                $date = ($currentHour < 17 && $currentHour >= 0) ? $yesterday : $today;
-
-                $start = Carbon::createFromTime($currentHour)->setDate($date->year, $date->month, $date->day);
-                $end = Carbon::createFromTime(($currentHour + 1) % 24)->setDate($date->year, $date->month, $date->day);
-
-                $timeSlots[] = $start->format('Y-m-d h:i A') . ' to ' . $end->format('Y-m-d h:i A');
-                Log::error('Start And End Hours ' .$start."---".$end);
-            
-                // Prepare batch data collection.
-                $prjoectsPending = $projects->flatMap(function ($project) use ($start, $end) {
+                $start = Carbon::createFromTime($currentHour);
+                $end = Carbon::createFromTime(($currentHour + 1) % 24);
+                $timeSlots[] = $start->format('y-m-d h:i A') . ' to ' . $end->format('y-m-d h:i A');
+            }
+            // Prepare batch data collection.
+            $prjoectsPending = $projects->flatMap(function ($project) use ($toDayStartDate, $toDayEndDate) {
                 $projectData = [];
                 $prjName = Helpers::projectName($project['id'])->project_name ?? null;
     
@@ -653,9 +645,9 @@ class ProjectController extends Controller
                         $modelClass = "App\\Models\\" . Str::studly($tableName);
     
                         if (class_exists($modelClass)) {
-                            $hourlyCount = $modelClass::whereBetween('updated_at', [$start, $end])
+                            $hourlyCount = $modelClass::whereBetween('updated_at', [$toDayStartDate, $toDayEndDate])
                                         ->where('chart_status', 'CE_Completed')->count();
-                           
+
                             $projectData[] = [
                                 'project' => $project['client_name'] . '-' . $subProject,
                                 'hourlyCount' => $hourlyCount
@@ -667,14 +659,14 @@ class ProjectController extends Controller
     
                 return $projectData;
             });
-        }
             $mailBody = $prjoectsPending->toArray();
             Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $timeSlots, $today));
-    
+
             Log::info('ProjectHourlyMail executed successfully.');
         } catch (\Exception $e) {
             Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
             Log::debug($e->getMessage());
         }
     }
-}
+
+    }
