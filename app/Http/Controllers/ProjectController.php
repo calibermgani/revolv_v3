@@ -693,7 +693,7 @@ class ProjectController extends Controller
                     return $projectData;
                 });
             
-                $mailBody[] = $slotData->toArray();
+                $mailBody = $slotData->toArray();
             }
         
             Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $headers, $today));
