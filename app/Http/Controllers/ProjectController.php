@@ -665,7 +665,7 @@ class ProjectController extends Controller
             foreach ($slotsToProcess as $slot) {
                 $headers[] = $slot['header'];
                 $startDate = $slot['start'];
-                $endDate = $slot['end'];
+                $endDate = $slot['end'];dd($startDate,$endDate);
             
                 $slotData = $projects->flatMap(function ($project) use ($startDate, $endDate) {
                     $projectData = [];
