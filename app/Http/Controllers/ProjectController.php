@@ -621,7 +621,7 @@ class ProjectController extends Controller
             // $toDayEndDate = $today->toDateTimeString();
 
             $projects = collect($this->getProjects());
-            $startHour = 10; // 5 PM
+            $startHour = 9; // 5 PM
             $endHour = 5;    // 5 AM (next day)
             
             // Generate time slots array
