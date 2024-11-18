@@ -696,7 +696,7 @@ class ProjectController extends Controller
                 $mailBody[] = $slotData->toArray();
             }
             
-        //  dd($mailBody, $timeSlots,$header);
+          dd($mailBody, $headers);
             Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $headers, $today));
 
             Log::info('ProjectHourlyMail executed successfully.');
