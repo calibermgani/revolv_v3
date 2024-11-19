@@ -6,6 +6,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
+
 <style>
     * {
         font-family: Verdana, Arial, sans-serif;
@@ -31,18 +32,20 @@
 <body>
 
     <div class="table-responsive pb-2">
+
         @php
         $today1 = \Carbon\Carbon::now(); // 17:00 is 5 PM in 24-hour format
         $formattedDate = $today1->format('m/d/Y h:i A');
         @endphp
+
         <p>Hello Team - Find below the Resolv Hourly report for {{$formattedDate}}</p>
 
         <table class="table" border="1" style="border-collapse: collapse">
             <thead>
                 <tr>
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Project</th>
-                    @foreach ($timeSlots as $timeSlot)
-                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">{{ $timeSlot['header'] }}</th>
+                    @foreach ($headers as $header)
+                        <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">{{ $header }}</th>
                     @endforeach
                 </tr>
             </thead>
@@ -52,15 +55,15 @@
                     @foreach ($mailBody as $data)
                         <tr>
                             <td style="text-align: center;padding: 5px;">{{ $data['project'] }}</td>
-                            @foreach ($data['timeSlots'] as $hourlyCount)
-                                <td style="text-align: center;padding: 5px;">{{ $hourlyCount }}</td>
+                            @foreach ($headers as $header)
+                                <td style="text-align: center;padding: 5px;">{{ $data['hourlyCount'] }}</td>
                             @endforeach
                         </tr>
                     @endforeach
                 @else
-                <tr>
-                    <td colspan="4" style="text-align: center; padding: 5px;">--No Records--</td>
-                </tr>
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 5px;">--No Records--</td>
+                    </tr>
                 @endif
             </tbody>
         </table>
