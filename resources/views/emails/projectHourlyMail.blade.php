@@ -63,7 +63,7 @@
                           @endphp --}}
                                 {{-- <td style="text-align: center;padding: 5px;">{{ $data['hourlyCount'] }}</td> --}}
                             {{-- @endforeach --}}
-                            @foreach ($projectData['hourlyCount'] as $count)
+                            @foreach ($data['hourlyCount'] as $count)
                             <td style="text-align: center;padding: 5px;">{{ $count }}</td>
                         @endforeach
                         </tr>
