@@ -149,9 +149,9 @@ Route::group(['prefix' => 'qa_production'], function () {
     Route::group(['prefix' => 'production'], function () {
          Route::any('ar_action_code_list', 'App\Http\Controllers\ProductionController@arActionCodeList');
     });
-  
+    Route::group(['prefix' => 'projects'], function() {
         Route::any('project_detailed_information', 'App\Http\Controllers\ProjectController@projectDetailedInformation');
-    
+    });
 Auth::routes();
 // });
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
