@@ -39,7 +39,6 @@ Route::any('production_dashboard', 'App\Http\Controllers\ProductionController@da
 Route::any('clients', 'App\Http\Controllers\ProductionController@clients')->name('clients');
 Route::any('sub_projects', 'App\Http\Controllers\ProductionController@getSubProjects')->name('subProjects');
 Route::any('clients/handle_row', 'App\Http\Controllers\ProductionController@handleRowClick')->name('client.handleRow');
-Route::any('projects/{clientName}', 'App\Http\Controllers\ProductionController@clientTabs')->name('client.tabs');
 Route::any('projects_assigned/{clientName}/{subProjectName}', 'App\Http\Controllers\ProductionController@clientAssignedTab')->name('clientAssigned');
 Route::any('projects_pending/{clientName}/{subProjectName}', 'App\Http\Controllers\ProductionController@clientPendingTab')->name('clientPending');
 Route::any('projects_hold/{clientName}/{subProjectName}', 'App\Http\Controllers\ProductionController@clientHoldTab')->name('clientHold');
@@ -150,9 +149,9 @@ Route::group(['prefix' => 'qa_production'], function () {
     Route::group(['prefix' => 'production'], function () {
          Route::any('ar_action_code_list', 'App\Http\Controllers\ProductionController@arActionCodeList');
     });
-    Route::group(['prefix' => 'projects'], function() {
+  
         Route::any('project_detailed_information', 'App\Http\Controllers\ProjectController@projectDetailedInformation');
-    });
+    
 Auth::routes();
 // });
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
