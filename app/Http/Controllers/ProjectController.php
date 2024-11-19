@@ -898,13 +898,13 @@ class ProjectController extends Controller
     {
         try {
             Log::info('Executing Project Hourly Mail logic.');
-            
+    
             $toMailId = ["vijayalaxmi@caliberfocus.com"];
             $ccMailId = ["vijayalaxmi@caliberfocus.com"];
             $mailHeader = "Resolv Project Hourly Report";
             $projects = collect($this->getProjects());
             $startHour = 17; // Start at 5 PM
-            $endHour = 12;   // End at 12 PM next day
+            $endHour = 13;   // End at 12 PM next day
     
             // Current time
             $currentTime = Carbon::now();
@@ -953,10 +953,10 @@ class ProjectController extends Controller
                 $endDate = $slot['end'];
     
                 Log::info("Processing slot: {$startDate} to {$endDate}");
-    
-                // Prepare an array for each project, where the keys are time slots and values are hourly counts
-                $slotDataForProjects = $projects->mapWithKeys(function ($project) use ($startDate, $endDate) {
-                    $projectData = [];
+                $hourlyCount = [];
+                $projectData = [];
+                $slotData = $projects->flatMap(function ($project) use ($startDate, $endDate) {
+                  
                     $prjName = Helpers::projectName($project['id'])->project_name ?? null;
     
                     Log::info("Processing project ID {$project['id']}: {$prjName}");
@@ -972,13 +972,12 @@ class ProjectController extends Controller
     
                             if (class_exists($modelClass)) {
                                 // Query data for this specific time slot
-                                $hourlyCount = $modelClass::whereBetween('updated_at', [$startDate, $endDate])
+                                $hourlyCount[] = $modelClass::whereBetween('updated_at', [$startDate, $endDate])
                                     ->where('chart_status', 'CE_Completed')->count();
     
                                 Log::info("Hourly count for {$tableName} from {$startDate} to {$endDate}: {$hourlyCount}");
     
-                                // Store hourly count with time slot information
-                                $projectData[$subProject] = [
+                                $projectData[] = [
                                     'project' => $project['client_name'] . '-' . $subProject,
                                     'hourlyCount' => $hourlyCount,
                                 ];
@@ -990,18 +989,12 @@ class ProjectController extends Controller
                         Log::warning("Project name is null for project ID {$project['id']}");
                     }
     
-                    return [$prjName => $projectData]; // Use project name as the key
+                    return $projectData;
                 });
     
-                Log::info("Data for slot {$startDate} to {$endDate}: ", $slotDataForProjects->toArray());
+                Log::info("Data for slot {$startDate} to {$endDate}: ", $slotData->toArray());
     
-                // Merge project data for each time slot
-                foreach ($slotDataForProjects as $projectName => $projectData) {
-                    if (!isset($mailBody[$projectName])) {
-                        $mailBody[$projectName] = [];
-                    }
-                    $mailBody[$projectName][] = $projectData;
-                }
+                $mailBody = array_merge($mailBody, $slotData->toArray());
             }
     
             Log::info("Final mail body: ", $mailBody);
@@ -1015,7 +1008,6 @@ class ProjectController extends Controller
             Log::debug($e->getTraceAsString());
         }
     }
-    
     
     
     }
