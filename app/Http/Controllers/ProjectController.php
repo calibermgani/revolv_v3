@@ -894,119 +894,240 @@ class ProjectController extends Controller
     // }
     
     
+    // public function projectHourlyMail()
+    // {
+    //     try {
+    //         Log::info('Executing Project Hourly Mail logic.');
+    
+    //         $toMailId = ["vijayalaxmi@caliberfocus.com"];
+    //         $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+    //         $mailHeader = "Resolv Project Hourly Report";
+    //         $projects = collect($this->getProjects());
+    //         $startHour = 17; // Start at 5 PM
+    //         $endHour = 13;   // End at 12 PM next day
+    
+    //         // Current time
+    //         $currentTime = Carbon::now();
+    //         Log::info("Current time: {$currentTime}");
+    
+    //         // Determine start time dynamically
+    //         $startTime = $currentTime->hour < $startHour
+    //             ? Carbon::yesterday()->setHour($startHour)->setMinute(0)->setSecond(0)
+    //             : Carbon::today()->setHour($startHour)->setMinute(0)->setSecond(0);
+    //         Log::info("Calculated start time: {$startTime}");
+    
+    //         // Generate time slots
+    //         $timeSlots = [];
+    //         $startDate = $startTime->copy(); // Use the calculated start time
+    //         $endDate = Carbon::today()->addDay()->setHour($endHour)->setMinute(0)->setSecond(0); // End at 12 PM next day
+    
+    //         Log::info("Today's date: {$startDate}");
+    //         Log::info("End date: {$endDate}");
+    
+    //         while ($startDate->lessThan($endDate)) {
+    //             $nextHour = $startDate->copy()->addHour();
+    //             $timeSlots[] = [
+    //                 'start' => $startDate->copy(),
+    //                 'end' => $nextHour,
+    //                 'header' => $startDate->format('m/d/Y h:i A') . ' to ' . $nextHour->format('m/d/Y h:i A'),
+    //             ];
+    //             Log::info("Time slot added: {$startDate} to {$nextHour}");
+    //             $startDate = $nextHour;
+    //         }
+    
+    //         // Filter time slots based on calculated start time and current time
+    //         $slotsToProcess = collect($timeSlots)->filter(function ($slot) use ($currentTime) {
+    //             return $slot['start']->lessThanOrEqualTo($currentTime) && $slot['end']->greaterThan($slot['start']);
+    //         });
+    
+    //         Log::info("Filtered time slots: ", $slotsToProcess->toArray());
+    
+    //         // Initialize headers and mail body
+    //         $headers = [];
+    //         $mailBody = [];
+    
+    //         // Process project data for each slot
+    //         foreach ($slotsToProcess as $slot) {
+    //             $headers[] = $slot['header'];
+    //             $startDate = $slot['start'];
+    //             $endDate = $slot['end'];
+    
+    //             Log::info("Processing slot: {$startDate} to {$endDate}");
+    
+    //             $slotData = $projects->flatMap(function ($project) use ($startDate, $endDate) {
+    //                 $projectData = [];
+    //                 $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+    
+    //                 Log::info("Processing project ID {$project['id']}: {$prjName}");
+    
+    //                 if ($prjName !== null) {
+    //                     $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
+    
+    //                     foreach ($subProjects as $subProject) {
+    //                         $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
+    //                         $modelClass = "App\\Models\\" . Str::studly($tableName);
+    
+    //                         Log::info("Generated table name: {$tableName}, Model class: {$modelClass}");
+    
+    //                         if (class_exists($modelClass)) {
+    //                             // Query data for this specific time slot
+    //                             $hourlyCount = $modelClass::whereBetween('updated_at', [$startDate, $endDate])
+    //                                 ->where('chart_status', 'CE_Completed')->count();
+    
+    //                             Log::info("Hourly count for {$tableName} from {$startDate} to {$endDate}: {$hourlyCount}");
+    
+    //                             $projectData[] = [
+    //                                 'project' => $project['client_name'] . '-' . $subProject,
+    //                                 'hourlyCount' => $hourlyCount,
+    //                             ];
+    //                         } else {
+    //                             Log::warning("Model class does not exist: {$modelClass}");
+    //                         }
+    //                     }
+    //                 } else {
+    //                     Log::warning("Project name is null for project ID {$project['id']}");
+    //                 }
+    
+    //                 return $projectData;
+    //             });
+    
+    //             Log::info("Data for slot {$startDate} to {$endDate}: ", $slotData->toArray());
+    
+    //             $mailBody = array_merge($mailBody, $slotData->toArray());
+    //         }
+    
+    //         Log::info("Final mail body: ", $mailBody);
+    
+    //         $today = Carbon::now();
+    //         // Send mail
+    //         Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $headers, $today));
+    //         Log::info('ProjectHourlyMail executed successfully.');
+    //     } catch (\Exception $e) {
+    //         Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
+    //         Log::debug($e->getTraceAsString());
+    //     }
+    // }
+    
     public function projectHourlyMail()
-    {
-        try {
-            Log::info('Executing Project Hourly Mail logic.');
+{
+    try {
+        Log::info('Executing Project Hourly Mail logic.');
     
-            $toMailId = ["vijayalaxmi@caliberfocus.com"];
-            $ccMailId = ["vijayalaxmi@caliberfocus.com"];
-            $mailHeader = "Resolv Project Hourly Report";
-            $projects = collect($this->getProjects());
-            $startHour = 17; // Start at 5 PM
-            $endHour = 13;   // End at 12 PM next day
+        $toMailId = ["vijayalaxmi@caliberfocus.com"];
+        $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+        $mailHeader = "Resolv Project Hourly Report";
+        $projects = collect($this->getProjects());
+        $startHour = 17; // Start at 5 PM
+        $endHour = 13;   // End at 12 PM next day
     
-            // Current time
-            $currentTime = Carbon::now();
-            Log::info("Current time: {$currentTime}");
+        // Current time
+        $currentTime = Carbon::now();
+        Log::info("Current time: {$currentTime}");
     
-            // Determine start time dynamically
-            $startTime = $currentTime->hour < $startHour
-                ? Carbon::yesterday()->setHour($startHour)->setMinute(0)->setSecond(0)
-                : Carbon::today()->setHour($startHour)->setMinute(0)->setSecond(0);
-            Log::info("Calculated start time: {$startTime}");
+        // Determine start time dynamically
+        $startTime = $currentTime->hour < $startHour
+            ? Carbon::yesterday()->setHour($startHour)->setMinute(0)->setSecond(0)
+            : Carbon::today()->setHour($startHour)->setMinute(0)->setSecond(0);
+        Log::info("Calculated start time: {$startTime}");
     
-            // Generate time slots
-            $timeSlots = [];
-            $startDate = $startTime->copy(); // Use the calculated start time
-            $endDate = Carbon::today()->addDay()->setHour($endHour)->setMinute(0)->setSecond(0); // End at 12 PM next day
+        // Generate time slots
+        $timeSlots = [];
+        $startDate = $startTime->copy(); // Use the calculated start time
+        $endDate = Carbon::today()->addDay()->setHour($endHour)->setMinute(0)->setSecond(0); // End at 12 PM next day
     
-            Log::info("Today's date: {$startDate}");
-            Log::info("End date: {$endDate}");
+        Log::info("Today's date: {$startDate}");
+        Log::info("End date: {$endDate}");
     
-            while ($startDate->lessThan($endDate)) {
-                $nextHour = $startDate->copy()->addHour();
-                $timeSlots[] = [
-                    'start' => $startDate->copy(),
-                    'end' => $nextHour,
-                    'header' => $startDate->format('m/d/Y h:i A') . ' to ' . $nextHour->format('m/d/Y h:i A'),
-                ];
-                Log::info("Time slot added: {$startDate} to {$nextHour}");
-                $startDate = $nextHour;
-            }
+        while ($startDate->lessThan($endDate)) {
+            $nextHour = $startDate->copy()->addHour();
+            $timeSlots[] = [
+                'start' => $startDate->copy(),
+                'end' => $nextHour,
+                'header' => $startDate->format('m/d/Y h:i A') . ' to ' . $nextHour->format('m/d/Y h:i A'),
+            ];
+            Log::info("Time slot added: {$startDate} to {$nextHour}");
+            $startDate = $nextHour;
+        }
     
-            // Filter time slots based on calculated start time and current time
-            $slotsToProcess = collect($timeSlots)->filter(function ($slot) use ($currentTime) {
-                return $slot['start']->lessThanOrEqualTo($currentTime) && $slot['end']->greaterThan($slot['start']);
-            });
+        // Filter time slots based on calculated start time and current time
+        $slotsToProcess = collect($timeSlots)->filter(function ($slot) use ($currentTime) {
+            return $slot['start']->lessThanOrEqualTo($currentTime) && $slot['end']->greaterThan($slot['start']);
+        });
     
-            Log::info("Filtered time slots: ", $slotsToProcess->toArray());
+        Log::info("Filtered time slots: ", $slotsToProcess->toArray());
     
-            // Initialize headers and mail body
-            $headers = [];
-            $mailBody = [];
+        // Initialize headers and mail body
+        $headers = [];
+        $mailBody = [];
     
-            // Process project data for each slot
-            foreach ($slotsToProcess as $slot) {
-                $headers[] = $slot['header'];
-                $startDate = $slot['start'];
-                $endDate = $slot['end'];
+        // Process project data for each slot
+        foreach ($slotsToProcess as $slot) {
+            $headers[] = $slot['header'];
+            $startDate = $slot['start'];
+            $endDate = $slot['end'];
     
-                Log::info("Processing slot: {$startDate} to {$endDate}");
-                $hourlyCount = [];
-                $slotData = $projects->flatMap(function ($project) use ($startDate, $endDate,$hourlyCount) {
-                    $projectData = [];
-                    $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+            Log::info("Processing slot: {$startDate} to {$endDate}");
     
-                    Log::info("Processing project ID {$project['id']}: {$prjName}");
+            $slotData = $projects->flatMap(function ($project) use ($startDate, $endDate) {
+                $projectData = [];
+                $prjName = Helpers::projectName($project['id'])->project_name ?? null;
     
-                    if ($prjName !== null) {
-                        $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
+                Log::info("Processing project ID {$project['id']}: {$prjName}");
     
-                        foreach ($subProjects as $subProject) {
-                            $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
-                            $modelClass = "App\\Models\\" . Str::studly($tableName);
+                if ($prjName !== null) {
+                    $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
     
-                            Log::info("Generated table name: {$tableName}, Model class: {$modelClass}");
+                    // Initialize an array to store hourly counts for all slots
+                    $hourlyCountsForProject = [];
     
-                            if (class_exists($modelClass)) {
-                                // Query data for this specific time slot
-                                $hourlyCount[] = $modelClass::whereBetween('updated_at', [$startDate, $endDate])
-                                    ->where('chart_status', 'CE_Completed')->count();
+                    foreach ($subProjects as $subProject) {
+                        $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
+                        $modelClass = "App\\Models\\" . Str::studly($tableName);
     
-                                Log::info("Hourly count for {$tableName} from {$startDate} to {$endDate}: {$hourlyCount}");
+                        Log::info("Generated table name: {$tableName}, Model class: {$modelClass}");
     
-                                $projectData[] = [
-                                    'project' => $project['client_name'] . '-' . $subProject,
-                                    'hourlyCount' => $hourlyCount,
-                                ];
-                            } else {
-                                Log::warning("Model class does not exist: {$modelClass}");
-                            }
+                        if (class_exists($modelClass)) {
+                            // Query data for this specific time slot and get count
+                            $hourlyCount = $modelClass::whereBetween('updated_at', [$startDate, $endDate])
+                                ->where('chart_status', 'CE_Completed')->count();
+    
+                            Log::info("Hourly count for {$tableName} from {$startDate} to {$endDate}: {$hourlyCount}");
+    
+                            // Add the hourly count to the array for the current time slot
+                            $hourlyCountsForProject[] = $hourlyCount;
+                        } else {
+                            Log::warning("Model class does not exist: {$modelClass}");
                         }
-                    } else {
-                        Log::warning("Project name is null for project ID {$project['id']}");
                     }
     
-                    return $projectData;
-                });
+                    // Store the data for this project
+                    $projectData[] = [
+                        'project' => $project['client_name'] . '-' . $subProject,
+                        'hourlyCount' => $hourlyCountsForProject,
+                    ];
+                } else {
+                    Log::warning("Project name is null for project ID {$project['id']}");
+                }
     
-                Log::info("Data for slot {$startDate} to {$endDate}: ", $slotData->toArray());
+                return $projectData;
+            });
     
-                $mailBody = array_merge($mailBody, $slotData->toArray());
-            }
+            Log::info("Data for slot {$startDate} to {$endDate}: ", $slotData->toArray());
     
-            Log::info("Final mail body: ", $mailBody);
-    
-            $today = Carbon::now();
-            // Send mail
-            Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $headers, $today));
-            Log::info('ProjectHourlyMail executed successfully.');
-        } catch (\Exception $e) {
-            Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
-            Log::debug($e->getTraceAsString());
+            // Merge project data for each time slot
+            $mailBody = array_merge($mailBody, $slotData->toArray());
         }
+    
+        Log::info("Final mail body: ", $mailBody);
+    
+        $today = Carbon::now();
+        // Send mail
+        Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $headers, $today));
+        Log::info('ProjectHourlyMail executed successfully.');
+    } catch (\Exception $e) {
+        Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
+        Log::debug($e->getTraceAsString());
     }
-    
-    
+}
+
     }
