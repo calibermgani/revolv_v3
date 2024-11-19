@@ -817,10 +817,10 @@ class ProjectController extends Controller
 
         // Filter time slots from 5 PM to current time
         $slotsToProcess = collect($timeSlots)->filter(function ($slot) use ($currentTime) {
-            return $slot['start']->greaterThanOrEqualTo(Carbon::today()->setHour(17))
+            return $slot['start']->greaterThanOrEqualTo(Carbon::yesterday()->setHour(17))
                 && $slot['end']->lessThanOrEqualTo($currentTime);
         });
-
+        
         Log::info("Filtered time slots: ", $slotsToProcess->toArray());
 
         // Initialize headers and mail body
