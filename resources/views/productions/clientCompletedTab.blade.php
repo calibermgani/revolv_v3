@@ -213,7 +213,12 @@ use Carbon\Carbon;
                                          $subProjectName = $data->sub_project_id != null ? App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->sub_project_id, 'encode') : '--';
                                             @endphp
                                              {!! Form::open([
-                                                 'url' => url()->current() . '?' . http_build_query(request()->except('page')),
+                                                'url' =>
+                                                url('projects_completed/' . $clientName . '/' . $subProjectName) .
+                                                                '?parent=' .
+                                                                request()->parent .
+                                                                '&child=' .
+                                                                request()->child,
                                                 'class' => 'form',
                                                 'id' => 'formSearch',
                                                 'enctype' => 'multipart/form-data',
