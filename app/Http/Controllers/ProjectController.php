@@ -886,7 +886,7 @@ class ProjectController extends Controller
 
             $toMailId = ["vijayalaxmi@caliberfocus.com"];
             // $ccMailId = ["vijayalaxmi@caliberfocus.com"];
-            $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net"];
+            $ccMailId = ["mgani@caliberfocus.com"];
             $mailHeader = "Resolv Project Hourly Report";
             $projects = collect($this->getProjects());
 
