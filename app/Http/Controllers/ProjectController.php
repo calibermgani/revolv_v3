@@ -784,11 +784,11 @@ class ProjectController extends Controller
     try {
         Log::info('Executing Project Hourly Mail logic.');
         $toMailId = ["vijayalaxmi@caliberfocus.com"];
-        $ccMailId = ["mgani@caliberfocus.com"];
+        $ccMailId = ["vijayalaxmi@caliberfocus.com"];
         $mailHeader = "Resolv Project Hourly Report";        
         $projects = collect($this->getProjects());
         $startHour = 17; // Start at 5 PM
-        $endHour = 11;   // End at 5 AM (next day)
+        $endHour = 11;  // End at 11 AM (next day)
 
         // Get current time
         $currentTime = Carbon::now();
@@ -797,7 +797,7 @@ class ProjectController extends Controller
         $timeSlots = [];
         $startDate = Carbon::today(); // Get today's date
 
-        for ($hour = $startHour; $hour <= $endHour + 24; $hour++) {
+        for ($hour = $startHour; $hour < $endHour + 24; $hour++) {
             $currentHour = $hour % 24; // Wrap around after 23
             $currentDate = $startDate->copy()->addDays(intval($hour / 24)); // Adjust date for next day
             $start = Carbon::create($currentDate->year, $currentDate->month, $currentDate->day, $currentHour, 0, 0);
@@ -810,9 +810,11 @@ class ProjectController extends Controller
             ];
         }
 
-        // Filter time slots from 5 PM to current time
+        // Filter time slots from 5 PM to the current time
         $slotsToProcess = collect($timeSlots)->filter(function ($slot) use ($currentTime) {
-            return $slot['start']->greaterThanOrEqualTo(Carbon::today()->setHour(17))
+            $slotStart = Carbon::today()->setHour(17); // Start at 5 PM today
+            $slotEnd = Carbon::today()->addDay()->setHour(11); // End at 11 AM the next day
+            return $slot['start']->greaterThanOrEqualTo($slotStart)
                 && $slot['end']->lessThanOrEqualTo($currentTime);
         });
 
