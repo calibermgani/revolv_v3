@@ -56,11 +56,7 @@
                     @foreach ($mailBody as $data)
                   
                         <tr>
-                            <td style="text-align: center; padding: 5px;">
-                                <a href="{{ url('projects/project_detailed_information') }}">{{ $data['project'] }}</a>
-                            </td>
-                            
-                            {{-- <td style="text-align: center;padding: 5px;">{{ $data['project'] }}</td> --}}
+                            <td style="text-align: center;padding: 5px;">{{ $data['project'] }}</td>
                             {{-- @foreach ($timeSlots as $timeSlot) --}}
                             {{-- @php
                             dd($mailBody,$timeSlots,$data,$timeSlot);
