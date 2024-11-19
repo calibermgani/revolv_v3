@@ -27,10 +27,10 @@ Route::get('logout', 'App\Http\Controllers\Auth\LoginController@logout')->name('
 Route::get('check_user_password', 'App\Http\Controllers\Auth\LoginController@CheckUserPassword');
 // Route::post('change_user_password', 'App\Http\Controllers\Auth\LoginController@ChangeUserPassword');
 Route::any('/store-in-session', 'App\Http\Controllers\Auth\LoginController@storeInSession');
-Route::get('/logout', function () {
-    Auth::logout();
-    return redirect('/login')->with('message', 'You have been logged out due to inactivity.');
-});
+// Route::get('/logout', function () {
+//     Auth::logout();
+//     return redirect('/login')->with('message', 'You have been logged out due to inactivity.');//auto logout
+// });
 
 // Route::middleware(['auto.logout'])->group(function () {
 
