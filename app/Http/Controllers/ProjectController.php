@@ -840,7 +840,7 @@ class ProjectController extends Controller
     
                 Log::info("Processing slot: {$startDate} to {$endDate}");
     
-                $slotData = $projects->flatMap(function ($project) use ($startDate, $endDate) {
+                $slotData = $projects->flatMap(function ($project) use ($startDate, $endDate,$slot) {
                     $projectData = [];
                     $prjName = Helpers::projectName($project['id'])->project_name ?? null;
     
@@ -861,7 +861,7 @@ class ProjectController extends Controller
     
                                 Log::info("Hourly count for {$tableName} from {$startDate} to {$endDate}: {$hourlyCount}");
     
-                                $projectData[] = [
+                                $projectData[$slot['header']] = [
                                     'project' => $project['client_name'] . '-' . $subProject,
                                     'hourlyCount' => $hourlyCount,
                                 ];
