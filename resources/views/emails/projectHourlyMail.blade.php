@@ -19,7 +19,6 @@
     thead,
     th {
         background-color: #0e969c2b;
-
     }
 
     th,
@@ -32,25 +31,19 @@
 <body>
 
     <div class="table-responsive pb-2">
+        @php
+        $today1 = \Carbon\Carbon::now(); // 17:00 is 5 PM in 24-hour format
+        $formattedDate = $today1->format('m/d/Y h:i A');
+        @endphp
+        <p>Hello Team - Find below the Resolv Hourly report for {{$formattedDate}}</p>
 
-        {{-- <h4>
-            <p>Hello Team, </p>
-        </h4> --}}
-    @php
-    $today1 = \Carbon\Carbon::now(); // 17:00 is 5 PM in 24-hour format
-    $formattedDate = $today1->format('m/d/Y h:i A');
-    @endphp
-        <p>Hello Team - Find below the Resolv  Hourly report for {{$formattedDate}}</p>
-        {{-- <p>Please find below the daily update for the production inventory : 06/07/2024</p> --}}
-       
         <table class="table" border="1" style="border-collapse: collapse">
             <thead>
                 <tr>
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Project</th>
                     @foreach ($timeSlots as $timeSlot)
-                       <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">{{ $timeSlot }}</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">{{ $timeSlot['header'] }}</th>
                     @endforeach
-              
                 </tr>
             </thead>
             <tbody>
@@ -59,8 +52,8 @@
                     @foreach ($mailBody as $data)
                         <tr>
                             <td style="text-align: center;padding: 5px;">{{ $data['project'] }}</td>
-                            @foreach ($timeSlots as $timeSlot)
-                               <td style="text-align: center;padding: 5px;">{{ $data['hourlyCount']}}</td>
+                            @foreach ($data['timeSlots'] as $hourlyCount)
+                                <td style="text-align: center;padding: 5px;">{{ $hourlyCount }}</td>
                             @endforeach
                         </tr>
                     @endforeach
