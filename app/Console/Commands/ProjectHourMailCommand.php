@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 class ProjectHourMailCommand extends Command
 {
     /**
@@ -38,9 +39,15 @@ class ProjectHourMailCommand extends Command
     {
         Log::info('Project Hourly Mail Cron started.');
         try {
-            $controller = app(\App\Http\Controllers\ProjectController::class);
-            $controller->projectHourlyMail();
-            Log::info('Project Hourly Mail Cron finished successfully.');
+            $currentHour = Carbon::now()->hour;
+            if ($currentHour >= 17 || $currentHour < 5) {                
+                Log::info("Hourly task running at " . Carbon::now());
+                $controller = app(\App\Http\Controllers\ProjectController::class);
+                $controller->projectHourlyMail();
+                Log::info('Project Hourly Mail Cron finished successfully.');
+            } else {
+                Log::info("Hourly task skipped at " . Carbon::now());
+            }
         } catch (\Exception $e) {
             Log::error('Project Hourly Mail Cron failed: ' . $e->getMessage());
         }
