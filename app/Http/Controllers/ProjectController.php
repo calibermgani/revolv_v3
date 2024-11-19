@@ -789,7 +789,7 @@ class ProjectController extends Controller
             $mailHeader = "Resolv Project Hourly Report";
             $projects = collect($this->getProjects());
             $startHour = 17; // Start at 5 PM
-            $endHour = 11;   // End at 11 AM next day
+            $endHour = 12;   // End at 11 AM next day
     
             // Current time
             $currentTime = Carbon::now();
