@@ -36,7 +36,7 @@
         @php
         $today1 = \Carbon\Carbon::now(); // 17:00 is 5 PM in 24-hour format
         $formattedDate = $today1->format('m/d/Y h:i A');
-        dd($mailBody,$timeSlots);
+      
         @endphp
 
         <p>Hello Team - Find below the Resolv Hourly report for {{$formattedDate}}</p>
@@ -54,6 +54,9 @@
 
                 @if (isset($mailBody) && count($mailBody) > 0)
                     @foreach ($mailBody as $data)
+                    @php
+                      dd($mailBody,$timeSlots,$data);
+                    @endphp
                         <tr>
                             <td style="text-align: center;padding: 5px;">{{ $data['project'] }}</td>
                             @foreach ($timeSlots as $timeSlot)
