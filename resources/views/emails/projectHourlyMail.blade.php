@@ -46,20 +46,20 @@
                 <tr>
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Project</th>
                     @foreach ($timeSlots as $timeSlot)
-                        <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">{{ $timeSlot }}</th>
-                    @endforeach
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">{{ $timeSlot['header'] }}</th>
+                @endforeach
+                
                 </tr>
             </thead>
             <tbody>
 
                 @if (isset($mailBody) && count($mailBody) > 0)
                     @foreach ($mailBody as $data)
-                    @php
-                      dd($mailBody,$timeSlots,$data);
-                    @endphp
+                  
                         <tr>
                             <td style="text-align: center;padding: 5px;">{{ $data['project'] }}</td>
                             @foreach ($timeSlots as $timeSlot)
+                          
                                 <td style="text-align: center;padding: 5px;">{{ $data['hourlyCount'] }}</td>
                             @endforeach
                         </tr>
