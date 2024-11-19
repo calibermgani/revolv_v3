@@ -32,7 +32,7 @@ Route::get('/logout', function () {
     return redirect('/login')->with('message', 'You have been logged out due to inactivity.');
 });
 
-Route::middleware(['auto.logout'])->group(function () {
+// Route::middleware(['auto.logout'])->group(function () {
 
 Route::any('dashboard', 'App\Http\Controllers\DashboardController@dashboard')->name('dashboard');
 Route::any('production_dashboard', 'App\Http\Controllers\ProductionController@dashboard')->name('production_dashboard');
@@ -154,5 +154,5 @@ Route::group(['prefix' => 'qa_production'], function () {
         Route::any('project_detailed_information', 'App\Http\Controllers\ProjectController@projectDetailedInformation');
     });
 Auth::routes();
-});
+// });
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
