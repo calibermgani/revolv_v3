@@ -462,11 +462,10 @@ use Carbon\Carbon;
                                     <div class="ml-3">
                                         Showing {{ $completedProjectDetails->firstItem() != null ? $completedProjectDetails->firstItem() : 0 }} to {{ $completedProjectDetails->lastItem() != null ? $completedProjectDetails->lastItem() : 0 }} of {{ $completedProjectDetails->total() }} entries
                                     </div>
-                                    <div>
-                                        {{ $completedProjectDetails->appends(request()->except('page'))->links() }}
+                                     <div>
+                                        {{ $completedProjectDetails->links() }}
                                     </div>
-                                </div>
-                                
+                                </div>          
                             </div>
 
                         </div>
