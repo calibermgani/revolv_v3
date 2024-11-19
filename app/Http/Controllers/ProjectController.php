@@ -898,7 +898,7 @@ class ProjectController extends Controller
     {
         try {
             Log::info('Executing Project Hourly Mail logic.');
-    
+            
             $toMailId = ["vijayalaxmi@caliberfocus.com"];
             $ccMailId = ["vijayalaxmi@caliberfocus.com"];
             $mailHeader = "Resolv Project Hourly Report";
@@ -954,7 +954,8 @@ class ProjectController extends Controller
     
                 Log::info("Processing slot: {$startDate} to {$endDate}");
     
-                $slotData = $projects->flatMap(function ($project) use ($startDate, $endDate) {
+                // Prepare an array for each project, where the keys are time slots and values are hourly counts
+                $slotDataForProjects = $projects->mapWithKeys(function ($project) use ($startDate, $endDate) {
                     $projectData = [];
                     $prjName = Helpers::projectName($project['id'])->project_name ?? null;
     
@@ -976,7 +977,8 @@ class ProjectController extends Controller
     
                                 Log::info("Hourly count for {$tableName} from {$startDate} to {$endDate}: {$hourlyCount}");
     
-                                $projectData[] = [
+                                // Store hourly count with time slot information
+                                $projectData[$subProject] = [
                                     'project' => $project['client_name'] . '-' . $subProject,
                                     'hourlyCount' => $hourlyCount,
                                 ];
@@ -988,12 +990,18 @@ class ProjectController extends Controller
                         Log::warning("Project name is null for project ID {$project['id']}");
                     }
     
-                    return $projectData;
+                    return [$prjName => $projectData]; // Use project name as the key
                 });
     
-                Log::info("Data for slot {$startDate} to {$endDate}: ", $slotData->toArray());
+                Log::info("Data for slot {$startDate} to {$endDate}: ", $slotDataForProjects->toArray());
     
-                $mailBody = array_merge($mailBody, $slotData->toArray());
+                // Merge project data for each time slot
+                foreach ($slotDataForProjects as $projectName => $projectData) {
+                    if (!isset($mailBody[$projectName])) {
+                        $mailBody[$projectName] = [];
+                    }
+                    $mailBody[$projectName][] = $projectData;
+                }
             }
     
             Log::info("Final mail body: ", $mailBody);
@@ -1007,6 +1015,7 @@ class ProjectController extends Controller
             Log::debug($e->getTraceAsString());
         }
     }
+    
     
     
     }
