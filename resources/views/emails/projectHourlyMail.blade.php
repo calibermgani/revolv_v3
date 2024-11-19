@@ -44,8 +44,8 @@
             <thead>
                 <tr>
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Project</th>
-                    @foreach ($headers as $header)
-                        <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">{{ $header }}</th>
+                    @foreach ($timeSlots as $timeSlot)
+                        <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">{{ $timeSlot }}</th>
                     @endforeach
                 </tr>
             </thead>
@@ -55,7 +55,7 @@
                     @foreach ($mailBody as $data)
                         <tr>
                             <td style="text-align: center;padding: 5px;">{{ $data['project'] }}</td>
-                            @foreach ($headers as $header)
+                            @foreach ($timeSlots as $timeSlot)
                                 <td style="text-align: center;padding: 5px;">{{ $data['hourlyCount'] }}</td>
                             @endforeach
                         </tr>
