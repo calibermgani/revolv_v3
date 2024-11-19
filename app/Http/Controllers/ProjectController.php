@@ -885,7 +885,8 @@ class ProjectController extends Controller
             Log::info('Executing Project Hourly Mail logic.');
 
             $toMailId = ["vijayalaxmi@caliberfocus.com"];
-            $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net"];
+            $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+            // $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net"];
             $mailHeader = "Resolv Project Hourly Report";
             $projects = collect($this->getProjects());
 
