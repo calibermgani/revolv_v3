@@ -74,6 +74,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('ncg_medical_ncg_psssf_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgPsssfARDuplicates');
     Route::any('srmg_ar', 'App\Http\Controllers\ProjectAutomationController@srmgAR');
     Route::any('srmg_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@srmgARDuplicates');
+    Route::any('valley_urogynecology_associates_ar', 'App\Http\Controllers\ProjectAutomationController@ValleyUrogynecologyAssociatesAR');
+    Route::any('valley_urogynecology_associates_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@ValleyUrogynecologyAssociatesARDuplicates');
     
     
 
