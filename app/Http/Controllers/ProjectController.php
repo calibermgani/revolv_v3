@@ -1103,7 +1103,7 @@ class ProjectController extends Controller
                     // Store the data for this project
                     $projectData[] = [
                         'project' => $project['client_name'] . '-' . $subProject,
-                        'hourlyCount' => $hourlyCountsForProject,
+                        'hourlyCount' => $hourlyCountsForProject,  // This will be an array for each slot
                     ];
                 } else {
                     Log::warning("Project name is null for project ID {$project['id']}");
