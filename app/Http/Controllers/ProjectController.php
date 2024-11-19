@@ -815,13 +815,18 @@ class ProjectController extends Controller
             Log::info("Time slot added: {$start} to {$end}");
         }
 
-        // Filter time slots from 5 PM to current time
-        $slotsToProcess = collect($timeSlots)->filter(function ($slot) use ($currentTime) {
-            return $slot['start']->greaterThanOrEqualTo(Carbon::yesterday()->setHour(17))
-                && $slot['end']->lessThanOrEqualTo($currentTime);
-        });
-        
-        Log::info("Filtered time slots: ", $slotsToProcess->toArray());
+        $startTime = $currentTime->hour < 17
+        ? Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0)
+        : Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
+    
+    // Filter time slots
+    $slotsToProcess = collect($timeSlots)->filter(function ($slot) use ($startTime, $currentTime) {
+        return $slot['start']->greaterThanOrEqualTo($startTime)
+            && $slot['end']->lessThanOrEqualTo($currentTime);
+    });
+    
+    // Log filtered time slots
+    Log::info("Filtered time slots: ", $slotsToProcess->toArray());
 
         // Initialize headers and mail body
         $headers = [];
