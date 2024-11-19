@@ -27,6 +27,12 @@ Route::get('logout', 'App\Http\Controllers\Auth\LoginController@logout')->name('
 Route::get('check_user_password', 'App\Http\Controllers\Auth\LoginController@CheckUserPassword');
 // Route::post('change_user_password', 'App\Http\Controllers\Auth\LoginController@ChangeUserPassword');
 Route::any('/store-in-session', 'App\Http\Controllers\Auth\LoginController@storeInSession');
+Route::get('/logout', function () {
+    Auth::logout();
+    return redirect('/login')->with('message', 'You have been logged out due to inactivity.');
+});
+
+Route::middleware(['auto.logout'])->group(function () {
 
 Route::any('dashboard', 'App\Http\Controllers\DashboardController@dashboard')->name('dashboard');
 Route::any('production_dashboard', 'App\Http\Controllers\ProductionController@dashboard')->name('production_dashboard');
@@ -144,6 +150,9 @@ Route::group(['prefix' => 'qa_production'], function () {
     Route::group(['prefix' => 'production'], function () {
          Route::any('ar_action_code_list', 'App\Http\Controllers\ProductionController@arActionCodeList');
     });
+    Route::group(['prefix' => 'projects'], function() {
+        Route::any('project_detailed_information', 'App\Http\Controllers\ProjectController@projectDetailedInformation');
+    });
 Auth::routes();
-
+});
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
