@@ -791,40 +791,38 @@ class ProjectController extends Controller
             $startHour = 17; // Start at 5 PM
             $endHour = 11;   // End at 11 AM next day
     
-            // Current time for range validation
+            // Current time
             $currentTime = Carbon::now();
             Log::info("Current time: {$currentTime}");
     
-            // Determine dynamic start time based on current time
-            $startTime = $currentTime->hour < 17
-                ? Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0)
-                : Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
+            // Determine start time dynamically
+            $startTime = $currentTime->hour < $startHour
+                ? Carbon::yesterday()->setHour($startHour)->setMinute(0)->setSecond(0)
+                : Carbon::today()->setHour($startHour)->setMinute(0)->setSecond(0);
+            Log::info("Calculated start time: {$startTime}");
     
-            Log::info("Start time: {$startTime}");
-    
-            // Generate time slots array
+            // Generate time slots
             $timeSlots = [];
-            $startDate = Carbon::today();
+            $startDate = $startTime->copy(); // Use the calculated start time
+            $endDate = Carbon::today()->addDay()->setHour($endHour)->setMinute(0)->setSecond(0); // End at 11 AM next day
     
-            for ($hour = $startHour; $hour <= $endHour + 24; $hour++) {
-                $currentHour = $hour % 24; // Wrap around after 23
-                $currentDate = $startDate->copy()->addDays(intval($hour / 24)); // Adjust date for next day
-                $start = Carbon::create($currentDate->year, $currentDate->month, $currentDate->day, $currentHour, 0, 0);
-                $end = $start->copy()->addHour(); // End is 1 hour after start
+            Log::info("Today's date: {$startDate}");
+            Log::info("End date: {$endDate}");
     
+            while ($startDate->lessThan($endDate)) {
+                $nextHour = $startDate->copy()->addHour();
                 $timeSlots[] = [
-                    'start' => $start,
-                    'end' => $end,
-                    'header' => $start->format('m/d/Y h:i A') . ' to ' . $end->format('m/d/Y h:i A'),
+                    'start' => $startDate->copy(),
+                    'end' => $nextHour,
+                    'header' => $startDate->format('m/d/Y h:i A') . ' to ' . $nextHour->format('m/d/Y h:i A'),
                 ];
-    
-                Log::info("Time slot added: {$start} to {$end}");
+                Log::info("Time slot added: {$startDate} to {$nextHour}");
+                $startDate = $nextHour;
             }
     
-            // Filter time slots
-            $slotsToProcess = collect($timeSlots)->filter(function ($slot) use ($startTime, $currentTime) {
-                return $slot['start']->greaterThanOrEqualTo($startTime)
-                    && $slot['end']->lessThanOrEqualTo($currentTime);
+            // Filter time slots based on calculated start time and current time
+            $slotsToProcess = collect($timeSlots)->filter(function ($slot) use ($currentTime) {
+                return $slot['start']->lessThanOrEqualTo($currentTime) && $slot['end']->greaterThan($slot['start']);
             });
     
             // Log filtered time slots
@@ -834,7 +832,7 @@ class ProjectController extends Controller
             $headers = [];
             $mailBody = [];
     
-            // Fetch project data for each slot
+            // Process project data for each slot
             foreach ($slotsToProcess as $slot) {
                 $headers[] = $slot['header'];
                 $startDate = $slot['start'];
@@ -894,6 +892,7 @@ class ProjectController extends Controller
             Log::debug($e->getTraceAsString());
         }
     }
+    
     
 
     
