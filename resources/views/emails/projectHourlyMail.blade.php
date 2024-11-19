@@ -36,7 +36,7 @@
         @php
         $today1 = \Carbon\Carbon::now(); // 17:00 is 5 PM in 24-hour format
         $formattedDate = $today1->format('m/d/Y h:i A');
-        dd($mailBody,$timeSlots);
+        // dd($mailBody,$timeSlots);
         @endphp
 
         <p>Hello Team - Find below the Resolv Hourly report for {{$formattedDate}}</p>
