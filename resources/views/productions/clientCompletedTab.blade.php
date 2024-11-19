@@ -213,12 +213,7 @@ use Carbon\Carbon;
                                          $subProjectName = $data->sub_project_id != null ? App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->sub_project_id, 'encode') : '--';
                                             @endphp
                                              {!! Form::open([
-                                                'url' =>
-                                                url('projects_completed/' . $clientName . '/' . $subProjectName) .
-                                                                '?parent=' .
-                                                                request()->parent .
-                                                                '&child=' .
-                                                                request()->child,
+                                                 'url' => url()->current() . '?' . http_build_query(request()->except('page')),
                                                 'class' => 'form',
                                                 'id' => 'formSearch',
                                                 'enctype' => 'multipart/form-data',
@@ -462,10 +457,11 @@ use Carbon\Carbon;
                                     <div class="ml-3">
                                         Showing {{ $completedProjectDetails->firstItem() != null ? $completedProjectDetails->firstItem() : 0 }} to {{ $completedProjectDetails->lastItem() != null ? $completedProjectDetails->lastItem() : 0 }} of {{ $completedProjectDetails->total() }} entries
                                     </div>
-                                     <div>
-                                        {{ $completedProjectDetails->links() }}
+                                    <div>
+                                        {{ $completedProjectDetails->appends(request()->except('page'))->links() }}
                                     </div>
-                                </div>          
+                                </div>
+                                
                             </div>
 
                         </div>
