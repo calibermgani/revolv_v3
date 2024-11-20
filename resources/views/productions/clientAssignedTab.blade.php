@@ -450,7 +450,7 @@ use Carbon\Carbon;
                                             Showing {{ $assignedProjectDetails->firstItem() != null ? $assignedProjectDetails->firstItem() : 0 }} to {{ $assignedProjectDetails->lastItem() != null ? $assignedProjectDetails->lastItem() : 0 }} of {{ $assignedProjectDetails->total() }} entries
                                         </div>
                                          <div>
-                                            {{ $assignedProjectDetails->->appends(request()->all())->links() }}
+                                            {{ $assignedProjectDetails->appends(request()->all())->links() }}
                                         </div>
                                     </div>                                    
                                 </div>
