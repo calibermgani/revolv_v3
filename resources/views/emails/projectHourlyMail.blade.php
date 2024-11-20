@@ -57,8 +57,11 @@
                   
                         <tr>
                             <td style="text-align: center; padding: 5px;">
-                                <a href="'http://resolv-aims.com/projects/project_detailed_information'">{{ $data['project'] }}</a>
+                                <a href="http://resolv-aims.com/projects/project_detailed_information?project_id={{ urlencode($data['project_id']) }}/subproject_id={{ urlencode($data['subproject_id']) }}">
+                                    {{ $data['project'] }}
+                                </a>
                             </td>
+                            
                             
                             {{-- <td style="text-align: center;padding: 5px;">{{ $data['project'] }}</td> --}}
                             {{-- @foreach ($timeSlots as $timeSlot) --}}

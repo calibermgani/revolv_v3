@@ -885,8 +885,8 @@ class ProjectController extends Controller
             Log::info('Executing Project Hourly Mail logic.');
 
             $toMailId = ["vijayalaxmi@caliberfocus.com"];
-            // $ccMailId = ["vijayalaxmi@caliberfocus.com"];
-            $ccMailId = ["mgani@caliberfocus.com"];
+            $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+            // $ccMailId = ["mgani@caliberfocus.com"];
             $mailHeader = "Resolv Project Hourly Report";
             $projects = collect($this->getProjects());
 
@@ -938,7 +938,7 @@ class ProjectController extends Controller
                 }
 
                 $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
-                foreach ($subProjects as $subProject) {
+                foreach ($subProjects as $subKey => $subProject) {
                     $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
                     $modelClass = "App\\Models\\" . Str::studly($tableName);
 
@@ -965,7 +965,9 @@ class ProjectController extends Controller
                     // Add project data to the mail body
                     $mailBody[] = [
                         'project' => $project['client_name'] . '-' . $subProject,
-                        'hourlyCount' => $hourlyCounts, // Full array of counts for all slots
+                        'hourlyCount' => $hourlyCounts, // Full array of counts for all slots                        
+                        'project_id' => $project['id'],
+                        'subproject_id' => $subKey,
                     ];
                 }
             }
@@ -985,7 +987,7 @@ class ProjectController extends Controller
 
     public function projectDetailedInformation(Request $request){
         try {
-            dd($request->all());
+            dd($request->all(),$request->input('project_id'),$request->input('subproject_id'));
         } catch (\Exception $e) {
             Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
             Log::debug($e->getTraceAsString());
