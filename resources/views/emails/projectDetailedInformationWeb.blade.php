@@ -1,47 +1,52 @@
 @extends('layouts.app3')
 @php
-use Carbon\Carbon;
+    use Carbon\Carbon;
 @endphp
 @section('content')
-<div class="table-responsive pb-2">
+<div class="card card-custom custom-card">
+    <div class="table-responsive pt-5">
 
-  
-    <table  class="table table-separate table-head-custom no-footer dtr-column clients_list_filter">
-        <thead>
-            <tr>
-                <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">User Name</th>
-                @foreach ($headers as $header)
-                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">{{ $header }}</th>
-                @endforeach
-            </tr>
-        </thead>
-        <tbody>
 
-            @if (isset($BodyDetails) && count($BodyDetails) > 0)
-                @foreach ($BodyDetails as $data)
-              
-                    <tr>
-                        <td style="text-align: center; padding: 5px;">                         
-                                {{ $data['user'] }}                          
-                        </td>
-                        @foreach ($data['hourlyCount'] as $count)
-                        <td style="text-align: center;padding: 5px;">{{ $count }}</td>
-                    @endforeach
-                    </tr>
-                @endforeach
-            @else
+        <table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter">
+            <thead>
                 <tr>
-                    <td colspan="4" style="text-align: center; padding: 5px;">--No Records--</td>
+                    <th
+                        style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">
+                        User Name</th>
+                    @foreach ($headers as $header)
+                        <th
+                            style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">
+                            {{ $header }}</th>
+                    @endforeach
                 </tr>
-            @endif
-        </tbody>
-    </table>
-    <br>
-   
+            </thead>
+            <tbody>
+
+                @if (isset($BodyDetails) && count($BodyDetails) > 0)
+                    @foreach ($BodyDetails as $data)
+                        <tr>
+                            <td style="text-align: center; padding: 5px;">
+                                {{ $data['user'] }}
+                            </td>
+                            @foreach ($data['hourlyCount'] as $count)
+                                <td style="text-align: center;padding: 5px;">{{ $count }}</td>
+                            @endforeach
+                        </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 5px;">--No Records--</td>
+                    </tr>
+                @endif
+            </tbody>
+        </table>
+        <br>
+
+    </div>
 </div>
 @endsection
 <style>
-       * {
+    * {
         font-family: Verdana, Arial, sans-serif;
         color: black;
     }
