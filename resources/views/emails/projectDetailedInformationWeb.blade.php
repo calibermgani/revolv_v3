@@ -4,10 +4,16 @@
 @endphp
 @section('content')
 <div class="card card-custom custom-card">
+    <div class="card-header border-0 px-4">
+        <div class="row">
+         <div class="col-md-6">
+             <span class="project_header" style="margin-left: 4px !important;">User Detailed Information</span>
+         </div>
+        </div>
     <div class="table-responsive pt-5">
 
 
-        <table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter">
+        <table class="table table-separate table-head-custom no-footer dtr-column" id="prj_detail_inf">
             <thead>
                 <tr>
                     <th
@@ -66,3 +72,8 @@
         padding-right: 30px;
     }
 </style>
+@push('view.scripts')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        </script>
