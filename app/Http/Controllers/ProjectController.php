@@ -996,8 +996,58 @@ class ProjectController extends Controller
             }
             $tableName = Str::slug(Str::lower($prjName . '_' . $subPrjName), '_');
             $modelClass = "App\\Models\\" . Str::studly($tableName);
+            $currentTime = Carbon::now();
+            Log::info("Current time: {$currentTime}");
+
+            // Determine start and end times based on current time
+            if ($currentTime->hour < 17) {
+                // Before 5 PM: Yesterday 5 PM to Today 5 AM
+                $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
+            } else {
+                // After 5 PM: Today 5 PM to Current Time
+                $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
+                $endTime = $currentTime;
+            }
+            $timeSlots = [];
+            $slotStart = $startTime->copy();
+
+            while ($slotStart->lessThan($endTime)) {
+                $slotEnd = $slotStart->copy()->addHour();
+                $timeSlots[] = [
+                    'start' => $slotStart,
+                    'end' => $slotEnd,
+                    'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $slotEnd->format('m/d/Y h:i A'),
+                ];
+                Log::info("Time slot added: {$slotStart} to {$slotEnd}");
+                $slotStart = $slotEnd;
+            }
+            $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
+            $mailBody = [];
+            $hourlyCounts = [];
             if(class_exists($modelClass)){
-                dd($modelClass);
+            foreach ($timeSlots as $slot) {
+                $slotStart = $slot['start'];
+                $slotEnd = $slot['end'];
+
+                // Query hourly count for the specific time slot
+                $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
+                    ->where('chart_status', 'CE_Completed')
+                    ->get();
+
+                Log::info("Hourly count for {$tableName} from {$slotStart} to {$slotEnd}: {$hourlyCount}");
+
+                $hourlyCounts[] = $hourlyCount; // Add to the array for this project
+            }
+
+            // Add project data to the mail body
+            $mailBody[] = [
+               
+                'hourlyCount' => $hourlyCounts, // Full array of counts for all slots                        
+              
+            ];
+         
+                dd($modelClass,$timeSlots,$mailBody);
             }
           
         } catch (\Exception $e) {
