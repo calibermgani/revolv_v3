@@ -1017,7 +1017,7 @@ class ProjectController extends Controller
                 $slotStart = $slotEnd;
             }
             $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
-            $mailBody = [];
+            $BodyDetails = [];
           
             if(class_exists($modelClass)){
                 $existingPrjUsers = $modelClass::where('CE_emp_id', '!=','0')->whereNotNull('CE_emp_id')
@@ -1035,14 +1035,14 @@ class ProjectController extends Controller
 
                         $hourlyCounts[] = $hourlyCount; 
                     }
-                    $mailBody[] = [
+                    $BodyDetails[] = [
                         'user' => $user,
                        'hourlyCount' => $hourlyCounts, 
                    ];
                
                 }             
-            }  dd($modelClass,$headers,$mailBody);
-          
+            }  
+          return view('projectDetailedInformationWeb.blade', compact('headers', 'BodyDetails'));
         } catch (\Exception $e) {
             Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
             Log::debug($e->getTraceAsString());
