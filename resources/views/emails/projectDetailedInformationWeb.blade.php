@@ -52,7 +52,7 @@
                                     @foreach ($BodyDetails as $data)
                                         <tr>
                                             <td style="text-align: center; padding: 5px;">
-                                                {{ $data['user'] }}
+                                                {{  App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['user']) }}
                                             </td>
                                             @foreach ($data['hourlyCount'] as $count)
                                                 <td style="text-align: center;padding: 5px;">{{ $count }}</td>
