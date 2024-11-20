@@ -2,10 +2,9 @@
 <html>
 
 <head>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link href="https://fonts.googleapis.com/css?family=Poppins:400,600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <style>
     * {
@@ -26,30 +25,6 @@
     td {
         text-align: center;
         padding-right: 30px;
-    }
-    
-    #loading {
-        position: fixed;
-        display: block;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        text-align: center;
-        opacity: 0.7;
-        background-color: #fff;
-        z-index: 99;
-    }
-    #loading-text {
-        top: 166px;
-        left: 50px;
-        position: relative;
-    }
-    #loading-image {
-    position: absolute;
-    top: 100px;
-    /* left: 340px; */
-    z-index: 100;
     }
 </style>
 
@@ -94,13 +69,8 @@
                         <br>
 
                     </div>
-                    <div id="loading">
-                        <img id="loading-image" src="{{ URL::asset('/assets/media/loader/loader.gif') }}" alt="Loading..." />
-                        <p id="loading-text">Please Wait.........</p>
-                      </div>
+                    
            
 </body>
-<script>
-      $('#loading').show();
-</script>
+
 </html>

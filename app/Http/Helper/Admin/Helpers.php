@@ -610,7 +610,7 @@ class Helpers
 		} else {
 			return response()->json(['error' => 'API request failed'], $response->getStatusCode());
 		}
-		if(isset($data['user_name']['user_name'])){
+		if(isset($data['user_name'])){
 			$userName = $data['user_name']['user_name'];
 			return $userName;
 		} else {
