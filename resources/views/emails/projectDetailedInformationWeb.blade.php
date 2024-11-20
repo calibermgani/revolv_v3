@@ -1,4 +1,34 @@
+<!DOCTYPE html>
+<html>
 
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<style>
+    * {
+        font-family: Verdana, Arial, sans-serif;
+        color: black;
+    }
+
+    table {
+        font-size: small;
+    }
+
+    thead,
+    th {
+        background-color: #0e969c2b;
+    }
+
+    th,
+    td {
+        text-align: center;
+        padding-right: 30px;
+    }
+</style>
+
+<body>
     <div class="card card-custom custom-card">
         <div class="card-body p-0">
             <div class="card-header border-0 px-4">
@@ -50,48 +80,6 @@
                 </div>
             </div>
         </div>
+</body>
 
-    <style>
-        .dropdown-item.active {
-            color: #ffffff;
-            text-decoration: none;
-            background-color: #888a91;
-        }
-
-        .modal-left .modal-dialog {
-            margin-top: 90px;
-            margin-left: 320px;
-            margin-right: auto;
-        }
-
-        .modal-left .modal-content {
-            border-radius: 5px;
-        }
-
-        .modal-right .modal-dialog {
-            margin-left: auto;
-            margin-right: 220px;
-            transition: margin 5s ease-in-out;
-        }
-
-        .modal-right .modal-content {
-            border-radius: 5px;
-        }
-
-        nav {
-            float: right !important;
-        }
-    </style>
-    @push('view.scripts')
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-        <script>
-            $(document).ready(function() {
-                var table = $("#client_assigned_list").DataTable({
-                    processing: true,
-                    ordering: true,
-                    clientSide: true,
-                    lengthChange: false,
-                });
-            })
-        </script>
+</html>
