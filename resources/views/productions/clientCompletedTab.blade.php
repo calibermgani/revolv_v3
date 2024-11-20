@@ -211,7 +211,7 @@ use Carbon\Carbon;
                                             }
                                          $clientName = App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->project_id, 'encode');
                                          $subProjectName = $data->sub_project_id != null ? App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->sub_project_id, 'encode') : '--';
-                                         dd($projectColSearchFields,$data);
+                                        //  dd($projectColSearchFields,$data);
                                             @endphp
                                              {!! Form::open([
                                                 'url' =>
