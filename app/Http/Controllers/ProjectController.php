@@ -988,12 +988,13 @@ class ProjectController extends Controller
     public function projectDetailedInformation(Request $request){
         try {
             $prjName = Helpers::projectName($request->input('project_id'))->project_name ?? null;
+            $aimsPrjName = Helpers::projectName($request->input('project_id'))->aims_project_name ?? null;
             if($request->input('subproject_id') != "NULL" && $request->input('subproject_id') != null){
                 $subPrjName = Helpers::subProjectName($request->input('project_id'),$request->input('subproject_id'))->sub_project_name ?? null;
             } else {
                 $subPrjName = 'project';
             }
-            $title = $prjName . '-' . $subPrjName;
+            $title = $aimsPrjName . '-' . $subPrjName;
             $tableName = Str::slug(Str::lower($prjName . '_' . $subPrjName), '_');
             $modelClass = "App\\Models\\" . Str::studly($tableName);
             $currentTime = Carbon::now();
