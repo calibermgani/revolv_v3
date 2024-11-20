@@ -996,7 +996,7 @@ class ProjectController extends Controller
             }
             $tableName = Str::slug(Str::lower($prjName . '_' . $subPrjName), '_');
             $modelClass = "App\\Models\\" . Str::studly($tableName);
-            if(!class_exists($modelClass)){
+            if(class_exists($modelClass)){
                 dd($modelClass);
             }
           
