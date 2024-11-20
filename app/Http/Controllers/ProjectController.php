@@ -1028,24 +1028,25 @@ class ProjectController extends Controller
             if(class_exists($modelClass)){
                 $existingPrjUsers = $modelClass::where('CE_emp_id', '!=','0')->whereNotNull('CE_emp_id')
                 ->groupBy('CE_emp_id')->pluck('CE_emp_id')->toArray(); 
-            dd($existingPrjUsers);
+            foreach ($existingPrjUsers as $user) {
             foreach ($timeSlots as $slot) {
                 $slotStart = $slot['start'];
                 $slotEnd = $slot['end'];
 
                 // Query hourly count for the specific time slot
                 $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
-                    ->where('chart_status', 'CE_Completed')
-                    ->get();
+                    ->where('chart_status', 'CE_Completed')->where('CE_emp_id', $user)
+                    ->count();
 
                 Log::info("Hourly count for {$tableName} from {$slotStart} to {$slotEnd}: {$hourlyCount}");
 
                 $hourlyCounts[] = $hourlyCount; // Add to the array for this project
             }
+        }
 
             // Add project data to the mail body
             $mailBody[] = [
-               
+               'user' => $user,
                 'hourlyCount' => $hourlyCounts, // Full array of counts for all slots                        
               
             ];
