@@ -1026,7 +1026,7 @@ class ProjectController extends Controller
             $mailBody = [];
             $hourlyCounts = [];
             if(class_exists($modelClass)){
-                $existingPrjUsers = $modelClass::select('CE_emp_id') 
+                $existingPrjUsers = $modelClass::select('CE_emp_id')->whereNotIn('CE_emp_id', [0,NULL])
                 ->groupBy('CE_emp_id') 
                 ->get(); 
             dd($existingPrjUsers);
