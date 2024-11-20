@@ -51,27 +51,6 @@
     </div>
 </div>
 @endsection
-<style>
-    * {
-        font-family: Verdana, Arial, sans-serif;
-        color: black;
-    }
-
-    table {
-        font-size: small;
-    }
-
-    thead,
-    th {
-        background-color: #0e969c2b;
-    }
-
-    th,
-    td {
-        text-align: center;
-        padding-right: 30px;
-    }
-</style>
 @push('view.scripts')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
