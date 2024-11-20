@@ -37,14 +37,14 @@
                             <thead>
                                 <tr>
                                     <th
-                                        style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;" width="10%">
+                                        style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;" width="8%">
                                         User Name</th>
                                     @foreach ($headers as $header)
                                         <th
                                             style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">
                                             {{ $header }}</th>
                                     @endforeach
-                                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;" width="10%">Reached Target</th>
+                                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;" width="8%">Reached Target</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -52,13 +52,13 @@
                                 @if (isset($BodyDetails) && count($BodyDetails) > 0)
                                     @foreach ($BodyDetails as $data)
                                         <tr>
-                                            <td style="text-align: center; padding: 5px;" width="10%">
+                                            <td style="text-align: center; padding: 5px;" width="8%">
                                                 {{  $data['user'] != null ? $data['user'].' - '.App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['user']) : '--' }}
                                             </td>
                                             @foreach ($data['hourlyCount'] as $count)
                                                 <td style="text-align: center;padding: 5px;">{{ $count }}</td>
                                             @endforeach
-                                            <td style="text-align: center;padding: 5px;" width="10%"  >{{ $data['reachedTarget'] }}</td>
+                                            <td style="text-align: center;padding: 5px;" width="8%"  >{{ $data['reachedTarget'] }}</td>
                                         </tr>
                                     @endforeach
                                 @else
