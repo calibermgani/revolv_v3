@@ -29,19 +29,11 @@
 </style>
 
 <body>
-    {{-- <div class="card card-custom custom-card">
-        <div class="card-body p-0">
-            <div class="card-header border-0 px-4">
-                <div class="row">
-                    <div class="col-md-6">
-                        <span class="project_header" style="margin-left: 4px !important;">User Detailed Information</span>
-                    </div>
-                </div>
-                <div class="card-body py-0 px-7"> --}}
+ 
                     <div class="table-responsive pb-2">
 
 
-                        <table class="table table-separate table-head-custom no-footer dtr-column" id="prj_detail_inf">
+                        <table class="table" border="1" style="border-collapse: collapse">
                             <thead>
                                 <tr>
                                     <th
@@ -77,9 +69,7 @@
                         <br>
 
                     </div>
-                {{-- </div>
-            </div>
-        </div> --}}
+           
 </body>
 
 </html>
