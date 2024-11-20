@@ -987,7 +987,19 @@ class ProjectController extends Controller
 
     public function projectDetailedInformation(Request $request){
         try {
-            dd($request->all(),$request->input('project_id'),$request->input('subproject_id'));
+            // dd($request->all(),$request->input('project_id'),$request->input('subproject_id'));
+            $prjName = Helpers::projectName($request->input('project_id'))->project_name ?? null;
+            if($request->input('subproject_id') != "NULL" && $request->input('subproject_id') != null){
+                $subPrjName = Helpers::subProjectName($request->input('project_id'),$request->input('subproject_id'))->sub_project_name ?? null;
+            } else {
+                $subPrjName = 'project';
+            }
+            $tableName = Str::slug(Str::lower($prjName . '_' . $subPrjName), '_');
+            $modelClass = "App\\Models\\" . Str::studly($tableName);
+            if(!class_exists($modelClass)){
+                dd($modelClass);
+            }
+          
         } catch (\Exception $e) {
             Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
             Log::debug($e->getTraceAsString());
