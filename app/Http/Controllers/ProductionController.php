@@ -653,7 +653,7 @@ class ProductionController extends Controller
                  $popupEditableFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->where('field_type','editable')->where('field_type_3','popup_visible')->get();
                  $arStatusList = Helpers::arStatusList();
                  $arActionListVal = Helpers::arActionList();
-                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();dd($projectColSearchFields,$completedProjectDetails,$searchData);
+                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();//dd($projectColSearchFields,$completedProjectDetails,$searchData);
                  $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
                 return view('productions/clientCompletedTab',compact('completedProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData'));
 
