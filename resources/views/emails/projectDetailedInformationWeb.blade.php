@@ -44,6 +44,7 @@
                                             style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">
                                             {{ $header }}</th>
                                     @endforeach
+                                    <th>Reached Target</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -57,11 +58,12 @@
                                             @foreach ($data['hourlyCount'] as $count)
                                                 <td style="text-align: center;padding: 5px;">{{ $count }}</td>
                                             @endforeach
+                                            <td>{{ $data['reachedTarget'] }}</td>
                                         </tr>
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="13" style="text-align: center; padding: 5px;">--No Records--</td>
+                                        <td colspan="14" style="text-align: center; padding: 5px;">--No Records--</td>
                                     </tr>
                                 @endif
                             </tbody>

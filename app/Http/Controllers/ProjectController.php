@@ -1026,6 +1026,7 @@ class ProjectController extends Controller
                 ->groupBy('CE_emp_id')->pluck('CE_emp_id')->toArray(); 
                 foreach ($existingPrjUsers as $user) {
                     $hourlyCounts = [];
+                    $reachedTarget = [];
                     foreach ($timeSlots as $slot) {
                         $slotStart = $slot['start'];
                         $slotEnd = $slot['end'];
@@ -1036,10 +1037,12 @@ class ProjectController extends Controller
                         Log::info("Hourly count for {$tableName} from {$slotStart} to {$slotEnd}: {$hourlyCount}");
 
                         $hourlyCounts[] = $hourlyCount; 
+                        $reachedTarget += $hourlyCount;
                     }
                     $BodyDetails[] = [
                         'user' => $user,
                        'hourlyCount' => $hourlyCounts, 
+                       'reachedTarget' => $reachedTarget,
                    ];
                
                 }             
