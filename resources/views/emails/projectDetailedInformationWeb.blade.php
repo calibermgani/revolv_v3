@@ -30,7 +30,7 @@
 
 <body>
  
-                    <div class="table-responsive pb-2">
+                    <div class="table-responsive" style="margin-top: 5rem;margin-left: 5rem;margin-right: 5rem;">
 
 
                         <table class="table" border="1" style="border-collapse: collapse">
