@@ -885,8 +885,8 @@ class ProjectController extends Controller
             Log::info('Executing Project Hourly Mail logic.');
 
             $toMailId = ["vijayalaxmi@caliberfocus.com"];
-            // $ccMailId = ["vijayalaxmi@caliberfocus.com"];
-             $ccMailId = ["mgani@caliberfocus.com","elanchezhian@annexmed.net"];
+            $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+            //  $ccMailId = ["mgani@caliberfocus.com","elanchezhian@annexmed.net"];
             $mailHeader = "Resolv Project Hourly Report";
             $projects = collect($this->getProjects());
 
@@ -987,13 +987,11 @@ class ProjectController extends Controller
 
     public function projectDetailedInformation(Request $request){
         try {
-            $prjName = Helpers::projectName($request->input('project_id'))->project_name ?? null;
-            $aimsPrjName = Helpers::projectName($request->input('project_id'))->aims_project_name ?? null;
-            if($request->input('subproject_id') != "NULL" && $request->input('subproject_id') != null){
-                $subPrjName = Helpers::subProjectName($request->input('project_id'),$request->input('subproject_id'))->sub_project_name ?? null;
-            } else {
-                $subPrjName = 'project';
-            }
+            $prjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->project_name ?? null;
+            $aimsPrjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->aims_project_name ?? null;
+          
+                $subPrjName = Helpers::subProjectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))->sub_project_name ?? null;
+       
             $title = $aimsPrjName . '-' . $subPrjName;
             $tableName = Str::slug(Str::lower($prjName . '_' . $subPrjName), '_');
             $modelClass = "App\\Models\\" . Str::studly($tableName);
