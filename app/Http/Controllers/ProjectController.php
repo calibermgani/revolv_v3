@@ -1051,8 +1051,8 @@ class ProjectController extends Controller
               
             ];
          
-                dd($modelClass,$timeSlots,$mailBody);
-            }
+              
+            }  dd($modelClass,$timeSlots,$mailBody);
           
         } catch (\Exception $e) {
             Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
