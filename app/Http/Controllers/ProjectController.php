@@ -1020,7 +1020,7 @@ class ProjectController extends Controller
             $BodyDetails = [];
           
             if(class_exists($modelClass)){
-                $existingPrjUsers = $modelClass::where('CE_emp_id', '!=','0')->whereNotNull('CE_emp_id')
+                $existingPrjUsers = $modelClass::where('CE_emp_id', '!=','0')->whereNotNull('CE_emp_id')->where('CE_emp_id','like','%AM%')
                 ->groupBy('CE_emp_id')->pluck('CE_emp_id')->toArray(); 
                 foreach ($existingPrjUsers as $user) {
                     $hourlyCounts = [];
