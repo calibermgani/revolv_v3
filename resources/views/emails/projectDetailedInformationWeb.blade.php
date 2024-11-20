@@ -6,7 +6,7 @@ use Carbon\Carbon;
 <div class="table-responsive pb-2">
 
   
-    <table class="table" border="1" style="border-collapse: collapse">
+    <table  class="table table-separate table-head-custom no-footer dtr-column clients_list_filter">
         <thead>
             <tr>
                 <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">User Name</th>
@@ -37,7 +37,7 @@ use Carbon\Carbon;
         </tbody>
     </table>
     <br>
-    @include('emails.emailFooter')
+   
 </div>
 @endsection
 <style>
