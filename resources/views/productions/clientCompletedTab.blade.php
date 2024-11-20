@@ -259,7 +259,7 @@ use Carbon\Carbon;
                                                                 @endif
                                                             @else
                                                                 @if ($inputType == 'select')
-                                                                    {!! Form::$inputType($columnName, ['' => '-- Select --'] + $associativeOptions, isset($searchData) && !empty($searchData) ? $searchData[$columnName] : null, [
+                                                                    {!! Form::$inputType($columnName, ['' => '-- Select --'] + $associativeOptions, isset($searchData) && !empty($searchData) && isset($searchData[$columnName]) && $searchData[$columnName] ? $searchData[$columnName] : null, [
                                                                         'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val select2',
                                                                         'autocomplete' => 'none',
                                                                     
@@ -464,7 +464,7 @@ use Carbon\Carbon;
                                         Showing {{ $completedProjectDetails->firstItem() != null ? $completedProjectDetails->firstItem() : 0 }} to {{ $completedProjectDetails->lastItem() != null ? $completedProjectDetails->lastItem() : 0 }} of {{ $completedProjectDetails->total() }} entries
                                     </div>
                                      <div>
-                                        {{ $completedProjectDetails->appends(request()->except([ '_token']))->links() }}
+                                        {{ $completedProjectDetails->appends(request()->except([ 'page']))->links() }}
                                     </div>
                                 </div>          
                             </div>

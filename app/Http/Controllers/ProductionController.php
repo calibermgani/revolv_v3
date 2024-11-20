@@ -586,9 +586,9 @@ class ProductionController extends Controller
                $modelName = Str::studly($table_name);
                $modelClass = "App\\Models\\" . $modelName;
                $query = $modelClass::query();
-               $searchData = [];//dd($request->all());
-            //    if($request['_token'] != null) {
-                    foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
+               $searchData = [];
+               if($request['_token'] != null) {
+                    foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
                        $searchData[$key] = $value;
                         if (is_array($value)) {
                             $value = implode('_el_', $value);  // If it's an array, handle it accordingly
@@ -607,7 +607,7 @@ class ProductionController extends Controller
                             }
                         }
                     }
-                // }
+                }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
                $completedProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
                if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
@@ -653,7 +653,7 @@ class ProductionController extends Controller
                  $popupEditableFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->where('field_type','editable')->where('field_type_3','popup_visible')->get();
                  $arStatusList = Helpers::arStatusList();
                  $arActionListVal = Helpers::arActionList();
-                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();//dd($projectColSearchFields,$completedProjectDetails,$searchData);
+                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                  $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
                 return view('productions/clientCompletedTab',compact('completedProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData'));
 
