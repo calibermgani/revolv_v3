@@ -1026,9 +1026,8 @@ class ProjectController extends Controller
             $mailBody = [];
             $hourlyCounts = [];
             if(class_exists($modelClass)){
-                $existingPrjUsers = $modelClass::select('CE_emp_id')->where('CE_emp_id', '!=','0')->whereNotNull('CE_emp_id')
-                ->groupBy('CE_emp_id') 
-                ->get(); 
+                $existingPrjUsers = $modelClass::where('CE_emp_id', '!=','0')->whereNotNull('CE_emp_id')
+                ->groupBy('CE_emp_id')->pluck('CE_emp_id')->toArray(); 
             dd($existingPrjUsers);
             foreach ($timeSlots as $slot) {
                 $slotStart = $slot['start'];
