@@ -1026,7 +1026,7 @@ class ProjectController extends Controller
                 ->groupBy('CE_emp_id')->pluck('CE_emp_id')->toArray(); 
                 foreach ($existingPrjUsers as $user) {
                     $hourlyCounts = [];
-                    $reachedTarget = [];
+                    $reachedTarget = 0;
                     foreach ($timeSlots as $slot) {
                         $slotStart = $slot['start'];
                         $slotEnd = $slot['end'];
