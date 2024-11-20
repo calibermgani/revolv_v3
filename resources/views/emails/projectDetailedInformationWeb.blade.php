@@ -29,7 +29,7 @@
 </style>
 
 <body>
- 
+ <p style="margin-top: 5rem;margin-left: 5rem;margin-right: 5rem;">{{$title}}</p>
                     <div class="table-responsive" style="margin-top: 5rem;margin-left: 5rem;margin-right: 5rem;">
 
 
@@ -61,7 +61,7 @@
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="4" style="text-align: center; padding: 5px;">--No Records--</td>
+                                        <td colspan="13" style="text-align: center; padding: 5px;">--No Records--</td>
                                     </tr>
                                 @endif
                             </tbody>

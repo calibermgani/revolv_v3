@@ -993,6 +993,7 @@ class ProjectController extends Controller
             } else {
                 $subPrjName = 'project';
             }
+            $title = $prjName . '-' . $subPrjName;
             $tableName = Str::slug(Str::lower($prjName . '_' . $subPrjName), '_');
             $modelClass = "App\\Models\\" . Str::studly($tableName);
             $currentTime = Carbon::now();
@@ -1042,7 +1043,7 @@ class ProjectController extends Controller
                
                 }             
             }  
-          return view('emails.projectDetailedInformationWeb', compact('headers', 'BodyDetails'));
+          return view('emails.projectDetailedInformationWeb', compact('headers', 'BodyDetails','title'));
         } catch (\Exception $e) {
             Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
             Log::debug($e->getTraceAsString());
