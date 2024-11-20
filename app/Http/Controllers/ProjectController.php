@@ -987,7 +987,6 @@ class ProjectController extends Controller
 
     public function projectDetailedInformation(Request $request){
         try {
-            // dd($request->all(),$request->input('project_id'),$request->input('subproject_id'));
             $prjName = Helpers::projectName($request->input('project_id'))->project_name ?? null;
             if($request->input('subproject_id') != "NULL" && $request->input('subproject_id') != null){
                 $subPrjName = Helpers::subProjectName($request->input('project_id'),$request->input('subproject_id'))->sub_project_name ?? null;
@@ -998,20 +997,15 @@ class ProjectController extends Controller
             $modelClass = "App\\Models\\" . Str::studly($tableName);
             $currentTime = Carbon::now();
             Log::info("Current time: {$currentTime}");
-
-            // Determine start and end times based on current time
-            if ($currentTime->hour < 17) {
-                // Before 5 PM: Yesterday 5 PM to Today 5 AM
-                $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+           if ($currentTime->hour < 17) {
+               $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
                 $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
             } else {
-                // After 5 PM: Today 5 PM to Current Time
                 $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
                 $endTime = $currentTime;
             }
             $timeSlots = [];
             $slotStart = $startTime->copy();
-
             while ($slotStart->lessThan($endTime)) {
                 $slotEnd = $slotStart->copy()->addHour();
                 $timeSlots[] = [
@@ -1024,11 +1018,12 @@ class ProjectController extends Controller
             }
             $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
             $mailBody = [];
-            $hourlyCounts = [];
+          
             if(class_exists($modelClass)){
                 $existingPrjUsers = $modelClass::where('CE_emp_id', '!=','0')->whereNotNull('CE_emp_id')
                 ->groupBy('CE_emp_id')->pluck('CE_emp_id')->toArray(); 
-            foreach ($existingPrjUsers as $user) {
+                foreach ($existingPrjUsers as $user) {
+                    $hourlyCounts = [];
                     foreach ($timeSlots as $slot) {
                         $slotStart = $slot['start'];
                         $slotEnd = $slot['end'];
@@ -1042,14 +1037,10 @@ class ProjectController extends Controller
                     }
                     $mailBody[] = [
                         'user' => $user,
-                       'hourlyCount' => $hourlyCounts, // Full array of counts for all slots                        
-                   
+                       'hourlyCount' => $hourlyCounts, 
                    ];
                
-                }
-
-                  
-              
+                }             
             }  dd($modelClass,$headers,$mailBody);
           
         } catch (\Exception $e) {
