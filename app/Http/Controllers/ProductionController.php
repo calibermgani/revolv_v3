@@ -586,7 +586,7 @@ class ProductionController extends Controller
                $modelName = Str::studly($table_name);
                $modelClass = "App\\Models\\" . $modelName;
                $query = $modelClass::query();
-               $searchData = [];//dd($request->all());
+               $searchData = [];dd($request->all());
             //    if($request['_token'] != null) {
                     foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
                        $searchData[$key] = $value;
