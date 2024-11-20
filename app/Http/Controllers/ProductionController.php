@@ -587,7 +587,7 @@ class ProductionController extends Controller
                $modelClass = "App\\Models\\" . $modelName;
                $query = $modelClass::query();
                $searchData = [];
-               if($request['_token'] != null) {
+            //    if($request['_token'] != null) {
                     foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
                        $searchData[$key] = $value;
                         if (is_array($value)) {
@@ -607,7 +607,7 @@ class ProductionController extends Controller
                             }
                         }
                     }
-                }
+                // }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
                $completedProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
                if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
