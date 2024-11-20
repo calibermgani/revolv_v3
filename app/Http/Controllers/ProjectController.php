@@ -1042,7 +1042,7 @@ class ProjectController extends Controller
                
                 }             
             }  
-          return view('projectDetailedInformationWeb.blade', compact('headers', 'BodyDetails'));
+          return view('projectDetailedInformationWeb', compact('headers', 'BodyDetails'));
         } catch (\Exception $e) {
             Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
             Log::debug($e->getTraceAsString());
