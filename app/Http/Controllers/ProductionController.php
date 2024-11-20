@@ -588,7 +588,7 @@ class ProductionController extends Controller
                $query = $modelClass::query();
                $searchData = [];
                if($request['_token'] != null) {
-                    foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
+                    foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
                        $searchData[$key] = $value;
                         if (is_array($value)) {
                             $value = implode('_el_', $value);  // If it's an array, handle it accordingly
