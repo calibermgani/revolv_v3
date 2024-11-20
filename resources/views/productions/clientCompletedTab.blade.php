@@ -464,7 +464,7 @@ use Carbon\Carbon;
                                         Showing {{ $completedProjectDetails->firstItem() != null ? $completedProjectDetails->firstItem() : 0 }} to {{ $completedProjectDetails->lastItem() != null ? $completedProjectDetails->lastItem() : 0 }} of {{ $completedProjectDetails->total() }} entries
                                     </div>
                                      <div>
-                                        {{ $completedProjectDetails->appends(request()->except(['page', '_token']))->links() }}
+                                        {{ $completedProjectDetails->appends(request()->except([ '_token']))->links() }}
                                     </div>
                                 </div>          
                             </div>
