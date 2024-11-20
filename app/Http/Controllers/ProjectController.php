@@ -1026,7 +1026,7 @@ class ProjectController extends Controller
             $mailBody = [];
             $hourlyCounts = [];
             if(class_exists($modelClass)){
-                $existingPrjUsers = $modelClass::groupBy('CE_emp_id')->get();dd($existingPrjUsers);
+                $existingPrjUsers = $modelClass::get();dd($existingPrjUsers);
             foreach ($timeSlots as $slot) {
                 $slotStart = $slot['start'];
                 $slotEnd = $slot['end'];
