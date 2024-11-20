@@ -1,8 +1,4 @@
-@extends('layouts.app3')
-@php
-    use Carbon\Carbon;
-@endphp
-@section('content')
+
     <div class="card card-custom custom-card">
         <div class="card-body p-0">
             <div class="card-header border-0 px-4">
@@ -54,7 +50,7 @@
                 </div>
             </div>
         </div>
-    @endsection
+
     <style>
         .dropdown-item.active {
             color: #ffffff;
