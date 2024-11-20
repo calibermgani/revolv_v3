@@ -29,7 +29,7 @@
 </style>
 
 <body>
-    <div class="card card-custom custom-card">
+    {{-- <div class="card card-custom custom-card">
         <div class="card-body p-0">
             <div class="card-header border-0 px-4">
                 <div class="row">
@@ -37,8 +37,8 @@
                         <span class="project_header" style="margin-left: 4px !important;">User Detailed Information</span>
                     </div>
                 </div>
-                <div class="card-body py-0 px-7">
-                    <div class="table-responsive pt-5">
+                <div class="card-body py-0 px-7"> --}}
+                    <div class="table-responsive pb-2">
 
 
                         <table class="table table-separate table-head-custom no-footer dtr-column" id="prj_detail_inf">
@@ -77,9 +77,9 @@
                         <br>
 
                     </div>
-                </div>
+                {{-- </div>
             </div>
-        </div>
+        </div> --}}
 </body>
 
 </html>
