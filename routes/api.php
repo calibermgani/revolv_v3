@@ -76,8 +76,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('srmg_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@srmgARDuplicates');
     Route::any('valley_urogynecology_associates_ar', 'App\Http\Controllers\ProjectAutomationController@ValleyUrogynecologyAssociatesAR');
     Route::any('valley_urogynecology_associates_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@ValleyUrogynecologyAssociatesARDuplicates');
-    Route::any('ambcinmotion_ar', 'App\Http\Controllers\ProjectAutomationController@ambcinmotionAR');
-    Route::any('ambcinmotion_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@ambcinmotionARDuplicates');
+    Route::any('advanced_medical_billing_collections_prn_ar', 'App\Http\Controllers\ProjectAutomationController@advancedMedicalBillingCollectionsPrnAr');
+    Route::any('advanced_medical_billing_collections_prn_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@advancedMedicalBillingCollectionsPrnArDuplicates');
     
     
 

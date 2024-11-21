@@ -55,8 +55,8 @@ use App\Models\SrmgAr;
 use App\Models\SrmgArDuplicates;
 use App\Models\VuaAr;
 use App\Models\VuaArDuplicates;
-use App\Models\AmbcinmotionAr;
-use App\Models\AmbcinmotionArDuplicates;
+use App\Models\AmbcPrnAr;
+use App\Models\AmbcPrnArDuplicates;
 
 class ProjectAutomationController extends Controller
 {
@@ -2394,7 +2394,7 @@ class ProjectAutomationController extends Controller
          }
      }
 
-     public function ambcinmotionAR(Request $request)
+     public function advancedMedicalBillingCollectionsPrnAr(Request $request)
      {
          try {
              $attributes = [
@@ -2403,9 +2403,9 @@ class ProjectAutomationController extends Controller
                 'srvbucket_total' => isset($request->srvbucket_total) && $request->srvbucket_total != "NULL" ? $request->srvbucket_total : NULL,  
                 ];
  
-             $duplicateRecordExisting  =  AmbcinmotionAr::where($attributes)->exists();
+             $duplicateRecordExisting  =  AmbcPrnAr::where($attributes)->exists();
              if (!$duplicateRecordExisting) {
-                AmbcinmotionAr::insert([
+                AmbcPrnAr::insert([
                     'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
                     'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,
                     'patient_lastname' => isset($request->patient_lastname) && $request->patient_lastname != "NULL" ? $request->patient_lastname : NULL,
@@ -2437,7 +2437,7 @@ class ProjectAutomationController extends Controller
                      ]);
                          return response()->json(['message' => 'Record Inserted Successfully']);
              } else {
-                 $duplicateRecord  =  AmbcinmotionAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                 $duplicateRecord  =  AmbcPrnAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
                  if ($duplicateRecord) {
                      $duplicateRecord->update([
                         'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
@@ -2476,10 +2476,10 @@ class ProjectAutomationController extends Controller
              $e->getMessage();
          }
      }
-     public function ambcinmotionARDuplicates(Request $request)
+     public function advancedMedicalBillingCollectionsPrnArDuplicates(Request $request)
      {
          try {
-            AmbcinmotionArDuplicates::insert([
+            AmbcPrnArDuplicates::insert([
                 'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
                 'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,
                 'patient_lastname' => isset($request->patient_lastname) && $request->patient_lastname != "NULL" ? $request->patient_lastname : NULL,
