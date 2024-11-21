@@ -102,6 +102,8 @@
                 //     window.location.href = url;
                 // });
                 $('#formConfigurationLsit tbody tr td:not(:last-child)').click(function() {
+                    console.log('click', $(this).closest('tr').data('href'));
+                    
                         // Your row click event handler logic here
                         var href = $(this).closest('tr').data('href');
                         if (href) {
