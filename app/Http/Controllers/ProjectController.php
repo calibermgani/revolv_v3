@@ -897,12 +897,11 @@ class ProjectController extends Controller
             // Determine start and end times based on current time
             if ($currentTime->hour < 17) {
                 // Before 5 PM: Yesterday 5 PM to Today 5 AM
-                $startTime = Carbon::yesterday()->setHour(17)->setMinute(2)->setSecond(0);
-                // $endTime = Carbon::today()->setHour(18)->setMinute(0)->setSecond(0);
-                $endTime = Carbon::yesterday()->setHour(18)->setMinute(0)->setSecond(0);
+                $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
             } else {
                 // After 5 PM: Today 5 PM to Current Time
-                $startTime = Carbon::today()->setHour(17)->setMinute(2)->setSecond(0);
+                $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
                 $endTime = $currentTime;
             }
 
@@ -999,11 +998,10 @@ class ProjectController extends Controller
             $currentTime = Carbon::now();
             Log::info("Current time: {$currentTime}");
            if ($currentTime->hour < 17) {
-               $startTime = Carbon::yesterday()->setHour(17)->setMinute(2)->setSecond(0);
-                // $endTime = Carbon::today()->setHour(18)->setMinute(0)->setSecond(0);
-                $endTime = Carbon::yesterday()->setHour(18)->setMinute(0)->setSecond(0);
+               $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
             } else {
-                $startTime = Carbon::today()->setHour(17)->setMinute(2)->setSecond(0);
+                $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
                 $endTime = $currentTime;
             }
             $timeSlots = [];
