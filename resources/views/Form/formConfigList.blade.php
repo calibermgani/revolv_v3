@@ -105,7 +105,6 @@
                         // Your row click event handler logic here
                         var href = $(this).closest('tr').data('href');
                         if (href) {
-                            console.log(href, 'href');
                             window.location.href = href;
                         }
                 });
