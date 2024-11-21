@@ -84,7 +84,7 @@
                   $('#formConfigurationLsit').DataTable({
                     lengthChange: false,
                     searching: true,
-                    pageLength: 20,
+                    pageLength: 30,
                     language: {
                         "search": '',
                         "searchPlaceholder": "   Search",
