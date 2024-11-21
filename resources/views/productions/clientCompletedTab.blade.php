@@ -211,6 +211,7 @@ use Carbon\Carbon;
                                             }
                                          $clientName = App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->project_id, 'encode');
                                          $subProjectName = $data->sub_project_id != null ? App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->sub_project_id, 'encode') : '--';
+                                        //  dd($projectColSearchFields,$data);
                                             @endphp
                                              {!! Form::open([
                                                 'url' =>
@@ -224,7 +225,7 @@ use Carbon\Carbon;
                                                 'enctype' => 'multipart/form-data',
                                             ]) !!}
                                             @csrf
-                                           
+                                          
                                         @if ($count % 4 == 0)
                                                 <div class="row mr-0 ml-0 mt-5">
                                                     @endif
@@ -241,7 +242,7 @@ use Carbon\Carbon;
                                                         <div class="col-md-10">
                                                             @if ($options == null)
                                                                 @if ($inputType != 'date_range')
-                                                                    {!! Form::$inputType($columnName,isset($searchData) && !empty($searchData) ? $searchData[$columnName] : null, [
+                                                                    {!! Form::$inputType($columnName,isset($searchData) && !empty($searchData) && isset($searchData[$columnName]) && $searchData[$columnName]  ? $searchData[$columnName] : null, [
                                                                         'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val',
                                                                         'autocomplete' => 'none',
                                                                         'style' => 'cursor:pointer',
@@ -258,7 +259,7 @@ use Carbon\Carbon;
                                                                 @endif
                                                             @else
                                                                 @if ($inputType == 'select')
-                                                                    {!! Form::$inputType($columnName, ['' => '-- Select --'] + $associativeOptions, isset($searchData) && !empty($searchData) ? $searchData[$columnName] : null, [
+                                                                    {!! Form::$inputType($columnName, ['' => '-- Select --'] + $associativeOptions, isset($searchData) && !empty($searchData) && isset($searchData[$columnName]) && $searchData[$columnName] ? $searchData[$columnName] : null, [
                                                                         'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val select2',
                                                                         'autocomplete' => 'none',
                                                                     
@@ -463,7 +464,7 @@ use Carbon\Carbon;
                                         Showing {{ $completedProjectDetails->firstItem() != null ? $completedProjectDetails->firstItem() : 0 }} to {{ $completedProjectDetails->lastItem() != null ? $completedProjectDetails->lastItem() : 0 }} of {{ $completedProjectDetails->total() }} entries
                                     </div>
                                      <div>
-                                        {{ $completedProjectDetails->links() }}
+                                        {{ $completedProjectDetails->appends(request()->except([ 'page']))->links() }}
                                     </div>
                                 </div>          
                             </div>

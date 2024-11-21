@@ -610,9 +610,14 @@ class Helpers
 		} else {
 			return response()->json(['error' => 'API request failed'], $response->getStatusCode());
 		}
-
-		$userName = $data['user_name']['user_name'];
-		return $userName;
+		if(isset($data['user_name'])){
+			$userName = $data['user_name']['user_name'];
+			return $userName;
+		} else {
+			$userName = '--';
+			return $userName;
+		}
+				
 	}
 	public static function getprojectResourceList($clientId)
 	{

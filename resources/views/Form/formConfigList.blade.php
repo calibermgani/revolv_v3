@@ -101,10 +101,12 @@
                 //     var url = $(this).data('href');
                 //     window.location.href = url;
                 // });
-                $('#formConfigurationLsit tbody tr td:not(:last-child)').click(function() {
+                $('#formConfigurationLsit tbody').on('click', 'tr td:not(:last-child)', function () {
                         // Your row click event handler logic here
                         var href = $(this).closest('tr').data('href');
-                        window.location.href = href;
+                        if (href) {
+                            window.location.href = href;
+                        }
                 });
                 $('#formConfigurationLsit tbody').on('click', 'td.project_delete', function(e){
                     var projectId = $(this).closest('tr').find('td:eq(0) input').val();
