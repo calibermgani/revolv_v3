@@ -291,7 +291,7 @@ use Carbon\Carbon;
                                                     @endif
                                                 @else
                                                     @if ($inputType == 'select')
-                                                        {!! Form::$inputType($columnName, ['' => '-- Select --'] + $associativeOptions, isset($searchData) && !empty($searchData) ? $searchData[$columnName] : null, [
+                                                        {!! Form::$inputType($columnName, ['' => '-- Select --'] + $associativeOptions, isset($searchData) && !empty($searchData) && isset($searchData[$columnName]) && $searchData[$columnName]  ? $searchData[$columnName] : null, [
                                                             'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val select2',
                                                             'autocomplete' => 'none',
                                                         

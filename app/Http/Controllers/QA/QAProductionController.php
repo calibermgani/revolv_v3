@@ -319,7 +319,7 @@ class QAProductionController extends Controller
                 $query = $modelClass::query();
                 $searchData = [];
                 if($request['_token'] != null) {
-                        foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
+                        foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
                         $searchData[$key] = $value;
                             if (is_array($value)) {
                                 $value = implode('_el_', $value);  // If it's an array, handle it accordingly
@@ -441,7 +441,7 @@ class QAProductionController extends Controller
                 $query = $modelClass::query();
                 $searchData = [];
                 if($request['_token'] != null) {
-                        foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
+                        foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
                         $searchData[$key] = $value;
                             if (is_array($value)) {
                                 $value = implode('_el_', $value);  // If it's an array, handle it accordingly
@@ -674,7 +674,7 @@ class QAProductionController extends Controller
                 $query = $modelClass::query();
                 $searchData = [];
                 if($request['_token'] != null) {
-                        foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
+                        foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
                         $searchData[$key] = $value;
                             if (is_array($value)) {
                                 $value = implode('_el_', $value);  // If it's an array, handle it accordingly
@@ -765,7 +765,7 @@ class QAProductionController extends Controller
                 $query = $modelClassDuplcates::query();
                 $searchData = [];
                 if($request['_token'] != null) {
-                        foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
+                        foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
                         $searchData[$key] = $value;
                             if (is_array($value)) {
                                 $value = implode('_el_', $value);  // If it's an array, handle it accordingly
@@ -915,7 +915,7 @@ class QAProductionController extends Controller
                 $modelClassRevokeHistory = "App\\Models\\" . $modelName.'RevokeHistory';
                 // $modelClass = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',ucfirst($decodedClientName).ucfirst($decodedsubProjectName)).'Datas';
                 $data = [];
-                foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
+                foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
                     if (is_array($value)) {
                         $data[$key] = implode('_el_', $value);
                     } else {
@@ -1068,7 +1068,7 @@ class QAProductionController extends Controller
                 $modelClass = "App\\Models\\" . $modelName.'Datas';
                 $modelClassRevokeHistory = "App\\Models\\" . $modelName.'RevokeHistory';
                 $data = [];
-                foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
+                foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
                     if (is_array($value)) {
                         $data[$key] = implode('_el_', $value);
                     } else {
@@ -1256,7 +1256,7 @@ class QAProductionController extends Controller
                 $query = $modelClass::query();
                 $searchData = [];
                 if($request['_token'] != null) {
-                        foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
+                        foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
                         $searchData[$key] = $value;
                             if (is_array($value)) {
                                 $value = implode('_el_', $value);  // If it's an array, handle it accordingly
@@ -1433,7 +1433,7 @@ class QAProductionController extends Controller
                 $query = $modelClass::query();
                 $searchData = [];
                if($request['_token'] != null) {
-                    foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
+                    foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
                        $searchData[$key] = $value;
                         if (is_array($value)) {
                             $value = implode('_el_', $value);  // If it's an array, handle it accordingly
@@ -1602,7 +1602,7 @@ class QAProductionController extends Controller
             $query = $modelClass::query();
             $searchData = [];
             if($request['_token'] != null) {
-                foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
+                foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
                     $searchData[$key] = $value;
                     if (is_array($value)) {
                         $value = implode('_el_', $value);  // If it's an array, handle it accordingly
@@ -1778,7 +1778,7 @@ class QAProductionController extends Controller
                 $modelClass = "App\\Models\\" . $modelName;
                 $query = $modelClass::query();
                 if($request['_token'] != null) {
-                    foreach ($request->except('_token', 'parent', 'child','clientName','subProjectName','recordStatusVal') as $key => $value) {
+                    foreach ($request->except('_token', 'parent', 'child','clientName','subProjectName','recordStatusVal','page') as $key => $value) {
                       
                         if (is_array($value)) {
                             $value = implode('_el_', $value);  

@@ -229,7 +229,7 @@ use Carbon\Carbon;
                                             <div class="col-md-10">
                                                 @if ($options == null)
                                                     @if ($inputType != 'date_range')
-                                                        {!! Form::$inputType($columnName,isset($searchData) && !empty($searchData) ? $searchData[$columnName] : null, [
+                                                        {!! Form::$inputType($columnName,isset($searchData) && !empty($searchData) && isset($searchData[$columnName]) && $searchData[$columnName]  ? $searchData[$columnName] : null, [
                                                             'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val',
                                                             'autocomplete' => 'none',
                                                             'style' => 'cursor:pointer',
@@ -246,7 +246,7 @@ use Carbon\Carbon;
                                                     @endif
                                                 @else
                                                     @if ($inputType == 'select')
-                                                        {!! Form::$inputType($columnName, ['' => '-- Select --'] + $associativeOptions, isset($searchData) && !empty($searchData) ? $searchData[$columnName] : null, [
+                                                        {!! Form::$inputType($columnName, ['' => '-- Select --'] + $associativeOptions, isset($searchData) && !empty($searchData) && isset($searchData[$columnName]) && $searchData[$columnName]  ? $searchData[$columnName] : null, [
                                                             'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val select2',
                                                             'autocomplete' => 'none',
                                                         
@@ -481,7 +481,7 @@ use Carbon\Carbon;
                             Showing {{ $autoCloseProjectDetails->firstItem() != null ? $autoCloseProjectDetails->firstItem() : 0 }} to {{ $autoCloseProjectDetails->lastItem() != null ? $autoCloseProjectDetails->lastItem() : 0 }} of {{ $autoCloseProjectDetails->total() }} entries
                         </div>
                          <div>
-                            {{ $autoCloseProjectDetails->links() }}
+                            {{ $autoCloseProjectDetails->appends(request()->all())->links() }}
                         </div>
                     </div>
                 </div>
