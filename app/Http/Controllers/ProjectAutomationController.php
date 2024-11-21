@@ -2578,6 +2578,7 @@ class ProjectAutomationController extends Controller
      public function coloradoFacialPlasticSurgeryArDuplicates(Request $request)
      {
          try {
+            
             CfpsArDuplicates::insert([
                 'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL,
                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
