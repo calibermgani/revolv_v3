@@ -103,7 +103,8 @@
                 // });
                 $('#formConfigurationLsit tbody tr td:not(:last-child)').click(function() {
                         // Your row click event handler logic here
-                        var href = $(this).closest('tr').data('href');
+                        var href = $(this).closest('tr').data('href');console.log(href,'href');
+                        
                         window.location.href = href;
                 });
                 $('#formConfigurationLsit tbody').on('click', 'td.project_delete', function(e){
