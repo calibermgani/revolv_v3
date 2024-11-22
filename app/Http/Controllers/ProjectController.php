@@ -884,8 +884,10 @@ class ProjectController extends Controller
         try {
             Log::info('Executing Project Hourly Mail logic.');
 
-            $toMailId = ["elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","radhika@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com","devanathan@annexmed.net"];
-            $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net","vijayalaxmi@caliberfocus.com"];
+            // $toMailId = ["elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","radhika@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com","devanathan@annexmed.net"];
+            // $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net","vijayalaxmi@caliberfocus.com"];
+            $toMailId = ["vijayalaxmi@caliberfocus.com"];
+            $ccMailId = ["vijayalaxmi@caliberfocus.com"];
             $mailHeader = "Resolv Project Hourly Report - Trail";
             $projects = collect($this->getProjects());
 
@@ -895,9 +897,10 @@ class ProjectController extends Controller
 
             // Determine start and end times based on current time
             if ($currentTime->hour < 17) {
-                // Before 5 PM: Yesterday 5 PM to Today 5 AM
+              
                 $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
-                $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
+                // $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
+                $endTime = $currentTime;
             } else {
                 // After 5 PM: Today 5 PM to Current Time
                 $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
