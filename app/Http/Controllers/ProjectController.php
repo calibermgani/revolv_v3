@@ -897,10 +897,15 @@ class ProjectController extends Controller
 
             // Determine start and end times based on current time
             if ($currentTime->hour < 17) {
-              
-                $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
-                // $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
-                $endTime = $currentTime;
+                if ($currentTime->hour < 5) {
+                    // Before 5 PM: Yesterday 5 PM to Current Time
+                    $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                    $endTime = $currentTime;
+                } else if($currentTime->hour > 5 && $currentTime->hour < 17){
+                    // Before 5 PM: Today 5 PM to Current Time
+                    $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                    $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
+                }
             } else {
                 // After 5 PM: Today 5 PM to Current Time
                 $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
