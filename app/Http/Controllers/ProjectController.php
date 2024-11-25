@@ -1212,7 +1212,7 @@ class ProjectController extends Controller
                 // After 5 PM: Today 5 PM to Current Time
                 $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
                 $endTime = $currentTime;
-            }dd($startTime,$ $endTime);
+            }dd($startTime,$endTime);
 
             Log::info("Calculated start time: {$startTime}");
             Log::info("Calculated end time: {$endTime}");
