@@ -39,7 +39,11 @@
             </div>
             <div class="card-body py-0 px-7">
                 <div class="table-responsive pb-2">
-
+                    @php
+                    $today1 = \Carbon\Carbon::now(); // 17:00 is 5 PM in 24-hour format
+                    $formattedDate = $today1->format('m/d/Y h:i A');
+                    @endphp
+            
                     <table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter"
                         border="1" style="border-collapse: collapse">
                         <thead>
