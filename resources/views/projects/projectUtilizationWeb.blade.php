@@ -2,7 +2,7 @@
 @section('content')
     <div class="card card-custom custom-card">
         <div class="card card-custom custom-top-border">
-            <div class="card-body mr-8 ml-12" id="filter_section" style="display:none;border:1px solid #F3F3F3">
+            <div class="card-body mr-8 ml-12" id="filter_section" >
                                    
               
                          {!! Form::open([
@@ -21,11 +21,10 @@
                                     <div class="col-md-10">
                                      
                                                 {!! Form::foreach('request_date',isset($yesterday) && !empty($yesterday) ? $yesterday : null, [
-                                                    'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val',
+                                                    'class' => 'form-control white-smoke pop-non-edt-val',
                                                     'autocomplete' => 'none',
                                                     'style' => 'cursor:pointer',
-                                                    'rows' => 3,
-                                                    'id' => $columnName,
+                                                    'rows' => 3
                                                 ]) !!}
                                           
                                     </div>
