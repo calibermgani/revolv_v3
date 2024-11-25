@@ -1005,15 +1005,31 @@ class ProjectController extends Controller
             $modelClass = "App\\Models\\" . Str::studly($tableName);
             $currentTime = Carbon::now();
             Log::info("Current time: {$currentTime}");
-            if($request->input('requested_date') &&Carbon::createFromFormat('m/d/Y h:i A',  $request->input('requested_date'))->format('Y-m-d') !== $currentTime->format('Y-m-d')) { 
-                         
-                if ($currentTime->hour < 17) {
-                    $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
-                        $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
+            if ($request->input('requested_date')) {
+                $requestedDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('requested_date'));
+                $currentDate = $currentTime->format('Y-m-d');
+                $inputDate = $requestedDate->format('Y-m-d');       dd($inputDate ,$currentDate,$requestedDate->hour);     
+                if ($inputDate !== $currentDate) {
+                    if ($requestedDate->hour < 5) {
+                       $startTime = $requestedDate->copy()->subDay()->setHour(17)->setMinute(0)->setSecond(0);
+                        $endTime = $requestedDate->copy()->setHour(5)->setMinute(0)->setSecond(0);
+                    } else {
+                        // If the requested time is after 5 AM, the startTime is that day's 5 PM and endTime is next day's 5 AM
+                        $startTime = $requestedDate->copy()->setHour(17)->setMinute(0)->setSecond(0);
+                        $endTime = $requestedDate->copy()->addDay()->setHour(5)->setMinute(0)->setSecond(0);
+                    }
+            
+                    Log::info("Start Time: {$startTime}");
+                    Log::info("End Time: {$endTime}");
                 } else {
-                    $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
-                    $endTime = $currentTime;
-                }  dd( $request->input('requested_date'),  $startTime,Carbon::createFromFormat('m/d/Y h:i A',$request->input('requested_date'))->setHour(17)->setMinute(0)->setSecond(0)); 
+                    if ($currentTime->hour < 17) {
+                        $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                            $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
+                    } else {
+                        $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
+                        $endTime = $currentTime;
+                    }
+                }
             } else {
                 if ($currentTime->hour < 17) {
                     $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
