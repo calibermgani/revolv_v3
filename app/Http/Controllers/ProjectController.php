@@ -1195,7 +1195,7 @@ class ProjectController extends Controller
     {
         try {
             $projects = collect($this->getProjects());
-
+            dd($request->all());
             $currentTime = $request['datetime'] != null ? Carbon::createFromFormat('Y-m-d', $request['datetime']) : Carbon::now(); dd($request->all(),$currentTime,Carbon::now());
             Log::info("Current time: {$currentTime}");
             if ($currentTime->hour < 17) {
