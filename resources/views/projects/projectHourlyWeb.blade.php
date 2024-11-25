@@ -15,8 +15,16 @@
                     <div class="col-md-3">
                         <div class="form-group row row_mar_bm">
                             <div class="col-md-10">
-                                <input type="text" id="start_time" name="request_date"
+                                <input type="text" id="start_time" name="start_time"
                                 class="white-smoke form-control start_time" value="" autocomplete="nope">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group row row_mar_bm">
+                            <div class="col-md-10">
+                                <input type="text" id="end_time" name="end_time"
+                                class="white-smoke form-control end_time" value="" autocomplete="nope">
                             </div>
                         </div>
                     </div>
