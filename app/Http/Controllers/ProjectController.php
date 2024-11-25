@@ -1082,9 +1082,10 @@ class ProjectController extends Controller
             Log::debug($e->getTraceAsString());
         }
     }
-    public function projectWorkWeb()
+    public function projectWorkWeb(Request $request)
     {
         try {
+            dd($requst->all());
             $yesterday = Carbon::yesterday();
             if ($yesterday->isSaturday()) {
                 $yesterday = $yesterday->subDay(1); // Friday
