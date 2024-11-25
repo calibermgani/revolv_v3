@@ -6,7 +6,12 @@
 
 
                 {!! Form::open([
-                    'url' => '',
+                    'url' =>
+                        url('projects/project_work_web') .
+                        '?parent=' .
+                        request()->parent .
+                        '&child=' .
+                        request()->child,
                     'class' => 'form',
                     'id' => 'formSearch',
                     'enctype' => 'multipart/form-data',
@@ -36,8 +41,10 @@
                         <div class="form-group row">
 
                             <div class="col-md-10">
-                                <button type="submit" class="btn  btn-white-black font-weight-bold" id="filter_search">Search</button>
-                                &nbsp;&nbsp; <button class="btn btn-light-danger" id="filter_clear" tabindex="10" type="button">
+                                <button type="submit" class="btn  btn-white-black font-weight-bold"
+                                    id="filter_search">Search</button>
+                                &nbsp;&nbsp; <button class="btn btn-light-danger" id="filter_clear" tabindex="10"
+                                    type="button">
                                     <span>
                                         <span>Clear</span>
                                     </span>
@@ -50,7 +57,7 @@
 
                 </div>
 
-             
+
 
             </div>
             <div class="card-body py-0 px-7">
