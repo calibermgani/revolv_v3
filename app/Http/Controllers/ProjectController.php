@@ -1195,25 +1195,29 @@ class ProjectController extends Controller
     {
         try {
             $projects = collect($this->getProjects());
-            dd($request->all(),Carbon::parse($request['datetime']));
-            $currentTime = $request['datetime'] != null ? Carbon::parse($request['datetime']) : Carbon::now(); dd($request->all(),$currentTime,Carbon::now());
-            Log::info("Current time: {$currentTime}");
-            if ($currentTime->hour < 17) {
-                if ($currentTime->hour < 5) {
-                    // Before 5 PM: Yesterday 5 PM to Current Time
-                    $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
-                    $endTime = $currentTime;
-                } else if($currentTime->hour > 5 && $currentTime->hour < 17){
-                    // Before 5 PM: Today 5 PM to Current Time
-                    $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
-                    $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
-                }
+          
+            if($request['startDateTime'] && $request['endDateTime']) {
+                $startTime =  Carbon::parse($request['startDateTime']);
+                $endTime = Carbon::parse($request['endDateTime']);
             } else {
-                // After 5 PM: Today 5 PM to Current Time
-                $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
-                $endTime = $currentTime;
+                $currentTime = Carbon::now(); 
+                Log::info("Current time: {$currentTime}");
+                if ($currentTime->hour < 17) {
+                    if ($currentTime->hour < 5) {
+                        // Before 5 PM: Yesterday 5 PM to Current Time
+                        $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                        $endTime = $currentTime;
+                    } else if($currentTime->hour > 5 && $currentTime->hour < 17){
+                        // Before 5 PM: Today 5 PM to Current Time
+                        $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                        $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
+                    }
+                } else {
+                    // After 5 PM: Today 5 PM to Current Time
+                    $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
+                    $endTime = $currentTime;
+                }
             }
-
             Log::info("Calculated start time: {$startTime}");
             Log::info("Calculated end time: {$endTime}");
 

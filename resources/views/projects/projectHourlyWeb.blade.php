@@ -15,15 +15,14 @@
                     <div class="col-md-3">
                         <div class="form-group row row_mar_bm">
                             <div class="col-md-10">
-                                <input type="datetime-local" id="datetime" name="datetime" class="form-control" value="{{ old('datetime', now()->format('Y-m-d\TH:i')) }}">
+                                <input type="datetime-local" id="startDateTime" name="startDateTime" class="form-control" value="{{ old('startDateTime', now()->format('Y-m-d\TH:i')) }}">
                             </div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group row row_mar_bm">
                             <div class="col-md-10">
-                                <input type="text" id="end_time" name="end_time"
-                                class="white-smoke form-control end_time" value="" autocomplete="nope">
+                                <input type="datetime-local" id="endDateTime" name="endDateTime" class="form-control" value="{{ old('endDateTime', now()->format('Y-m-d\TH:i')) }}">
                             </div>
                         </div>
                     </div>
