@@ -20,7 +20,7 @@
                                    
                                     <div class="col-md-10">
                                      
-                                                {!! Form::foreach('request_date',isset($yesterday) && !empty($yesterday) ? $yesterday : null, [
+                                                {!! Form::date('request_date',isset($yesterday) && !empty($yesterday) ? $yesterday : null, [
                                                     'class' => 'form-control white-smoke pop-non-edt-val',
                                                     'autocomplete' => 'none',
                                                     'style' => 'cursor:pointer',
