@@ -1193,7 +1193,7 @@ class ProjectController extends Controller
     }
     public function projectHourlyWeb(Request $request)
     {
-        try {
+        try {dd($request->all());
             $projects = collect($this->getProjects());
 
             $currentTime = $request['request_date'] ? Carbon::createFromFormat('m/d/Y h:i A', $request['request_date']) : Carbon::now();
