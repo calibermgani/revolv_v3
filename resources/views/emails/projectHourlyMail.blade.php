@@ -36,6 +36,7 @@
         @php
         $today1 = \Carbon\Carbon::now(); // 17:00 is 5 PM in 24-hour format
         $formattedDate = $today1->format('m/d/Y h:i A');
+        $detailedDate = $today1->format('Y-m-d');
         // dd($mailBody,$timeSlots);
         @endphp
 
@@ -57,7 +58,7 @@
                   
                         <tr>
                             <td style="text-align: center; padding: 5px;">
-                                <a href="http://resolv-aims.com/projects/project_detailed_information?project_id={{ App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data['project_id'],'encode') }}&subproject_id={{ App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data['subproject_id'],'encode') }}">
+                                <a href="http://resolv-aims.com/projects/project_detailed_information?project_id={{ App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data['project_id'],'encode') }}&subproject_id={{ App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data['subproject_id'],'encode') }}&requested_date={{ $detailedDate }}">
                                     {{ $data['project'] }}
                                 </a>
                             </td>

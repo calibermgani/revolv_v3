@@ -1003,12 +1003,14 @@ class ProjectController extends Controller
             $modelClass = "App\\Models\\" . Str::studly($tableName);
             $currentTime = Carbon::now();
             Log::info("Current time: {$currentTime}");
-           if ($currentTime->hour < 17) {
-               $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
-                $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
-            } else {
-                $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
-                $endTime = $currentTime;
+            if($request->input('requested_date') == $currentTime->format('Y-m-d')) {             
+                if ($currentTime->hour < 17) {
+                    $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                        $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
+                } else {
+                    $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
+                    $endTime = $currentTime;
+                }
             }
             $timeSlots = [];
             $slotStart = $startTime->copy();
