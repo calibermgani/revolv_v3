@@ -1200,8 +1200,8 @@ class ProjectController extends Controller
                 $startTime =  Carbon::parse($request['startDateTime']);
                 $endTime = Carbon::parse($request['endDateTime']);
             } else {
-                $currentTime = Carbon::now(); 
-                Log::info("Current time: {$currentTime}");
+                  $currentTime = Carbon::now(); 
+            Log::info("Current time: {$currentTime}");
                 if ($currentTime->hour < 17) {
                     if ($currentTime->hour < 5) {
                         // Before 5 PM: Yesterday 5 PM to Current Time
@@ -1283,7 +1283,7 @@ class ProjectController extends Controller
             Log::info("Final mail body: ", $mailBody);
 
             $today = Carbon::now();
-            return view('projects.projectHourlyWeb', compact( 'mailBody','headers', 'today'));
+            return view('projects.projectHourlyWeb', compact( 'mailBody','headers', 'startTime', 'endTime', 'today'));
         } catch (\Exception $e) {
             Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
             Log::debug($e->getTraceAsString());
