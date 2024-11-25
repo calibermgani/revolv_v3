@@ -37,7 +37,7 @@
         $today1 = \Carbon\Carbon::now(); // 17:00 is 5 PM in 24-hour format
         $formattedDate = $today1->format('m/d/Y h:i A');
         $detailedDate = $today1->format('Y-m-d');
-        $formattedDate = '11/22/2024 06:58 PM';
+        $formattedDate = '11/22/2024 04:58 AM';
         // dd($mailBody,$timeSlots);
         @endphp
 
