@@ -1082,5 +1082,128 @@ class ProjectController extends Controller
             Log::debug($e->getTraceAsString());
         }
     }
+    public function projectWorkWeb()
+    {
+        try {
+            $yesterday = Carbon::yesterday();
+            if ($yesterday->isSaturday()) {
+                $yesterday = $yesterday->subDay(1); // Friday
+            } elseif ($yesterday->isSunday()) {
+                $yesterday = $yesterday->subDay(2); // Friday
+            }
+    
+            $today = Carbon::today();
+            $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y')." - Trail";
+            $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
+            $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
+
+            $yesterday5PM = Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
+            $tomorrow9AM = Carbon::tomorrow()->setTime(9, 0); 
+    
+            $projects = collect($this->getProjects());
+    
+            // Prepare batch data collection.
+            $prjoectsPending = $projects->flatMap(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday) {
+                $projectData = [];
+                $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+    
+                if ($prjName !== null) {
+                    $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
+    
+                    foreach ($subProjects as $subProject) {
+                        $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
+                        $modelClass = "App\\Models\\" . Str::studly($tableName);
+    
+                        if (class_exists($modelClass)) {
+                            $aCount = $modelClass::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                        ->where('chart_status', 'CE_Assigned')->count();
+                            $cCount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                        ->where('chart_status', 'CE_Completed')->count();
+                            $qCount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                        ->where('chart_status', 'QA_Completed')->count();
+                            $productionARCount =  $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today) {
+                                $query->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                      ->whereIn('chart_status', [
+                                          'CE_Inprocess', 
+                                          'CE_Pending', 
+                                          'CE_Completed', 
+                                          'CE_Clarification', 
+                                          'CE_Hold', 
+                                          'AR_non_workable', 
+                                          'Revoke'
+                                      ]);
+                                 $query->orWhere(function ($subQuery) use ($yesterday, $today) {
+                                    $subQuery->where('chart_status', 'CE_Completed')
+                                             ->whereDate('coder_work_date', $yesterday)
+                                             ->orWhereDate('coder_work_date', $today);
+                                });
+                            })
+                            ->groupBy('CE_emp_id')
+                            ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate])  // Adding the HAVING clause for the updated_at condition
+                            ->select('CE_emp_id') 
+                            ->get() 
+                            ->count(); 
+                            // $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                            // ->whereIn('chart_status', ['QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])->whereNotNull('QA_emp_id')
+                            // ->groupBy('QA_emp_id')->count();
+                            $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                ->whereIn('chart_status', ['QA_Assigned', 'QA_Inprocess', 'QA_Pending', 'QA_Completed', 'QA_Clarification', 'QA_Hold'])
+                                ->whereNotNull('QA_emp_id')
+                                ->distinct('QA_emp_id')
+                                ->count('QA_emp_id'); 
+
+                            $totalARDetails = $this->getProjectTotalARCount($project['id']);
+                             $totalQADetails = $this->getProjectTotalQACount($project['id']);
+                            $loggedResolvAR = 0;$loggedResolvQA=0;
+
+                           // Log::error('Total Users: ' . print_r($totalARDetails['totalArList'], true));
+
+                            foreach($totalARDetails['totalArList'] as $key => $arList){
+                               // $yesterday5PM = "2024-11-07 17:00:00"; //Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
+                                //$tomorrow9AM = "2024-11-08 09:00:00"; //Carbon::tomorrow()->setTime(9, 0); 
+                                $yesterday5PM = Carbon::yesterday()->setTime(17, 0); 
+                                $tomorrow9AM =  Carbon::tomorrow()->setTime(9, 0);
+                                //$loggedResolvAR += EmployeeLogin::where('user_id',$arList['assigned_people'])->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
+                                $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
+                                                    ->whereBetween('updated_at', [$yesterday5PM, $tomorrow9AM])
+                                                    ->distinct('user_id')
+                                                    ->count();
+                                //Log::error('Total Users Time'.$tomorrow9AM);
+                           
+
+
+                            }
+                            foreach($totalQADetails['totalQAList'] as $key => $qaList){
+                                $loggedResolvQA += EmployeeLogin::where('user_id',$qaList['assigned_people'])
+                                ->whereBetween('updated_at', [$yesterday5PM, $tomorrow9AM])
+                                ->distinct('user_id')
+                                ->count();
+                            }
+                            $projectData[] = [
+                                'project' => $project['client_name'] . '-' . $subProject,
+                                'Chats' => $aCount,
+                                'Coder' => $cCount,
+                                'QA' => $qCount,
+                                'total_ar' => $totalARDetails['totalArCount'],
+                                'total_qa' => $totalQADetails['totalQACount'],
+                                'prodcution_ar' => $productionARCount,
+                                'prodcution_qa' => $productionQACount,
+                                'logged_resolv_ar' => $loggedResolvAR,
+                                'logged_resolv_qa' => $loggedResolvQA,
+                            ];
+                        }
+                    }
+                }
+    
+                return $projectData;
+            });
+            $mailBody = $prjoectsPending->toArray();
+            return view('projects.projectUtilizationWeb', compact('mailHeader', 'mailBody', 'yesterday'));
+            Log::info('ProjectWorkMail executed successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error in ProjectWorkMail: ' . $e->getMessage());
+            Log::debug($e->getMessage());
+        }
+    }
 
     }
