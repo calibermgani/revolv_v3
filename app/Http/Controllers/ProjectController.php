@@ -1008,19 +1008,15 @@ class ProjectController extends Controller
             if ($request->input('requested_date')) {
                 $requestedDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('requested_date'));
                 $currentDate = $currentTime->format('Y-m-d');
-                $inputDate = $requestedDate->format('Y-m-d');      // dd($inputDate ,$currentDate,$requestedDate->hour);     
+                $inputDate = $requestedDate->format('Y-m-d');     
                 if ($inputDate !== $currentDate) {
                     if ($requestedDate->hour < 5) {
                        $startTime = $requestedDate->copy()->subDay()->setHour(17)->setMinute(0)->setSecond(0);
                         $endTime = $requestedDate->copy()->setHour(5)->setMinute(0)->setSecond(0);
                     } else {
-                        // If the requested time is after 5 AM, the startTime is that day's 5 PM and endTime is next day's 5 AM
                         $startTime = $requestedDate->copy()->setHour(17)->setMinute(0)->setSecond(0);
                         $endTime = $requestedDate->copy()->addDay()->setHour(5)->setMinute(0)->setSecond(0);
                     }
-            
-                    Log::info("Start Time: {$startTime}");
-                    Log::info("End Time: {$endTime}");
                 } else {
                     if ($currentTime->hour < 17) {
                         $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
