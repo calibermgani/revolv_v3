@@ -77,7 +77,7 @@
                     @endforeach
                 @else
                 <tr>
-                    <td colspan="4" style="text-align: center; padding: 5px;">--No Records--</td>
+                    <td colspan="9" style="text-align: center; padding: 5px;">--No Records--</td>
                 </tr>
                 @endif
             </tbody>
