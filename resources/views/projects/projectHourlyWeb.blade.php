@@ -15,14 +15,14 @@
                     <div class="col-md-3">
                         <div class="form-group row row_mar_bm">
                             <div class="col-md-10">
-                                <input type="datetime-local" id="startDateTime" name="startDateTime" class="form-control"   value="{{ old('startDateTime', isset($startTime) ? $startTime->format('Y-m-d\TH:i') : now()->format('Y-m-d\TH:i')) }}">>
+                                <input type="datetime-local" id="startDateTime" name="startDateTime" class="form-control"   value="{{ old('startDateTime', isset($startTime) ? $startTime->format('Y-m-d\TH:i') : now()->format('Y-m-d\TH:i')) }}">
                             </div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group row row_mar_bm">
                             <div class="col-md-10">
-                                <input type="datetime-local" id="endDateTime" name="endDateTime" class="form-control"   value="{{ old('endDateTime', isset($endTime) ? $endTime->format('Y-m-d\TH:i') : now()->format('Y-m-d\TH:i')) }}">>
+                                <input type="datetime-local" id="endDateTime" name="endDateTime" class="form-control"   value="{{ old('endDateTime', isset($endTime) ? $endTime->format('Y-m-d\TH:i') : now()->format('Y-m-d\TH:i')) }}">
                             </div>
                         </div>
                     </div>
