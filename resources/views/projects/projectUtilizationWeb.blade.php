@@ -62,8 +62,7 @@
                         border="1" style="border-collapse: collapse">
                         <thead>
                             <tr>
-                                <th
-                                    style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">
+                                <th>
                                     Project</th>
                                 {{-- <th style="text-align: left;padding: 5px;">Chats</th> --}}
                                 <th
