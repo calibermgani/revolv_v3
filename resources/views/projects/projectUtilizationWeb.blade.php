@@ -10,7 +10,7 @@
     <p>Resolv utilization report for {{$yesterday->format('m/d/Y')}}</p>
     {{-- <p>Please find below the daily update for the production inventory : 06/07/2024</p> --}}
    
-    <table class="table" border="1" style="border-collapse: collapse">
+    <table   class="table table-separate table-head-custom no-footer dtr-column clients_list_filter"  border="1" style="border-collapse: collapse">
         <thead>
             <tr>
                 <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Project</th>
@@ -52,7 +52,6 @@
             @endif
         </tbody>
     </table>
-    <br>
-    @include('emails.emailFooter')
+   
 </div>
 @endsection
