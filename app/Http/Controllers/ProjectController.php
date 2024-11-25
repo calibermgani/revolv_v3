@@ -1087,7 +1087,7 @@ class ProjectController extends Controller
         try {
           
             $yesterday = $request['request_date'] ? Carbon::createFromFormat('Y-m-d', $request->input('request_date')) : Carbon::yesterday(); //Carbon::yesterday();
-            dd( $yesterday, Carbon::yesterday());
+            // dd( $yesterday, Carbon::yesterday());
             if ($yesterday->isSaturday()) {
                 $yesterday = $yesterday->subDay(1); // Friday
             } elseif ($yesterday->isSunday()) {
