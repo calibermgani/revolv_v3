@@ -1013,7 +1013,7 @@ class ProjectController extends Controller
                 } else {
                     $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
                     $endTime = $currentTime;
-                }  dd( $request->input('requested_date'),  $startTime,$request->input('requested_date')->toda); 
+                }  dd( $request->input('requested_date'),  $startTime,Carbon::createFromFormat('Y-m-d',$request->input('requested_date'))); 
             } else {
                 if ($currentTime->hour < 17) {
                     $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
