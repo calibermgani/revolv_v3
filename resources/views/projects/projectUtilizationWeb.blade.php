@@ -2,52 +2,59 @@
 @section('content')
     <div class="card card-custom custom-card">
         <div class="card card-custom custom-top-border">
-            <div class="card-body mr-8 ml-12" id="filter_section" >
-                                   
-              
-                         {!! Form::open([
-                            'url' =>'',
-                            'class' => 'form',
-                            'id' => 'formSearch',
-                            'enctype' => 'multipart/form-data',
-                        ]) !!}
-                        @csrf
-                 
-                            <div class="row mr-0 ml-0">
-                             
-                            <div class="col-md-3">
-                                <div class="form-group row row_mar_bm">
-                                   
-                                    <div class="col-md-10">
-                                     
-                                                {!! Form::date('request_date',isset($yesterday) && !empty($yesterday) ? $yesterday : null, [
-                                                    'class' => 'form-control white-smoke pop-non-edt-val',
-                                                    'autocomplete' => 'none',
-                                                    'style' => 'cursor:pointer',
-                                                    'rows' => 3
-                                                ]) !!}
-                                          
-                                    </div>
-                                
-                                
-                                </div>
+            <div class="card-body mr-8 ml-12" id="filter_section">
+
+
+                {!! Form::open([
+                    'url' => '',
+                    'class' => 'form',
+                    'id' => 'formSearch',
+                    'enctype' => 'multipart/form-data',
+                ]) !!}
+                @csrf
+
+                <div class="row mr-0 ml-0">
+
+                    <div class="col-md-3">
+                        <div class="form-group row row_mar_bm">
+
+                            <div class="col-md-10">
+
+                                {!! Form::date('request_date', isset($yesterday) && !empty($yesterday) ? $yesterday : null, [
+                                    'class' => 'form-control white-smoke pop-non-edt-val',
+                                    'autocomplete' => 'none',
+                                    'style' => 'cursor:pointer',
+                                    'rows' => 3,
+                                ]) !!}
+
                             </div>
-                      
-                            </div>
-                      
-                    <div class="form-footer" style="justify-content: center !important">                                      
-                        <button type="submit" class="btn  btn-white-black font-weight-bold"
-                            id="filter_search">Search</button> &nbsp;&nbsp; <button class="btn btn-light-danger" id="filter_clear" tabindex="10" type="button">
-                                <span>
-                                    <span>Clear</span>
-                                </span>
-                            </button>                        
+
+
+                        </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="form-group row">
+
+                            <div class="col-md-10">
+                                <button type="submit" class="btn  btn-white-black font-weight-bold" id="filter_search">Search</button>
+                                &nbsp;&nbsp; <button class="btn btn-light-danger" id="filter_clear" tabindex="10" type="button">
+                                    <span>
+                                        <span>Clear</span>
+                                    </span>
+                                </button>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+
              
+
             </div>
             <div class="card-body py-0 px-7">
                 <div class="table-responsive pb-2">
-                    <p>Resolv utilization report for {{ $yesterday->format('m/d/Y') }}</p>
 
                     <table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter"
                         border="1" style="border-collapse: collapse">
