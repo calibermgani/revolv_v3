@@ -1008,7 +1008,7 @@ class ProjectController extends Controller
             if ($request->input('requested_date')) {
                 $requestedDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('requested_date'));
                 $currentDate = $currentTime->format('Y-m-d');
-                $inputDate = $requestedDate->format('Y-m-d');       dd($inputDate ,$currentDate,$requestedDate->hour);     
+                $inputDate = $requestedDate->format('Y-m-d');      // dd($inputDate ,$currentDate,$requestedDate->hour);     
                 if ($inputDate !== $currentDate) {
                     if ($requestedDate->hour < 5) {
                        $startTime = $requestedDate->copy()->subDay()->setHour(17)->setMinute(0)->setSecond(0);
