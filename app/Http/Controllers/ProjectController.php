@@ -1278,8 +1278,8 @@ class ProjectController extends Controller
 
             Log::info("Final mail body: ", $mailBody);
 
-            $today = Carbon::now();dd($mailBody,$headers,$today);
-            return view('projects.projectHourlyWeb.blade', compact( 'mailBody','headers', 'today'));
+            $today = Carbon::now();
+            return view('projects.projectHourlyWeb', compact( 'mailBody','headers', 'today'));
         } catch (\Exception $e) {
             Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
             Log::debug($e->getTraceAsString());
