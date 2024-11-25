@@ -71,7 +71,7 @@
                                     <tr>
                                         <td style="text-align: center; padding: 5px;">
                                             <a
-                                                href="http://resolv-aims.com/projects/project_detailed_information?project_id={{ App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data['project_id'], 'encode') }}&subproject_id={{ App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data['subproject_id'], 'encode') }}&requested_date={{ $formattedDate }}">
+                                                href="http://resolv-aims.com/projects/project_detailed_information_web?project_id={{ App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data['project_id'], 'encode') }}&subproject_id={{ App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data['subproject_id'], 'encode') }}&startTime={{ $startTime }}&endTime={{ $endTime }}">
                                                 {{ $data['project'] }}
                                             </a>
                                         </td>
