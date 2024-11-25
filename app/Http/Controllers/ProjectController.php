@@ -1004,7 +1004,7 @@ class ProjectController extends Controller
             $tableName = Str::slug(Str::lower($prjName . '_' . $subPrjName), '_');
             $modelClass = "App\\Models\\" . Str::studly($tableName);
             $currentTime = Carbon::now();
-            Log::info("Current time: {$currentTime}");
+            Log::info("Current time: {$currentTime}");dd($request->input('requested_date'),$currentTime->format('Y-m-d'));
             if($request->input('requested_date') && $request->input('requested_date') == $currentTime->format('Y-m-d')) { 
                          
                 if ($currentTime->hour < 17) {
