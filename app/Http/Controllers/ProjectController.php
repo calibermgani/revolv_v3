@@ -185,10 +185,11 @@ class ProjectController extends Controller
             Log::info('Executing ProjectWorkMail logic.');
             $loginEmpId = Session::get('loginDetails')['userDetail']['emp_id'] ?? "";    
             //$toMailId = ["mgani@caliberfocus.com"];
-            $toMailId = ["elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","radhika@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com","devanathan@annexmed.net"];
-            $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net"];
+            // $toMailId = ["elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","radhika@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com","devanathan@annexmed.net"];
+            // $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net"];
 
-
+            $toMailId = ["vijayalaxmi@caliberfocus.com"];
+            $ccMailId = ["vijayalaxmi@caliberfocus.com"];
     
             // Set date ranges based on yesterday's date, skipping weekends.
             $yesterday = Carbon::yesterday();
