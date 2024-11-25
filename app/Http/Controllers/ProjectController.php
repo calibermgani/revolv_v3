@@ -1004,8 +1004,8 @@ class ProjectController extends Controller
             $tableName = Str::slug(Str::lower($prjName . '_' . $subPrjName), '_');
             $modelClass = "App\\Models\\" . Str::studly($tableName);
             $currentTime = Carbon::now();
-            Log::info("Current time: {$currentTime}");dd( $request->input('requested_date'),$currentTime->format('Y-m-d'),$currentTime->format('Y-m-d h:i A'));
-            if($request->input('requested_date') && $request->input('requested_date') !== $currentTime->format('Y-m-d')) { 
+            Log::info("Current time: {$currentTime}");
+            if($request->input('requested_date') &&Carbon::createFromFormat('m/d/Y h:i A',  $request->input('requested_date'))->format('Y-m-d') !== $currentTime->format('Y-m-d')) { 
                          
                 if ($currentTime->hour < 17) {
                     $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
@@ -1013,7 +1013,7 @@ class ProjectController extends Controller
                 } else {
                     $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
                     $endTime = $currentTime;
-                }  dd( $request->input('requested_date'),  $startTime,Carbon::createFromFormat('Y-m-d',$request->input('requested_date'))->setHour(17)->setMinute(0)->setSecond(0)); 
+                }  dd( $request->input('requested_date'),  $startTime,Carbon::createFromFormat('m/d/Y h:i A',$request->input('requested_date'))->setHour(17)->setMinute(0)->setSecond(0)); 
             } else {
                 if ($currentTime->hour < 17) {
                     $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
