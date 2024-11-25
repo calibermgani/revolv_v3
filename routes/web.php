@@ -152,6 +152,7 @@ Route::group(['prefix' => 'qa_production'], function () {
     Route::group(['prefix' => 'projects'], function() {
         Route::any('project_detailed_information', 'App\Http\Controllers\ProjectController@projectDetailedInformation');
         Route::any('project_work_web', 'App\Http\Controllers\ProjectController@projectWorkWeb');
+        Route::any('project_hourly_web', 'App\Http\Controllers\ProjectController@projectHourlyWeb');
     });
 Auth::routes();
 // });

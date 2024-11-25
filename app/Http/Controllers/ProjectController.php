@@ -1087,7 +1087,6 @@ class ProjectController extends Controller
         try {
           
             $yesterday = $request['request_date'] ? Carbon::createFromFormat('Y-m-d', $request->input('request_date')) : Carbon::yesterday(); //Carbon::yesterday();
-            // dd( $yesterday, Carbon::yesterday());
             if ($yesterday->isSaturday()) {
                 $yesterday = $yesterday->subDay(1); // Friday
             } elseif ($yesterday->isSunday()) {
@@ -1099,12 +1098,10 @@ class ProjectController extends Controller
             $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
             $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
 
-            $yesterday5PM = Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
+            $yesterday5PM = Carbon::yesterday()->setTime(17, 0); 
             $tomorrow9AM = Carbon::tomorrow()->setTime(9, 0); 
     
             $projects = collect($this->getProjects());
-    
-            // Prepare batch data collection.
             $prjoectsPending = $projects->flatMap(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday) {
                 $projectData = [];
                 $prjName = Helpers::projectName($project['id'])->project_name ?? null;
@@ -1141,13 +1138,10 @@ class ProjectController extends Controller
                                 });
                             })
                             ->groupBy('CE_emp_id')
-                            ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate])  // Adding the HAVING clause for the updated_at condition
+                            ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate]) 
                             ->select('CE_emp_id') 
                             ->get() 
                             ->count(); 
-                            // $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                            // ->whereIn('chart_status', ['QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])->whereNotNull('QA_emp_id')
-                            // ->groupBy('QA_emp_id')->count();
                             $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
                                 ->whereIn('chart_status', ['QA_Assigned', 'QA_Inprocess', 'QA_Pending', 'QA_Completed', 'QA_Clarification', 'QA_Hold'])
                                 ->whereNotNull('QA_emp_id')
@@ -1157,23 +1151,13 @@ class ProjectController extends Controller
                             $totalARDetails = $this->getProjectTotalARCount($project['id']);
                              $totalQADetails = $this->getProjectTotalQACount($project['id']);
                             $loggedResolvAR = 0;$loggedResolvQA=0;
-
-                           // Log::error('Total Users: ' . print_r($totalARDetails['totalArList'], true));
-
                             foreach($totalARDetails['totalArList'] as $key => $arList){
-                               // $yesterday5PM = "2024-11-07 17:00:00"; //Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
-                                //$tomorrow9AM = "2024-11-08 09:00:00"; //Carbon::tomorrow()->setTime(9, 0); 
                                 $yesterday5PM = Carbon::yesterday()->setTime(17, 0); 
                                 $tomorrow9AM =  Carbon::tomorrow()->setTime(9, 0);
-                                //$loggedResolvAR += EmployeeLogin::where('user_id',$arList['assigned_people'])->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
                                 $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
                                                     ->whereBetween('updated_at', [$yesterday5PM, $tomorrow9AM])
                                                     ->distinct('user_id')
                                                     ->count();
-                                //Log::error('Total Users Time'.$tomorrow9AM);
-                           
-
-
                             }
                             foreach($totalQADetails['totalQAList'] as $key => $qaList){
                                 $loggedResolvQA += EmployeeLogin::where('user_id',$qaList['assigned_people'])
@@ -1201,11 +1185,104 @@ class ProjectController extends Controller
             });
             $mailBody = $prjoectsPending->toArray();
             return view('projects.projectUtilizationWeb', compact('mailHeader', 'mailBody', 'yesterday'));
-            Log::info('ProjectWorkMail executed successfully.');
+            Log::info('ProjectWorkWeb executed successfully.');
         } catch (\Exception $e) {
-            Log::error('Error in ProjectWorkMail: ' . $e->getMessage());
+            Log::error('Error in ProjectWorkWeb: ' . $e->getMessage());
             Log::debug($e->getMessage());
         }
     }
+    public function projectHourlyWeb(Request $request)
+    {
+        try {
+            $projects = collect($this->getProjects());
 
+            $currentTime = $request['request_date'] ? Carbon::createFromFormat('m/d/Y h:i A', $request['request_date']) : Carbon::now();
+            Log::info("Current time: {$currentTime}");
+            if ($currentTime->hour < 17) {
+                if ($currentTime->hour < 5) {
+                    // Before 5 PM: Yesterday 5 PM to Current Time
+                    $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                    $endTime = $currentTime;
+                } else if($currentTime->hour > 5 && $currentTime->hour < 17){
+                    // Before 5 PM: Today 5 PM to Current Time
+                    $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                    $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
+                }
+            } else {
+                // After 5 PM: Today 5 PM to Current Time
+                $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
+                $endTime = $currentTime;
+            }dd($$startTime,$ $endTime);
+
+            Log::info("Calculated start time: {$startTime}");
+            Log::info("Calculated end time: {$endTime}");
+
+            // Generate time slots dynamically
+            $timeSlots = [];
+            $slotStart = $startTime->copy();
+
+            while ($slotStart->lessThan($endTime)) {
+                $slotEnd = $slotStart->copy()->addHour();
+                $timeSlots[] = [
+                    'start' => $slotStart,
+                    'end' => $slotEnd,
+                    'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $slotEnd->format('m/d/Y h:i A'),
+                ];
+                Log::info("Time slot added: {$slotStart} to {$slotEnd}");
+                $slotStart = $slotEnd;
+            }
+
+            Log::info("Generated time slots: ", $timeSlots);
+
+            // Initialize headers and mail body
+            $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
+            $mailBody = [];
+
+            // Process each project
+            foreach ($projects as $project) {
+                $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+                if ($prjName === null) {
+                    Log::warning("Project name is null for project ID {$project['id']}");
+                    continue;
+                }
+
+                $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
+                foreach ($subProjects as $subKey => $subProject) {
+                    $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
+                    $modelClass = "App\\Models\\" . Str::studly($tableName);
+
+                    if (!class_exists($modelClass)) {
+                        Log::warning("Model class does not exist: {$modelClass}");
+                        continue;
+                    }
+
+                    $hourlyCounts = [];
+                    foreach ($timeSlots as $slot) {
+                        $slotStart = $slot['start'];
+                        $slotEnd = $slot['end'];
+                        $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
+                            ->where('chart_status', 'CE_Completed')
+                            ->count();
+
+                        $hourlyCounts[] = $hourlyCount; 
+                    }
+
+                    $mailBody[] = [
+                        'project' => $project['client_name'] . '-' . $subProject,
+                        'hourlyCount' => $hourlyCounts, // Full array of counts for all slots                        
+                        'project_id' => $project['id'],
+                        'subproject_id' => $subKey,
+                    ];
+                }
+            }
+
+            Log::info("Final mail body: ", $mailBody);
+
+            $today = Carbon::now();
+            return view('projects.projectHourlyWeb.blade', compact( 'mailBody','headers', 'today'));
+        } catch (\Exception $e) {
+            Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
+            Log::debug($e->getTraceAsString());
+        }
+    }
     }
