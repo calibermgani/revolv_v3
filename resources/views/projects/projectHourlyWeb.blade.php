@@ -15,8 +15,7 @@
                     <div class="col-md-3">
                         <div class="form-group row row_mar_bm">
                             <div class="col-md-10">
-                                <input type="text" id="start_time" name="start_time"
-                                class="white-smoke form-control start_time" value="" autocomplete="nope">
+                                <input type="datetime-local" id="datetime" name="datetime" class="form-control" value="{{ old('datetime', now()->format('Y-m-d\TH:i')) }}">
                             </div>
                         </div>
                     </div>
