@@ -4,7 +4,7 @@
         <div class="card card-custom custom-top-border">
             <div class="card-body mr-8 ml-12" id="filter_section">
                 {!! Form::open([
-                    'url' => url('projects/project_work_web'),
+                    'url' => url('projects/project_hourly_web'),
                     'class' => 'form',
                     'id' => 'formSearch',
                     'enctype' => 'multipart/form-data',
