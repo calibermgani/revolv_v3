@@ -6,12 +6,7 @@
                                    
               
                          {!! Form::open([
-                            'url' =>
-                            url('projects_assigned/' . $clientName . '/' . $subProjectName) .
-                                            '?parent=' .
-                                            request()->parent .
-                                            '&child=' .
-                                            request()->child,
+                            'url' =>'',
                             'class' => 'form',
                             'id' => 'formSearch',
                             'enctype' => 'multipart/form-data',
