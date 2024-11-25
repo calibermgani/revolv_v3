@@ -1097,7 +1097,7 @@ class ProjectController extends Controller
             $today = $request['request_date'] ? Carbon::createFromFormat('Y-m-d', $request->input('request_date'))->copy()->addDay() : Carbon::today();
             $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y')." - Trail";
             $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
-            $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
+            $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();dd($yesterday,$today,$yesterDayStartDate,$yesterDayEndDate);
 
             $yesterday5PM = Carbon::yesterday()->setTime(17, 0); // Yesterday at 5:00 PM
             $tomorrow9AM = Carbon::tomorrow()->setTime(9, 0); 
