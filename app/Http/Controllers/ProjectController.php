@@ -1085,7 +1085,7 @@ class ProjectController extends Controller
     public function projectWorkWeb(Request $request)
     {
         try {
-           // dd($request->all());
+            dd($request->all());
             $yesterday = Carbon::yesterday();
             if ($yesterday->isSaturday()) {
                 $yesterday = $yesterday->subDay(1); // Friday
