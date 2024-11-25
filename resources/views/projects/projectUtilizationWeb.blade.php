@@ -6,12 +6,7 @@
 
 
                 {!! Form::open([
-                    'url' =>
-                        url('projects/project_work_web') .
-                        '?parent=' .
-                        request()->parent .
-                        '&child=' .
-                        request()->child,
+                    'url' => url('projects/project_work_web'),
                     'class' => 'form',
                     'id' => 'formSearch',
                     'enctype' => 'multipart/form-data',
