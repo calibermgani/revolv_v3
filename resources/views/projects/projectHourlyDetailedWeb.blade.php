@@ -9,8 +9,7 @@
                         <tr>
                             <th>User Name</th>
                             @foreach ($headers as $header)
-                                <th
-                                    style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">
+                                <th>
                                     {{ $header }}</th>
                             @endforeach
                             <th>Reached Target</th>
