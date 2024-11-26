@@ -1,7 +1,7 @@
 @extends('layouts.app3')
 @section('content')
     <div class="card card-custom custom-card">
-        <div class="card card-custom custom-top-border">
+     
             <div class="card-body py-0 px-7">
                 <div class="table-responsive" style="margin-left: 5rem;margin-right: 5rem;">
                     <table class="table" border="1" style="border-collapse: collapse">
@@ -42,6 +42,5 @@
                     </table>
                 </div>
             </div>
-        </div>
     </div>
 @endsection
