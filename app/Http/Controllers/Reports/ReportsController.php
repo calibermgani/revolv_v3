@@ -228,7 +228,7 @@ class ReportsController extends Controller
                         if ($header == 'ar_action_code') {
                             if ($data != '--' && $data != null) {
                                 $action = Helpers::arActionById($data);
-                                $data = $action['action_code'] != null ? $action['action_code'] : $data;
+                                $data = $action != null ? $action['action_code'] : $data;
                             } else {
                                 $data;
                             }
