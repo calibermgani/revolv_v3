@@ -53,7 +53,7 @@
                     @endphp
 
                     <table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter"
-                        border="1" style="border-collapse: collapse" id="project_hourly_table">
+                      id="project_hourly_table">
                         <thead>
                             <tr>
                                 <th>Project</th>
