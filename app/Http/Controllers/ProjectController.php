@@ -556,7 +556,17 @@ class ProjectController extends Controller
                 ]);
                 
                 if ($response->getStatusCode() == 200) {
-                    return json_decode($response->getBody(), true);
+                    $responseData = json_decode($response->getBody(), true);
+    
+                    if (isset($responseData['totalArCount'])) {
+                        return $responseData;
+                    } else {
+                        throw new \Exception('totalArCount not found in the API response');
+                    }
+                } elseif ($response->getStatusCode() == 429) {
+                    $retryAfter = $response->getHeader('Retry-After')[0] ?? 2; // Default wait time 2 seconds
+                    sleep((int)$retryAfter);
+                    throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
                 } else {
                     throw new \Exception('API request failed with status: ' . $response->getStatusCode());
                 }
@@ -589,11 +599,22 @@ class ProjectController extends Controller
                 ]);
                 
                 if ($response->getStatusCode() == 200) {
-                    return json_decode($response->getBody(), true);
+                    $responseData = json_decode($response->getBody(), true);
+    
+                    if (isset($responseData['totalQACount'])) {
+                        return $responseData;
+                    } else {
+                        throw new \Exception('totalQACount not found in the API response');
+                    }
+                } elseif ($response->getStatusCode() == 429) {
+                    $retryAfter = $response->getHeader('Retry-After')[0] ?? 2; // Default wait time 2 seconds
+                    sleep((int)$retryAfter);
+                    throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
                 } else {
                     throw new \Exception('API request failed with status: ' . $response->getStatusCode());
                 }
-            }, 2000); // 2000ms delay
+            }, 2000);
+            
             return $data;
             // if (isset($data['totalQACount'])) {
             //     return $data['totalQACount'];
@@ -602,7 +623,7 @@ class ProjectController extends Controller
             //     return null;
             // }
         } catch (\Exception $e) {
-            Log::error('Error in getProjectTotalARCount: ' . $e->getMessage());
+            Log::error('Error in getProjectTotalQACount: ' . $e->getMessage());
             return null;
         }
     }
