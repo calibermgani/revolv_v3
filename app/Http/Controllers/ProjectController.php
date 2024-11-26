@@ -1312,7 +1312,7 @@ class ProjectController extends Controller
                     $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
                     $endTime = $currentTime;
                 }
-            }
+            }dd($request['startDateTime'] ,$request['endDateTime'],   $startTime,$endTime );
             $timeSlots = [];
             $slotStart = $startTime->copy();
             while ($slotStart->lessThan($endTime)) {
