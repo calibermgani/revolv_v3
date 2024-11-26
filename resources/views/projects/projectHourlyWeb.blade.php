@@ -4,7 +4,7 @@
         <div class="card card-custom custom-top-border">
             <div class="card-body mr-8 ml-12" id="filter_section">
                 {!! Form::open([
-                    'url' => url('projects/project_hourly_web'),
+                    'url' => url('projects/project_hourly_web') . '?parent=' . request()->parent . '&child=' . request()->child,
                     'class' => 'form',
                     'id' => 'formSearch',
                     'enctype' => 'multipart/form-data',
@@ -15,14 +15,16 @@
                     <div class="col-md-3">
                         <div class="form-group row row_mar_bm">
                             <div class="col-md-10">
-                                <input type="datetime-local" id="startDateTime" name="startDateTime" class="form-control"   value="{{ old('startDateTime', isset($startTime) ? $startTime->format('Y-m-d\TH:i') : now()->format('Y-m-d\TH:i')) }}">
+                                <input type="datetime-local" id="startDateTime" name="startDateTime" class="form-control"
+                                    value="{{ old('startDateTime', isset($startTime) ? $startTime->format('Y-m-d\TH:i') : now()->format('Y-m-d\TH:i')) }}">
                             </div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group row row_mar_bm">
                             <div class="col-md-10">
-                                <input type="datetime-local" id="endDateTime" name="endDateTime" class="form-control"   value="{{ old('endDateTime', isset($endTime) ? $endTime->format('Y-m-d\TH:i') : now()->format('Y-m-d\TH:i')) }}">
+                                <input type="datetime-local" id="endDateTime" name="endDateTime" class="form-control"
+                                    value="{{ old('endDateTime', isset($endTime) ? $endTime->format('Y-m-d\TH:i') : now()->format('Y-m-d\TH:i')) }}">
                             </div>
                         </div>
                     </div>
@@ -46,15 +48,15 @@
             <div class="card-body py-0 px-7">
                 <div class="table-responsive pb-2">
                     @php
-                    $today1 = \Carbon\Carbon::now(); // 17:00 is 5 PM in 24-hour format
-                    $formattedDate = $today1->format('m/d/Y h:i A');
+                        $today1 = \Carbon\Carbon::now(); // 17:00 is 5 PM in 24-hour format
+                        $formattedDate = $today1->format('m/d/Y h:i A');
                     @endphp
-            
+
                     <table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter"
-                        border="1" style="border-collapse: collapse">
+                        border="1" style="border-collapse: collapse" id="project_hourly_table">
                         <thead>
                             <tr>
-                              <th>Project</th>
+                                <th>Project</th>
                                 @foreach ($headers as $timeSlot)
                                     <th>
                                         {{ $timeSlot }}</th>
@@ -90,3 +92,18 @@
         </div>
     </div>
 @endsection
+@push('view.scripts')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var table = $("#project_hourly_table").DataTable({
+                processing: true,
+                ordering: true,
+                clientSide: true,
+                lengthChange: false,
+                searching: true,
+            });
+        });
+    </script>
+@endpush

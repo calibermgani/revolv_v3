@@ -4,7 +4,8 @@
         <div class="card card-custom custom-top-border">
             <div class="card-body mr-8 ml-12" id="filter_section">
                 {!! Form::open([
-                    'url' => url('projects/project_work_web'),
+                    'url' => url('projects/project_work_web') . '?parent=' . request()->parent . '&child=' . request()->child,
+                    ,
                     'class' => 'form',
                     'id' => 'formSearch',
                     'enctype' => 'multipart/form-data',
@@ -88,14 +89,19 @@
         </div>
     </div>
 @endsection
-<script>
-    $(document).ready(function() {
-        var table = $("#project_utilization_table").DataTable({
+
+@push('view.scripts')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var table = $("#project_utilization_table").DataTable({
                 processing: true,
                 ordering: true,
                 clientSide: true,
                 lengthChange: false,
-                searching:  true,
+                searching: true,
+            });
         });
-    });
-</script>
+    </script>
+@endpush
