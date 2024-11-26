@@ -4,7 +4,7 @@
         <div class="card-body py-0 px-7">
             <p style="margin-top: 5rem;margin-left: 0.4rem;">{{ $title }}</p>
             <div class="table-responsive pb-2">
-                <table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter" border="1" style="border-collapse: collapse">
+                <table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter" id="project_hourly_detailed">
                     <thead>
                         <tr>
                             <th>User Name</th>
@@ -38,3 +38,20 @@
         </div>
     </div>
 @endsection
+@push('view.scripts')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var table = $("#project_hourly_detailed").DataTable({
+                processing: true,
+                ordering: true,
+                clientSide: true,
+                lengthChange: false,
+                searching: true,
+                pageLength: 20,
+            });
+        });
+    </script>
+@endpush
+
