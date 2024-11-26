@@ -55,3 +55,23 @@
         </div>
     </div>
 </div>
+
+@push('view.scripts')
+    <script>
+        $(document).ready(function() {
+              $('a.project_header').on('click', function(e) {
+                KTApp.block('#kt_aside', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Fetching...',
+                    });
+            });
+
+            $(window).on('load', function() {
+                KTApp.unblock('#kt_aside');
+            });
+        });
+    
+    </script>
+    @endpush
