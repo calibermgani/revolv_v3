@@ -100,6 +100,7 @@
                 clientSide: true,
                 lengthChange: false,
                 searching: true,
+                pageLength: 20,
             });
         });
     </script>
