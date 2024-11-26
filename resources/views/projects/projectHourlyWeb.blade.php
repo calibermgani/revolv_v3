@@ -66,14 +66,14 @@
                             @if (isset($mailBody) && count($mailBody) > 0)
                                 @foreach ($mailBody as $data)
                                     <tr>
-                                        <td style="text-align: center; padding: 5px;">
+                                        <td>
                                             <a target="_blank"
                                                 href="http://resolv-aims.com/projects/project_detailed_information_web?project_id={{ App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data['project_id'], 'encode') }}&subproject_id={{ App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data['subproject_id'], 'encode') }}&startTime={{ $startTime }}&endTime={{ $endTime }}">
                                                 {{ $data['project'] }}
                                             </a>
                                         </td>
                                         @foreach ($data['hourlyCount'] as $count)
-                                            <td style="text-align: center;padding: 5px;">{{ $count }}</td>
+                                            <td>{{ $count }}</td>
                                         @endforeach
                                     </tr>
                                 @endforeach
