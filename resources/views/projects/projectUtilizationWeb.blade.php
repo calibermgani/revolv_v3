@@ -45,7 +45,7 @@
                 <div class="table-responsive pb-2">
 
                     <table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter"
-                        border="1" style="border-collapse: collapse" id="project_utilization_table">
+                         id="project_utilization_table">
                         <thead>
                             <tr>
                                 <th>Project</th>
