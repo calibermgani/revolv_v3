@@ -2,7 +2,7 @@
 @section('content')
     <div class="card card-custom custom-card">
         <div class="card-body py-0 px-7">
-            <p style="margin-top: 5rem;margin-left: 5.5rem;">{{ $title }}</p>
+            <p style="margin-top: 5rem;margin-left: 0.4rem;">{{ $title }}</p>
             <div class="table-responsive pb-2">
                 <table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter" border="1" style="border-collapse: collapse">
                     <thead>
