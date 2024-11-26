@@ -1360,4 +1360,13 @@ class ProjectController extends Controller
             Log::debug($e->getTraceAsString());
         }
     }
+    public function projectUtilizationDashboard(Request $request) {
+        try {
+            return view('projects.projectUtilizationDashboard');
+
+    } catch (\Exception $e) {
+            Log::error('Error in ProjectUtilizationDashboard: ' . $e->getMessage());
+            Log::debug($e->getTraceAsString());
+        }
+    }
 }
