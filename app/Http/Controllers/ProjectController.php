@@ -271,7 +271,7 @@ class ProjectController extends Controller
                                 $tomorrow9AM =  Carbon::tomorrow()->setTime(9, 0);
                                 //$loggedResolvAR += EmployeeLogin::where('user_id',$arList['assigned_people'])->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])->count();
                                 $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
-                                                    ->whereBetween('updated_at', [$yesterday5PM, $tomorrow9AM])
+                                                    ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
                                                     ->distinct('user_id')
                                                     ->count();
                                 //Log::error('Total Users Time'.$tomorrow9AM);
