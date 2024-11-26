@@ -217,16 +217,16 @@ class ReportsController extends Controller
                                 $data;
                             }
                         }
-                        if ($header == 'ar_status_code') {dd($header,$data);
-                            if ($data != '--') {
-                                $data = Helpers::arStatusById($data)['ar_status_code'];
+                        if ($header == 'ar_status_code') {
+                            if ($data != '--' && $data != null) {
+                                $data = Helpers::arStatusById($data);
                             } else {
                                 $data;
                             }
                         }
                         if ($header == 'ar_action_code') {
-                            if ($data != '--') {
-                                $data = Helpers::arActionById($data)['ar_action_code'];
+                            if ($data != '--' && $data != null) {
+                                $data = Helpers::arActionById($data);
                             } else {
                                 $data;
                             }
