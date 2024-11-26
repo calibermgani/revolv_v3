@@ -217,7 +217,7 @@ class ReportsController extends Controller
                                 $data;
                             }
                         }
-                        if ($header == 'ar_status_code') {
+                        if ($header == 'ar_status_code') {dd($header,$data);
                             if ($data != '--') {
                                 $data = Helpers::arStatusById($data)['ar_status_code'];
                             } else {
