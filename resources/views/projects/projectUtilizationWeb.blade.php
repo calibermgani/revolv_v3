@@ -1,6 +1,6 @@
 @extends('layouts.app3')
 @section('content')
-    <div class="card card-custom custom-card">
+    <div class="card card-custom custom-card" id="project_utilization">
         <div class="card card-custom custom-top-border">
             <div class="card-body mr-8 ml-12" id="filter_section">
                 {!! Form::open([
@@ -102,6 +102,14 @@
                 searching: true,
                 pageLength: 20,
             });
+        });
+        $(document).on('click', '#filter_search', function() {
+            KTApp.block('#project_utilization', {
+                    overlayColor: '#000000',
+                    state: 'danger',
+                    opacity: 0.1,
+                    message: 'Fetching...',
+                });
         });
     </script>
 @endpush
