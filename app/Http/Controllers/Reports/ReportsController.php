@@ -219,14 +219,16 @@ class ReportsController extends Controller
                         }
                         if ($header == 'ar_status_code') {
                             if ($data != '--' && $data != null) {
-                                $data = Helpers::arStatusById($data)->status_code;
+                                $status = Helpers::arStatusById($data);
+                                $data = $status['status_code'];
                             } else {
                                 $data;
                             }
                         }
                         if ($header == 'ar_action_code') {
                             if ($data != '--' && $data != null) {
-                                $data = Helpers::arActionById($data)->action_code;
+                                $action = Helpers::arActionById($data);
+                                $data = $action['action_code'];
                             } else {
                                 $data;
                             }
