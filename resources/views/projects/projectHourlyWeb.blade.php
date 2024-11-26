@@ -70,7 +70,7 @@
                                 @foreach ($mailBody as $data)
                                     <tr>
                                         <td style="text-align: center; padding: 5px;">
-                                            <a
+                                            <a target="_blank"
                                                 href="http://resolv-aims.com/projects/project_detailed_information_web?project_id={{ App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data['project_id'], 'encode') }}&subproject_id={{ App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data['subproject_id'], 'encode') }}&startTime={{ $startTime }}&endTime={{ $endTime }}">
                                                 {{ $data['project'] }}
                                             </a>
