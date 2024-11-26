@@ -45,7 +45,7 @@
                 <div class="table-responsive pb-2">
 
                     <table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter"
-                        border="1" style="border-collapse: collapse">
+                        border="1" style="border-collapse: collapse" id="project_utilization_table">
                         <thead>
                             <tr>
                                 <th>Project</th>
@@ -88,3 +88,14 @@
         </div>
     </div>
 @endsection
+<script>
+    $(document).ready(function() {
+        var table = $("#project_utilization_table").DataTable({
+                processing: true,
+                ordering: true,
+                clientSide: true,
+                lengthChange: false,
+                searching:  true,
+        });
+    });
+</script>
