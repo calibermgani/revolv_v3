@@ -4,7 +4,7 @@
         <div class="card-body py-0 px-7">
             <p style="margin-top: 5rem;margin-left: 5.5rem;">{{ $title }}</p>
             <div class="table-responsive pb-2">
-                <table class="table" border="1" style="border-collapse: collapse">
+                <table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter" border="1" style="border-collapse: collapse">
                     <thead>
                         <tr>
                             <th>User Name</th>
