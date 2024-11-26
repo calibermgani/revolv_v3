@@ -1301,9 +1301,9 @@ class ProjectController extends Controller
             $modelClass = "App\\Models\\" . Str::studly($tableName);
             $currentTime = Carbon::now();
             Log::info("Current time: {$currentTime}");
-            if($request['startDateTime'] && $request['endDateTime']) {
-                $startTime =  Carbon::parse($request['startDateTime']);
-                $endTime = Carbon::parse($request['endDateTime']);
+            if($request['startTime'] && $request['endTime']) {
+                $startTime =  Carbon::parse($request['startTime']);
+                $endTime = Carbon::parse($request['endTime']);
             } else {
                 if ($currentTime->hour < 17) {
                     $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
@@ -1312,7 +1312,7 @@ class ProjectController extends Controller
                     $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
                     $endTime = $currentTime;
                 }
-            }dd($request['startDateTime'] ,$request['endDateTime'],   $startTime,$endTime );
+            }dd($request['startTime'] ,$request['endTime'],   $startTime,$endTime );
             $timeSlots = [];
             $slotStart = $startTime->copy();
             while ($slotStart->lessThan($endTime)) {
