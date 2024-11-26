@@ -220,7 +220,7 @@ class ReportsController extends Controller
                         if ($header == 'ar_status_code') {
                             if ($data != '--' && $data != null) {
                                 $status = Helpers::arStatusById($data);
-                                $data = $status['status_code'];
+                                $data = $status != null ? $status['status_code'] : $data;
                             } else {
                                 $data;
                             }
@@ -228,7 +228,7 @@ class ReportsController extends Controller
                         if ($header == 'ar_action_code') {
                             if ($data != '--' && $data != null) {
                                 $action = Helpers::arActionById($data);
-                                $data = $action['action_code'];
+                                $data = $action['action_code'] != null ? $action['action_code'] : $data;
                             } else {
                                 $data;
                             }
