@@ -217,20 +217,20 @@ class ReportsController extends Controller
                                 $data;
                             }
                         }
-                        if ($header == 'ar_status_code') {
-                            if ($data != '--' && $data != null) {
-                                $data = Helpers::arStatusById($data)['status_code'];
-                            } else {
-                                $data;
-                            }
-                        }
-                        if ($header == 'ar_action_code') {
-                            if ($data != '--' && $data != null) {
-                                $data = Helpers::arActionById($data)['action_code'];
-                            } else {
-                                $data;
-                            }
-                        }
+                        // if ($header == 'ar_status_code') {
+                        //     if ($data != '--' && $data != null) {
+                        //         $data = Helpers::arStatusById($data)['status_code'];
+                        //     } else {
+                        //         $data;
+                        //     }
+                        // }
+                        // if ($header == 'ar_action_code') {
+                        //     if ($data != '--' && $data != null) {
+                        //         $data = Helpers::arActionById($data)['action_code'];
+                        //     } else {
+                        //         $data;
+                        //     }
+                        // }
                         if ($header === 'chart_status') {
                             //$data = str_replace('_', ' ', $row->{'record_status'});
                             $recordStatus = $row->{'record_status'};
