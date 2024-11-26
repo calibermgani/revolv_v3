@@ -1362,7 +1362,7 @@ class ProjectController extends Controller
     }
     public function projectUtilizationDashboard(Request $request) {
         try {
-            return view('projects.projectUtilizationDashboard');
+            return view('projects.ProjectUtilizationDashboard');
 
     } catch (\Exception $e) {
             Log::error('Error in ProjectUtilizationDashboard: ' . $e->getMessage());
