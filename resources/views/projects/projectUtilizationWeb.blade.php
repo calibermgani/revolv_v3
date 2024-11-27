@@ -139,5 +139,8 @@
                 message: 'Fetching...',
             });
         });
+        $(document).on('click', '#filter_clear', function() {
+            location.reload();
+        })
     </script>
 @endpush

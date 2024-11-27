@@ -134,6 +134,10 @@
             })
             table.buttons().container()
                 .appendTo('.outside');
+                
+            $(document).on('click', '#filter_clear', function() {
+                location.reload();
+            })
         });
     </script>
 @endpush
