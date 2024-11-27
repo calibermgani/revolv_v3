@@ -61,6 +61,8 @@ use App\Models\CfpsAr;
 use App\Models\CfpsArDuplicates;
 use App\Models\DkmgAr;
 use App\Models\DkmgArDuplicates;
+use App\Models\BncmhcAr;
+use App\Models\BncmhcArDuplicates;
 
 class ProjectAutomationController extends Controller
 {
@@ -2610,7 +2612,7 @@ class ProjectAutomationController extends Controller
                 'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,
                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
-                'ins_pkg_name' => isset($request->ins_pkg_name) && $request->ins_pkg_name != "NULL" ? $request->ins_pkg_name     : NULL
+                'ins_pkg_name' => isset($request->ins_pkg_name) && $request->ins_pkg_name != "NULL" ? $request->ins_pkg_name: NULL
                 ];
  
              $duplicateRecordExisting  =  DkmgAr::where($attributes)->exists();
@@ -2715,6 +2717,89 @@ class ProjectAutomationController extends Controller
                 'srvbucket_total' => isset($request->srvbucket_total) && $request->srvbucket_total != "NULL" ? $request->srvbucket_total : NULL,  
                 'lstactiondate' => isset($request->lstactiondate) && $request->lstactiondate != "NULL" ? $request->lstactiondate : NULL,  
                 'trnsfr_type' => isset($request->trnsfr_type) && $request->trnsfr_type != "NULL" ? $request->trnsfr_type : NULL,  
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+             ]);
+             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+     public function bertNashCommunityMentalHealthCenterAR(Request $request)
+     {
+         try {
+             $attributes = [
+                'charge_id' => isset($request->charge_id) && $request->charge_id != "NULL" ? $request->charge_id : NULL,
+                'client_name' => isset($request->client_name) && $request->client_name != "NULL" ? $request->client_name : NULL,  
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance: NULL
+                ];
+ 
+             $duplicateRecordExisting  =  BncmhcAr::where($attributes)->exists();
+             if (!$duplicateRecordExisting) {
+                BncmhcAr::insert([
+                    'charge_id' => isset($request->charge_id) && $request->charge_id != "NULL" ? $request->charge_id : NULL,
+                    'plan' => isset($request->plan) && $request->plan != "NULL" ? $request->plan : NULL,
+                    'client_name' => isset($request->client_name) && $request->client_name != "NULL" ? $request->client_name : NULL,  
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                    'clinician' => isset($request->clinician) && $request->clinician != "NULL" ? $request->clinician : NULL,  
+                    'procedure_name' => isset($request->procedure_name) && $request->procedure_name != "NULL" ? $request->procedure_name : NULL,  
+                    'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,  
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,  
+                    'claim_line_item_id' => isset($request->claim_line_item_id) && $request->claim_line_item_id != "NULL" ? $request->claim_line_item_id : NULL,  
+                    'payer_name_as_per_smartcare' => isset($request->payer_name_as_per_smartcare) && $request->payer_name_as_per_smartcare != "NULL" ? $request->payer_name_as_per_smartcare : NULL,  
+                    'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,  
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                     ]);
+                         return response()->json(['message' => 'Record Inserted Successfully']);
+             } else {
+                 $duplicateRecord  =  BncmhcAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                 if ($duplicateRecord) {
+                     $duplicateRecord->update([
+                        'charge_id' => isset($request->charge_id) && $request->charge_id != "NULL" ? $request->charge_id : NULL,
+                        'plan' => isset($request->plan) && $request->plan != "NULL" ? $request->plan : NULL,
+                        'client_name' => isset($request->client_name) && $request->client_name != "NULL" ? $request->client_name : NULL,  
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                        'clinician' => isset($request->clinician) && $request->clinician != "NULL" ? $request->clinician : NULL,  
+                        'procedure_name' => isset($request->procedure_name) && $request->procedure_name != "NULL" ? $request->procedure_name : NULL,  
+                        'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,  
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,  
+                        'claim_line_item_id' => isset($request->claim_line_item_id) && $request->claim_line_item_id != "NULL" ? $request->claim_line_item_id : NULL,  
+                        'payer_name_as_per_smartcare' => isset($request->payer_name_as_per_smartcare) && $request->payer_name_as_per_smartcare != "NULL" ? $request->payer_name_as_per_smartcare : NULL,  
+                        'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,  
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                     ]);
+                 }
+                 return response()->json(['message' => 'Existing Record Updated Successfully']);
+             }
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+     public function bertNashCommunityMentalHealthCenterARDuplicates(Request $request)
+     {
+         try {
+            
+            BncmhcArDuplicates::insert([
+                'charge_id' => isset($request->charge_id) && $request->charge_id != "NULL" ? $request->charge_id : NULL,
+                'plan' => isset($request->plan) && $request->plan != "NULL" ? $request->plan : NULL,
+                'client_name' => isset($request->client_name) && $request->client_name != "NULL" ? $request->client_name : NULL,  
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                'clinician' => isset($request->clinician) && $request->clinician != "NULL" ? $request->clinician : NULL,  
+                'procedure_name' => isset($request->procedure_name) && $request->procedure_name != "NULL" ? $request->procedure_name : NULL,  
+                'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,  
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,  
+                'claim_line_item_id' => isset($request->claim_line_item_id) && $request->claim_line_item_id != "NULL" ? $request->claim_line_item_id : NULL,  
+                'payer_name_as_per_smartcare' => isset($request->payer_name_as_per_smartcare) && $request->payer_name_as_per_smartcare != "NULL" ? $request->payer_name_as_per_smartcare : NULL,  
+                'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,  
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
