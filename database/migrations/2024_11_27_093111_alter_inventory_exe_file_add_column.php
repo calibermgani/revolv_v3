@@ -14,8 +14,8 @@ class AlterInventoryExeFileAddColumn extends Migration
     public function up()
     {
         Schema::table('inventory_exe_files', function (Blueprint $table) {
-            $table->string('upload_status')->nullable()->after('inventory_count');
-       });
+            $table->string('upload_status')->nullable()->default('auto')->after('inventory_count');
+        });        
     }
 
     /**
