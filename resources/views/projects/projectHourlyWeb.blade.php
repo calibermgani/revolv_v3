@@ -1,10 +1,12 @@
 @extends('layouts.app3')
 @section('content')
     <div class="card card-custom custom-card">
-        <div class="card card-custom custom-top-border">
+        <div class="card-body p-0">
             <div class="card-header border-0 px-4">
                 <div class="row">
-                    <div class="col-md-6"></div>
+                    <div class="col-md-6">
+                        <span class="project_header" style="margin-left: 4px !important;">Hourly</span>
+                    </div>
                     <div class="col-md-6">
                         <div class="row" style="justify-content: flex-end;margin-right:1.4rem">
                             <div class="outside" href="javascript:void(0);"></div>
@@ -12,6 +14,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="card card-custom custom-top-border">
+       
             <div class="card-body mr-8 ml-12" id="filter_section">
                 {!! Form::open([
                     'url' => url('projects/project_hourly_web') . '?parent=' . request()->parent . '&child=' . request()->child,
