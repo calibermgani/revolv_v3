@@ -564,14 +564,14 @@ class ProjectController extends Controller
                         throw new \Exception('totalArCount not found in the API response');
                     }
                 } elseif ($response->getStatusCode() == 429) {
-                    $retryAfter = $response->getHeader('Retry-After')[0] ?? 2; // Default wait time 2 seconds
+                    $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
                     sleep((int)$retryAfter);
                     throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
                 } else {
                     throw new \Exception('API request failed with status: ' . $response->getStatusCode());
                 }
-            }, 2000);
-            return $data;
+            }, [2000, 4000, 8000]);
+            return $data ?? null;
             // if (isset($data['totalArCount'])) {
             //     return $data;
             // } else {
@@ -590,43 +590,41 @@ class ProjectController extends Controller
             $payload = [
                 'token' => '1a32e71a46317b9cc6feb7388238c95d',
                 'client_id' => $project_id,
-            ];            
-            // Retry 3 times, with a 2-second delay between each attempt
+            ];
+    
+            // Retry logic with exponential backoff
             $data = retry(3, function () use ($payload) {
                 $client = new Client(['verify' => false]);
-                $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_total_qa_list', [
+                $response = $client->post('https://aims.officeos.in/api/v1_users/get_resolv_project_total_qa_list', [
                     'json' => $payload,
                 ]);
-                
-                if ($response->getStatusCode() == 200) {
+    
+                if ($response->getStatusCode() === 200) {
                     $responseData = json_decode($response->getBody(), true);
     
                     if (isset($responseData['totalQACount'])) {
                         return $responseData;
                     } else {
-                        throw new \Exception('totalQACount not found in the API response');
+                        throw new \Exception('Missing totalQACount in API response');
                     }
-                } elseif ($response->getStatusCode() == 429) {
-                    $retryAfter = $response->getHeader('Retry-After')[0] ?? 2; // Default wait time 2 seconds
+                } elseif ($response->getStatusCode() === 429) {
+                    $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time
                     sleep((int)$retryAfter);
-                    throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
+                    throw new \Exception('Rate limit exceeded. Retrying after ' . $retryAfter . ' seconds.');
                 } else {
-                    throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+                    throw new \Exception('Unexpected status code: ' . $response->getStatusCode());
                 }
-            }, 2000);
-            
-            return $data;
-            // if (isset($data['totalQACount'])) {
-            //     return $data['totalQACount'];
-            // } else {
-            //     Log::error('totalQACount not found in API response.');
-            //     return null;
-            // }
+            }, [2000, 4000, 8000]);
+    
+            // Return totalQACount from the response
+            return $data ?? null;
+    
         } catch (\Exception $e) {
-            Log::error('Error in getProjectTotalQACount: ' . $e->getMessage());
+            Log::error('Error in getProjectTotalQACount', ['message' => $e->getMessage()]);
             return null;
         }
     }
+    
     // public function projectHourlyMail()
     // {
     //     try {
