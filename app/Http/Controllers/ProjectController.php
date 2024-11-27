@@ -291,7 +291,7 @@ class ProjectController extends Controller
                                 'Coder' => $cCount,
                                 'QA' => $qCount,
                                 'total_ar' => $totalARDetails['totalArCount'],
-                                // 'total_qa' => $totalQADetails['totalQACount'],
+                                'total_qa' => $totalQADetails['totalQACount'],
                                 'prodcution_ar' => $productionARCount,
                                 'prodcution_qa' => $productionQACount,
                                 'logged_resolv_ar' => $loggedResolvAR,
@@ -570,8 +570,8 @@ class ProjectController extends Controller
                 } else {
                     throw new \Exception('API request failed with status: ' . $response->getStatusCode());
                 }
-            }, [2000, 4000, 8000]);
-            return $data ?? null;
+            }, 4000);
+            return $data;
             // if (isset($data['totalArCount'])) {
             //     return $data;
             // } else {
@@ -590,41 +590,43 @@ class ProjectController extends Controller
             $payload = [
                 'token' => '1a32e71a46317b9cc6feb7388238c95d',
                 'client_id' => $project_id,
-            ];
-    
-            // Retry logic with exponential backoff
+            ];            
+            // Retry 3 times, with a 2-second delay between each attempt
             $data = retry(3, function () use ($payload) {
                 $client = new Client(['verify' => false]);
-                $response = $client->post('https://aims.officeos.in/api/v1_users/get_resolv_project_total_qa_list', [
+                $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_total_qa_list', [
                     'json' => $payload,
                 ]);
-    
-                if ($response->getStatusCode() === 200) {
+                
+                if ($response->getStatusCode() == 200) {
                     $responseData = json_decode($response->getBody(), true);
     
                     if (isset($responseData['totalQACount'])) {
                         return $responseData;
                     } else {
-                        throw new \Exception('Missing totalQACount in API response');
+                        throw new \Exception('totalQACount not found in the API response');
                     }
-                } elseif ($response->getStatusCode() === 429) {
-                    $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time
+                } elseif ($response->getStatusCode() == 429) {
+                    $retryAfter = $response->getHeader('Retry-After')[0] ?? 2; // Default wait time 2 seconds
                     sleep((int)$retryAfter);
-                    throw new \Exception('Rate limit exceeded. Retrying after ' . $retryAfter . ' seconds.');
+                    throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
                 } else {
-                    throw new \Exception('Unexpected status code: ' . $response->getStatusCode());
+                    throw new \Exception('API request failed with status: ' . $response->getStatusCode());
                 }
-            }, [2000, 4000, 8000]);
-    
-            // Return totalQACount from the response
-            return $data ?? null;
-    
+            }, 4000);
+            
+            return $data;
+            // if (isset($data['totalQACount'])) {
+            //     return $data['totalQACount'];
+            // } else {
+            //     Log::error('totalQACount not found in API response.');
+            //     return null;
+            // }
         } catch (\Exception $e) {
-            Log::error('Error in getProjectTotalQACount', ['message' => $e->getMessage()]);
+            Log::error('Error in getProjectTotalQACount: ' . $e->getMessage());
             return null;
         }
     }
-    
     // public function projectHourlyMail()
     // {
     //     try {
@@ -1169,7 +1171,7 @@ class ProjectController extends Controller
                                 ->count('QA_emp_id'); 
 
                             $totalARDetails = $this->getProjectTotalARCount($project['id']);
-                            $totalQADetails = $this->getProjectTotalQACount($project['id']);
+                             $totalQADetails = $this->getProjectTotalQACount($project['id']);
                             $loggedResolvAR = 0;$loggedResolvQA=0;
                             foreach($totalARDetails['totalArList'] as $key => $arList){
                                 $yesterday5PM = Carbon::yesterday()->setTime(17, 0); 
@@ -1191,7 +1193,7 @@ class ProjectController extends Controller
                                 'Coder' => $cCount,
                                 'QA' => $qCount,
                                 'total_ar' => $totalARDetails['totalArCount'],
-                                // 'total_qa' => $totalQADetails['totalQACount'],
+                                'total_qa' => $totalQADetails['totalQACount'],
                                 'prodcution_ar' => $productionARCount,
                                 'prodcution_qa' => $productionQACount,
                                 'logged_resolv_ar' => $loggedResolvAR,
