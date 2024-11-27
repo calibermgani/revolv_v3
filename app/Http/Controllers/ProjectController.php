@@ -291,7 +291,7 @@ class ProjectController extends Controller
                                 'Coder' => $cCount,
                                 'QA' => $qCount,
                                 'total_ar' => $totalARDetails['totalArCount'],
-                                'total_qa' => $totalQADetails['totalQACount'],
+                                // 'total_qa' => $totalQADetails['totalQACount'],
                                 'prodcution_ar' => $productionARCount,
                                 'prodcution_qa' => $productionQACount,
                                 'logged_resolv_ar' => $loggedResolvAR,
@@ -957,7 +957,7 @@ class ProjectController extends Controller
             // Initialize headers and mail body
             $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
             $mailBody = [];
-
+            $toMailId=[];
             // Process each project
             foreach ($projects as $project) {
                 $prjName = Helpers::projectName($project['id'])->project_name ?? null;
@@ -998,6 +998,7 @@ class ProjectController extends Controller
                         'project_id' => $project['id'],
                         'subproject_id' => $subKey,
                     ];
+                    $toMailId[] = $project['scope_manager_email'][$subKey];
                 }
             }
 
@@ -1170,7 +1171,7 @@ class ProjectController extends Controller
                                 ->count('QA_emp_id'); 
 
                             $totalARDetails = $this->getProjectTotalARCount($project['id']);
-                             $totalQADetails = $this->getProjectTotalQACount($project['id']);
+                            $totalQADetails = $this->getProjectTotalQACount($project['id']);
                             $loggedResolvAR = 0;$loggedResolvQA=0;
                             foreach($totalARDetails['totalArList'] as $key => $arList){
                                 $yesterday5PM = Carbon::yesterday()->setTime(17, 0); 
@@ -1192,7 +1193,7 @@ class ProjectController extends Controller
                                 'Coder' => $cCount,
                                 'QA' => $qCount,
                                 'total_ar' => $totalARDetails['totalArCount'],
-                                'total_qa' => $totalQADetails['totalQACount'],
+                                // 'total_qa' => $totalQADetails['totalQACount'],
                                 'prodcution_ar' => $productionARCount,
                                 'prodcution_qa' => $productionQACount,
                                 'logged_resolv_ar' => $loggedResolvAR,
