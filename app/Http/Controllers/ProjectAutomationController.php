@@ -83,7 +83,7 @@ class ProjectAutomationController extends Controller
                 'file_name' => isset($request->file_name) ? $request->file_name : NULL
             ];
             $exists = InventoryExeFile::where($whereAttributes)->whereDate('exe_date', now()->format('Y-m-d'))->exists();
-            if (!$exists) {
+            // if (!$exists) {
                 $currentDate = Carbon::now()->format('Y-m-d');
                 if (isset($request->project_id)) {
                     $projectId = $request->project_id;
@@ -150,9 +150,9 @@ class ProjectAutomationController extends Controller
                     return response()->json(['message' => 'Inventory File Inserted Successfully']);
                 }
                 return response()->json(['message' => 'Inventory mail was not sent because the count is zero']);
-            } else {
-                return response()->json(['message' => 'Inventory File already exists']);
-            }
+            // } else {
+            //     return response()->json(['message' => 'Inventory File already exists']);
+            // }
         } catch (\Exception $e) {
             $e->getMessage();
         }
