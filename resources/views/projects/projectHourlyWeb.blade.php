@@ -4,9 +4,7 @@
         <div class="card card-custom custom-top-border">
             <div class="card-header border-0 px-4">
                 <div class="row">
-                 <div class="col-md-6">
-                     <span class="project_header" style="margin-left: 4px !important;">Practice List</span>
-                 </div>
+             
                  <div class="col-md-6">
                      <div class="row" style="justify-content: flex-end;margin-right:1.4rem">
                              {{-- <div class="d-flex align-items-center" id="export_div">
@@ -132,7 +130,9 @@
                     }
                 }],
                  dom: "<'row'<'col-md-12'f><'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>"
-            });
+            })
+            table.buttons().container()
+            .appendTo('.outside');
         });
     </script>
 @endpush
