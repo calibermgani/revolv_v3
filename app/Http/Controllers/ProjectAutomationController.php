@@ -59,6 +59,8 @@ use App\Models\AmbcPrnAr;
 use App\Models\AmbcPrnArDuplicates;
 use App\Models\CfpsAr;
 use App\Models\CfpsArDuplicates;
+use App\Models\DkmgAr;
+use App\Models\DkmgArDuplicates;
 
 class ProjectAutomationController extends Controller
 {
@@ -2590,6 +2592,129 @@ class ProjectAutomationController extends Controller
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
                 'phone_number' => isset($request->phone_number) && $request->phone_number != "NULL" ? $request->phone_number : NULL,  
                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,  
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+             ]);
+             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+
+     public function dayKimballMedicalGroupAr(Request $request)
+     {
+         try {
+             $attributes = [
+                'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                'ins_pkg_name' => isset($request->ins_pkg_name) && $request->ins_pkg_name != "NULL" ? $request->ins_pkg_name     : NULL
+                ];
+ 
+             $duplicateRecordExisting  =  DkmgAr::where($attributes)->exists();
+             if (!$duplicateRecordExisting) {
+                DkmgAr::insert([
+                    'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,
+                    'patientid' => isset($request->patientid) && $request->patientid != "NULL" ? $request->patientid : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                    'patientdob' => isset($request->patientdob) && $request->patientdob != "NULL" ? $request->patientdob : NULL,  
+                    'cstm_ins_grpng' => isset($request->cstm_ins_grpng) && $request->cstm_ins_grpng != "NULL" ? $request->cstm_ins_grpng : NULL,  
+                    'ins_pkg_id' => isset($request->ins_pkg_id) && $request->ins_pkg_id != "NULL" ? $request->ins_pkg_id : NULL,  
+                    'ins_pkg_name' => isset($request->ins_pkg_name) && $request->ins_pkg_name != "NULL" ? $request->ins_pkg_name : NULL,  
+                    'ins_report_cat' => isset($request->ins_report_cat) && $request->ins_report_cat != "NULL" ? $request->ins_report_cat : NULL,  
+                    'proccode' => isset($request->proccode) && $request->proccode != "NULL" ? $request->proccode : NULL,  
+                    'proccode_grp' => isset($request->proccode_grp) && $request->proccode_grp != "NULL" ? $request->proccode_grp : NULL,  
+                    'rndrng_prvdr' => isset($request->rndrng_prvdr) && $request->rndrng_prvdr != "NULL" ? $request->rndrng_prvdr : NULL,  
+                    'sup_prvdr' => isset($request->sup_prvdr) && $request->sup_prvdr != "NULL" ? $request->sup_prvdr : NULL,  
+                    'svc_dprtmnt' => isset($request->svc_dprtmnt) && $request->svc_dprtmnt != "NULL" ? $request->svc_dprtmnt : NULL,  
+                    'rndrng_prvdr_mdcl_grp' => isset($request->rndrng_prvdr_mdcl_grp) && $request->rndrng_prvdr_mdcl_grp != "NULL" ? $request->rndrng_prvdr_mdcl_grp : NULL,  
+                    'sprsvng_prvdr_prvdr_grp' => isset($request->sprsvng_prvdr_prvdr_grp) && $request->sprsvng_prvdr_prvdr_grp != "NULL" ? $request->sprsvng_prvdr_prvdr_grp : NULL,  
+                    'curr_athena_kick_code' => isset($request->curr_athena_kick_code) && $request->curr_athena_kick_code != "NULL" ? $request->curr_athena_kick_code : NULL,  
+                    'curr_athena_kick_code_rej_rsn' => isset($request->curr_athena_kick_code_rej_rsn) && $request->curr_athena_kick_code_rej_rsn != "NULL" ? $request->curr_athena_kick_code_rej_rsn : NULL,  
+                    'currenterrorfull' => isset($request->currenterrorfull) && $request->currenterrorfull != "NULL" ? $request->currenterrorfull : NULL,  
+                    'curr_glbl_rule_rej_rsn' => isset($request->curr_glbl_rule_rej_rsn) && $request->curr_glbl_rule_rej_rsn != "NULL" ? $request->curr_glbl_rule_rej_rsn : NULL,  
+                    'curr_glbl_rule' => isset($request->curr_glbl_rule) && $request->curr_glbl_rule != "NULL" ? $request->curr_glbl_rule : NULL,  
+                    'srvbucket_total' => isset($request->srvbucket_total) && $request->srvbucket_total != "NULL" ? $request->srvbucket_total : NULL,  
+                    'lstactiondate' => isset($request->lstactiondate) && $request->lstactiondate != "NULL" ? $request->lstactiondate : NULL,  
+                    'trnsfr_type' => isset($request->trnsfr_type) && $request->trnsfr_type != "NULL" ? $request->trnsfr_type : NULL,  
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                     ]);
+                         return response()->json(['message' => 'Record Inserted Successfully']);
+             } else {
+                 $duplicateRecord  =  DkmgAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                 if ($duplicateRecord) {
+                     $duplicateRecord->update([
+                        'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,
+                        'patientid' => isset($request->patientid) && $request->patientid != "NULL" ? $request->patientid : NULL,
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                        'patientdob' => isset($request->patientdob) && $request->patientdob != "NULL" ? $request->patientdob : NULL,  
+                        'cstm_ins_grpng' => isset($request->cstm_ins_grpng) && $request->cstm_ins_grpng != "NULL" ? $request->cstm_ins_grpng : NULL,  
+                        'ins_pkg_id' => isset($request->ins_pkg_id) && $request->ins_pkg_id != "NULL" ? $request->ins_pkg_id : NULL,  
+                        'ins_pkg_name' => isset($request->ins_pkg_name) && $request->ins_pkg_name != "NULL" ? $request->ins_pkg_name : NULL,  
+                        'ins_report_cat' => isset($request->ins_report_cat) && $request->ins_report_cat != "NULL" ? $request->ins_report_cat : NULL,  
+                        'proccode' => isset($request->proccode) && $request->proccode != "NULL" ? $request->proccode : NULL,  
+                        'proccode_grp' => isset($request->proccode_grp) && $request->proccode_grp != "NULL" ? $request->proccode_grp : NULL,  
+                        'rndrng_prvdr' => isset($request->rndrng_prvdr) && $request->rndrng_prvdr != "NULL" ? $request->rndrng_prvdr : NULL,  
+                        'sup_prvdr' => isset($request->sup_prvdr) && $request->sup_prvdr != "NULL" ? $request->sup_prvdr : NULL,  
+                        'svc_dprtmnt' => isset($request->svc_dprtmnt) && $request->svc_dprtmnt != "NULL" ? $request->svc_dprtmnt : NULL,  
+                        'rndrng_prvdr_mdcl_grp' => isset($request->rndrng_prvdr_mdcl_grp) && $request->rndrng_prvdr_mdcl_grp != "NULL" ? $request->rndrng_prvdr_mdcl_grp : NULL,  
+                        'sprsvng_prvdr_prvdr_grp' => isset($request->sprsvng_prvdr_prvdr_grp) && $request->sprsvng_prvdr_prvdr_grp != "NULL" ? $request->sprsvng_prvdr_prvdr_grp : NULL,  
+                        'curr_athena_kick_code' => isset($request->curr_athena_kick_code) && $request->curr_athena_kick_code != "NULL" ? $request->curr_athena_kick_code : NULL,  
+                        'curr_athena_kick_code_rej_rsn' => isset($request->curr_athena_kick_code_rej_rsn) && $request->curr_athena_kick_code_rej_rsn != "NULL" ? $request->curr_athena_kick_code_rej_rsn : NULL,  
+                        'currenterrorfull' => isset($request->currenterrorfull) && $request->currenterrorfull != "NULL" ? $request->currenterrorfull : NULL,  
+                        'curr_glbl_rule_rej_rsn' => isset($request->curr_glbl_rule_rej_rsn) && $request->curr_glbl_rule_rej_rsn != "NULL" ? $request->curr_glbl_rule_rej_rsn : NULL,  
+                        'curr_glbl_rule' => isset($request->curr_glbl_rule) && $request->curr_glbl_rule != "NULL" ? $request->curr_glbl_rule : NULL,  
+                        'srvbucket_total' => isset($request->srvbucket_total) && $request->srvbucket_total != "NULL" ? $request->srvbucket_total : NULL,  
+                        'lstactiondate' => isset($request->lstactiondate) && $request->lstactiondate != "NULL" ? $request->lstactiondate : NULL,  
+                        'trnsfr_type' => isset($request->trnsfr_type) && $request->trnsfr_type != "NULL" ? $request->trnsfr_type : NULL,  
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                     ]);
+                 }
+                 return response()->json(['message' => 'Existing Record Updated Successfully']);
+             }
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+     public function dayKimballMedicalGroupArDuplicates(Request $request)
+     {
+         try {
+            
+            DkmgArDuplicates::insert([
+                'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,
+                'patientid' => isset($request->patientid) && $request->patientid != "NULL" ? $request->patientid : NULL,
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                'patientdob' => isset($request->patientdob) && $request->patientdob != "NULL" ? $request->patientdob : NULL,  
+                'cstm_ins_grpng' => isset($request->cstm_ins_grpng) && $request->cstm_ins_grpng != "NULL" ? $request->cstm_ins_grpng : NULL,  
+                'ins_pkg_id' => isset($request->ins_pkg_id) && $request->ins_pkg_id != "NULL" ? $request->ins_pkg_id : NULL,  
+                'ins_pkg_name' => isset($request->ins_pkg_name) && $request->ins_pkg_name != "NULL" ? $request->ins_pkg_name : NULL,  
+                'ins_report_cat' => isset($request->ins_report_cat) && $request->ins_report_cat != "NULL" ? $request->ins_report_cat : NULL,  
+                'proccode' => isset($request->proccode) && $request->proccode != "NULL" ? $request->proccode : NULL,  
+                'proccode_grp' => isset($request->proccode_grp) && $request->proccode_grp != "NULL" ? $request->proccode_grp : NULL,  
+                'rndrng_prvdr' => isset($request->rndrng_prvdr) && $request->rndrng_prvdr != "NULL" ? $request->rndrng_prvdr : NULL,  
+                'sup_prvdr' => isset($request->sup_prvdr) && $request->sup_prvdr != "NULL" ? $request->sup_prvdr : NULL,  
+                'svc_dprtmnt' => isset($request->svc_dprtmnt) && $request->svc_dprtmnt != "NULL" ? $request->svc_dprtmnt : NULL,  
+                'rndrng_prvdr_mdcl_grp' => isset($request->rndrng_prvdr_mdcl_grp) && $request->rndrng_prvdr_mdcl_grp != "NULL" ? $request->rndrng_prvdr_mdcl_grp : NULL,  
+                'sprsvng_prvdr_prvdr_grp' => isset($request->sprsvng_prvdr_prvdr_grp) && $request->sprsvng_prvdr_prvdr_grp != "NULL" ? $request->sprsvng_prvdr_prvdr_grp : NULL,  
+                'curr_athena_kick_code' => isset($request->curr_athena_kick_code) && $request->curr_athena_kick_code != "NULL" ? $request->curr_athena_kick_code : NULL,  
+                'curr_athena_kick_code_rej_rsn' => isset($request->curr_athena_kick_code_rej_rsn) && $request->curr_athena_kick_code_rej_rsn != "NULL" ? $request->curr_athena_kick_code_rej_rsn : NULL,  
+                'currenterrorfull' => isset($request->currenterrorfull) && $request->currenterrorfull != "NULL" ? $request->currenterrorfull : NULL,  
+                'curr_glbl_rule_rej_rsn' => isset($request->curr_glbl_rule_rej_rsn) && $request->curr_glbl_rule_rej_rsn != "NULL" ? $request->curr_glbl_rule_rej_rsn : NULL,  
+                'curr_glbl_rule' => isset($request->curr_glbl_rule) && $request->curr_glbl_rule != "NULL" ? $request->curr_glbl_rule : NULL,  
+                'srvbucket_total' => isset($request->srvbucket_total) && $request->srvbucket_total != "NULL" ? $request->srvbucket_total : NULL,  
+                'lstactiondate' => isset($request->lstactiondate) && $request->lstactiondate != "NULL" ? $request->lstactiondate : NULL,  
+                'trnsfr_type' => isset($request->trnsfr_type) && $request->trnsfr_type != "NULL" ? $request->trnsfr_type : NULL,  
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
