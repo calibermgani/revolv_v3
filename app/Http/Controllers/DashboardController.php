@@ -995,7 +995,7 @@ class DashboardController extends Controller
                         <td class="wrap-text">' . $subProjectName . '</td>
                         <td class="wrap-text">' . $inventoryCount . '</td>
                         <td class="wrap-text">' . date('m/d/Y H:i:s',strtotime($data->exe_date)) . '</td>
-                        <td class="wrap-text">' . $data->upload_status . '</td>';
+                        <td class="wrap-text">' . ucfirst($data->upload_status) . '</td>';
                         $body_info .= '</tr>';
                     }                 
                     $body_info .= '</tbody></table>';
