@@ -2,26 +2,16 @@
 @section('content')
     <div class="card card-custom custom-card">
         <div class="card card-custom custom-top-border">
-            {{-- <div class="card-header border-0 px-4">
+            <div class="card-header border-0 px-4">
                 <div class="row">
+                    <div class="col-md-6"></div>
                     <div class="col-md-6">
                         <div class="row" style="justify-content: flex-end;margin-right:1.4rem">
                             <div class="outside" href="javascript:void(0);"></div>
                         </div>
                     </div>
                 </div>
-            </div> --}}
-            <div class="card-header border-0 px-4">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="row" style="justify-content: flex-end; margin-right: 1.4rem;">
-                            <div class="outside" href="javascript:void(0);" style="position: absolute; top: 0; right: 0; margin-right: 20px;">
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
-            
             <div class="card-body mr-8 ml-12" id="filter_section">
                 {!! Form::open([
                     'url' => url('projects/project_hourly_web') . '?parent=' . request()->parent . '&child=' . request()->child,
