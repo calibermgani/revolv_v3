@@ -565,7 +565,7 @@ class ProjectController extends Controller
                     }
                 } elseif ($response->getStatusCode() == 429) {
                     $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
-                    sleep((int)$retryAfter);
+                    sleep($retryAfter);
                     throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
                 } else {
                     throw new \Exception('API request failed with status: ' . $response->getStatusCode());
@@ -607,8 +607,8 @@ class ProjectController extends Controller
                         throw new \Exception('totalQACount not found in the API response');
                     }
                 } elseif ($response->getStatusCode() == 429) {
-                    $retryAfter = $response->getHeader('Retry-After')[0] ?? 2; // Default wait time 2 seconds
-                    sleep((int)$retryAfter);
+                    $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
+                    sleep($retryAfter);
                     throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
                 } else {
                     throw new \Exception('API request failed with status: ' . $response->getStatusCode());
