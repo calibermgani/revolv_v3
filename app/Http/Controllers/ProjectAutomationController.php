@@ -75,8 +75,7 @@ class ProjectAutomationController extends Controller
                 'sub_project_id' => isset($request->sub_project_id) && $request->sub_project_id != "NULL" ? $request->sub_project_id : NULL,
                 'file_name' => isset($request->file_name) ? $request->file_name : NULL,
                 'exe_date' => now()->format('Y-m-d H:i:s'),
-                'upload_status'=> isset($request->upload_status) ? $request->upload_status : 'Auto',
-                "inventory_count"=>  isset($request->inventory_count) ? $request->inventory_count : NULL
+                'upload_status'=> isset($request->upload_status) ? $request->upload_status : 'Auto'
             ];
             $whereAttributes = [
                 'project_id' => isset($request->project_id) ? $request->project_id : NULL,
@@ -110,7 +109,7 @@ class ProjectAutomationController extends Controller
                 $modelClassDuplicate = "App\\Models\\" . $modelName . 'Duplicates';
                 $currentCount = 0;
                 if (class_exists($modelClass)) {
-                    $currentCount = $modelClass::where('invoke_date', $currentDate)->where('chart_status', 'CE_Assigned')->count();
+                    $currentCount =  isset($request->inventory_count) ? $request->inventory_count : $modelClass::where('invoke_date', $currentDate)->where('chart_status', 'CE_Assigned')->count();
                     $duplicateCount = $modelClassDuplicate::where('invoke_date', $currentDate)->where('chart_status', 'CE_Assigned')->count();
                     // $assignedCount = $modelClass::where('invoke_date', $currentDate)->where('chart_status', 'CE_Assigned')->whereNotNull('CE_emp_id')->count();
                     // $unAssignedCount = $modelClass::where('invoke_date', $currentDate)->where('chart_status', 'CE_Assigned')->whereNull('CE_emp_id')->count();
@@ -119,7 +118,7 @@ class ProjectAutomationController extends Controller
                 }
                 $procodeProjectsCurrent = [];
                 Log::info($prjoectName . " count is " . $currentCount);
-                if (isset($request->inventory_count) &&  $request->inventory_count> 0) {
+                if ($currentCount> 0) {
                     $procodeProjectsCurrent['project'] = $prjoectName;
                     $procodeProjectsCurrent['currentCount'] = $currentCount;
                     $procodeProjectsCurrent['duplicateCount'] = $duplicateCount;
@@ -139,7 +138,7 @@ class ProjectAutomationController extends Controller
                     $project_information["error_description"] = "Default Assigned Count: " . $procodeProjectsCurrent['assignedCount'] . PHP_EOL . " Inventory Uploaded Time: " . now()->format('m/d/Y g:i A');
                     $project_information["error_status_code"] = 200;
                     $project_information["error_date"] = now()->format('Y-m-d H:i:s');
-                    // $attributes["inventory_count"] = $currentCount;
+                    $attributes["inventory_count"] = $currentCount;
                     InventoryExeFile::create($attributes);
                     InventoryErrorLogs::create($project_information);
                     if (isset($toMailId) && !empty($toMailId)) {
