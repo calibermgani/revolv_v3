@@ -217,7 +217,22 @@ class ReportsController extends Controller
                                 $data;
                             }
                         }
-
+                        if ($header == 'ar_status_code') {
+                            if ($data != '--' && $data != null) {
+                                $status = Helpers::arStatusById($data);
+                                $data = $status != null ? $status['status_code'] : $data;
+                            } else {
+                                $data;
+                            }
+                        }
+                        if ($header == 'ar_action_code') {
+                            if ($data != '--' && $data != null) {
+                                $action = Helpers::arActionById($data);
+                                $data = $action != null ? $action['action_code'] : $data;
+                            } else {
+                                $data;
+                            }
+                        }
                         if ($header === 'chart_status') {
                             //$data = str_replace('_', ' ', $row->{'record_status'});
                             $recordStatus = $row->{'record_status'};

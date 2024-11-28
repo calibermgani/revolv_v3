@@ -982,6 +982,7 @@ class DashboardController extends Controller
                                 <th>Sub Project</th>
                                 <th>Uploaded Count</th>
                                 <th>Uploaded Date</th>
+                                <th>Uploaded Status</th>
                             </tr>
                             </thead><tbody>';
 
@@ -993,7 +994,8 @@ class DashboardController extends Controller
                         $body_info .= '<td class="wrap-text">' . $projectName. '</td>
                         <td class="wrap-text">' . $subProjectName . '</td>
                         <td class="wrap-text">' . $inventoryCount . '</td>
-                        <td class="wrap-text">' . date('m/d/Y H:i:s',strtotime($data->exe_date)) . '</td>';
+                        <td class="wrap-text">' . date('m/d/Y H:i:s',strtotime($data->exe_date)) . '</td>
+                        <td class="wrap-text">' . ucfirst($data->upload_status) . '</td>';
                         $body_info .= '</tr>';
                     }                 
                     $body_info .= '</tbody></table>';

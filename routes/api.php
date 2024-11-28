@@ -80,6 +80,10 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('advanced_medical_billing_collections_prn_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@advancedMedicalBillingCollectionsPrnArDuplicates');
     Route::any('colorado_facial_plastic_surgery_ar', 'App\Http\Controllers\ProjectAutomationController@coloradoFacialPlasticSurgeryAr');
     Route::any('colorado_facial_plastic_surgery_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@coloradoFacialPlasticSurgeryArDuplicates');
+    Route::any('day_kimball_medical_group_ar', 'App\Http\Controllers\ProjectAutomationController@dayKimballMedicalGroupAr');
+    Route::any('day_kimball_medical_group_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@dayKimballMedicalGroupArDuplicates');
+    Route::any('bert_nash_community_mental_health_center_ar', 'App\Http\Controllers\ProjectAutomationController@bertNashCommunityMentalHealthCenterAR');
+    Route::any('bert_nash_community_mental_health_center_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@bertNashCommunityMentalHealthCenterARDuplicates');
     
     
 
