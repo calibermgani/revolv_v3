@@ -63,6 +63,9 @@ use App\Models\DkmgAr;
 use App\Models\DkmgArDuplicates;
 use App\Models\BncmhcAr;
 use App\Models\BncmhcArDuplicates;
+use App\Models\RnAr;
+use App\Models\RnArDuplicates;
+
 
 class ProjectAutomationController extends Controller
 {
@@ -2812,4 +2815,162 @@ class ProjectAutomationController extends Controller
              $e->getMessage();
          }
      }
+
+  // Retina Northwest
+
+  public function RetinaNorthwestAR(Request $request)
+     {
+         try {
+             $attributes = [
+                'acct_no' => isset($request->acct_no) && $request->acct_no != "NULL" ? $request->acct_no : NULL,                
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance: NULL
+                ];
+ 
+             $duplicateRecordExisting  =  RnAr::where($attributes)->exists();
+             if (!$duplicateRecordExisting) {
+                RnAr::insert([
+                    'patientname' => isset($request->patientname) && $request->patientname != "NULL" ? $request->patientname : NULL,
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                    'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,  
+                    'acct_no' => isset($request->acct_no) && $request->acct_no != "NULL" ? $request->acct_no : NULL,  
+                    'uid' => isset($request->uid) && $request->uid != "NULL" ? $request->uid : NULL,  
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                    'year' => isset($request->year) && $request->year != "NULL" ? $request->year : NULL,  
+                    'month' => isset($request->month) && $request->month != "NULL" ? $request->month : NULL,  
+                    'responsibility' => isset($request->responsibility) && $request->responsibility != "NULL" ? $request->responsibility : NULL,  
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,  
+                    'first_billed' => isset($request->first_billed) && $request->first_billed != "NULL" ? $request->first_billed : NULL,  
+                    'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,  
+                    'last_billed' => isset($request->last_billed) && $request->last_billed != "NULL" ? $request->last_billed : NULL, 
+                    'last_payment' => isset($request->last_payment) && $request->last_payment != "NULL" ? $request->last_payment : NULL, 
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL, 
+                    'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL, 
+                    'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL, 
+                    'policyid' => isset($request->policyid) && $request->policyid != "NULL" ? $request->policyid : NULL,
+                    'group_number' => isset($request->group_number) && $request->group_number != "NULL" ? $request->group_number : NULL,
+                    'on_hold' => isset($request->on_hold) && $request->on_hold != "NULL" ? $request->on_hold : NULL,
+                    'aging_current' => isset($request->aging_current) && $request->aging_current != "NULL" ? $request->aging_current : NULL,
+                    'aging_30_to_60' => isset($request->aging_30_to_60) && $request->aging_30_to_60 != "NULL" ? $request->aging_30_to_60 : NULL,
+                    'aging_60_to_90' => isset($request->aging_60_to_90) && $request->aging_60_to_90 != "NULL" ? $request->aging_60_to_90 : NULL,
+                    'aging_90_to_120' => isset($request->aging_90_to_120) && $request->aging_90_to_120 != "NULL" ? $request->aging_90_to_120 : NULL,
+                    'aging_120_to_150' => isset($request->aging_120_to_150) && $request->aging_120_to_150 != "NULL" ? $request->aging_120_to_150 : NULL,
+                    'aging_older' => isset($request->aging_older) && $request->aging_older != "NULL" ? $request->aging_older : NULL,
+                    'last_worklist_status_name' => isset($request->last_worklist_status_name) && $request->last_worklist_status_name != "NULL" ? $request->last_worklist_status_name : NULL,
+                    'location' => isset($request->location) && $request->location != "NULL" ? $request->location : NULL,
+                    'last_worklist_status_note' => isset($request->last_worklist_status_note) && $request->last_worklist_status_note != "NULL" ? $request->last_worklist_status_note : NULL,
+                    'last_worklist_status_date' => isset($request->last_worklist_status_date) && $request->last_worklist_status_date != "NULL" ? $request->last_worklist_status_date : NULL,
+                    'last_worklist_status_username' => isset($request->last_worklist_status_username) && $request->last_worklist_status_username != "NULL" ? $request->last_worklist_status_username : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                     ]);
+                         return response()->json(['message' => 'Record Inserted Successfully']);
+             } else {
+                 $duplicateRecord  =  RnAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                 if ($duplicateRecord) {
+                     $duplicateRecord->update([
+                        'patientname' => isset($request->patientname) && $request->patientname != "NULL" ? $request->patientname : NULL,
+                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                        'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,  
+                        'acct_no' => isset($request->acct_no) && $request->acct_no != "NULL" ? $request->acct_no : NULL,  
+                        'uid' => isset($request->uid) && $request->uid != "NULL" ? $request->uid : NULL,  
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                        'year' => isset($request->year) && $request->year != "NULL" ? $request->year : NULL,  
+                        'month' => isset($request->month) && $request->month != "NULL" ? $request->month : NULL,  
+                        'responsibility' => isset($request->responsibility) && $request->responsibility != "NULL" ? $request->responsibility : NULL,  
+                        'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,  
+                        'first_billed' => isset($request->first_billed) && $request->first_billed != "NULL" ? $request->first_billed : NULL,  
+                        'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,  
+                        'last_billed' => isset($request->last_billed) && $request->last_billed != "NULL" ? $request->last_billed : NULL, 
+                        'last_payment' => isset($request->last_payment) && $request->last_payment != "NULL" ? $request->last_payment : NULL, 
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL, 
+                        'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL, 
+                        'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL, 
+                        'policyid' => isset($request->policyid) && $request->policyid != "NULL" ? $request->policyid : NULL,
+                        'group_number' => isset($request->group_number) && $request->group_number != "NULL" ? $request->group_number : NULL,
+                        'on_hold' => isset($request->on_hold) && $request->on_hold != "NULL" ? $request->on_hold : NULL,
+                        'aging_current' => isset($request->aging_current) && $request->aging_current != "NULL" ? $request->aging_current : NULL,
+                        'aging_30_to_60' => isset($request->aging_30_to_60) && $request->aging_30_to_60 != "NULL" ? $request->aging_30_to_60 : NULL,
+                        'aging_60_to_90' => isset($request->aging_60_to_90) && $request->aging_60_to_90 != "NULL" ? $request->aging_60_to_90 : NULL,
+                        'aging_90_to_120' => isset($request->aging_90_to_120) && $request->aging_90_to_120 != "NULL" ? $request->aging_90_to_120 : NULL,
+                        'aging_120_to_150' => isset($request->aging_120_to_150) && $request->aging_120_to_150 != "NULL" ? $request->aging_120_to_150 : NULL,
+                        'aging_older' => isset($request->aging_older) && $request->aging_older != "NULL" ? $request->aging_older : NULL,
+                        'last_worklist_status_name' => isset($request->last_worklist_status_name) && $request->last_worklist_status_name != "NULL" ? $request->last_worklist_status_name : NULL,
+                        'location' => isset($request->location) && $request->location != "NULL" ? $request->location : NULL,
+                        'last_worklist_status_note' => isset($request->last_worklist_status_note) && $request->last_worklist_status_note != "NULL" ? $request->last_worklist_status_note : NULL,
+                        'last_worklist_status_date' => isset($request->last_worklist_status_date) && $request->last_worklist_status_date != "NULL" ? $request->last_worklist_status_date : NULL,
+                        'last_worklist_status_username' => isset($request->last_worklist_status_username) && $request->last_worklist_status_username != "NULL" ? $request->last_worklist_status_username : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                     ]);
+                 }
+                 return response()->json(['message' => 'Existing Record Updated Successfully']);
+             }
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+     public function RetinaNorthwestARDuplicates(Request $request)
+     {
+         try {
+            
+            RnArDuplicates::insert([
+                'patientname' => isset($request->patientname) && $request->patientname != "NULL" ? $request->patientname : NULL,
+                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,  
+                'acct_no' => isset($request->acct_no) && $request->acct_no != "NULL" ? $request->acct_no : NULL,  
+                'uid' => isset($request->uid) && $request->uid != "NULL" ? $request->uid : NULL,  
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                'year' => isset($request->year) && $request->year != "NULL" ? $request->year : NULL,  
+                'month' => isset($request->month) && $request->month != "NULL" ? $request->month : NULL,  
+                'responsibility' => isset($request->responsibility) && $request->responsibility != "NULL" ? $request->responsibility : NULL,  
+                'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,  
+                'first_billed' => isset($request->first_billed) && $request->first_billed != "NULL" ? $request->first_billed : NULL,  
+                'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,  
+                'last_billed' => isset($request->last_billed) && $request->last_billed != "NULL" ? $request->last_billed : NULL, 
+                'last_payment' => isset($request->last_payment) && $request->last_payment != "NULL" ? $request->last_payment : NULL, 
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL, 
+                'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL, 
+                'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL, 
+                'policyid' => isset($request->policyid) && $request->policyid != "NULL" ? $request->policyid : NULL,
+                'group_number' => isset($request->group_number) && $request->group_number != "NULL" ? $request->group_number : NULL,
+                'on_hold' => isset($request->on_hold) && $request->on_hold != "NULL" ? $request->on_hold : NULL,
+                'aging_current' => isset($request->aging_current) && $request->aging_current != "NULL" ? $request->aging_current : NULL,
+                'aging_30_to_60' => isset($request->aging_30_to_60) && $request->aging_30_to_60 != "NULL" ? $request->aging_30_to_60 : NULL,
+                'aging_60_to_90' => isset($request->aging_60_to_90) && $request->aging_60_to_90 != "NULL" ? $request->aging_60_to_90 : NULL,
+                'aging_90_to_120' => isset($request->aging_90_to_120) && $request->aging_90_to_120 != "NULL" ? $request->aging_90_to_120 : NULL,
+                'aging_120_to_150' => isset($request->aging_120_to_150) && $request->aging_120_to_150 != "NULL" ? $request->aging_120_to_150 : NULL,
+                'aging_older' => isset($request->aging_older) && $request->aging_older != "NULL" ? $request->aging_older : NULL,
+                'last_worklist_status_name' => isset($request->last_worklist_status_name) && $request->last_worklist_status_name != "NULL" ? $request->last_worklist_status_name : NULL,
+                'location' => isset($request->location) && $request->location != "NULL" ? $request->location : NULL,
+                'last_worklist_status_note' => isset($request->last_worklist_status_note) && $request->last_worklist_status_note != "NULL" ? $request->last_worklist_status_note : NULL,
+                'last_worklist_status_date' => isset($request->last_worklist_status_date) && $request->last_worklist_status_date != "NULL" ? $request->last_worklist_status_date : NULL,
+                'last_worklist_status_username' => isset($request->last_worklist_status_username) && $request->last_worklist_status_username != "NULL" ? $request->last_worklist_status_username : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+             ]);
+             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
