@@ -83,21 +83,37 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script>
         $(document).ready(function() {
-                  $('#formConfigurationLsit').DataTable({
+                //   $('#formConfigurationLsit').DataTable({
+                //     lengthChange: false,
+                //     searching: true,
+                //     pageLength: 20,
+                //     language: {
+                //         "search": '',
+                //         "searchPlaceholder": "   Search",
+                //     },
+                //     "columnDefs": [
+                //         { "width": "200px", "targets": 0 }, // Adjust the width as needed
+                //         { "width": "150px", "targets": 1 }, // Adjust the width as needed
+                //         // Add more columnDefs for each column as needed
+                //         { "className": "dt-wrap", "targets": "_all" } // Enable text wrapping for all columns
+                //     ]
+                // });
+                $('#formConfigurationLsit').DataTable({
+                    processing: true,
                     lengthChange: false,
+                    clientSide: true,
                     searching: true,
                     pageLength: 20,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    "initComplete": function(settings, json) {
+                        $('body').find('.dataTables_scrollBody').addClass("scrollbar");
+                        $('body').find('.dataTables_scrollBody').css("margin-top",'-0.3rem','important');
+                    },
                     language: {
                         "search": '',
                         "searchPlaceholder": "   Search",
-                    },
-                    "columnDefs": [
-                        { "width": "200px", "targets": 0 }, // Adjust the width as needed
-                        { "width": "150px", "targets": 1 }, // Adjust the width as needed
-                        { "width": "200px", "targets": 2 }, 
-                        // Add more columnDefs for each column as needed
-                        { "className": "dt-wrap", "targets": "_all" } // Enable text wrapping for all columns
-                    ]
+                    }
                 });
 
                 // $('tr[data-href]').click(function() { // full row click
