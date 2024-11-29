@@ -1410,7 +1410,7 @@ class ProjectController extends Controller
         $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
         // Fetch project data
         $projects = collect($this->getProjects());
-        $projectIds = $projects->pluck('id')->toArray();
+        $projectIds = [];
         $projectsPending = $projects->flatMap(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday) {
             // Prepare data for each project
             $projectData = [];
@@ -1467,6 +1467,7 @@ class ProjectController extends Controller
                             'prodcution_qa' => $productionQACount,
                             'project_id' => $project['id'], // Store project ID
                         ];
+                        $projectIds[] = $project['id'];
                     }
                 }
             }
