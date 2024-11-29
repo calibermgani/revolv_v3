@@ -81,7 +81,7 @@
                                         <td>{{ $data['project'] }}</td>
                                         <td>{{ $data['Chats'] == 0 ? 'No' : 'Yes' }}</td>
                                         {{-- <td>{{ $data['total_ar'] }}</td> --}}
-                                        <td class="total-ar">Loading..</td>
+                                        <td class="total-ar"></td>
                                         {{-- <td>{{ $data['logged_resolv_ar'] }}</td> --}}
                                         <td>{{ $data['prodcution_ar'] }}</td>
                                         <td>{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder'] }}</td>
@@ -141,6 +141,8 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.total_ar !== undefined) {
+                            console.log(data.totalArCount,'totalArCount');
+                            
                             $(this).find(".total-ar").text(data.totalArCount);
                             // $(this).find(".total-qa").text(data.total_qa);
                         }
