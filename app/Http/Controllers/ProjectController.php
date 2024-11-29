@@ -1410,10 +1410,10 @@ class ProjectController extends Controller
         $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
         // Fetch project data
         $projects = collect($this->getProjects());
-        $projectIds = [];
+    
         $projectsPending = $projects->flatMap(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday) {
             // Prepare data for each project
-            $projectData = [];
+            $projectData = [];    $projectIds = [];
             $prjName = Helpers::projectName($project['id'])->project_name ?? null;
 
             if ($prjName !== null) {
@@ -1474,7 +1474,7 @@ class ProjectController extends Controller
 
             return $projectData;
         });
-dd($projectIds);
+dd($projectsPending);
         // Dispatch jobs to calculate AR/QA counts for each project asynchronously
         // foreach ($projectsPending as $project) {
         //     GetTotalARCountJob::dispatch($project['project_id'])->delay(now()->addSeconds(5));  // Delay for job processing
