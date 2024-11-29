@@ -76,6 +76,14 @@
         </div>
     </div>
 @endsection
+<style>
+.dt-wrap {
+    white-space: normal !important; /* Allow text wrapping */
+    word-wrap: break-word !important; /* Break long words */
+    overflow-wrap: break-word; /* Ensure consistent wrapping across browsers */
+}
+
+</style>
 @push('view.scripts')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
