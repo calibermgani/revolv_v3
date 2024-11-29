@@ -1475,10 +1475,11 @@ class ProjectController extends Controller
         });
 
         // Dispatch jobs to calculate AR/QA counts for each project asynchronously
-        foreach ($projectsPending as $project) {
-            GetTotalARCountJob::dispatch($project['project_id'])->delay(now()->addSeconds(5));  // Delay for job processing
-            // GetTotalQACountJob::dispatch($project['project_id'])->delay(now()->addSeconds(5));  // Delay for job processing
-        }
+        // foreach ($projectsPending as $project) {
+        //     GetTotalARCountJob::dispatch($project['project_id'])->delay(now()->addSeconds(5));  // Delay for job processing
+        //     // GetTotalQACountJob::dispatch($project['project_id'])->delay(now()->addSeconds(5));  // Delay for job processing
+        // }
+        GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5)); 
 
         // Return the view with placeholder values
         return view('projects.projectUtilizationWeb', compact('projectsPending', 'yesterday','yesterDayStartDate','yesterDayEndDate','projectIds'));
