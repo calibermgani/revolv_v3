@@ -23,7 +23,8 @@
                                 class="fa fa-plus" style="font-size:13px;color:#ffffff"></i>&nbsp;&nbsp;Add</a>
 
                     </div>
-                    <table class="table table-separate table-head-custom no-footer dtr-column " id="formConfigurationLsit">
+                    <div class="table-responsive pt-5">
+                    <table class="table table-separate table-head-custom no-footer dtr-column" id="formConfigurationLsit">
                         <thead>
                             <tr>
                                 <th style="width: 30%">Project Name</th>
@@ -71,6 +72,7 @@
                             @endif
                         </tbody>
                     </table>
+                </div>
                 </div>
             </div>
         </div>
