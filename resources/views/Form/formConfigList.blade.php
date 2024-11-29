@@ -97,11 +97,11 @@
                     //     // Add more columnDefs for each column as needed
                     //     { "className": "dt-wrap", "targets": "_all" } // Enable text wrapping for all columns
                     // ]
-                    columnDefs: [{
-                        className: 'details-control',
-                        targets: [0],
-                        orderable: false,
-                    }, ],
+                    // columnDefs: [{
+                    //     className: 'details-control',
+                    //     targets: [0],
+                    //     orderable: false,
+                    // }, ],
                     responsive: true
                 });
 
