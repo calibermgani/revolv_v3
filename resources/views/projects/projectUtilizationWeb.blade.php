@@ -77,7 +77,7 @@
 
                             @if (isset($projectsPending) && count($projectsPending) > 0)
                                 @foreach ($projectsPending as $data)
-                                    <tr>
+                                    <tr data-project-id="{{ $data['project_id'] }}">
                                         <td>{{ $data['project'] }}</td>
                                         <td>{{ $data['Chats'] == 0 ? 'No' : 'Yes' }}</td>
                                         {{-- <td>{{ $data['total_ar'] }}</td> --}}
