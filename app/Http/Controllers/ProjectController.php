@@ -22,6 +22,8 @@ use App\Http\Helper\Admin\Helpers as Helpers;
 use Illuminate\Support\Facades\DB;
 use App\Models\EmployeeLogin;
 use App\Mail\ProjectHourlyMail;
+use Illuminate\Support\Facades\Cache;
+use App\Jobs\GetTotalARCountJob;
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
@@ -1104,7 +1106,7 @@ class ProjectController extends Controller
             Log::debug($e->getTraceAsString());
         }
     }
-    public function projectWorkWeb(Request $request)
+    public function projectWorkWeb1(Request $request)
     {
         try {
           
@@ -1391,4 +1393,114 @@ class ProjectController extends Controller
             Log::debug($e->getTraceAsString());
         }
     }
+
+    public function projectWorkWeb(Request $request)
+{
+    try {
+        // Prepare variables for the project data (e.g., yesterday date)
+        $yesterday = $request['request_date'] ? Carbon::createFromFormat('Y-m-d', $request->input('request_date')) : Carbon::yesterday();
+        if ($yesterday->isSaturday()) {
+            $yesterday = $yesterday->subDay(1); // Friday
+        } elseif ($yesterday->isSunday()) {
+            $yesterday = $yesterday->subDay(2); // Friday
+        }
+        
+        $today = $request['request_date'] ? Carbon::createFromFormat('Y-m-d', $request->input('request_date'))->copy()->addDay() : Carbon::today();
+        $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
+        $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
+        // Fetch project data
+        $projects = collect($this->getProjects());
+
+        $projectsPending = $projects->flatMap(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday) {
+            // Prepare data for each project
+            $projectData = [];
+            $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+
+            if ($prjName !== null) {
+                $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
+
+                foreach ($subProjects as $subProject) {
+                    $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
+                    $modelClass = "App\\Models\\" . Str::studly($tableName);
+                    
+                    if (class_exists($modelClass)) {
+                        $aCount = $modelClass::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
+                        ->where('chart_status', 'CE_Assigned')->count();
+            $cCount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                        ->where('chart_status', 'CE_Completed')->count();
+            $qCount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                        ->where('chart_status', 'QA_Completed')->count();
+            $productionARCount =  $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today) {
+                $query->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                      ->whereIn('chart_status', [
+                          'CE_Inprocess', 
+                          'CE_Pending', 
+                          'CE_Completed', 
+                          'CE_Clarification', 
+                          'CE_Hold', 
+                          'AR_non_workable', 
+                          'Revoke'
+                      ]);
+                 $query->orWhere(function ($subQuery) use ($yesterday, $today) {
+                    $subQuery->where('chart_status', 'CE_Completed')
+                             ->whereDate('coder_work_date', $yesterday)
+                             ->orWhereDate('coder_work_date', $today);
+                });
+            })
+            ->groupBy('CE_emp_id')
+            ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate]) 
+            ->select('CE_emp_id') 
+            ->get() 
+            ->count(); 
+            $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                ->whereIn('chart_status', ['QA_Assigned', 'QA_Inprocess', 'QA_Pending', 'QA_Completed', 'QA_Clarification', 'QA_Hold'])
+                ->whereNotNull('QA_emp_id')
+                ->distinct('QA_emp_id')
+                ->count('QA_emp_id'); 
+                        // Placeholder values for now
+                        $projectData[] = [
+                            'project' => $project['client_name'] . '-' . $subProject,
+                            'Chats' => $aCount,
+                            'Coder' => $cCount,
+                            'QA' => $qCount,
+                            'prodcution_ar' => $productionARCount,
+                            'prodcution_qa' => $productionQACount,
+                            'project_id' => $project['id'], // Store project ID
+                        ];
+                    }
+                }
+            }
+
+            return $projectData;
+        });
+
+        // Dispatch jobs to calculate AR/QA counts for each project asynchronously
+        foreach ($projectsPending as $project) {
+            GetTotalARCountJob::dispatch($project['project_id'])->delay(now()->addSeconds(5));  // Delay for job processing
+            // GetTotalQACountJob::dispatch($project['project_id'])->delay(now()->addSeconds(5));  // Delay for job processing
+        }
+
+        // Return the view with placeholder values
+        return view('projects.projectUtilizationWeb', compact('projectsPending', 'yesterday'));
+    } catch (\Exception $e) {
+        Log::error('Error in ProjectWorkWeb: ' . $e->getMessage());
+        Log::debug($e->getMessage());
+    }
+}
+public function getProjectCounts($projectId)
+{
+    try {
+        // Retrieve AR and QA counts from Cache
+        $totalAR = Cache::get("project_{$projectId}_ar_count", 0); // Default to 0 if not found
+        // $totalQA = Cache::get("project_{$projectId}_qa_count", 0); // Default to 0 if not found
+
+        return response()->json([
+            'total_ar' => $totalAR,
+            // 'total_qa' => $totalQA,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
+
 }

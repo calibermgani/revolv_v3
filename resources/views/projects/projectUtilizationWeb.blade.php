@@ -65,10 +65,10 @@
                                 <th>Project</th>
                                 <th>Inventory Uploaded</th>
                                 <th>Total Users - AR</th>
-                                <th>Logged Resolv - AR</th>
+                                {{-- <th>Logged Resolv - AR</th> --}}
                                 <th>Production Users - AR</th>
                                 <th>AR</th>
-                                <th>Logged Resolv - QA</th>
+                                {{-- <th>Logged Resolv - QA</th> --}}
                                 <th>Production - QA</th>
                                 <th>QA</th>
                             </tr>
@@ -80,11 +80,12 @@
                                     <tr>
                                         <td>{{ $data['project'] }}</td>
                                         <td>{{ $data['Chats'] == 0 ? 'No' : 'Yes' }}</td>
-                                        <td>{{ $data['total_ar'] }}</td>
-                                        <td>{{ $data['logged_resolv_ar'] }}</td>
+                                        {{-- <td>{{ $data['total_ar'] }}</td> --}}
+                                        <td class="total-ar">Loading..</td>
+                                        {{-- <td>{{ $data['logged_resolv_ar'] }}</td> --}}
                                         <td>{{ $data['prodcution_ar'] }}</td>
                                         <td>{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder'] }}</td>
-                                        <td>{{ $data['logged_resolv_qa'] }}</td>
+                                        {{-- <td>{{ $data['logged_resolv_qa'] }}</td> --}}
                                         <td>{{ $data['prodcution_qa'] }}</td>
                                         <td>{{ $data['QA'] == 0 ? 'No Activity' : $data['QA'] }}</td>
                                     </tr>
@@ -130,6 +131,23 @@
             })
             table.buttons().container()
                 .appendTo('.outside');
+                var rows = $("#project_utilization_table tbody tr");
+
+        rows.each(function () {
+            var projectId = $(this).data('project-id');
+
+            if (projectId) {
+                fetch(`projects/project-ar-qa-counts/${projectId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.total_ar !== undefined) {
+                            $(this).find(".total-ar").text(data.total_ar);
+                            // $(this).find(".total-qa").text(data.total_qa);
+                        }
+                    })
+                    .catch(error => console.error("Error fetching AR/QA counts:", error));
+            }
+        });
         });
         $(document).on('click', '#filter_search', function() {
             KTApp.block('#project_utilization', {
