@@ -65,7 +65,7 @@
                                         <td><input type="hidden" value="{{$data->sub_project_id}}">{{ $subProjectName == '--' ? '--' : $subProjectName->sub_project_name }}</td>
                                         <td style="word-wrap: break-word;    white-space: normal;    overflow-wrap: break-word;
     word-break: break-word; ">{{$data->label_names}}</td>
-                                        <td class="project_delete" data-value="{{$loop->iteration}}"><i
+                                        <td class="project_delete" data-value="{{$loop->iteration}}" style="3%"><i
                                             class="fa fas fa-trash text-danger icon-circle2 ml-1 mt-0 record_delete"></i></a></td>
                                     </tr>
                                     @endif
