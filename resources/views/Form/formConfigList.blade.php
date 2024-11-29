@@ -27,9 +27,9 @@
                         <table class="table table-separate table-head-custom no-footer dtr-column " id="formConfigurationLsit">
                             <thead>
                                 <tr>
-                                    <th>Project Name</th>
-                                    <th>Sub Project Name</th>
-                                    <th>Column Fields</th>
+                                    <th style="width: 10%">Project Name</th>
+                                    <th style="width: 10%">Sub Project Name</th>
+                                    <th style="width: 30%">Column Fields</th>
                                     <th  style="width: 3%"></th>
                                 </tr>
                             </thead>
