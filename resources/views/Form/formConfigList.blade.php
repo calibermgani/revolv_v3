@@ -13,7 +13,7 @@
                                     d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
                             </svg>
                         </span> --}}
-                        <span class="project_header">Project Creation List</span>
+                        <span class="project_header">Project Creation Listt</span>
                     </div>
                     <div style="margin-bottom:-2rem"
                         class="d-flex flex-row justify-content-between align-items-center float-right ml-2">
@@ -26,9 +26,9 @@
                     <table class="table table-separate table-head-custom no-footer dtr-column " id="formConfigurationLsit">
                         <thead>
                             <tr>
-                                <th style="width: 3%">Project Name</th>
-                                <th style="width: 3%">Sub Project Name</th>
-                                <th>Column Fields</th>
+                                <th style="width: 30%">Project Name</th>
+                                <th style="width: 30%">Sub Project Name</th>
+                                <th style="width: 37%">Column Fields</th>
                                 <th  style="width: 3%"></th>
                             </tr>
                         </thead>
@@ -60,9 +60,9 @@
                                     @if($projectName !== null  && $subProjectName !== null )
                                     <tr
                                         data-href="{{ route('formEdit', ['parent' => request()->parent, 'child' => request()->child, 'project_id' => $project_id_encode, 'sub_project_id' => $sub_project_id_encode]) }}" style="cursor:pointer !important">
-                                        <td style="width: 13%"><input type="hidden" value="{{$data->project_id}}">{{ $projectName->aims_project_name }}</td>
-                                        <td style="width: 10%"><input type="hidden" value="{{$data->sub_project_id}}">{{ $subProjectName == '--' ? '--' : $subProjectName->sub_project_name }}</td>
-                                        <td style="width: 10%">{{$data->label_names}}</td>
+                                        <td style="width: 30%"><input type="hidden" value="{{$data->project_id}}">{{ $projectName->aims_project_name }}</td>
+                                        <td style="width: 30%"><input type="hidden" value="{{$data->sub_project_id}}">{{ $subProjectName == '--' ? '--' : $subProjectName->sub_project_name }}</td>
+                                        <td style="width: 37%">{{$data->label_names}}</td>
                                         <td class="project_delete" data-value="{{$loop->iteration}}" style="width: 3%"><i
                                             class="fa fas fa-trash text-danger icon-circle2 ml-1 mt-0 record_delete"></i></a></td>
                                     </tr>
@@ -101,7 +101,7 @@
                         { "width": "200px", "targets": 0 }, // Adjust the width as needed
                         { "width": "150px", "targets": 1 }, // Adjust the width as needed
                         // Add more columnDefs for each column as needed
-                        { "className": "dt-wrap", "targets": "_all" } // Enable text wrapping for all columns
+                       // Enable text wrapping for all columns
                     ]
                 });
 
