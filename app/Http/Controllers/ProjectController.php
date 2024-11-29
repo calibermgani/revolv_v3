@@ -1410,10 +1410,10 @@ class ProjectController extends Controller
         $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
         // Fetch project data
         $projects = collect($this->getProjects());
-    
+        $projectIds = [];
         $projectsPending = $projects->flatMap(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday) {
             // Prepare data for each project
-            $projectData = [];    $projectIds = [];
+            $projectData = [];    
             $prjName = Helpers::projectName($project['id'])->project_name ?? null;
 
             if ($prjName !== null) {
