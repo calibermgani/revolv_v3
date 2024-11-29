@@ -957,7 +957,7 @@ class ProjectController extends Controller
             // Initialize headers and mail body
             $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
             $mailBody = [];
-            $toMailId=[];
+          //  $toMailId=[];
             // Process each project
             foreach ($projects as $project) {
                 $prjName = Helpers::projectName($project['id'])->project_name ?? null;
@@ -998,7 +998,7 @@ class ProjectController extends Controller
                         'project_id' => $project['id'],
                         'subproject_id' => $subKey,
                     ];
-                    $toMailId[] = $project['scope_manager_email'][$subKey];
+                    //$toMailId[] = $project['scope_manager_email'][$subKey];
                 }
             }
 
