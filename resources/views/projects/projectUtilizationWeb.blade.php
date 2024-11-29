@@ -146,7 +146,7 @@
                             console.log(data.total_ar,'totalArCount');
                             
                             $(this).find(".total-ar").text(data.total_ar);
-                            $(this).find(".logged_resolv_ar").text(data.logged_resolv_ar);
+                            $(this).find(".logged-resolv-ar").text(data.logged_resolv_ar);
                             // $(this).find(".total-qa").text(data.total_qa);
                         }
                     })
