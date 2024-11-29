@@ -1417,9 +1417,7 @@ class ProjectController extends Controller
             $prjName = Helpers::projectName($project['id'])->project_name ?? null;
 
             if ($prjName !== null) {
-                if (in_array($project['id'], $projectIds)) {
-                    return []; // Skip this project if the ID is not in the $projectIds array
-                }
+                $projectIds = array_filter($projectIds, fn($id) => $id !== $project['id']);
                 $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
 
                 foreach ($subProjects as $subProject) {
