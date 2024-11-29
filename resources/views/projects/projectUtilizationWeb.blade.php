@@ -140,7 +140,7 @@
                 fetch(`projects/project-ar-qa-counts/${projectId}`)
                     .then(response => response.json())
                     .then(data => {
-                        if (data.total_ar !== undefined) {
+                        if (data.totalArCount !== undefined) {
                             console.log(data.totalArCount,'totalArCount');
                             
                             $(this).find(".total-ar").text(data.totalArCount);
