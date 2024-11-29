@@ -24,11 +24,11 @@
 
                     </div>
                     <div class="table-responsive pt-5">
-                    <table class="table table-separate table-head-custom no-footer dtr-column" id="formConfigurationLsit" width = "100%">
+                    <table class="table table-separate table-head-custom no-footer dtr-column" id="formConfigurationLsit">
                         <thead>
                             <tr>
-                                <th>Project Name</th>
-                                <th>Sub Project Name</th>
+                                <th width="10%">Project Name</th>
+                                <th width="10%">Sub Project Name</th>
                                 <th>Column Fields</th>
                                 <th width="3%"></th>
                             </tr>
@@ -61,10 +61,9 @@
                                     @if($projectName !== null  && $subProjectName !== null )
                                     <tr
                                         data-href="{{ route('formEdit', ['parent' => request()->parent, 'child' => request()->child, 'project_id' => $project_id_encode, 'sub_project_id' => $sub_project_id_encode]) }}" style="cursor:pointer !important">
-                                        <td><input type="hidden" value="{{$data->project_id}}">{{ $projectName->aims_project_name }}</td>
-                                        <td><input type="hidden" value="{{$data->sub_project_id}}">{{ $subProjectName == '--' ? '--' : $subProjectName->sub_project_name }}</td>
-                                        <td style="word-wrap: break-word;    white-space: normal;    overflow-wrap: break-word;
-    word-break: break-word; ">{{$data->label_names}}</td>
+                                        <td width="10%"><input type="hidden" value="{{$data->project_id}}">{{ $projectName->aims_project_name }}</td>
+                                        <td width="10%"><input type="hidden" value="{{$data->sub_project_id}}">{{ $subProjectName == '--' ? '--' : $subProjectName->sub_project_name }}</td>
+                                        <td style="word-wrap: break-word;white-space: normal;overflow-wrap: break-word;word-break: break-word; ">{{$data->label_names}}</td>
                                         <td class="project_delete" data-value="{{$loop->iteration}}" width="3%"><i
                                             class="fa fas fa-trash text-danger icon-circle2 ml-1 mt-0 record_delete"></i></a></td>
                                     </tr>
@@ -79,12 +78,6 @@
         </div>
     </div>
 @endsection
-<style>
-.dt-wrap {
-    white-space: normal !important; /* Allow text wrapping */
-    word-wrap: break-word !important; /* Break long words */
-    overflow-wrap: break-word; /* Ensure consistent wrapping across browsers */
-}
 
 </style>
 @push('view.scripts')
@@ -100,13 +93,7 @@
                         "search": '',
                         "searchPlaceholder": "   Search",
                     },
-                    autoWidth: false, // Prevent automatic column width adjustment
-                    // columnDefs: [
-                    //     { width: '30%', targets: 0 },
-                    //     { width: '30%', targets: 1 },
-                    //     { width: '37%', targets: 2 },
-                    //     { width: '3%', targets: 3 },
-                    // ],
+                    autoWidth: false
                 });
 
                 // $('tr[data-href]').click(function() { // full row click
