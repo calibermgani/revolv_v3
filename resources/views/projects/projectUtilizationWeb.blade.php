@@ -75,8 +75,8 @@
                         </thead>
                         <tbody>
 
-                            @if (isset($mailBody) && count($mailBody) > 0)
-                                @foreach ($mailBody as $data)
+                            @if (isset($projectsPending) && count($projectsPending) > 0)
+                                @foreach ($projectsPending as $data)
                                     <tr>
                                         <td>{{ $data['project'] }}</td>
                                         <td>{{ $data['Chats'] == 0 ? 'No' : 'Yes' }}</td>
@@ -141,7 +141,7 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.total_ar !== undefined) {
-                            $(this).find(".total-ar").text(data.total_ar);
+                            $(this).find(".total-ar").text(data.totalArCount);
                             // $(this).find(".total-qa").text(data.total_qa);
                         }
                     })
