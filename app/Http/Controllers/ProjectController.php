@@ -1493,10 +1493,9 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
         // Retrieve AR and QA counts from Cache
         $totalAR = Cache::get("project_{$projectId}_ar_count", 0); // Default to 0 if not found
         // $totalQA = Cache::get("project_{$projectId}_qa_count", 0); // Default to 0 if not found
-        $loggedResolvAR = 0;$loggedResolvQA=0;
+        dd($totalAR);
+        $loggedResolvAR = 0;
         foreach($totalAR['totalArList'] as $key => $arList){
-            $yesterday5PM = Carbon::yesterday()->setTime(17, 0); 
-            $tomorrow9AM =  Carbon::tomorrow()->setTime(9, 0);
             $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
                                 ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
                                 ->distinct('user_id')

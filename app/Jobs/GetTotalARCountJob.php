@@ -27,6 +27,6 @@ class GetTotalARCountJob implements ShouldQueue
         ]);
 
         Log::info("Processed Project ID: {$this->projectId}", $data ?? []);
-        Cache::put("project_{$this->projectId}_ar_count", $data["totalArCount"], now()->addMinutes(30));
+        Cache::put("project_{$this->projectId}_ar_count", $data, now()->addMinutes(30));
     }
 }
