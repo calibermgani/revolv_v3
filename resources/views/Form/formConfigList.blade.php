@@ -15,81 +15,69 @@
                         </span> --}}
                         <span class="project_header">Project Creation List</span>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div>
-                            <a class="btn btn-white-black font-weight-bolder btn-sm" 
-                                href="{{ url('form_creation') }}?parent={{ request()->parent }}&child={{ request()->child }}">
-                                <i class="fa fa-plus" style="font-size:13px;color:#ffffff"></i>&nbsp;&nbsp;Add
-                            </a>
-                        </div>
-                        <div>
-                            <input type="search" class="form-control form-control-sm" placeholder="Search" style="width: 200px;" id="customSearch">
-                        </div>
+                    <div
+                        class="d-flex flex-row justify-content-between align-items-center float-right ml-2">
+
+                        <a class="btn btn-white-black font-weight-bolder btn-sm mr-1"
+                            href="{{ url('form_creation') }}?parent={{ request()->parent }}&child={{ request()->child }}"><i
+                                class="fa fa-plus" style="font-size:13px;color:#ffffff"></i>&nbsp;&nbsp;Add</a>
+
                     </div>
-                    
                     <div class="table-responsive pb-4">
-                        <table class="table table-separate table-head-custom no-footer dtr-column" id="formConfigurationLsit">
+                        <table class="table table-separate table-head-custom no-footer dtr-column " id="formConfigurationLsit">
                             <thead>
                                 <tr>
                                     <th>Project Name</th>
                                     <th>Sub Project Name</th>
-                                    <th style="white-space: normal; word-wrap: break-word;">Column Fields</th>
-                                    <th style="width: 3%;"></th>
+                                    <th>Column Fields</th>
+                                    <th  style="width: 3%"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @if (isset($formConfiguration))
                                     @foreach ($formConfiguration as $data)
                                         @php
+                                            // $projectName = App\Models\project::where('id', $data->project_id)->first();
+                                            // $subProjectName = App\Models\subproject::where('project_id', $data->project_id)
+                                            //     ->where('id', $data->sub_project_id)
+                                            //     ->first();
                                             $projectName = App\Models\project::where('project_id', $data->project_id)->first();
-                                            if ($data->sub_project_id != null) {
+                                            if($data->sub_project_id != null) {
                                                 $subProjectName = App\Models\subproject::where('project_id', $data->project_id)
                                                     ->where('sub_project_id', $data->sub_project_id)
                                                     ->first();
-                                                $sub_project_id_encode = App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->sub_project_id);
+                                                    $sub_project_id_encode = App\Http\Helper\Admin\Helpers::encodeAndDecodeID(
+                                                $data->sub_project_id,
+                                            );
                                             } else {
                                                 $subProjectName = '--';
                                                 $sub_project_id_encode = '--';
                                             }
-                                            $project_id_encode = App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->project_id);
+                                            $project_id_encode = App\Http\Helper\Admin\Helpers::encodeAndDecodeID(
+                                                $data->project_id,
+                                            );
+
                                         @endphp
-                                        @if ($projectName !== null && $subProjectName !== null)
-                                            <tr data-href="{{ route('formEdit', ['parent' => request()->parent, 'child' => request()->child, 'project_id' => $project_id_encode, 'sub_project_id' => $sub_project_id_encode]) }}" style="cursor:pointer !important">
-                                                <td><input type="hidden" value="{{ $data->project_id }}">{{ $projectName->aims_project_name }}</td>
-                                                <td><input type="hidden" value="{{ $data->sub_project_id }}">{{ $subProjectName == '--' ? '--' : $subProjectName->sub_project_name }}</td>
-                                                <td style="white-space: normal; word-wrap: break-word;">{{ $data->label_names }}</td>
-                                                <td class="project_delete" data-value="{{ $loop->iteration }}">
-                                                    <i class="fa fas fa-trash text-danger icon-circle2 ml-1 mt-0 record_delete"></i>
-                                                </td>
-                                            </tr>
+                                        @if($projectName !== null  && $subProjectName !== null )
+                                        <tr
+                                            data-href="{{ route('formEdit', ['parent' => request()->parent, 'child' => request()->child, 'project_id' => $project_id_encode, 'sub_project_id' => $sub_project_id_encode]) }}" style="cursor:pointer !important">
+                                            <td><input type="hidden" value="{{$data->project_id}}">{{ $projectName->aims_project_name }}</td>
+                                            <td><input type="hidden" value="{{$data->sub_project_id}}">{{ $subProjectName == '--' ? '--' : $subProjectName->sub_project_name }}</td>
+                                            <td>{{$data->label_names}}</td>
+                                            <td class="project_delete" data-value="{{$loop->iteration}}"><i
+                                                class="fa fas fa-trash text-danger icon-circle2 ml-1 mt-0 record_delete"></i></a></td>
+                                        </tr>
                                         @endif
                                     @endforeach
                                 @endif
                             </tbody>
                         </table>
                     </div>
-                    
                 </div>
             </div>
         </div>
     </div>
 @endsection
-<style>
-    .d-flex .btn {
-    margin-right: 10px;
-}
-
-#customSearch {
-    width: 200px;
-    margin-left: auto;
-}
-
-.table-responsive td {
-    white-space: normal !important;
-    word-wrap: break-word !important;
-}
-
-</style>
 @push('view.scripts')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
@@ -110,7 +98,7 @@
                 //         { "className": "dt-wrap", "targets": "_all" } // Enable text wrapping for all columns
                 //     ]
                 // });
-                var table = $('#formConfigurationLsit').DataTable({
+                $('#formConfigurationLsit').DataTable({
                     processing: true,
                     lengthChange: false,
                     clientSide: true,
@@ -118,28 +106,16 @@
                     pageLength: 20,
                     scrollCollapse: true,
                     scrollX: true,
-                    columnDefs: [
-                        {
-                            targets: 2, // "Column Fields" column
-                            render: function (data, type, row) {
-                                return '<div style="white-space: normal; word-wrap: break-word;">' + data + '</div>';
-                            }
-                        }
-                    ],
-                    language: {
-                        search: '',
-                        searchPlaceholder: 'Search',
-                    },
-                    initComplete: function () {
+                    "initComplete": function(settings, json) {
                         $('body').find('.dataTables_scrollBody').addClass("scrollbar");
-                        $('body').find('.dataTables_scrollBody').css("margin-top", '-0.3rem', 'important');
-
-                        // Attach custom search bar functionality
-                        $('#customSearch').on('keyup', function () {
-                            table.search(this.value).draw();
-                        });
+                        $('body').find('.dataTables_scrollBody').css("margin-top",'-0.3rem','important');
                     },
+                    language: {
+                        "search": '',
+                        "searchPlaceholder": "   Search",
+                    }
                 });
+
                 // $('tr[data-href]').click(function() { // full row click
                 //     var url = $(this).data('href');
                 //     window.location.href = url;
