@@ -26,8 +26,8 @@
                     <table class="table table-separate table-head-custom no-footer dtr-column " id="formConfigurationLsit">
                         <thead>
                             <tr>
-                                <th>Project Name</th>
-                                <th>Sub Project Name</th>
+                                <th style="width: 3%">Project Name</th>
+                                <th style="width: 3%">Sub Project Name</th>
                                 <th>Column Fields</th>
                                 <th  style="width: 3%"></th>
                             </tr>
@@ -60,8 +60,8 @@
                                     @if($projectName !== null  && $subProjectName !== null )
                                     <tr
                                         data-href="{{ route('formEdit', ['parent' => request()->parent, 'child' => request()->child, 'project_id' => $project_id_encode, 'sub_project_id' => $sub_project_id_encode]) }}" style="cursor:pointer !important">
-                                        <td><input type="hidden" value="{{$data->project_id}}">{{ $projectName->aims_project_name }}</td>
-                                        <td><input type="hidden" value="{{$data->sub_project_id}}">{{ $subProjectName == '--' ? '--' : $subProjectName->sub_project_name }}</td>
+                                        <td style="width: 3%"><input type="hidden" value="{{$data->project_id}}">{{ $projectName->aims_project_name }}</td>
+                                        <td style="width: 3%"><input type="hidden" value="{{$data->sub_project_id}}">{{ $subProjectName == '--' ? '--' : $subProjectName->sub_project_name }}</td>
                                         <td>--</td>
                                         <td class="project_delete" data-value="{{$loop->iteration}}"><i
                                             class="fa fas fa-trash text-danger icon-circle2 ml-1 mt-0 record_delete"></i></a></td>
