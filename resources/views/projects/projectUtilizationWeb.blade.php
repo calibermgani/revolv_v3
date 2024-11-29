@@ -141,10 +141,10 @@
                     .then(response => response.json())
                     .then(data => {
                         console.log(data,'totalArCount');
-                        if (data.totalArCount !== undefined) {
-                            console.log(data.totalArCount,'totalArCount');
+                        if (data.total_ar !== undefined) {
+                            console.log(data.total_ar,'totalArCount');
                             
-                            $(this).find(".total-ar").text(data.totalArCount);
+                            $(this).find(".total-ar").text(data.total_ar);
                             // $(this).find(".total-qa").text(data.total_qa);
                         }
                     })
