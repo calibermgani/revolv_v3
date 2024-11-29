@@ -155,7 +155,7 @@ Route::group(['prefix' => 'qa_production'], function () {
         Route::any('project_hourly_web', 'App\Http\Controllers\ProjectController@projectHourlyWeb');
         Route::any('project_detailed_information_web', 'App\Http\Controllers\ProjectController@projectDetailedInformationWeb');
         Route::any('project_utilization_dashboard', 'App\Http\Controllers\ProjectController@projectUtilizationDashboard');
-         Route::get('project-ar-qa-counts/{projectId}', 'App\Http\Controllers\ProjectController@getProjectCounts');
+        Route::get('project-ar-qa-counts/{projectId}/{yesterDayStartDate}/{yesterDayEndDate}', 'App\Http\Controllers\ProjectController@getProjectCounts');
 
     });
 Auth::routes();

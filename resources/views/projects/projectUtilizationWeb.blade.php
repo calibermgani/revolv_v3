@@ -65,7 +65,7 @@
                                 <th>Project</th>
                                 <th>Inventory Uploaded</th>
                                 <th>Total Users - AR</th>
-                                {{-- <th>Logged Resolv - AR</th> --}}
+                                <th>Logged Resolv - AR</th>
                                 <th>Production Users - AR</th>
                                 <th>AR</th>
                                 {{-- <th>Logged Resolv - QA</th> --}}
@@ -82,7 +82,7 @@
                                         <td>{{ $data['Chats'] == 0 ? 'No' : 'Yes' }}</td>
                                         {{-- <td>{{ $data['total_ar'] }}</td> --}}
                                         <td class="total-ar"></td>
-                                        {{-- <td>{{ $data['logged_resolv_ar'] }}</td> --}}
+                                        <td calss="logged-resolv-ar"></td>
                                         <td>{{ $data['prodcution_ar'] }}</td>
                                         <td>{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder'] }}</td>
                                         {{-- <td>{{ $data['logged_resolv_qa'] }}</td> --}}
@@ -135,9 +135,10 @@
 
         rows.each(function () {
             var projectId = $(this).data('project-id');
-
+            var yesterDayStartDate = @json($yesterDayStartDate);
+            var yesterDayEndDate = @json($yesterDayEndDate);
             if (projectId) {
-                fetch(`project-ar-qa-counts/${projectId}`)
+                fetch(`project-ar-qa-counts/${projectId}/${yesterDayStartDate}/${yesterDayEndDate}`)
                     .then(response => response.json())
                     .then(data => {
                         console.log(data,'totalArCount');
@@ -145,6 +146,7 @@
                             console.log(data.total_ar,'totalArCount');
                             
                             $(this).find(".total-ar").text(data.total_ar);
+                            $(this).find(".logged_resolv_ar").text(data.logged_resolv_ar);
                             // $(this).find(".total-qa").text(data.total_qa);
                         }
                     })

@@ -1481,22 +1481,30 @@ class ProjectController extends Controller
         }
 
         // Return the view with placeholder values
-        return view('projects.projectUtilizationWeb', compact('projectsPending', 'yesterday'));
+        return view('projects.projectUtilizationWeb', compact('projectsPending', 'yesterday','yesterDayStartDate','yesterDayEndDate'));
     } catch (\Exception $e) {
         Log::error('Error in ProjectWorkWeb: ' . $e->getMessage());
         Log::debug($e->getMessage());
     }
 }
-public function getProjectCounts($projectId)
+public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDate)
 {
     try {
         // Retrieve AR and QA counts from Cache
         $totalAR = Cache::get("project_{$projectId}_ar_count", 0); // Default to 0 if not found
         // $totalQA = Cache::get("project_{$projectId}_qa_count", 0); // Default to 0 if not found
-
+        $loggedResolvAR = 0;$loggedResolvQA=0;
+        foreach($totalAR['totalArList'] as $key => $arList){
+            $yesterday5PM = Carbon::yesterday()->setTime(17, 0); 
+            $tomorrow9AM =  Carbon::tomorrow()->setTime(9, 0);
+            $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
+                                ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                ->distinct('user_id')
+                                ->count();
+        }
         return response()->json([
-            'total_ar' => $totalAR,
-            // 'total_qa' => $totalQA,
+            'total_ar' => $totalAR["totalArCount"],
+            'logged_resolv_ar' => $loggedResolvAR,
         ]);
     } catch (\Exception $e) {
         return response()->json(['error' => $e->getMessage()], 500);
