@@ -94,7 +94,7 @@
                     "columnDefs": [
                         { "width": "200px", "targets": 0 }, // Adjust the width as needed
                         { "width": "150px", "targets": 1 }, // Adjust the width as needed
-                        { "width": "400px", "targets": 2 }, 
+                        { "width": "200px", "targets": 2 }, 
                         // Add more columnDefs for each column as needed
                         { "className": "dt-wrap", "targets": "_all" } // Enable text wrapping for all columns
                     ]
