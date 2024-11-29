@@ -1472,7 +1472,7 @@ class ProjectController extends Controller
                 }
             }
 
-            return $projectData;
+            return [$projectData,$projectIds];
         });
 dd($projectsPending);
         // Dispatch jobs to calculate AR/QA counts for each project asynchronously
