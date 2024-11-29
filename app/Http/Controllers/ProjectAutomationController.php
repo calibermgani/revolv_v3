@@ -65,7 +65,8 @@ use App\Models\BncmhcAr;
 use App\Models\BncmhcArDuplicates;
 use App\Models\RnAr;
 use App\Models\RnArDuplicates;
-
+use App\Models\MmhAr;
+use App\Models\MmhArDuplicates;
 
 class ProjectAutomationController extends Controller
 {
@@ -2961,6 +2962,88 @@ class ProjectAutomationController extends Controller
          }
      }
 
+     public function mayersMemorialHospitalAR(Request $request)
+     {
+         try {
+             $attributes = [
+                'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL,                
+                'encounter_id' => isset($request->encounter_id) && $request->encounter_id != "NULL" ? $request->encounter_id : NULL,  
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name: NULL,
+                'dos_from' => isset($request->dos_from) && $request->dos_from != "NULL" ? $request->dos_from: NULL,
+                'dos_to' => isset($request->dos_to) && $request->dos_to != "NULL" ? $request->dos_to: NULL,
+                'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt: NULL,
+                'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt: NULL,
+                'insurance_plan' => isset($request->insurance_plan) && $request->insurance_plan != "NULL" ? $request->insurance_plan: NULL,
+                'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility: NULL
+                ];
+ 
+             $duplicateRecordExisting  =  MmhAr::where($attributes)->exists();
+             if (!$duplicateRecordExisting) {
+                MmhAr::insert([
+                    'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL,                
+                    'encounter_id' => isset($request->encounter_id) && $request->encounter_id != "NULL" ? $request->encounter_id : NULL,  
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name: NULL,
+                    'dos_from' => isset($request->dos_from) && $request->dos_from != "NULL" ? $request->dos_from: NULL,
+                    'dos_to' => isset($request->dos_to) && $request->dos_to != "NULL" ? $request->dos_to: NULL,
+                    'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt: NULL,
+                    'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt: NULL,
+                    'insurance_plan' => isset($request->insurance_plan) && $request->insurance_plan != "NULL" ? $request->insurance_plan: NULL,
+                    'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility: NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                     ]);
+                         return response()->json(['message' => 'Record Inserted Successfully']);
+             } else {
+                 $duplicateRecord  =  MmhAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                 if ($duplicateRecord) {
+                     $duplicateRecord->update([
+                        'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL,                
+                        'encounter_id' => isset($request->encounter_id) && $request->encounter_id != "NULL" ? $request->encounter_id : NULL,  
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name: NULL,
+                        'dos_from' => isset($request->dos_from) && $request->dos_from != "NULL" ? $request->dos_from: NULL,
+                        'dos_to' => isset($request->dos_to) && $request->dos_to != "NULL" ? $request->dos_to: NULL,
+                        'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt: NULL,
+                        'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt: NULL,
+                        'insurance_plan' => isset($request->insurance_plan) && $request->insurance_plan != "NULL" ? $request->insurance_plan: NULL,
+                        'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility: NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                     ]);
+                 }
+                 return response()->json(['message' => 'Existing Record Updated Successfully']);
+             }
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+     public function mayersMemorialHospitalARDuplicates(Request $request)
+     {
+         try {
+            
+            MmhArDuplicates::insert([
+                'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL,                
+                'encounter_id' => isset($request->encounter_id) && $request->encounter_id != "NULL" ? $request->encounter_id : NULL,  
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name: NULL,
+                'dos_from' => isset($request->dos_from) && $request->dos_from != "NULL" ? $request->dos_from: NULL,
+                'dos_to' => isset($request->dos_to) && $request->dos_to != "NULL" ? $request->dos_to: NULL,
+                'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt: NULL,
+                'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt: NULL,
+                'insurance_plan' => isset($request->insurance_plan) && $request->insurance_plan != "NULL" ? $request->insurance_plan: NULL,
+                'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility: NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+             ]);
+             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
 
 
 
