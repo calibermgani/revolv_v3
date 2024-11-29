@@ -22,10 +22,10 @@ class GetTotalARCountJob implements ShouldQueue
 
     public function handle()
     {
-        $data = app()->call('App\Http\Controllers\ProjectController@getProjectTotalARCount', [
+        $data = app()->call('App\Http\Controllers\ProjectController@getProjectTotalARCount1', [
             'project_id' => $this->projectId,
         ]);
-
+dd($data);
         Log::info("Processed Project ID: {$this->projectId}", $data ?? []);
         Cache::put("project_{$this->projectId}_ar_count", $data, now()->addMinutes(30));
     }
