@@ -1471,7 +1471,7 @@ class ProjectController extends Controller
                     }
                 }
             }
-
+dd($project['id']);
             return $projectData;
         });
 
