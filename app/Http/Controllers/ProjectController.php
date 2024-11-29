@@ -1410,13 +1410,16 @@ class ProjectController extends Controller
         $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
         // Fetch project data
         $projects = collect($this->getProjects());
-        $projectIds = [];
-        $projectsPending = $projects->flatMap(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday) {
+        $projectIds = $projects->pluck('id')->toArray();
+        $projectsPending = $projects->flatMap(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday,$projectIds) {
             // Prepare data for each project
-            $projectData = [];    
+            $projectData = [];
             $prjName = Helpers::projectName($project['id'])->project_name ?? null;
 
             if ($prjName !== null) {
+                if (!in_array($project['id'], $projectIds)) {
+                    return []; // Skip this project if the ID is not in the $projectIds array
+                }
                 $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
 
                 foreach ($subProjects as $subProject) {
@@ -1467,14 +1470,13 @@ class ProjectController extends Controller
                             'prodcution_qa' => $productionQACount,
                             'project_id' => $project['id'], // Store project ID
                         ];
-                        $projectIds[] = $project['id'];
                     }
                 }
             }
 
-            return [$projectData,$projectIds];
+            return $projectData;
         });
-dd($projectsPending);
+
         // Dispatch jobs to calculate AR/QA counts for each project asynchronously
         // foreach ($projectsPending as $project) {
         //     GetTotalARCountJob::dispatch($project['project_id'])->delay(now()->addSeconds(5));  // Delay for job processing
