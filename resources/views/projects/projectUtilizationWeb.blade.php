@@ -133,8 +133,9 @@
                 .appendTo('.outside');
                 var rows = $("#project_utilization_table tbody tr");
 
-        rows.each(function () {
-            var projectId = $(this).data('project-id');
+        // rows.each(function () {
+            //var projectId = $(this).data('project-id');
+            var projectId = @json($projectIds);
             var yesterDayStartDate = @json($yesterDayStartDate);
             var yesterDayEndDate = @json($yesterDayEndDate);
             if (projectId) {
@@ -146,13 +147,13 @@
                             console.log(data.total_ar,'totalArCount');
                             
                             $(this).find(".total-ar").text(data.total_ar);
-                            $(this).find(".logged-resolv-ar").text(data.logged_resolv_ar);
+                            $(this).find(".logged_resolv_ar").text(data.logged_resolv_ar);
                             // $(this).find(".total-qa").text(data.total_qa);
                         }
                     })
                     .catch(error => console.error("Error fetching AR/QA counts:", error));
             }
-        });
+        // });
         });
         $(document).on('click', '#filter_search', function() {
             KTApp.block('#project_utilization', {

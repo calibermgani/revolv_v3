@@ -1410,7 +1410,7 @@ class ProjectController extends Controller
         $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
         // Fetch project data
         $projects = collect($this->getProjects());
-
+        $projectIds = $projects->pluck('id')->toArray();
         $projectsPending = $projects->flatMap(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday) {
             // Prepare data for each project
             $projectData = [];
@@ -1481,7 +1481,7 @@ class ProjectController extends Controller
         }
 
         // Return the view with placeholder values
-        return view('projects.projectUtilizationWeb', compact('projectsPending', 'yesterday','yesterDayStartDate','yesterDayEndDate'));
+        return view('projects.projectUtilizationWeb', compact('projectsPending', 'yesterday','yesterDayStartDate','yesterDayEndDate','projectIds'));
     } catch (\Exception $e) {
         Log::error('Error in ProjectWorkWeb: ' . $e->getMessage());
         Log::debug($e->getMessage());
@@ -1493,7 +1493,7 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
         // Retrieve AR and QA counts from Cache
         $totalAR = Cache::get("project_{$projectId}_ar_count", 0); // Default to 0 if not found
         // $totalQA = Cache::get("project_{$projectId}_qa_count", 0); // Default to 0 if not found
-     
+     dd($totalAR);
         $loggedResolvAR = 0;
         foreach($totalAR['totalArList'] as $key => $arList){
             $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
@@ -1509,5 +1509,45 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
         return response()->json(['error' => $e->getMessage()], 500);
     }
 }
+public function getProjectTotalARCount1($project_id)
+{
+    try {
+        $payload = [
+            'token' => '1a32e71a46317b9cc6feb7388238c95d',
+            'client_id' => $project_id,
+        ]; 
+        $data = retry(3, function () use ($payload) {
+            $client = new Client(['verify' => false]);
+            $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_total_ar_total_list', [
+                'json' => $payload,
+            ]);
+            
+            if ($response->getStatusCode() == 200) {
+                $responseData = json_decode($response->getBody(), true);
 
+                if (isset($responseData['totalArCount'])) {
+                    return $responseData;
+                } else {
+                    throw new \Exception('totalArCount not found in the API response');
+                }
+            } elseif ($response->getStatusCode() == 429) {
+                $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
+                sleep($retryAfter);
+                throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
+            } else {
+                throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+            }
+        }, 4000);
+        return $data;
+        // if (isset($data['totalArCount'])) {
+        //     return $data;
+        // } else {
+        //     Log::error('totalArCount not found in API response.');
+        //     return null;
+        // }
+    } catch (\Exception $e) {
+        Log::error('Error in getProjectTotalARCount: ' . $e->getMessage());
+        return null;
+    }
+}
 }
