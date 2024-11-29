@@ -137,7 +137,7 @@
             var projectId = $(this).data('project-id');
 
             if (projectId) {
-                fetch(`projects/project-ar-qa-counts/${projectId}`)
+                fetch(`project-ar-qa-counts/${projectId}`)
                     .then(response => response.json())
                     .then(data => {
                         console.log(data,'totalArCount');
