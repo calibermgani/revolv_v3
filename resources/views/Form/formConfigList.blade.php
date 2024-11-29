@@ -82,6 +82,13 @@
     word-wrap: break-word !important; /* Break long words */
     overflow-wrap: break-word; /* Ensure consistent wrapping across browsers */
 }
+#formConfigurationLsit th,
+#formConfigurationLsit td {
+    width: auto !important; /* Override any conflicting styles */
+    max-width: 100%; /* Ensure content fits */
+    white-space: normal; /* Allow wrapping */
+    word-wrap: break-word; /* Break long words */
+}
 
 </style>
 @push('view.scripts')
@@ -97,12 +104,13 @@
                         "search": '',
                         "searchPlaceholder": "   Search",
                     },
-                    "columnDefs": [
-                        { "width": "200px", "targets": 0 }, // Adjust the width as needed
-                        { "width": "150px", "targets": 1 }, // Adjust the width as needed
-                        // Add more columnDefs for each column as needed
-                       // Enable text wrapping for all columns
-                    ]
+                    autoWidth: false, // Prevent automatic column width adjustment
+                    columnDefs: [
+                        { width: '30%', targets: 0 },
+                        { width: '30%', targets: 1 },
+                        { width: '37%', targets: 2 },
+                        { width: '3%', targets: 3 },
+                    ],
                 });
 
                 // $('tr[data-href]').click(function() { // full row click
