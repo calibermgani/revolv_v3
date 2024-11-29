@@ -27,9 +27,9 @@
                         <table class="table table-separate table-head-custom no-footer dtr-column " id="formConfigurationLsit">
                             <thead>
                                 <tr>
-                                    <th style="width: 10%">Project Name</th>
-                                    <th style="width: 10%">Sub Project Name</th>
-                                    <th style="width: 30%">Column Fields</th>
+                                    <th>Project Name</th>
+                                    <th>Sub Project Name</th>
+                                    <th>Column Fields</th>
                                     <th  style="width: 3%"></th>
                                 </tr>
                             </thead>
@@ -91,12 +91,18 @@
                         "search": '',
                         "searchPlaceholder": "   Search",
                     },
-                    "columnDefs": [
-                        { "width": "200px", "targets": 0 }, // Adjust the width as needed
-                        { "width": "150px", "targets": 1 }, // Adjust the width as needed
-                        // Add more columnDefs for each column as needed
-                        { "className": "dt-wrap", "targets": "_all" } // Enable text wrapping for all columns
-                    ]
+                    // "columnDefs": [
+                    //     { "width": "200px", "targets": 0 }, // Adjust the width as needed
+                    //     { "width": "150px", "targets": 1 }, // Adjust the width as needed
+                    //     // Add more columnDefs for each column as needed
+                    //     { "className": "dt-wrap", "targets": "_all" } // Enable text wrapping for all columns
+                    // ]
+                    columnDefs: [{
+                        className: 'details-control',
+                        targets: [0],
+                        orderable: false,
+                    }, ],
+                    responsive: true
                 });
 
                 // $('tr[data-href]').click(function() { // full row click
