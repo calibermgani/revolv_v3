@@ -98,8 +98,8 @@
                         "searchPlaceholder": "   Search",
                     },
                     "columnDefs": [
-                        { "width": "300px", "targets": 0 }, // Adjust the width as needed
-                        { "width": "350px", "targets": 1 }, // Adjust the width as needed
+                        { "width": "200px", "targets": 0 }, // Adjust the width as needed
+                        { "width": "150px", "targets": 1 }, // Adjust the width as needed
                         // Add more columnDefs for each column as needed
                         { "className": "dt-wrap", "targets": "_all" } // Enable text wrapping for all columns
                     ]
