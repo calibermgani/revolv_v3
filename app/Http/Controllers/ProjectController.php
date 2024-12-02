@@ -1513,7 +1513,7 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
                                 ->count();
             }
         }
-        $totalQADetails = $this->getProjectTotalQACount1($projectId);
+        $totalQADetails = $this->getProjectTotalQACount1($projectId);dd($totalQADetails);
         $loggedResolvQA = 0;
         foreach($totalQADetails['totalQAList'] as $key => $qaList){    
             if($qaList['client_id'] == $rowProjectId && $qaList['assigned_people'] != null){
