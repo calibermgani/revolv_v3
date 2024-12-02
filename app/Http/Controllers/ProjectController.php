@@ -1479,7 +1479,6 @@ class ProjectController extends Controller
         //     // GetTotalQACountJob::dispatch($project['project_id'])->delay(now()->addSeconds(5));  // Delay for job processing
         // }
         GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
-        dd('projectsPending', $projectsPending);
         // Return the view with placeholder values
         return view('projects.projectUtilizationWeb', compact('projectsPending', 'yesterday','yesterDayStartDate','yesterDayEndDate','projectIds'));
     } catch (\Exception $e) {
@@ -1491,8 +1490,8 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
 {dd(explode(',', $projectId));
     try {
         // Retrieve AR and QA counts from Cache
-        // $totalAR = Cache::get("project_{$projectId}_ar_count", 0); // Default to 0 if not found
-        $totalAR = Cache::get( 'project_' . explode(',', $projectId) . '_ar_count', 0); 
+        $totalAR = Cache::get("project_'.$projectId.'_ar_count", 0); // Default to 0 if not found
+        // $totalAR = Cache::get( 'project_' . explode(',', $projectId) . '_ar_count', 0); 
         // $totalQA = Cache::get("project_{$projectId}_qa_count", 0); // Default to 0 if not found
      dd('totalAR',$totalAR);
         $loggedResolvAR = 0;
@@ -1512,7 +1511,6 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
 }
 public function getProjectTotalARCount1($project_id)
 {
-   
     try {
         $payload = [
             'token' => '1a32e71a46317b9cc6feb7388238c95d',
