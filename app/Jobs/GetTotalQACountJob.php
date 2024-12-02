@@ -10,9 +10,12 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
-class GetTotalARCountJob implements ShouldQueue
+
+
+class GetTotalQACountJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
     public array $projectIds;
     public function __construct(array $projectIds)
     {
@@ -21,11 +24,11 @@ class GetTotalARCountJob implements ShouldQueue
 
     public function handle()
     {
-        $data = app()->call('App\Http\Controllers\ProjectController@getProjectTotalARCount1', [
+        $data = app()->call('App\Http\Controllers\ProjectController@getProjectTotalQACount1', [
             'project_id' => $this->projectIds,
         ]); 
         Log::info("Processed Project IDs", ['projectIds' => $this->projectIds]);
-        $cacheKey = 'project_' . implode('_', $this->projectIds) . '_ar_count';
+        $cacheKey = 'project_' . implode('_', $this->projectIds) . '_qa_count';
         Cache::put($cacheKey, $data, now()->addMinutes(30));
         
     }

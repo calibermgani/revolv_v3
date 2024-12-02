@@ -24,6 +24,7 @@ use App\Models\EmployeeLogin;
 use App\Mail\ProjectHourlyMail;
 use Illuminate\Support\Facades\Cache;
 use App\Jobs\GetTotalARCountJob;
+use App\Jobs\GetTotalQACountJob;
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
@@ -1484,6 +1485,7 @@ class ProjectController extends Controller
         //     // GetTotalQACountJob::dispatch($project['project_id'])->delay(now()->addSeconds(5));  // Delay for job processing
         // }
         GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
+        GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
         // Return the view with placeholder values
         return view('projects.projectUtilizationWeb', compact('projectsPending', 'yesterday','yesterDayStartDate','yesterDayEndDate','projectIds'));
     } catch (\Exception $e) {
@@ -1495,16 +1497,13 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
 {
   
     try {
-        $cacheKey = 'project_' . str_replace(',', '_', $projectId) . '_ar_count'
-;
-        // Retrieve AR and QA counts from Cache
-        $totalAR = Cache::get($cacheKey, 0); // Default to 0 if not found
-        // $totalAR = Cache::get( 'project_' . explode(',', $projectId) . '_ar_count', 0); 
-        // $totalQA = Cache::get("project_{$projectId}_qa_count", 0); // Default to 0 if not found
+        $arCacheKey = 'project_' . str_replace(',', '_', $projectId) . '_ar_count';
+        $qaCacheKey = 'project_' . str_replace(',', '_', $projectId) . '_qa_count';      
+        $totalAR = Cache::get($arCacheKey, 0);
+        $totalQA = Cache::get($qaCacheKey, 0);
      
         $loggedResolvAR = 0;$totalARCount = 0;
-        foreach($totalAR['totalArList'] as $key => $arList){
-          
+        foreach($totalAR['totalArList'] as $key => $arList){          
             if($arList['client_id'] == $rowProjectId && $arList['assigned_people'] != null){
                 $totalARCount += 1;
             $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
@@ -1513,9 +1512,8 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
                                 ->count();
             }
         }
-        $totalQADetails = $this->getProjectTotalQACount1($projectId);
         $loggedResolvQA = 0;
-        foreach($totalQADetails['totalQAList'] as $key => $qaList){    
+        foreach($totalQA['totalQAList'] as $key => $qaList){    
             if($qaList['client_id'] == $rowProjectId && $qaList['assigned_people'] != null){
             $loggedResolvQA +=  EmployeeLogin::where('user_id', $qaList['assigned_people'])
                                 ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
