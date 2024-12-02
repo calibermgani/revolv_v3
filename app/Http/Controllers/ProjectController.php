@@ -1443,15 +1443,15 @@ class ProjectController extends Controller
                                 ]);
                             $query->orWhere(function ($subQuery) use ($yesterday, $today) {
                                 $subQuery->where('chart_status', 'QA_Completed')
-                                        ->whereDate('coder_work_date', $yesterday)
-                                        ->orWhereDate('coder_work_date', $today);
+                                        ->whereDate('coder_work_date', "2024-11-26")
+                                        ->orWhereDate('coder_work_date', "2024-11-27");
                             });
                         })
                     ->groupBy('CE_emp_id')
                     ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate]) 
                     ->select('CE_emp_id') 
                     ->get() 
-                    ->count(); dd($yesterday, $today);
+                    ->count(); //dd($yesterday, $today);
                     $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
                         ->whereIn('chart_status', ['QA_Assigned', 'QA_Inprocess', 'QA_Pending', 'QA_Completed', 'QA_Clarification', 'QA_Hold'])
                         ->whereNotNull('QA_emp_id')
