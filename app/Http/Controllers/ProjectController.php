@@ -1500,7 +1500,7 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
         $loggedResolvAR = 0;$totalARCount = 0;
         foreach($totalAR['totalArList'] as $key => $arList){
           
-            if($arList['client_id'] == $rowProjectId){
+            if($arList['client_id'] == $rowProjectId && $arList['assigned_people'] != null){
                 $totalARCount += 1;
             $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
                                 ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
