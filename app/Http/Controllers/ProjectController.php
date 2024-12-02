@@ -1417,7 +1417,7 @@ class ProjectController extends Controller
             $prjName = Helpers::projectName($project['id'])->project_name ?? null;
 
             if ($prjName !== null) {
-                $projectIds = array_filter($projectIds, fn($id) => $id == $project['id']);
+                $projectIds = array_filter($projectIds, fn($id) => $id == $project['id']);dd('project ids in if',$projectIds);
                 $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
 
                 foreach ($subProjects as $subProject) {
@@ -1474,7 +1474,7 @@ class ProjectController extends Controller
 
             return $projectData;
         });
-dd($projectIds);
+dd('project ids',$projectIds);
         // Dispatch jobs to calculate AR/QA counts for each project asynchronously
         // foreach ($projectsPending as $project) {
         //     GetTotalARCountJob::dispatch($project['project_id'])->delay(now()->addSeconds(5));  // Delay for job processing
@@ -1495,7 +1495,7 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
         // Retrieve AR and QA counts from Cache
         $totalAR = Cache::get("project_{$projectId}_ar_count", 0); // Default to 0 if not found
         // $totalQA = Cache::get("project_{$projectId}_qa_count", 0); // Default to 0 if not found
-     dd($totalAR);
+     dd('totalAR',$totalAR);
         $loggedResolvAR = 0;
         foreach($totalAR['totalArList'] as $key => $arList){
             $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
