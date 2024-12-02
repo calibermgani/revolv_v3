@@ -1472,8 +1472,14 @@ class ProjectController extends Controller
                 }
             }
 
-            return ['project_id'=>$project_id,'projectData'=>$projectData];
+            return ['data' => $projectData, 'ids' => $projectIds];
         });
+        // Process the result to separate `projectData` and `projectIds`
+$projectsData = $projectsPending->pluck('data')->flatten(1)->toArray();
+$projectIds = $projectsPending->pluck('ids')->flatten()->unique()->toArray();
+
+// Debugging
+dd($projectsData, $projectIds);
 dd($projectsPending,'project ids');
         // Dispatch jobs to calculate AR/QA counts for each project asynchronously
         // foreach ($projectsPending as $project) {
