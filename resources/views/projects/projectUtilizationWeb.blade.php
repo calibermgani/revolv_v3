@@ -82,7 +82,7 @@
                                         <td>{{ $data['Chats'] == 0 ? 'No' : 'Yes' }}</td>
                                         {{-- <td>{{ $data['total_ar'] }}</td> --}}
                                         <td class="total-ar"></td>
-                                        <td class="logged-resolv-ar"></td>
+                                        <td class="logged_resolv_ar"></td>
                                         <td>{{ $data['prodcution_ar'] }}</td>
                                         <td>{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder'] }}</td>
                                         {{-- <td>{{ $data['logged_resolv_qa'] }}</td> --}}
