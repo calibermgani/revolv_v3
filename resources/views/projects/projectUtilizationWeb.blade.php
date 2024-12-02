@@ -140,7 +140,7 @@
             var yesterDayStartDate = @json($yesterDayStartDate);
             var yesterDayEndDate = @json($yesterDayEndDate);
             if (projectId) {console.log('projectId',projectId);
-                fetch(`project-ar-qa-counts/${projectId}/${yesterDayStartDate}/${yesterDayEndDate}`)
+                fetch(`project-ar-qa-counts/`+projectId+`/${yesterDayStartDate}/${yesterDayEndDate}`)
                     .then(response => response.json())
                     .then(data => {
                         console.log(data,'totalArCount');
