@@ -1516,13 +1516,13 @@ public function getProjectTotalARCount1($project_id)
         $payload = [
             'token' => '1a32e71a46317b9cc6feb7388238c95d',
             'client_id' => array_values($project_id),
-        ]; dd($payload);
+        ];
         $data = retry(3, function () use ($payload) {
             $client = new Client(['verify' => false]);
             $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_total_ar_total_list', [
                 'json' => $payload,
             ]);
-            
+            dd($data);
             if ($response->getStatusCode() == 200) {
                 $responseData = json_decode($response->getBody(), true);
 
