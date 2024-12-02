@@ -1515,7 +1515,7 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
         }
         $totalQADetails = $this->getProjectTotalQACount($projectId);
         $loggedResolvQA = 0;
-        foreach($totalQADetails['totalQAList'] as $key => $qaList){          
+        foreach($totalQADetails['totalQAList'] as $key => $qaList){   dd($qaList,$rowProjectId);       
             if($qaList['client_id'] == $rowProjectId && $qaList['assigned_people'] != null){
             $loggedResolvQA +=  EmployeeLogin::where('user_id', $qaList['assigned_people'])
                                 ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
