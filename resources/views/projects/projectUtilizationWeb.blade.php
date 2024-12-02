@@ -135,7 +135,8 @@
 
         // rows.each(function () {
             //var projectId = $(this).data('project-id');
-            var projectId = @json($projectIds);
+            var projectId = @json($projectIds);console.log('projectId',projectId);
+            
             var yesterDayStartDate = @json($yesterDayStartDate);
             var yesterDayEndDate = @json($yesterDayEndDate);
             if (projectId) {
