@@ -86,7 +86,7 @@
                                         <td>{{ $data['prodcution_ar'] }}</td>
                                         <td>{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder'] }}</td>
                                         {{-- <td>{{ $data['logged_resolv_qa'] }}</td> --}}
-                                        <td class="logged_resolv_qa"></td>
+                                          <td class="logged_resolv_qa"></td>
                                         <td>{{ $data['prodcution_qa'] }}</td>
                                         <td>{{ $data['QA'] == 0 ? 'No Activity' : $data['QA'] }}</td>
                                     </tr>
@@ -109,138 +109,65 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script>
-        // $(document).ready(function() {
-        //     var table = $("#project_utilization_table").DataTable({
-        //         processing: true,
-        //         ordering: true,
-        //         clientSide: true,
-        //         lengthChange: false,
-        //         searching: true,
-        //         pageLength: 15,
-        //         buttons: [{
-        //             "extend": 'excel',
-        //             "text": `<span data-dismiss="modal" data-toggle="tooltip" data-placement="left" data-original-title="Export" style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
-        //                      </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></span>`,
-        //             "className": 'btn btn-primary-export text-white',
-        //             "title": 'Resolv Utilization',
-        //             "filename": 'resolv_utilization_report',
-        //             "exportOptions": {
-        //                 "columns": ':not(.notexport)' // Exclude first two columns
-        //             }
-        //         }],
-        //         dom: "<'row'<'col-md-12'f><'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>"
-        //     })
-        //     table.buttons().container()
-        //         .appendTo('.outside');
-        //     var rows = $("#project_utilization_table tbody tr");
+        $(document).ready(function() {
+            var table = $("#project_utilization_table").DataTable({
+                processing: true,
+                ordering: true,
+                clientSide: true,
+                lengthChange: false,
+                searching: true,
+                pageLength: 30,
+                buttons: [{
+                    "extend": 'excel',
+                    "text": `<span data-dismiss="modal" data-toggle="tooltip" data-placement="left" data-original-title="Export" style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
+                             </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></span>`,
+                    "className": 'btn btn-primary-export text-white',
+                    "title": 'Resolv Utilization',
+                    "filename": 'resolv_utilization_report',
+                    "exportOptions": {
+                        "columns": ':not(.notexport)' // Exclude first two columns
+                    }
+                }],
+                dom: "<'row'<'col-md-12'f><'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>"
+            })
+            table.buttons().container()
+                .appendTo('.outside');
+                var rows = $("#project_utilization_table tbody tr");
 
-        //     rows.each(function() {
-        //         var rowProjectId = $(this).data('project-id');
-        //         var projectId = @json($projectIds);
-
-        //         var yesterDayStartDate = @json($yesterDayStartDate);
-        //         var yesterDayEndDate = @json($yesterDayEndDate);
-        //         if (projectId) {
-        //             console.log('projectId', projectId);
-        //             fetch(`project-ar-qa-counts/` + projectId +
-        //                     `/${yesterDayStartDate}/${yesterDayEndDate}/${rowProjectId}`)
-        //                 .then(response => response.json())
-        //                 .then(data => {
-        //                     console.log(data, 'totalArCount');
-        //                     if (data.total_ar !== undefined) {
-        //                         console.log(data.total_ar, 'totalArCount');
-        //                         $(this).find(".total-ar").text(data.total_ar);
-        //                         $(this).find(".logged_resolv_ar").text(data.logged_resolv_ar);
-        //                         $(this).find(".logged_resolv_qa").text(data.logged_resolv_qa);
-        //                         // $(this).find(".total-qa").text(data.total_qa);
-        //                     }
-        //                 })
-        //                 .catch(error => console.error("Error fetching AR/QA counts:", error));
-        //         }
-        //     });
-        // });
-        $(document).ready(function () {
-    var projectId = @json($projectIds);
-    var yesterDayStartDate = @json($yesterDayStartDate);
-    var yesterDayEndDate = @json($yesterDayEndDate);
-
-    var table = $("#project_utilization_table").DataTable({
-        processing: true,
-        ordering: true,
-        clientSide: true,
-        lengthChange: false,
-        searching: true,
-        pageLength: 15,
-        buttons: [
-            {
-                "extend": 'excel',
-                "text": `<span data-dismiss="modal" data-toggle="tooltip" data-placement="left" data-original-title="Export" style="font-size:13px"> 
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/>
-                        <path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
-                    </svg>
-                    &nbsp;&nbsp;&nbsp;<span>Export</span>
-                </span>`,
-                "className": 'btn btn-primary-export text-white',
-                "title": 'Resolv Utilization',
-                "filename": 'resolv_utilization_report',
-                "exportOptions": {
-                    "columns": ':not(.notexport)' // Exclude specific columns
-                }
-            }
-        ],
-        dom: "<'row'<'col-md-12'f><'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>"
-    });
-
-    table.buttons().container().appendTo('.outside');
-
-    // Handle row processing on draw
-    table.on('draw', function () {
-        $("#project_utilization_table tbody tr").each(function () {
-            var row = $(this);
-            var rowProjectId = row.data('project-id');
-
-            if (projectId && rowProjectId) {
-                fetch(`project-ar-qa-counts/${projectId}/${yesterDayStartDate}/${yesterDayEndDate}/${rowProjectId}`)
+        rows.each(function () {
+            var rowProjectId = $(this).data('project-id');
+            var projectId = @json($projectIds);
+            
+            var yesterDayStartDate = @json($yesterDayStartDate);
+            var yesterDayEndDate = @json($yesterDayEndDate);
+            if (projectId) {console.log('projectId',projectId);
+                fetch(`project-ar-qa-counts/`+projectId+`/${yesterDayStartDate}/${yesterDayEndDate}/${rowProjectId}`)
                     .then(response => response.json())
                     .then(data => {
+                        console.log(data,'totalArCount');
                         if (data.total_ar !== undefined) {
-                            row.find(".total-ar").text(data.total_ar);
-                            row.find(".logged_resolv_ar").text(data.logged_resolv_ar);
-                            row.find(".logged_resolv_qa").text(data.logged_resolv_qa);
+                            console.log(data.total_ar,'totalArCount');
+                            
+                            $(this).find(".total-ar").text(data.total_ar);
+                            $(this).find(".logged_resolv_ar").text(data.logged_resolv_ar);
+                            $(this).find(".logged_resolv_qa").text(data.logged_resolv_qa);
+                            // $(this).find(".total-qa").text(data.total_qa);
                         }
                     })
                     .catch(error => console.error("Error fetching AR/QA counts:", error));
             }
         });
-    });
-
-    // Block UI on search
-    $(document).on('click', '#filter_search', function () {
-        KTApp.block('#project_utilization', {
-            overlayColor: '#000000',
-            state: 'danger',
-            opacity: 0.1,
-            message: 'Fetching...',
         });
-    });
-
-    // Reload page on clear
-    $(document).on('click', '#filter_clear', function () {
-        location.reload();
-    });
-});
-
-        // $(document).on('click', '#filter_search', function() {
-        //     KTApp.block('#project_utilization', {
-        //         overlayColor: '#000000',
-        //         state: 'danger',
-        //         opacity: 0.1,
-        //         message: 'Fetching...',
-        //     });
-        // });
-        // $(document).on('click', '#filter_clear', function() {
-        //     location.reload();
-        // })
+        $(document).on('click', '#filter_search', function() {
+            KTApp.block('#project_utilization', {
+                overlayColor: '#000000',
+                state: 'danger',
+                opacity: 0.1,
+                message: 'Fetching...',
+            });
+        });
+        $(document).on('click', '#filter_clear', function() {
+            location.reload();
+        })
     </script>
 @endpush
