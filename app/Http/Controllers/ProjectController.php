@@ -1512,6 +1512,7 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
 }
 public function getProjectTotalARCount1($project_id)
 {
+    dd($project_id);
     try {
         $payload = [
             'token' => '1a32e71a46317b9cc6feb7388238c95d',
