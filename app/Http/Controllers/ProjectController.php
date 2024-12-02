@@ -1410,12 +1410,10 @@ class ProjectController extends Controller
         $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
         // Fetch project data
         $projects = collect($this->getProjects());
-        $projectIds = $projects->pluck('id')->toArray();
-        $projectData = []; // To collect project data
-        $project_id = [];
-        $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$projectData, &$project_id) {
-            // Prepare data for each project
-            // $projectData = [];$project_id = [];
+        // $projectIds = $projects->pluck('id')->toArray();
+        $prjoectsPending = []; // To collect project data
+        $projectIds = [];
+        $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$prjoectsPending, &$projectIds) {
             $prjName = Helpers::projectName($project['id'])->project_name ?? null;
 
             if ($prjName !== null) {
@@ -1427,40 +1425,40 @@ class ProjectController extends Controller
                     
                     if (class_exists($modelClass)) {
                         $aCount = $modelClass::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
-                        ->where('chart_status', 'CE_Assigned')->count();
-            $cCount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                        ->where('chart_status', 'CE_Completed')->count();
-            $qCount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                        ->where('chart_status', 'QA_Completed')->count();
-            $productionARCount =  $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today) {
-                $query->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                      ->whereIn('chart_status', [
-                          'CE_Inprocess', 
-                          'CE_Pending', 
-                          'CE_Completed', 
-                          'CE_Clarification', 
-                          'CE_Hold', 
-                          'AR_non_workable', 
-                          'Revoke'
-                      ]);
-                 $query->orWhere(function ($subQuery) use ($yesterday, $today) {
-                    $subQuery->where('chart_status', 'CE_Completed')
-                             ->whereDate('coder_work_date', $yesterday)
-                             ->orWhereDate('coder_work_date', $today);
-                });
-            })
-            ->groupBy('CE_emp_id')
-            ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate]) 
-            ->select('CE_emp_id') 
-            ->get() 
-            ->count(); 
-            $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                ->whereIn('chart_status', ['QA_Assigned', 'QA_Inprocess', 'QA_Pending', 'QA_Completed', 'QA_Clarification', 'QA_Hold'])
-                ->whereNotNull('QA_emp_id')
-                ->distinct('QA_emp_id')
-                ->count('QA_emp_id'); 
-                        // Placeholder values for now
-                        $projectData[] = [
+                          ->where('chart_status', 'CE_Assigned')->count();
+                        $cCount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                    ->where('chart_status', 'CE_Completed')->count();
+                        $qCount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                    ->where('chart_status', 'QA_Completed')->count();
+                        $productionARCount =  $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today) {
+                            $query->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                ->whereIn('chart_status', [
+                                    'CE_Inprocess', 
+                                    'CE_Pending', 
+                                    'CE_Completed', 
+                                    'CE_Clarification', 
+                                    'CE_Hold', 
+                                    'AR_non_workable', 
+                                    'Revoke'
+                                ]);
+                            $query->orWhere(function ($subQuery) use ($yesterday, $today) {
+                                $subQuery->where('chart_status', 'CE_Completed')
+                                        ->whereDate('coder_work_date', $yesterday)
+                                        ->orWhereDate('coder_work_date', $today);
+                            });
+                        })
+                    ->groupBy('CE_emp_id')
+                    ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate]) 
+                    ->select('CE_emp_id') 
+                    ->get() 
+                    ->count(); 
+                    $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                        ->whereIn('chart_status', ['QA_Assigned', 'QA_Inprocess', 'QA_Pending', 'QA_Completed', 'QA_Clarification', 'QA_Hold'])
+                        ->whereNotNull('QA_emp_id')
+                        ->distinct('QA_emp_id')
+                        ->count('QA_emp_id'); 
+
+                        $prjoectsPending[] = [
                             'project' => $project['client_name'] . '-' . $subProject,
                             'Chats' => $aCount,
                             'Coder' => $cCount,
@@ -1469,17 +1467,13 @@ class ProjectController extends Controller
                             'prodcution_qa' => $productionQACount,
                             'project_id' => $project['id'], // Store project ID
                         ];
-                        $project_id[] = $project['id'];
+                        $projectIds[] = $project['id'];
                     }
                 }
             }
             // return ['data' => $projectData, 'ids' => $project_id];
         });
 
-
-// Debugging
-dd($projectData, $project_id);
-dd($projectsPending,'project ids');
         // Dispatch jobs to calculate AR/QA counts for each project asynchronously
         // foreach ($projectsPending as $project) {
         //     GetTotalARCountJob::dispatch($project['project_id'])->delay(now()->addSeconds(5));  // Delay for job processing
