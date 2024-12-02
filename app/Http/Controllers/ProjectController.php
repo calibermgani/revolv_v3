@@ -1575,7 +1575,7 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
         try {
             $payload = [
                 'token' => '1a32e71a46317b9cc6feb7388238c95d',
-                'client_id' => explode(',', $project_id),
+                'client_id' => $project_id,
             ];         
             // Retry 3 times, with a 2-second delay between each attempt
             $data = retry(3, function () use ($payload) {
