@@ -1451,7 +1451,7 @@ class ProjectController extends Controller
                     ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate]) 
                     ->select('CE_emp_id') 
                     ->get() 
-                    ->count(); 
+                    ->count(); dd($yesterday, $today);
                     $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
                         ->whereIn('chart_status', ['QA_Assigned', 'QA_Inprocess', 'QA_Pending', 'QA_Completed', 'QA_Clarification', 'QA_Hold'])
                         ->whereNotNull('QA_emp_id')
