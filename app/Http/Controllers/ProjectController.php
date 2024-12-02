@@ -1520,9 +1520,9 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
             $loggedResolvQA +=  EmployeeLogin::where('user_id', $qaList['assigned_people'])
                                 ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
                                 ->distinct('user_id')
-                                ->count();
+                                ->count();dd($loggedResolvQA);
             }
-        }dd($loggedResolvQA);
+        }
         return response()->json([
             'total_ar' => $totalARCount,
             'logged_resolv_ar' => $loggedResolvAR,
