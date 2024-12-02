@@ -1411,7 +1411,7 @@ class ProjectController extends Controller
         // Fetch project data
         $projects = collect($this->getProjects());
         $projectIds = $projects->pluck('id')->toArray();
-        $projectsPending = $projects->flatMap(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday) {
+        $projectsPending = $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday) {
             // Prepare data for each project
             $projectData = [];$project_id = [];
             $prjName = Helpers::projectName($project['id'])->project_name ?? null;
@@ -1471,10 +1471,8 @@ class ProjectController extends Controller
                     }
                 }
             }
-return $projectData;
             return ['data' => $projectData, 'ids' => $project_id];
         });
-        dd($projectsPending,'project ids');
         // Process the result to separate `projectData` and `projectIds`
 $projectsData = $projectsPending->pluck('data')->flatten(1)->toArray();
 $projectIds = $projectsPending->pluck('ids')->flatten()->unique()->toArray();
