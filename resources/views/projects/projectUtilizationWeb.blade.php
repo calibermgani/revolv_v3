@@ -150,7 +150,7 @@
                             
                             $(this).find(".total-ar").text(data.total_ar);
                             $(this).find(".logged_resolv_ar").text(data.logged_resolv_ar);
-                            $(this).find(".logged_resolv_qa").text(data.total_qa);
+                            $(this).find(".logged_resolv_qa").text(data.logged_resolv_qa);
                             // $(this).find(".total-qa").text(data.total_qa);
                         }
                     })
