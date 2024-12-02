@@ -1507,7 +1507,7 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
                                 ->distinct('user_id')
                                 ->count();
             }
-        }
+        }dd( $totalAR);
         return response()->json([
             'total_ar' => $totalAR,
             'logged_resolv_ar' => $loggedResolvAR,
