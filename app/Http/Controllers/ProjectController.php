@@ -1441,11 +1441,11 @@ class ProjectController extends Controller
                                     'AR_non_workable', 
                                     'Revoke'
                                 ]);
-                            $query->orWhere(function ($subQuery) use ($yesterday, $today) {
-                                $subQuery->where('chart_status', 'CE_Completed')
-                                        ->whereDate('coder_work_date', $yesterday)
-                                        ->orWhereDate('coder_work_date', $today);
-                            });
+                            // $query->orWhere(function ($subQuery) use ($yesterday, $today) {
+                            //     $subQuery->where('chart_status', 'CE_Completed')
+                            //             ->whereDate('coder_work_date', $yesterday)
+                            //             ->orWhereDate('coder_work_date', $today);
+                            // });
                         })
                     ->groupBy('CE_emp_id')
                     ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate]) 
