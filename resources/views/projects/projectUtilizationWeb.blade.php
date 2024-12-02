@@ -146,8 +146,7 @@
                     .then(data => {
                         console.log(data,'totalArCount');
                         if (data.total_ar !== undefined) {
-                            console.log(data.total_ar,'totalArCount');
-                            
+                            console.log(data.total_ar,'totalArCount');                            
                             $(this).find(".total-ar").text(data.total_ar);
                             $(this).find(".logged_resolv_ar").text(data.logged_resolv_ar);
                             $(this).find(".logged_resolv_qa").text(data.logged_resolv_qa);
