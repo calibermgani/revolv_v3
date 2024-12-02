@@ -1411,9 +1411,11 @@ class ProjectController extends Controller
         // Fetch project data
         $projects = collect($this->getProjects());
         $projectIds = $projects->pluck('id')->toArray();
-        $projectsPending = $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday) {
+        $projectData = []; // To collect project data
+        $project_id = [];
+        $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$projectData, &$project_id) {
             // Prepare data for each project
-            $projectData = [];$project_id = [];
+            // $projectData = [];$project_id = [];
             $prjName = Helpers::projectName($project['id'])->project_name ?? null;
 
             if ($prjName !== null) {
@@ -1471,14 +1473,12 @@ class ProjectController extends Controller
                     }
                 }
             }
-            return ['data' => $projectData, 'ids' => $project_id];
+            // return ['data' => $projectData, 'ids' => $project_id];
         });
-        // Process the result to separate `projectData` and `projectIds`
-$projectsData = $projectsPending->pluck('data')->flatten(1)->toArray();
-$projectIds = $projectsPending->pluck('ids')->flatten()->unique()->toArray();
+
 
 // Debugging
-dd($projectsData, $projectIds);
+dd($projectData, $project_id);
 dd($projectsPending,'project ids');
         // Dispatch jobs to calculate AR/QA counts for each project asynchronously
         // foreach ($projectsPending as $project) {
