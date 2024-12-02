@@ -34,7 +34,7 @@ class GetTotalARCountJob implements ShouldQueue
 Log::info("Processed Project IDs", ['projectIds' => $this->projectIds]);
 
 // Create a unique cache key from project IDs
-$cacheKey = 'project_' . implode('_', $this->projectIds) . '_ar_count';
+$cacheKey = 'project_' . implode('_', $this->projectIds) . '_ar_count';dd($cacheKey);
 
 // Store the data in the cache
 Cache::put($cacheKey, $data, now()->addMinutes(30));
