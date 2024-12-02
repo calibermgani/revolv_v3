@@ -1522,7 +1522,7 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
                                 ->distinct('user_id')
                                 ->count();
             }
-        }
+        }dd($loggedResolvQA);
         return response()->json([
             'total_ar' => $totalARCount,
             'logged_resolv_ar' => $loggedResolvAR,
