@@ -1440,8 +1440,7 @@ class ProjectController extends Controller
                                     'CE_Hold', 
                                     'AR_non_workable', 
                                     'Revoke'
-                                ]);
-                            $query->orWhere(function ($subQuery) use ($yesterday, $today) {
+                                ])->orWhere(function ($subQuery) use ($yesterday, $today) {
                                 $subQuery->where('chart_status', 'CE_Completed')
                                         ->whereDate('coder_work_date', "2024-11-26")
                                         ->orWhereDate('coder_work_date', "2024-11-27");
