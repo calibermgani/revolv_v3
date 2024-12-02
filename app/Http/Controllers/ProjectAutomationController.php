@@ -1710,6 +1710,7 @@ class ProjectAutomationController extends Controller
          try {
              $attributes = [
                  'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                 'insurance_no' => isset($request->insurance_no) && $request->insurance_no != "NULL" ? $request->insurance_no : NULL,
                  'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
                  'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,
                  'unqi_1' => isset($request->unqi_1) && $request->unqi_1 != "NULL" ? $request->unqi_1 : NULL,
@@ -1732,6 +1733,7 @@ class ProjectAutomationController extends Controller
              if (!$duplicateRecordExisting) {
                 NmNcgGottengerAr::insert([
                     'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                    'insurance_no' => isset($request->insurance_no) && $request->insurance_no != "NULL" ? $request->insurance_no : NULL,
                     'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
                     'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,
                     'unqi_1' => isset($request->unqi_1) && $request->unqi_1 != "NULL" ? $request->unqi_1 : NULL,
@@ -1759,6 +1761,7 @@ class ProjectAutomationController extends Controller
                  if ($duplicateRecord) {
                      $duplicateRecord->update([
                         'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                        'insurance_no' => isset($request->insurance_no) && $request->insurance_no != "NULL" ? $request->insurance_no : NULL,
                         'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
                         'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,
                         'unqi_1' => isset($request->unqi_1) && $request->unqi_1 != "NULL" ? $request->unqi_1 : NULL,
@@ -1792,6 +1795,7 @@ class ProjectAutomationController extends Controller
          try {
             NmNcgGottengerArDuplicates::insert([
                 'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                'insurance_no' => isset($request->insurance_no) && $request->insurance_no != "NULL" ? $request->insurance_no : NULL,
                 'unique_value' => isset($request->unique_value) && $request->unique_value != "NULL" ? $request->unique_value : NULL,
                 'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,
                 'unqi_1' => isset($request->unqi_1) && $request->unqi_1 != "NULL" ? $request->unqi_1 : NULL,
