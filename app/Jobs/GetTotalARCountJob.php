@@ -38,7 +38,6 @@ $cacheKey = 'project_' . $this->projectIds . '_ar_count';
 
 // Store the data in the cache
 Cache::put($cacheKey, $data, now()->addMinutes(30));
-dd(Cache::get( 'project_' . $this->projectIds . '_ar_count', 0) );
         
     }
 }
