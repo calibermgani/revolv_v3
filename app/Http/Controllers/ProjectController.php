@@ -1411,20 +1411,12 @@ class ProjectController extends Controller
         // Fetch project data
         $projects = collect($this->getProjects());
         $projectIds = $projects->pluck('id')->toArray();
-        $remainingProjectIds = $projectIds;
-        $projectsPending = $projects->flatMap(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday,&$remainingProjectIds) {
+        $projectsPending = $projects->flatMap(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday) {
             // Prepare data for each project
             $projectData = [];$project_id = [];
             $prjName = Helpers::projectName($project['id'])->project_name ?? null;
 
             if ($prjName !== null) {
-                if (!in_array($project['id'], $remainingProjectIds)) {
-                    return []; // Skip this project if the ID is not in $remainingProjectIds
-                }
-            
-                // Remove matched project ID from $remainingProjectIds
-                $remainingProjectIds = array_filter($remainingProjectIds, fn($id) => $id !== $project['id']);
-            
                 $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
 
                 foreach ($subProjects as $subProject) {
@@ -1480,10 +1472,9 @@ class ProjectController extends Controller
                 }
             }
 
-            return $project_id;
+            return ['project_id'=>$project_id,'projectData'=>$projectData];
         });
-        $remainingProjectIds = array_values($remainingProjectIds);
-dd($projectsPending,'project ids',$remainingProjectIds);
+dd($projectsPending,'project ids');
         // Dispatch jobs to calculate AR/QA counts for each project asynchronously
         // foreach ($projectsPending as $project) {
         //     GetTotalARCountJob::dispatch($project['project_id'])->delay(now()->addSeconds(5));  // Delay for job processing
