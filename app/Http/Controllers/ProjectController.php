@@ -1490,7 +1490,7 @@ class ProjectController extends Controller
 }
 public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDate)
 {
-    try {
+    try {dd($projectId,$yesterDayStartDate,$yesterDayEndDate);
         // Retrieve AR and QA counts from Cache
         $totalAR = Cache::get("project_{$projectId}_ar_count", 0); // Default to 0 if not found
         // $totalQA = Cache::get("project_{$projectId}_qa_count", 0); // Default to 0 if not found
