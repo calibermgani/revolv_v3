@@ -1497,10 +1497,11 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
         // $totalAR = Cache::get( 'project_' . explode(',', $projectId) . '_ar_count', 0); 
         // $totalQA = Cache::get("project_{$projectId}_qa_count", 0); // Default to 0 if not found
      
-        $loggedResolvAR = 0;
+        $loggedResolvAR = 0;$totalAR = 0;
         foreach($totalAR['totalArList'] as $key => $arList){
           
             if($arList['client_id'] == $rowProjectId){
+                $totalAR += 1;
             $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
                                 ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
                                 ->distinct('user_id')
@@ -1508,7 +1509,7 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
             }
         }
         return response()->json([
-            'total_ar' => 0,
+            'total_ar' => $totalAR,
             'logged_resolv_ar' => $loggedResolvAR,
         ]);
     } catch (\Exception $e) {
