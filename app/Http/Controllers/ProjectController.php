@@ -1522,14 +1522,13 @@ public function getProjectTotalARCount1($project_id)
             $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_total_ar_total_list', [
                 'json' => $payload,
             ]);
-            dd($response);
             if ($response->getStatusCode() == 200) {
                 $responseData = json_decode($response->getBody(), true);
 
-                if (isset($responseData['totalArCount'])) {
+                if (isset($responseData['totalArList'])) {
                     return $responseData;
                 } else {
-                    throw new \Exception('totalArCount not found in the API response');
+                    throw new \Exception('totalArList not found in the API response');
                 }
             } elseif ($response->getStatusCode() == 429) {
                 $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
