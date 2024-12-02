@@ -1473,6 +1473,7 @@ class ProjectController extends Controller
             }
             // return ['data' => $projectData, 'ids' => $project_id];
         });
+dd($projectsPending,$projectIds);
         // Dispatch jobs to calculate AR/QA counts for each project asynchronously
         // foreach ($projectsPending as $project) {
         //     GetTotalARCountJob::dispatch($project['project_id'])->delay(now()->addSeconds(5));  // Delay for job processing
