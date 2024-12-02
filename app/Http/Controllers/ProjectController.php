@@ -1513,14 +1513,14 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
                                 ->count();
             }
         }
-        $totalQADetails = $this->getProjectTotalQACount($projectId);
+        $totalQADetails = $this->getProjectTotalQACount1($projectId);
         $loggedResolvQA = 0;
-        foreach($totalQADetails['totalQAList'] as $key => $qaList){   dd($qaList,$rowProjectId);       
+        foreach($totalQADetails['totalQAList'] as $key => $qaList){    
             if($qaList['client_id'] == $rowProjectId && $qaList['assigned_people'] != null){
             $loggedResolvQA +=  EmployeeLogin::where('user_id', $qaList['assigned_people'])
                                 ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
                                 ->distinct('user_id')
-                                ->count();dd($loggedResolvQA);
+                                ->count();
             }
         }
         return response()->json([
