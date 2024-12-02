@@ -133,14 +133,14 @@
                 .appendTo('.outside');
                 var rows = $("#project_utilization_table tbody tr");
 
-        // rows.each(function () {
-            //var projectId = $(this).data('project-id');
+        rows.each(function () {
+            var rowProjectId = $(this).data('project-id');
             var projectId = @json($projectIds);
             
             var yesterDayStartDate = @json($yesterDayStartDate);
             var yesterDayEndDate = @json($yesterDayEndDate);
             if (projectId) {console.log('projectId',projectId);
-                fetch(`project-ar-qa-counts/`+projectId+`/${yesterDayStartDate}/${yesterDayEndDate}`)
+                fetch(`project-ar-qa-counts/`+projectId+`/${yesterDayStartDate}/${yesterDayEndDate}/${rowProjectId}`)
                     .then(response => response.json())
                     .then(data => {
                         console.log(data,'totalArCount');
@@ -154,7 +154,7 @@
                     })
                     .catch(error => console.error("Error fetching AR/QA counts:", error));
             }
-        // });
+        });
         });
         $(document).on('click', '#filter_search', function() {
             KTApp.block('#project_utilization', {
