@@ -135,11 +135,11 @@
 
         // rows.each(function () {
             //var projectId = $(this).data('project-id');
-            var projectId = @json($projectIds);console.log('projectId',projectId);
+            var projectId = @json($projectIds);
             
             var yesterDayStartDate = @json($yesterDayStartDate);
             var yesterDayEndDate = @json($yesterDayEndDate);
-            if (projectId) {
+            if (projectId) {console.log('projectId',projectId);
                 fetch(`project-ar-qa-counts/${projectId}/${yesterDayStartDate}/${yesterDayEndDate}`)
                     .then(response => response.json())
                     .then(data => {
