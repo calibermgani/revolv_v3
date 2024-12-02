@@ -1430,27 +1430,33 @@ class ProjectController extends Controller
                                     ->where('chart_status', 'CE_Completed')->count();
                         $qCount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
                                     ->where('chart_status', 'QA_Completed')->count();
-                        $productionARCount =  $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today) {
-                            $query->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                                ->whereIn('chart_status', [
-                                    'CE_Inprocess', 
-                                    'CE_Pending', 
-                                    'CE_Completed', 
-                                    'CE_Clarification', 
-                                    'CE_Hold', 
-                                    'AR_non_workable', 
-                                    'Revoke'
-                                ]);
-                            $query->orWhere('chart_status', 'QA_Completed')
-                                        ->whereDate('coder_work_date', $yesterday)
-                                        ->orWhereDate('coder_work_date', $today);
-                           
-                        })
-                    ->groupBy('CE_emp_id')
-                    ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate]) 
-                    ->select('CE_emp_id') 
-                    ->get() 
-                    ->count(); 
+                                    $productionARCount = $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today) {
+                                        $query->where(function ($subQuery) use ($yesterDayStartDate, $yesterDayEndDate) {
+                                            $subQuery->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                                     ->whereIn('chart_status', [
+                                                         'CE_Inprocess',
+                                                         'CE_Pending',
+                                                         'CE_Completed',
+                                                         'CE_Clarification',
+                                                         'CE_Hold',
+                                                         'AR_non_workable',
+                                                         'Revoke'
+                                                     ]);
+                                        })
+                                        ->orWhere(function ($subQuery) use ($yesterday, $today) {
+                                            $subQuery->where('chart_status', 'QA_Completed')
+                                                     ->where(function ($nestedQuery) use ($yesterday, $today) {
+                                                         $nestedQuery->whereDate('coder_work_date', $yesterday)
+                                                                     ->orWhereDate('coder_work_date', $today);
+                                                     });
+                                        });
+                                    })
+                                    ->groupBy('CE_emp_id')
+                                    ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate])
+                                    ->select('CE_emp_id')
+                                    ->get()
+                                    ->count();
+                                
                     $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
                         ->whereIn('chart_status', ['QA_Assigned', 'QA_Inprocess', 'QA_Pending', 'QA_Completed', 'QA_Clarification', 'QA_Hold'])
                         ->whereNotNull('QA_emp_id')
