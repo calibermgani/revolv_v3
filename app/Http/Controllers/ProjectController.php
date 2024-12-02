@@ -1490,7 +1490,8 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
 {
     try {
         // Retrieve AR and QA counts from Cache
-        $totalAR = Cache::get( 'project_' . implode('_', $projectId) . '_ar_count', 0); // Default to 0 if not found
+        $totalAR = Cache::get("project_" . "$projectId" . "_ar_count", 0); // Default to 0 if not found
+        //$totalAR = Cache::get( 'project_' . implode('_', $projectId) . '_ar_count', 0); 
         // $totalQA = Cache::get("project_{$projectId}_qa_count", 0); // Default to 0 if not found
      dd('totalAR',$totalAR);
         $loggedResolvAR = 0;
