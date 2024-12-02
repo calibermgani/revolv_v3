@@ -13,19 +13,18 @@ use Illuminate\Support\Facades\Cache;
 class GetTotalARCountJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    protected $projectId;
-
-    public function __construct($projectId)
+    public array $projectIds;
+    public function __construct(array $projectIds)
     {
-        $this->projectId = $projectId;
+        $this->projectIds = $projectIds;
     }
 
     public function handle()
     {
         $data = app()->call('App\Http\Controllers\ProjectController@getProjectTotalARCount1', [
-            'project_id' => $this->projectId,
+            'project_id' => $this->projectIds,
         ]);
-        Log::info("Processed Project ID: {$this->projectId}", $data ?? []);
-        Cache::put("project_{$this->projectId}_ar_count", $data, now()->addMinutes(30));
+        Log::info("Processed Project ID: {$this->projectIds}", $data ?? []);
+        Cache::put("project_{$this->projectIds}_ar_count", $data, now()->addMinutes(30));
     }
 }
