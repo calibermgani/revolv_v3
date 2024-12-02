@@ -1442,7 +1442,7 @@ class ProjectController extends Controller
                                     'Revoke'
                                 ]);
                             $query->orWhere(function ($subQuery) use ($yesterday, $today) {
-                                $subQuery->where('chart_status', 'QA_Completed')
+                                $subQuery->where('chart_status', 'CE_Completed')
                                         ->whereDate('coder_work_date', "2024-11-26")
                                         ->orWhereDate('coder_work_date', "2024-11-27");
                             });
