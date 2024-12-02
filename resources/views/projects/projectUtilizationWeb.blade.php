@@ -135,25 +135,31 @@
 
         // rows.each(function () {
             //var projectId = $(this).data('project-id');
-            var projectId = @json($projectIds);
-            
-            var yesterDayStartDate = @json($yesterDayStartDate);
-            var yesterDayEndDate = @json($yesterDayEndDate);
-            if (projectId) {console.log('projectId',projectId);
-                fetch(`project-ar-qa-counts/`+projectId+`/${yesterDayStartDate}/${yesterDayEndDate}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log(data,'totalArCount');
-                        if (data.total_ar !== undefined) {
-                            console.log(data.total_ar,'totalArCount');
-                            
-                            $(this).find(".total-ar").text(data.total_ar);
-                            $(this).find(".logged_resolv_ar").text(data.logged_resolv_ar);
-                            // $(this).find(".total-qa").text(data.total_qa);
-                        }
-                    })
-                    .catch(error => console.error("Error fetching AR/QA counts:", error));
+            var projectIds = @json($projectIds); // Ensure this is an array
+var yesterDayStartDate = @json($yesterDayStartDate);
+var yesterDayEndDate = @json($yesterDayEndDate);
+
+if (projectIds) {
+    console.log('projectIds', projectIds);
+
+    // Convert the array into a JSON string to send to the backend
+    var projectIdsParam = encodeURIComponent(JSON.stringify(projectIds));
+
+    fetch(`project-ar-qa-counts?projectIds=${projectIdsParam}&yesterDayStartDate=${yesterDayStartDate}&yesterDayEndDate=${yesterDayEndDate}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data, 'totalArCount');
+            if (data.total_ar !== undefined) {
+                console.log(data.total_ar, 'totalArCount');
+
+                $(this).find(".total-ar").text(data.total_ar);
+                $(this).find(".logged_resolv_ar").text(data.logged_resolv_ar);
+                // $(this).find(".total-qa").text(data.total_qa);
             }
+        })
+        .catch(error => console.error("Error fetching AR/QA counts:", error));
+}
+
         // });
         });
         $(document).on('click', '#filter_search', function() {
