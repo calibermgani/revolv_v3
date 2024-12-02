@@ -1414,7 +1414,7 @@ class ProjectController extends Controller
         $remainingProjectIds = $projectIds;
         $projectsPending = $projects->flatMap(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday,&$remainingProjectIds) {
             // Prepare data for each project
-            $projectData = [];
+            $projectData = [];$project_id = [];
             $prjName = Helpers::projectName($project['id'])->project_name ?? null;
 
             if ($prjName !== null) {
@@ -1475,14 +1475,15 @@ class ProjectController extends Controller
                             'prodcution_qa' => $productionQACount,
                             'project_id' => $project['id'], // Store project ID
                         ];
+                        $project_id[] = $project['id'];
                     }
                 }
             }
 
-            return $projectData;
+            return $project_id;
         });
         $remainingProjectIds = array_values($remainingProjectIds);
-dd('project ids',$remainingProjectIds);
+dd($projectsPending,'project ids',$remainingProjectIds);
         // Dispatch jobs to calculate AR/QA counts for each project asynchronously
         // foreach ($projectsPending as $project) {
         //     GetTotalARCountJob::dispatch($project['project_id'])->delay(now()->addSeconds(5));  // Delay for job processing
