@@ -1522,7 +1522,7 @@ public function getProjectTotalARCount1($project_id)
             $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_total_ar_total_list', [
                 'json' => $payload,
             ]);
-            dd($data);
+            dd($response);
             if ($response->getStatusCode() == 200) {
                 $responseData = json_decode($response->getBody(), true);
 
