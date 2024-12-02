@@ -1472,7 +1472,7 @@ class ProjectController extends Controller
                 }
             }
 
-            return ['data' => $projectData, 'ids' => $projectIds];
+            return ['data' => $projectData, 'ids' => $project_id];
         });
         // Process the result to separate `projectData` and `projectIds`
 $projectsData = $projectsPending->pluck('data')->flatten(1)->toArray();
