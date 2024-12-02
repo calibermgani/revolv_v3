@@ -68,7 +68,7 @@
                                 <th>Logged Resolv - AR</th>
                                 <th>Production Users - AR</th>
                                 <th>AR</th>
-                                {{-- <th>Logged Resolv - QA</th> --}}
+                                <th>Logged Resolv - QA</th>
                                 <th>Production - QA</th>
                                 <th>QA</th>
                             </tr>
@@ -86,6 +86,7 @@
                                         <td>{{ $data['prodcution_ar'] }}</td>
                                         <td>{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder'] }}</td>
                                         {{-- <td>{{ $data['logged_resolv_qa'] }}</td> --}}
+                                          <td class="logged_resolv_qa"></td>
                                         <td>{{ $data['prodcution_qa'] }}</td>
                                         <td>{{ $data['QA'] == 0 ? 'No Activity' : $data['QA'] }}</td>
                                     </tr>
@@ -149,6 +150,7 @@
                             
                             $(this).find(".total-ar").text(data.total_ar);
                             $(this).find(".logged_resolv_ar").text(data.logged_resolv_ar);
+                            $(this).find(".logged_resolv_qa").text(data.total_qa);
                             // $(this).find(".total-qa").text(data.total_qa);
                         }
                     })

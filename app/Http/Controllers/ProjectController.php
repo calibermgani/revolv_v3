@@ -1430,32 +1430,32 @@ class ProjectController extends Controller
                                     ->where('chart_status', 'CE_Completed')->count();
                         $qCount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
                                     ->where('chart_status', 'QA_Completed')->count();
-                                    $productionARCount = $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today) {
-                                        $query->where(function ($subQuery) use ($yesterDayStartDate, $yesterDayEndDate) {
-                                            $subQuery->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                                                     ->whereIn('chart_status', [
-                                                         'CE_Inprocess',
-                                                         'CE_Pending',
-                                                         'CE_Completed',
-                                                         'CE_Clarification',
-                                                         'CE_Hold',
-                                                         'AR_non_workable',
-                                                         'Revoke'
-                                                     ]);
-                                        })
-                                        ->orWhere(function ($subQuery) use ($yesterday, $today) {
-                                            $subQuery->where('chart_status', 'QA_Completed')
-                                                     ->where(function ($nestedQuery) use ($yesterday, $today) {
-                                                         $nestedQuery->whereDate('coder_work_date', $yesterday)
-                                                                     ->orWhereDate('coder_work_date', $today);
-                                                     });
-                                        });
-                                    })
-                                    ->groupBy('CE_emp_id')
-                                    ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate])
-                                    ->select('CE_emp_id')
-                                    ->get()
-                                    ->count();
+                        $productionARCount = $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today) {
+                            $query->where(function ($subQuery) use ($yesterDayStartDate, $yesterDayEndDate) {
+                                $subQuery->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                            ->whereIn('chart_status', [
+                                                'CE_Inprocess',
+                                                'CE_Pending',
+                                                'CE_Completed',
+                                                'CE_Clarification',
+                                                'CE_Hold',
+                                                'AR_non_workable',
+                                                'Revoke'
+                                            ]);
+                            })
+                            ->orWhere(function ($subQuery) use ($yesterday, $today) {
+                                $subQuery->where('chart_status', 'QA_Completed')
+                                            ->where(function ($nestedQuery) use ($yesterday, $today) {
+                                                $nestedQuery->whereDate('coder_work_date', $yesterday)
+                                                            ->orWhereDate('coder_work_date', $today);
+                                            });
+                            });
+                        })
+                        ->groupBy('CE_emp_id')
+                        ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate])
+                        ->select('CE_emp_id')
+                        ->get()
+                        ->count();
                                 
                     $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
                         ->whereIn('chart_status', ['QA_Assigned', 'QA_Inprocess', 'QA_Pending', 'QA_Completed', 'QA_Clarification', 'QA_Hold'])
@@ -1513,52 +1513,106 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
                                 ->count();
             }
         }
+        $totalQADetails = $this->getProjectTotalQACount($projectId);
+        $loggedResolvQA = 0;
+        foreach($totalQADetails['totalQAList'] as $key => $qaList){          
+            if($qaList['client_id'] == $rowProjectId && $qaList['assigned_people'] != null){
+            $loggedResolvQA +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
+                                ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                ->distinct('user_id')
+                                ->count();
+            }
+        }
         return response()->json([
             'total_ar' => $totalARCount,
             'logged_resolv_ar' => $loggedResolvAR,
+            'logged_resolv_qa' => $loggedResolvQA,
         ]);
     } catch (\Exception $e) {
         return response()->json(['error' => $e->getMessage()], 500);
     }
 }
-public function getProjectTotalARCount1($project_id)
-{
-    try {
-        $payload = [
-            'token' => '1a32e71a46317b9cc6feb7388238c95d',
-            'client_id' => $project_id,
-        ];
-        $data = retry(3, function () use ($payload) {
-            $client = new Client(['verify' => false]);
-            $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_total_ar_total_list', [
-                'json' => $payload,
-            ]);
-            if ($response->getStatusCode() == 200) {
-                $responseData = json_decode($response->getBody(), true);
+    public function getProjectTotalARCount1($project_id)
+    {
+        try {
+            $payload = [
+                'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                'client_id' => $project_id,
+            ];
+            $data = retry(3, function () use ($payload) {
+                $client = new Client(['verify' => false]);
+                $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_total_ar_total_list', [
+                    'json' => $payload,
+                ]);
+                if ($response->getStatusCode() == 200) {
+                    $responseData = json_decode($response->getBody(), true);
 
-                if (isset($responseData['totalArList'])) {
-                    return $responseData;
+                    if (isset($responseData['totalArList'])) {
+                        return $responseData;
+                    } else {
+                        throw new \Exception('totalArList not found in the API response');
+                    }
+                } elseif ($response->getStatusCode() == 429) {
+                    $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
+                    sleep($retryAfter);
+                    throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
                 } else {
-                    throw new \Exception('totalArList not found in the API response');
+                    throw new \Exception('API request failed with status: ' . $response->getStatusCode());
                 }
-            } elseif ($response->getStatusCode() == 429) {
-                $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
-                sleep($retryAfter);
-                throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
-            } else {
-                throw new \Exception('API request failed with status: ' . $response->getStatusCode());
-            }
-        }, 4000);
-        return $data;
-        // if (isset($data['totalArCount'])) {
-        //     return $data;
-        // } else {
-        //     Log::error('totalArCount not found in API response.');
-        //     return null;
-        // }
-    } catch (\Exception $e) {
-        Log::error('Error in getProjectTotalARCount: ' . $e->getMessage());
-        return null;
+            }, 4000);
+            return $data;
+            // if (isset($data['totalArCount'])) {
+            //     return $data;
+            // } else {
+            //     Log::error('totalArCount not found in API response.');
+            //     return null;
+            // }
+        } catch (\Exception $e) {
+            Log::error('Error in getProjectTotalARCount: ' . $e->getMessage());
+            return null;
+        }
     }
-}
+    public function getProjectTotalQACount1($project_id)
+    {
+        try {
+            $payload = [
+                'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                'client_id' => $project_id,
+            ];            
+            // Retry 3 times, with a 2-second delay between each attempt
+            $data = retry(3, function () use ($payload) {
+                $client = new Client(['verify' => false]);
+                $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_total_qa_total_list', [
+                    'json' => $payload,
+                ]);
+                
+                if ($response->getStatusCode() == 200) {
+                    $responseData = json_decode($response->getBody(), true);
+    
+                    if (isset($responseData['totalQAList'])) {
+                        return $responseData;
+                    } else {
+                        throw new \Exception('totalQAList not found in the API response');
+                    }
+                } elseif ($response->getStatusCode() == 429) {
+                    $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
+                    sleep($retryAfter);
+                    throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
+                } else {
+                    throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+                }
+            }, 4000);
+            
+            return $data;
+            // if (isset($data['totalQACount'])) {
+            //     return $data['totalQACount'];
+            // } else {
+            //     Log::error('totalQACount not found in API response.');
+            //     return null;
+            // }
+        } catch (\Exception $e) {
+            Log::error('Error in getProjectTotalQACount: ' . $e->getMessage());
+            return null;
+        }
+    }
 }
