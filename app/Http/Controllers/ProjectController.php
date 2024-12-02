@@ -1447,7 +1447,7 @@ class ProjectController extends Controller
                                         ->orWhereDate('coder_work_date', $today);
                             });
                         })
-                    ->distinct('CE_emp_id')
+                    ->groupBy('CE_emp_id')
                     ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate]) 
                     ->select('CE_emp_id') 
                     ->get() 
