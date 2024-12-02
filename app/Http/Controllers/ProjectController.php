@@ -1499,11 +1499,13 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
      
         $loggedResolvAR = 0;
         foreach($totalAR['totalArList'] as $key => $arList){
-            dd($arList);
+          
+            if($arList['client_id'] == $rowProjectId){
             $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
                                 ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
                                 ->distinct('user_id')
                                 ->count();
+            }
         }
         return response()->json([
             'total_ar' => 0,
