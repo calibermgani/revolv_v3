@@ -81,7 +81,7 @@ class ProjectAutomationController extends Controller
                 'sub_project_id' => isset($request->sub_project_id) && $request->sub_project_id != "NULL" ? $request->sub_project_id : NULL,
                 'file_name' => isset($request->file_name) ? $request->file_name : NULL,
                 'exe_date' => now()->format('Y-m-d H:i:s'),
-                'upload_status'=> isset($request->upload_status) ? $request->upload_status : 'Auto'
+                'upload_status'=> isset($request->upload_status) ? $request->upload_status : 'auto'
             ];
             $whereAttributes = [
                 'project_id' => isset($request->project_id) ? $request->project_id : NULL,
