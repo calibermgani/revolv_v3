@@ -92,6 +92,9 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('mayers_memorial_hospital_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@mayersMemorialHospitalARDuplicates');
     Route::any('restoration_healthcare_ar', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareAr');
     Route::any('restoration_healthcare_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareArDuplicates');
+    Route::any('advanced_medical_billing_collections_ambc_ar', 'App\Http\Controllers\ProjectAutomationController@advancedMedicalBillingCollectionsAmbcAr');
+    Route::any('advanced_medical_billing_collections_ambc_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@advancedMedicalBillingCollectionsAmbcArDuplicates');
+ 
     
     
 
