@@ -90,6 +90,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('retina_northwest_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@RetinaNorthwestARDuplicates');
     Route::any('mayers_memorial_hospital_ar', 'App\Http\Controllers\ProjectAutomationController@mayersMemorialHospitalAR');
     Route::any('mayers_memorial_hospital_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@mayersMemorialHospitalARDuplicates');
+    Route::any('restoration_healthcare_ar', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareAr');
+    Route::any('restoration_healthcare_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@restorationHealthcareArDuplicates');
     
     
 

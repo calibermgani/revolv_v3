@@ -67,6 +67,8 @@ use App\Models\RnAr;
 use App\Models\RnArDuplicates;
 use App\Models\MmhAr;
 use App\Models\MmhArDuplicates;
+use App\Models\RhAr;
+use App\Models\RhArDuplicates;
 
 class ProjectAutomationController extends Controller
 {
@@ -3049,15 +3051,94 @@ class ProjectAutomationController extends Controller
          }
      }
 
-
-
-
-
-
-
-
-
-
-
-
+     public function restorationHealthcareAr(Request $request)
+     {
+         try {
+             $attributes = [
+                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,                
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id: NULL,
+                'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance: NULL,
+                'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider: NULL,
+                'office' => isset($request->office) && $request->office != "NULL" ? $request->office: NULL,
+                'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed: NULL,
+                'first_edi_date' => isset($request->first_edi_date) && $request->first_edi_date != "NULL" ? $request->first_edi_date: NULL,
+                'last_edi_date' => isset($request->last_edi_date) && $request->last_edi_date != "NULL" ? $request->last_edi_date: NULL,
+                'billing_status' => isset($request->billing_status) && $request->billing_status != "NULL" ? $request->billing_status: NULL,
+                'total_insurance_balance' => isset($request->total_insurance_balance) && $request->total_insurance_balance != "NULL" ? $request->total_insurance_balance: NULL,
+                ];
+ 
+             $duplicateRecordExisting  =  RhAr::where($attributes)->exists();
+             if (!$duplicateRecordExisting) {
+                RhAr::insert([
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,                
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                    'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id: NULL,
+                    'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance: NULL,
+                    'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider: NULL,
+                    'office' => isset($request->office) && $request->office != "NULL" ? $request->office: NULL,
+                    'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed: NULL,
+                    'first_edi_date' => isset($request->first_edi_date) && $request->first_edi_date != "NULL" ? $request->first_edi_date: NULL,
+                    'last_edi_date' => isset($request->last_edi_date) && $request->last_edi_date != "NULL" ? $request->last_edi_date: NULL,
+                    'billing_status' => isset($request->billing_status) && $request->billing_status != "NULL" ? $request->billing_status: NULL,
+                    'total_insurance_balance' => isset($request->total_insurance_balance) && $request->total_insurance_balance != "NULL" ? $request->total_insurance_balance: NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                     ]);
+                         return response()->json(['message' => 'Record Inserted Successfully']);
+             } else {
+                 $duplicateRecord  =  RhAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                 if ($duplicateRecord) {
+                     $duplicateRecord->update([
+                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,                
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                        'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id: NULL,
+                        'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance: NULL,
+                        'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider: NULL,
+                        'office' => isset($request->office) && $request->office != "NULL" ? $request->office: NULL,
+                        'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed: NULL,
+                        'first_edi_date' => isset($request->first_edi_date) && $request->first_edi_date != "NULL" ? $request->first_edi_date: NULL,
+                        'last_edi_date' => isset($request->last_edi_date) && $request->last_edi_date != "NULL" ? $request->last_edi_date: NULL,
+                        'billing_status' => isset($request->billing_status) && $request->billing_status != "NULL" ? $request->billing_status: NULL,
+                        'total_insurance_balance' => isset($request->total_insurance_balance) && $request->total_insurance_balance != "NULL" ? $request->total_insurance_balance: NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                     ]);
+                 }
+                 return response()->json(['message' => 'Existing Record Updated Successfully']);
+             }
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+     public function restorationHealthcareArDuplicates(Request $request)
+     {
+         try {
+            
+            RhArDuplicates::insert([
+                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,                
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id: NULL,
+                'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance: NULL,
+                'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider: NULL,
+                'office' => isset($request->office) && $request->office != "NULL" ? $request->office: NULL,
+                'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed: NULL,
+                'first_edi_date' => isset($request->first_edi_date) && $request->first_edi_date != "NULL" ? $request->first_edi_date: NULL,
+                'last_edi_date' => isset($request->last_edi_date) && $request->last_edi_date != "NULL" ? $request->last_edi_date: NULL,
+                'billing_status' => isset($request->billing_status) && $request->billing_status != "NULL" ? $request->billing_status: NULL,
+                'total_insurance_balance' => isset($request->total_insurance_balance) && $request->total_insurance_balance != "NULL" ? $request->total_insurance_balance: NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+             ]);
+             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
 }
