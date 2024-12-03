@@ -178,7 +178,7 @@ class ProjectAutomationController extends Controller
                 'past_due_days' => isset($request->past_due_days) && $request->past_due_days != "NULL" ? $request->past_due_days : NULL,
                 'visit' => isset($request->visit) && $request->visit != "NULL" ? $request->visit : NULL,
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                // 'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                 'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
                 'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
                 'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
