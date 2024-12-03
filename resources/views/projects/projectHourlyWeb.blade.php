@@ -1,6 +1,6 @@
 @extends('layouts.app3')
 @section('content')
-    <div class="card card-custom custom-card" id="hourly_card">
+    <div class="card card-custom custom-card">
         <div class="card-body p-0">
             <div class="card-header border-0 px-4">
                 <div class="row">
@@ -112,12 +112,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script>
         $(document).ready(function() {
-            KTApp.block('#project_hourly_table', {
-                    overlayColor: '#000000',
-                    state: 'danger',
-                    opacity: 0.1,
-                    message: 'Fetching...',
-                });
             var table = $("#project_hourly_table").DataTable({
                 processing: true,
                 ordering: true,
