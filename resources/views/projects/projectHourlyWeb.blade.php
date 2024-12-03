@@ -118,7 +118,7 @@
                     opacity: 0.1,
                     message: 'Fetching...',
                 });
-            var table = $("#hourly_card").DataTable({
+            var table = $("#project_hourly_table").DataTable({
                 processing: true,
                 ordering: true,
                 clientSide: true,
@@ -145,7 +145,7 @@
                 location.reload();
             })
             $(document).on('click', '#filter_search', function() {
-                KTApp.block('#hourly_card', {
+                KTApp.block('#project_hourly_table', {
                     overlayColor: '#000000',
                     state: 'danger',
                     opacity: 0.1,
