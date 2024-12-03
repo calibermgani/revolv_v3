@@ -138,10 +138,9 @@
             })
             table.buttons().container()
                 .appendTo('.outside');
-            var rows = $("#project_utilization_table tbody tr");
+            // var rows = $("#project_utilization_table tbody tr");
+            var rows = table.rows().nodes();
             console.log(rows.length, rows, 'rows');
-
-
             rows.each(function() {
                 var rowProjectId = $(this).data('project-id');
                 var projectId = @json($projectIds);
