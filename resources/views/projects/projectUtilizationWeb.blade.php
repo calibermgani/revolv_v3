@@ -163,9 +163,8 @@
                 //             .catch(error => console.error("Error fetching AR/QA counts:", error));
                 //     }
                 // });
-                table.on('draw', function () {
-    var rows = table.rows().nodes(); // All rows (across all pages)
-
+                function processAllRows() {
+    var rows = table.rows().nodes(); // Fetch all rows across all pages
     $(rows).each(function () {
         var row = $(this);
         var rowProjectId = row.data('project-id');
@@ -182,13 +181,18 @@
                         row.find(".total-ar").text(data.total_ar);
                         row.find(".logged_resolv_ar").text(data.logged_resolv_ar);
                         row.find(".logged_resolv_qa").text(data.logged_resolv_qa);
-                        // KTApp.unblock('#project_utilization');
                     }
                 })
                 .catch(error => console.error("Error fetching AR/QA counts:", error));
         }
     });
-});
+}
+
+// Call processAllRows on table draw
+table.on('draw', processAllRows);
+
+// Initial processing
+processAllRows();
         });
         $(document).on('click', '#filter_search', function() {
             KTApp.block('#project_utilization', {
