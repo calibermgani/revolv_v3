@@ -112,6 +112,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script>
         $(document).ready(function() {
+            KTApp.block('#project_hourly_table', {
+                    overlayColor: '#000000',
+                    state: 'danger',
+                    opacity: 0.1,
+                    message: 'Fetching...',
+                });
             var table = $("#project_hourly_table").DataTable({
                 processing: true,
                 ordering: true,
@@ -138,6 +144,14 @@
             $(document).on('click', '#filter_clear', function() {
                 location.reload();
             })
+            $(document).on('click', '#filter_search', function() {
+                KTApp.block('#project_hourly_table', {
+                    overlayColor: '#000000',
+                    state: 'danger',
+                    opacity: 0.1,
+                    message: 'Fetching...',
+                });
+           });
         });
     </script>
 @endpush
