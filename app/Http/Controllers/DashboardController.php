@@ -953,7 +953,7 @@ class DashboardController extends Controller
                     $currentDate = Carbon::now();
                     $start_date = $currentDate->subMonths(2)->startOfMonth()->format('Y-m-d 00:00:00');
                     $end_date = $currentDate->addMonths(2)->endOfMonth()->format('Y-m-d 23:59:59');
-                }
+                }dd($start_date,$end_date);
                 if (isset($request->project_id)) {
                     $client_data = InventoryExeFile::where('project_id', '=', $request->project_id)
                             ->where('sub_project_id', '=', $request->sub_project_id)
