@@ -86,7 +86,7 @@
                                         <td>{{ $data['prodcution_ar'] }}</td>
                                         <td>{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder'] }}</td>
                                         {{-- <td>{{ $data['logged_resolv_qa'] }}</td> --}}
-                                        <td class="logged_resolv_qa"></td>
+                                          <td class="logged_resolv_qa"></td>
                                         <td>{{ $data['prodcution_qa'] }}</td>
                                         <td>{{ $data['QA'] == 0 ? 'No Activity' : $data['QA'] }}</td>
                                     </tr>
@@ -138,35 +138,57 @@
             })
             table.buttons().container()
                 .appendTo('.outside');
-            // var rows = $("#project_utilization_table tbody tr");
-            var rows = table.rows().nodes();
-            console.log(rows.length, rows, 'rows');
-            rows.each(function() {
-                var rowProjectId = $(this).data('project-id');
-                var projectId = @json($projectIds);
+                // var rows = $("#project_utilization_table tbody tr");
+                // rows.each(function () {
+                //     var rowProjectId = $(this).data('project-id');
+                //     var projectId = @json($projectIds);
+                    
+                //     var yesterDayStartDate = @json($yesterDayStartDate);
+                //     var yesterDayEndDate = @json($yesterDayEndDate);
+                //     if (projectId) {console.log('projectId',projectId);
+                //         fetch(`project-ar-qa-counts/`+projectId+`/${yesterDayStartDate}/${yesterDayEndDate}/${rowProjectId}`)
+                //             .then(response => response.json())
+                //             .then(data => {
+                //                 console.log(data,'totalArCount');
+                //                 if (data.total_ar !== undefined) {
+                //                     console.log(data.total_ar,'totalArCount');
+                                    
+                //                     $(this).find(".total-ar").text(data.total_ar);
+                //                     $(this).find(".logged_resolv_ar").text(data.logged_resolv_ar);
+                //                     $(this).find(".logged_resolv_qa").text(data.logged_resolv_qa);
+                //                     // $(this).find(".total-qa").text(data.total_qa);
+                //                     KTApp.unblock('#project_utilization');
+                //                 }
+                //             })
+                //             .catch(error => console.error("Error fetching AR/QA counts:", error));
+                //     }
+                // });
+                table.on('draw', function () {
+    var rows = table.rows().nodes(); // All rows (across all pages)
 
-                var yesterDayStartDate = @json($yesterDayStartDate);
-                var yesterDayEndDate = @json($yesterDayEndDate);
-                if (projectId) {
-                    console.log('projectId', projectId);
-                    fetch(`project-ar-qa-counts/` + projectId +
-                            `/${yesterDayStartDate}/${yesterDayEndDate}/${rowProjectId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log(data, 'totalArCount');
-                            if (data.total_ar !== undefined) {
-                                console.log(data.total_ar, 'totalArCount');
+    $(rows).each(function () {
+        var row = $(this);
+        var rowProjectId = row.data('project-id');
+        var projectId = @json($projectIds);
+        var yesterDayStartDate = @json($yesterDayStartDate);
+        var yesterDayEndDate = @json($yesterDayEndDate);
 
-                                $(this).find(".total-ar").text(data.total_ar);
-                                $(this).find(".logged_resolv_ar").text(data.logged_resolv_ar);
-                                $(this).find(".logged_resolv_qa").text(data.logged_resolv_qa);
-                                // $(this).find(".total-qa").text(data.total_qa);
-                                KTApp.unblock('#project_utilization');
-                            }
-                        })
-                        .catch(error => console.error("Error fetching AR/QA counts:", error));
-                }
-            });
+        if (projectId) {
+            fetch(`project-ar-qa-counts/` + projectId +
+                    `/${yesterDayStartDate}/${yesterDayEndDate}/${rowProjectId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.total_ar !== undefined) {
+                        row.find(".total-ar").text(data.total_ar);
+                        row.find(".logged_resolv_ar").text(data.logged_resolv_ar);
+                        row.find(".logged_resolv_qa").text(data.logged_resolv_qa);
+                        KTApp.unblock('#project_utilization');
+                    }
+                })
+                .catch(error => console.error("Error fetching AR/QA counts:", error));
+        }
+    });
+});
         });
         $(document).on('click', '#filter_search', function() {
             KTApp.block('#project_utilization', {
