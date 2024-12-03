@@ -110,12 +110,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script>
         $(document).ready(function() {
-            KTApp.block('#project_utilization', {
-                overlayColor: '#000000',
-                state: 'danger',
-                opacity: 0.1,
-                message: 'Fetching...',
-            });
+            // KTApp.block('#project_utilization', {
+            //     overlayColor: '#000000',
+            //     state: 'danger',
+            //     opacity: 0.1,
+            //     message: 'Fetching...',
+            // });
             var table = $("#project_utilization_table").DataTable({
                 processing: true,
                 ordering: true,
@@ -182,7 +182,7 @@
                         row.find(".total-ar").text(data.total_ar);
                         row.find(".logged_resolv_ar").text(data.logged_resolv_ar);
                         row.find(".logged_resolv_qa").text(data.logged_resolv_qa);
-                        KTApp.unblock('#project_utilization');
+                        // KTApp.unblock('#project_utilization');
                     }
                 })
                 .catch(error => console.error("Error fetching AR/QA counts:", error));
