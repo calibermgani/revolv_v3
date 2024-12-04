@@ -65,3 +65,23 @@
 @include('layouts/flashMessage')
 
 </html>
+<script>
+    let timeout;
+
+// Reset session on any user activity
+const resetTimeout = () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+        window.location.href = '/logout'; // Redirect to logout route
+    }, 7200000); // 1 hour in milliseconds
+};
+
+// Listeners for user activity
+['click', 'mousemove', 'keypress'].forEach((event) => {
+    document.addEventListener(event, resetTimeout);
+});
+
+// Initial timeout set on page load
+resetTimeout();
+
+</script>
