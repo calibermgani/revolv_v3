@@ -71,12 +71,9 @@
 // Reset session on any user activity
 const resetTimeout = () => {
     clearTimeout(timeout);
-    // timeout = setTimeout(() => {
-    //     window.location.href = '/logout'; // Redirect to logout route
-    // }, 7200000); // 2 hour in milliseconds
     timeout = setTimeout(() => {
         window.location.href = '/logout'; // Redirect to logout route
-    }, 60000);
+    }, 7200000); // 2 hour in milliseconds
 };
 
 // Listeners for user activity

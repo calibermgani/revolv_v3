@@ -15,8 +15,7 @@ class AutoLogout
             $now = Carbon::now();
 
             // Check if more than 120 minutes have passed since last activity
-            // if ($lastActivity && $now->diffInMinutes($lastActivity) > 120) {
-                if ($lastActivity && $now->diffInMinutes($lastActivity) > 1) {
+            if ($lastActivity && $now->diffInMinutes($lastActivity) > 120) {
                 Auth::logout(); // Log the user out
                 return redirect('/login')->with('message', 'You have been logged out due to inactivity.');
             }
