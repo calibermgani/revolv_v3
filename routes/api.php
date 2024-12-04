@@ -67,6 +67,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('colon_and_rectal_surgery_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@ColonAndRectalSurgeryARDuplicates');
     Route::any('ncg_medical_ncg_gottenger_ar', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgGottengerAR');
     Route::any('ncg_medical_ncg_gottenger_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgGottengerARDuplicates');
+    Route::any('ncg_medical_ncg_hsc_ar', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgHscAR');
+    Route::any('ncg_medical_ncg_hsc_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgHscARDuplicates');
     // Route::any('ncg_medical_ncg_hudson_ar', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgHudsonAR');
     // Route::any('ncg_medical_ncg_hudson_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgHudsonARDuplicates');
     // Route::any('ncg_medical_ncg_hsc_ar', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgHscAR');
