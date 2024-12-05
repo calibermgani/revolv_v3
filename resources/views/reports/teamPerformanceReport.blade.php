@@ -46,8 +46,7 @@
                                 </div>
                             </div>
                             <div class="col-lg-2 mb-lg-0 mb-6">
-                                <label>Month</label>
-                                <fieldset class="form-group mb-1">
+                                 <fieldset class="form-group mb-1">
                                     <input class="form-control" autocomplete="nope" id="month_num" name="month_num" type="month"
                                         value="{{ date('Y-m') }}" max="{{ date('Y-m') }}">
                                 </fieldset>
