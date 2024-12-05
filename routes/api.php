@@ -69,12 +69,10 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('ncg_medical_ncg_gottenger_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgGottengerARDuplicates');
     Route::any('ncg_medical_ncg_hsc_ar', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgHscAR');
     Route::any('ncg_medical_ncg_hsc_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgHscARDuplicates');
-    // Route::any('ncg_medical_ncg_hudson_ar', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgHudsonAR');
-    // Route::any('ncg_medical_ncg_hudson_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgHudsonARDuplicates');
-    // Route::any('ncg_medical_ncg_hsc_ar', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgHscAR');
-    // Route::any('ncg_medical_ncg_hsc_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgHscARDuplicates');
-    // Route::any('ncg_medical_ncg_psssf_ar', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgPsssfAR');
-    // Route::any('ncg_medical_ncg_psssf_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgPsssfARDuplicates');
+    Route::any('ncg_medical_ncg_hudson_ar', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgHudsonAR');
+    Route::any('ncg_medical_ncg_hudson_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgHudsonARDuplicates');
+    Route::any('ncg_medical_ncg_psssf_ar', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgPsssfAR');
+    Route::any('ncg_medical_ncg_psssf_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgPsssfARDuplicates');
     Route::any('srmg_ar', 'App\Http\Controllers\ProjectAutomationController@srmgAR');
     Route::any('srmg_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@srmgARDuplicates');
     Route::any('valley_urogynecology_associates_ar', 'App\Http\Controllers\ProjectAutomationController@ValleyUrogynecologyAssociatesAR');
