@@ -5,7 +5,7 @@
             <div class="card-header border-0 px-4">
                 <div class="row">
                     <div class="col-md-6">
-                        <span class="project_header" style="margin-left: 4px !important;">Error List</span>
+                        <span class="project_header" style="margin-left: 4px !important;">Team Performance List</span>
                     </div>
                     <div class="col-md-6">
                         <div class="row" style="justify-content: flex-end;margin-right:1.4rem">
@@ -108,10 +108,11 @@
             });
             var project_id = '';
             var sub_project_id = '';
+            var user = '';
             var month_num = $('#month_num').val();
-            errorList(project_id, sub_project_id, month_num);
+            errorList(project_id, sub_project_id, user, month_num);
 
-            function errorList(project_id, sub_project_id, month_num) {
+            function errorList(project_id, sub_project_id, user, month_num) {
                 console.log('p1', project_id, sub_project_id, month_num);
                 $.ajax({
                     type: "POST",
@@ -119,6 +120,7 @@
                     data: {
                         project_id: project_id,
                         sub_project_id: sub_project_id,
+                        user:user,
                         month_num: month_num
                     },
                     success: function(res) {
@@ -154,6 +156,7 @@
                 $('#report_list').DataTable().destroy();
                 var project_id = $('#project_list').val();
                 var sub_project_id = $('#sub_project_list').val();
+                var user = $('#user').val();
                 var month_num = $('#month_num').val();
                 errorList(project_id, sub_project_id, month_num);
             });

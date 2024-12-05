@@ -468,7 +468,7 @@ class ReportsController extends Controller
                 }dd($request->all());
                 $decodedClientName = $request->project_id != '' ? Helpers::projectName($request->project_id)->aims_project_name : 'Project';
                 $decodedsubProjectName = $request->sub_project_id == '' ? '--' : Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
-                $userName = $request->user == '' ? '--' : Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
+                $user = $request->user == '' ? '--' : $request->user;
                 $datediff = strtotime($end_month_number) - strtotime($start_month_number);
                 $datediff = floor($datediff / (60 * 60 * 24));
                 $month_numbers = '';
@@ -494,7 +494,7 @@ class ReportsController extends Controller
                     $body_info .= '<tr>';
                     $body_info .= '<td  style="text-align: center">' . $decodedClientName . '</td>';
                     $body_info .= '<td  style="text-align: center">' .  $decodedsubProjectName   . '</td>';
-                    $body_info .= '<td  style="text-align: center">' .  'User'  . '</td>'.  $userPercentage.  '</tr>';
+                    $body_info .= '<td  style="text-align: center">' .  $user . '</td>'.  $userPercentage.  '</tr>';
            
 
                 $body_info .= '</tbody></table>';
