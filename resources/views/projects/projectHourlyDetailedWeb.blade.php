@@ -19,6 +19,9 @@
                     <tbody>
                         @if (isset($BodyDetails) && count($BodyDetails) > 0)
                             @foreach ($BodyDetails as $data)
+                            @php
+                            dd($data);
+                            @endphp
                                 <td>
                                     {{ $data['user'] != null ? $data['user'] . ' - ' . App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['user']) : '--' }}
                                     </td>
