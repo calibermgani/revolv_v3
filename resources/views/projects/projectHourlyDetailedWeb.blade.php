@@ -28,7 +28,7 @@
                                     @endforeach
                                     <td>{{ $data['slaTarget'] }}</td>
                                     <td>{{ $data['reachedTarget'] }}</td>
-                                    <td>{{$data['achievedPercentage']."%"}}</td>
+                                    <td style={{$data['achievedPercentage'] >= 95 ? "background-color:green" : "background-color:red"}}>{{$data['achievedPercentage']."%"}}</td>
                                     </tr>
                             @endforeach
                         @else
