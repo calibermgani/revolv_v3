@@ -158,7 +158,7 @@
                 var sub_project_id = $('#sub_project_list').val();
                 var user = $('#user').val();
                 var month_num = $('#month_num').val();
-                errorList(project_id, sub_project_id, month_num);
+                errorList(project_id, sub_project_id, user,month_num);
             });
 
             $(document).on('change', '#project_list', function() {
