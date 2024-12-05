@@ -495,7 +495,7 @@ class ReportsController extends Controller
                     $body_info .= '<td>' . 'Project' . '</td>';
                     $body_info .= '<td>' .  'Sub Project'  . '</td>';
                     $body_info .= '<td>' .  'User'  . '</td>';
-                    $body_info .= '<td>' .'Date'. '</td>';
+                    $body_info .=   $userPercentage ;
                     $body_info .= '</tr>';
            
 
