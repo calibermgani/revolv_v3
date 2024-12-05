@@ -481,7 +481,7 @@ class ReportsController extends Controller
                     $userPercentage .= '<td  style="text-align: center">' . "100%" . '</td>';
                 }
                     
-                $body_info = '<table class="table table-separate table-head-custom no-footer dtr-column dataTable" id="leaveMusterReport">
+                $body_info = '<table class="table table-separate table-head-custom no-footer dtr-column dataTable" id="report_list">
                 <thead>
                       <tr>
                         <th style="text-align: center">Project</th>
