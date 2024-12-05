@@ -35,7 +35,16 @@
                                     ]) !!}
                                 </div>
                             </div>
-
+                            <div class="col-lg-2 mb-lg-0 mb-3" id="sub_project_div">
+                                <div class="form-group mb-0">
+                                    @php $userList = []; @endphp
+                                    {!! Form::select('user', $userList, null, [
+                                        'class' => 'text-black form-control select2 user_select',
+                                        'id' => 'user',
+                                        'placeholder' => 'User',
+                                    ]) !!}
+                                </div>
+                            </div>
                             <div class="col-lg-2 mb-lg-0 mb-3">
                                 <fieldset class="form-group mb-0">
                                     <input type="text" name="error_date" id="error_date"
@@ -124,7 +133,7 @@
                                 pageLength: 20,
                                 scrollCollapse: true,
                                 scrollX: true,
-                                order: [],  
+                                order: [],
                                 language: {
                                     "search": '',
                                     "searchPlaceholder": "   Search",
@@ -149,8 +158,13 @@
                 errorList(project_id, sub_project_id, error_date);
             });
 
-
             $(document).on('change', '#project_list', function() {
+                KTApp.block('#reportModal', {
+                    overlayColor: '#000000',
+                    state: 'danger',
+                    opacity: 0.1,
+                    message: 'Fetching...',
+                });
                 var project_id = $(this).val();
                 $.ajaxSetup({
                     headers: {
@@ -158,27 +172,34 @@
                     }
                 });
                 $.ajax({
-                    type: "GET",
-                    url: "{{ url('sub_project_list') }}",
+                    type: "POST",
+                    url: "{{ url('reports/get_sub_projects') }}",
                     data: {
                         project_id: project_id
                     },
                     success: function(res) {
-                        subprojectCount = Object.keys(res.subProject).length;
-                        var myArray = res.existingSubProject;
+                        $("#sub_project_id").val(res.subProject);
                         var sla_options = '<option value="">-- Select --</option>';
                         $.each(res.subProject, function(key, value) {
-                            sla_options += '<option value="' + key + '" ' +
-                                '>' + value +
+                            sla_options = sla_options + '<option value="' + key + '">' +
+                                value +
                                 '</option>';
                         });
                         $("#sub_project_id").html(sla_options);
-                        $('select[name="sub_project_id"]').html(sla_options);
+                        $("#user").val(res.resource);
+                        var user_options = '<option value="">Select User</option>';
+                        $.each(res.resource, function(key, value) {
+                            user_options = user_options + '<option value="' + key +
+                                '">' + value +
+                                '</option>';
+                        });
+                        $("#user").html(user_options);
+                        KTApp.unblock('#reportModal');
                     },
                     error: function(jqXHR, exception) {}
                 });
             });
-            $(document).on('click','#clear_submit_month',function(){
+            $(document).on('click', '#clear_submit_month', function() {
                 location.reload();
             })
         });
