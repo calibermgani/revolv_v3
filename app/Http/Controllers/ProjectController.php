@@ -1371,11 +1371,13 @@ class ProjectController extends Controller
                         $hourlyCounts[] = $hourlyCount; 
                         $reachedTarget += $hourlyCount;
                     }
+                    $achievedPercentage=$reachedTarget/$prjSLATarget*100;
                     $BodyDetails[] = [
                         'user' => $user,
                        'hourlyCount' => $hourlyCounts, 
                        'reachedTarget' => $reachedTarget,
-                       'slaTarget' => $prjSLATarget
+                       'slaTarget' => $prjSLATarget,
+                       'achievedPercentage' => $achievedPercentage
                    ];
                
                 }             

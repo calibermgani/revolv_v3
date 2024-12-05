@@ -14,6 +14,7 @@
                             @endforeach
                             <th>Actuval Target</th>
                             <th>Achieved Target</th>
+                            <th>%</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -27,6 +28,7 @@
                                     @endforeach
                                     <td>{{ $data['slaTarget']['projectSLATarget'] }}</td>
                                     <td>{{ $data['reachedTarget'] }}</td>
+                                    <td>{{$data['achievedPercentage']}}</td>
                                     </tr>
                             @endforeach
                         @else
