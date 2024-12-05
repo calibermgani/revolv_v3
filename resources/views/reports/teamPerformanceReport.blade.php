@@ -218,6 +218,11 @@
                 teamPerformanceList(project_id, sub_project_id, user, error_date);
             });
             function teamPerformanceList(project_id, sub_project_id, user, error_date) {
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
                  $.ajax({
                     type: "POST",
                     url: "{{ url('report/team_performance_report') }}",
