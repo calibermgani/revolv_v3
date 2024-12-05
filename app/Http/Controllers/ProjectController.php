@@ -1370,7 +1370,7 @@ class ProjectController extends Controller
 
                         $hourlyCounts[] = $hourlyCount; 
                         $reachedTarget += $hourlyCount;
-                    }dd(is_numeric($reachedTarget) ,is_numeric($prjSLATarget));
+                    }
                     if (is_numeric($reachedTarget) && is_numeric($prjSLATarget) && $prjSLATarget != 0 && $prjSLATarget != "") {
                         $achievedPercentage = ($reachedTarget / $prjSLATarget) * 100;
                     } else {
