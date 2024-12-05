@@ -178,14 +178,14 @@
                         project_id: project_id
                     },
                     success: function(res) {
-                        $("#sub_project_id").val(res.subProject);
+                        $("#sub_project_list").val(res.subProject);
                         var sla_options = '<option value="">-- Select --</option>';
                         $.each(res.subProject, function(key, value) {
                             sla_options = sla_options + '<option value="' + key + '">' +
                                 value +
                                 '</option>';
                         });
-                        $("#sub_project_id").html(sla_options);
+                        $("#sub_project_list").html(sla_options);
                         $("#user").val(res.resource);
                         var user_options = '<option value="">Select User</option>';
                         $.each(res.resource, function(key, value) {
