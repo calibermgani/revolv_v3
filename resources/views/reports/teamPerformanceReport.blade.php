@@ -106,7 +106,7 @@
                 console.log('p1', project_id, sub_project_id, error_date);
                 $.ajax({
                     type: "POST",
-                    url: "{{ url('report/inventory_error_report') }}",
+                    url: "{{ url('report/team_performance_report') }}",
                     data: {
                         project_id: project_id,
                         sub_project_id: sub_project_id,
