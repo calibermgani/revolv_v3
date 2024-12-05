@@ -45,10 +45,11 @@
                                     ]) !!}
                                 </div>
                             </div>
-                            <div class="col-lg-2 mb-lg-0 mb-3">
-                                <fieldset class="form-group mb-0">
-                                    <input type="text" name="error_date" id="error_date"
-                                        class="form-control daterange_error_date" value="" autocomplete="nope">
+                            <div class="col-lg-2 mb-lg-0 mb-6">
+                                <label>Month</label>
+                                <fieldset class="form-group mb-1">
+                                    <input class="form-control" autocomplete="nope" id="month_num" name="month_num" type="month"
+                                        value="{{ date('Y-m') }}" max="{{ date('Y-m') }}">
                                 </fieldset>
                             </div>
 
@@ -108,18 +109,18 @@
             });
             var project_id = '';
             var sub_project_id = '';
-            var error_date = $('#error_date').val();
-            errorList(project_id, sub_project_id, error_date);
+            var month_num = $('#month_num').val();
+            errorList(project_id, sub_project_id, month_num);
 
-            function errorList(project_id, sub_project_id, error_date) {
-                console.log('p1', project_id, sub_project_id, error_date);
+            function errorList(project_id, sub_project_id, month_num) {
+                console.log('p1', project_id, sub_project_id, month_num);
                 $.ajax({
                     type: "POST",
                     url: "{{ url('report/team_performance_report') }}",
                     data: {
                         project_id: project_id,
                         sub_project_id: sub_project_id,
-                        error_date: error_date
+                        month_num: month_num
                     },
                     success: function(res) {
                         if (res.body_info) {
@@ -154,8 +155,8 @@
                 $('#report_list').DataTable().destroy();
                 var project_id = $('#project_list').val();
                 var sub_project_id = $('#sub_project_list').val();
-                var error_date = $('#error_date').val();
-                errorList(project_id, sub_project_id, error_date);
+                var month_num = $('#month_num').val();
+                errorList(project_id, sub_project_id, month_num);
             });
 
             $(document).on('change', '#project_list', function() {

@@ -459,47 +459,38 @@ class ReportsController extends Controller
 
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
             try {
-                $searchDate  = explode("-", $request['error_date']);
-
-                if (count($searchDate) > 1) {
-                    $start_date  = date('Y-m-d 00:00:00', strtotime($searchDate[0]));
-                    $end_date    = date('Y-m-d 23:59:59', strtotime($searchDate[1]));
+                if (isset($request['month_num']) && $request['month_num'] < date('Y-m')) {
+                    $start_month_number = date('Y-m-01', strtotime($request['month_num']));
+                    $end_month_number = date('Y-m-t', strtotime($request['month_num']));
                 } else {
-                    $start_date = "";
-                    $end_date   = "";
+                    $start_month_number = date('Y-m-01');
+                    $end_month_number = date('Y-m-d');
                 }
-                $error_data = InventoryErrorLogs::where(function ($query) use ($request) {
-                    if (isset($request['project_id']) && $request['project_id'] != '') {
-                        $query->where('project_id', $request['project_id']);
-                    } else {
-                        $query;
-                    }
-                })
-                    ->where(function ($query) use ($request) {
-                        if (isset($request['sub_project_id']) && $request['sub_project_id'] != '') {
-                            $query->where('sub_project_id', $request['sub_project_id']);
-                        } else {
-                            $query;
-                        }
-                    })
-                    ->where(function ($query) use ($request, $start_date, $end_date) {
-                        if (isset($request['error_date'])) {
-                            $query->whereBetween('error_date', [$start_date, $end_date]);
-                        } else {
-                            $query;
-                        }
-                    })
-                    ->orderBy('id', 'desc')
-                    ->get();
+                
+                $datediff = strtotime($end_month_number) - strtotime($start_month_number);
+                $datediff = floor($datediff / (60 * 60 * 24));
+                $month_numbers = '';
+                $month_days = '';
+                $userPercentage = '';
+                for ($i = 0; $i < $datediff + 1; $i++) {
+                    $start_month   = date("Y-m-d", strtotime($start_month_number . ' + ' . $i . 'day'));
+                    $month_numbers .= '<th style="text-align: center">' . date('d', strtotime($start_month)) . '</th>';
+                    $month_days .= '<th style="text-align: center">' . date('D', strtotime($start_month)) . '</th>';
+                    $userPercentage .= '<td">' . "100%" . '</th>';
+                }
                     
-                $body_info = '<table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter" id="report_list"><thead><tr>';
-                  $body_info .= '<th>Project Name</th>';
-                $body_info .= '<th>Sub Project Name</th>';
-                $body_info .= '<th>User</th>';
-                $body_info .= '<th>Date</th>';
-                $body_info .= '</tr></thead><tbody>';
-
-          
+                $body_info = '<table class="table table-separate table-head-custom no-footer dtr-column dataTable" id="leaveMusterReport">
+                <thead>
+                      <tr>
+                        <th rowspan="2" style="text-align: center">Project</th>
+                        <th rowspan="2" style="text-align: center">Sub Project</th>
+                        <th rowspan="2" style="text-align: center">User</th>
+                     ' . $month_numbers . '
+                    </tr>
+                    <tr>
+                     ' . $month_days . '
+                    </tr>
+                </thead>  <tbody id="body_info">';          
                     $body_info .= '<tr>';
                     $body_info .= '<td>' . 'Project' . '</td>';
                     $body_info .= '<td>' .  'Sub Project'  . '</td>';
