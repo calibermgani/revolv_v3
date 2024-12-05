@@ -476,7 +476,7 @@ class ReportsController extends Controller
                     $start_month   = date("Y-m-d", strtotime($start_month_number . ' + ' . $i . 'day'));
                     $month_numbers .= '<th style="text-align: center">' . date('d', strtotime($start_month)) . '</th>';
                     $month_days .= '<th style="text-align: center">' . date('D', strtotime($start_month)) . '</th>';
-                    $userPercentage .= '<td">' . "100%" . '</th>';
+                    $userPercentage .= '<td>' . "100%" . '</td>';
                 }
                     
                 $body_info = '<table class="table table-separate table-head-custom no-footer dtr-column dataTable" id="leaveMusterReport">
@@ -490,7 +490,7 @@ class ReportsController extends Controller
                     <tr>
                      ' . $month_days . '
                     </tr>
-                </thead>  <tbody id="body_info">';          
+                </thead>  <tbody >';          
                     $body_info .= '<tr>';
                     $body_info .= '<td>' . 'Project' . '</td>';
                     $body_info .= '<td>' .  'Sub Project'  . '</td>';
