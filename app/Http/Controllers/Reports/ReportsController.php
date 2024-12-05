@@ -466,8 +466,8 @@ class ReportsController extends Controller
                     $start_month_number = date('Y-m-01');
                     $end_month_number = date('Y-m-d');
                 }
-                $decodedClientName = Helpers::projectName($request->project_id)->aims_project_name;
-                $decodedsubProjectName = $request->sub_project_id == NULL ? '--' : Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
+                $decodedClientName = $request->project_id != '' ? Helpers::projectName($request->project_id)->aims_project_name : 'Project';
+                $decodedsubProjectName = $request->sub_project_id == '' ? '--' : Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
                 $datediff = strtotime($end_month_number) - strtotime($start_month_number);
                 $datediff = floor($datediff / (60 * 60 * 24));
                 $month_numbers = '';
