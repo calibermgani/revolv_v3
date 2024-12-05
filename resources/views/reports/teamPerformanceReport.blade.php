@@ -1,88 +1,60 @@
 @extends('layouts.app3')
 @section('content')
-    <div class="card card-custom custom-card">
-        <div class="card-body p-0">
+    <div class="card card-custom custom-card" style="display: none" id="listData">
+        <div class="card-body  px-4">
             <div class="card-header border-0 px-4">
                 <div class="row">
                     <div class="col-md-6">
-                        <span class="project_header" style="margin-left: 4px !important;">Team Performance Report</span>
+                        <span class="project_header" style="margin-left: 4px !important;">Error List</span>
                     </div>
                     <div class="col-md-6">
                         <div class="row" style="justify-content: flex-end;margin-right:1.4rem">
-                            <div class="outside" href="javascript:void(0);"></div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="card card-custom custom-top-border">
+                <div class="row mt-8 ml-2">
+                    <div class="col-md-12">
+                        <div class="row">
 
-            <div class="card-body mr-8 ml-12" id="filter_section">
-            
-                <div class="row mr-0 ml-0">
-                    <div class="col-md-2">
-                        <div class="form-group row row_mar_bm">
-                            <div class="col-md-10">
+                            <div class="col-lg-2 mb-lg-0 mb-3" id="project_div">
                                 @php $projectList = App\Http\Helper\Admin\Helpers::projectList(); @endphp
-                                {!! Form::select('project_id', $projectList, request()->project_id, [
-                                    'class' => 'text-black form-control select2 project_select',
-                                    'id' => 'project_id',
-                                    'placeholder' => 'Select Project',
-                                ]) !!}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group row row_mar_bm">
-                            <div class="col-md-10">
-                                @if (isset(request()->project_id))
-                                    @php $subProjectList = App\Http\Helper\Admin\Helpers::subProjectList(request()->project_id); @endphp
-                                    {!! Form::select('sub_project_id', $subProjectList, request()->sub_project_id, [
-                                        'class' => 'text-black form-control select2 sub_project_select',
-                                        'id' => 'sub_project_id',
-                                        'placeholder' => 'Select Sub Project',
+                                <div class="form-group mb-0">
+                                    {!! Form::select('project_id', $projectList, null, [
+                                        'class' => 'form-control kt_select2_project',
+                                        'id' => 'project_list',
                                     ]) !!}
-                                @else
+                                </div>
+                            </div>
+
+                            <div class="col-lg-2 mb-lg-0 mb-3" id="sub_project_div">
+                                <div class="form-group mb-0">
                                     @php $subProjectList = []; @endphp
                                     {!! Form::select('sub_project_id', $subProjectList, null, [
-                                        'class' => 'text-black form-control select2 sub_project_select',
-                                        'id' => 'sub_project_id',
-                                        'placeholder' => 'Select Sub Project',
+                                        'class' => 'form-control  kt_select2_sub_project',
+                                        'id' => 'sub_project_list',
                                     ]) !!}
-                                @endif
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group row row_mar_bm">
-                            <div class="col-md-10">
-                                @php $userList = []; @endphp
-                                {!! Form::select('user', $userList, null, [
-                                    'class' => 'text-black form-control select2 user_select',
-                                    'id' => 'user',
-                                    'placeholder' => 'User',
-                                ]) !!}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="row form-group">
-                            <div class="col-md-12">
-                                <input type="text" name="error_date" id="error_date"
-                                class="form-control daterange_error_date" value="" autocomplete="nope">
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="col-md-3">
-                        <div class="form-group row">
+                            <div class="col-lg-2 mb-lg-0 mb-3">
+                                <fieldset class="form-group mb-0">
+                                    <input type="text" name="error_date" id="error_date"
+                                        class="form-control daterange_error_date" value="" autocomplete="nope">
+                                </fieldset>
+                            </div>
 
-                            <div class="col-md-10">
-                                <button type="submit" class="btn  btn-white-black font-weight-bold"
-                                    id="search_submit_1">Search</button>
-                                &nbsp;&nbsp; <button class="btn btn-light-danger" id="filter_clear" tabindex="10"
+                            <div class="col-lg-4 mb-lg-0 mb-3 d-flex align-items-center">
+                                <button class="btn btn-primary-export text-white mr-2" id="search_submit" tabindex="9"
+                                    type="submit" value="Search" autocomplete="nope">
+                                    <span>
+                                        <i class="la la-search text-white"></i>
+                                        <span>Search</span>
+                                    </span>
+                                </button>
+                                <button class="btn btn-secondary btn-secondary--icon" id="clear_submit_month" tabindex="10"
                                     type="button">
                                     <span>
+                                        <i class="la la-close"></i>
                                         <span>Clear</span>
                                     </span>
                                 </button>
@@ -90,42 +62,20 @@
                         </div>
                     </div>
                 </div>
-                <div class="table-responsive" id="reportTable1">
-                </div>
+
+            </div>
+
+            <div class="table-responsive" id="reportTable">
             </div>
         </div>
     </div>
-    <!-- Modal content End-->
 @endsection
-<style>
-    .table thead th {
-        padding-top: 0.5rem !important;
-        padding-bottom: 0.5rem !important;
-    }
-
-    .leave_color {
-        background: #ff00000f;
-    }
-
-    .border-none {
-        border: none !important
-    }
-
-
-    .table.table-separate .inv_lft th:last-child,
-    .table.table-separate td:last-child {
-        padding-right: 10 !important;
-    }
-</style>
 @push('view.scripts')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script>
         $(document).ready(function() {
-            var start = moment().startOf('month');
-            var end = moment().endOf('month');
-
-            $('.daterange_error_date').attr("autocomplete", "off");
+            var start = moment().startOf('day')
+            var end = moment().endOf('day');
+            console.log(start, end, 'start');
             $('.daterange_error_date').daterangepicker({
                 showOn: 'both',
                 startDate: start,
@@ -133,83 +83,40 @@
                 showDropdowns: true,
                 ranges: {
                     'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
                     'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1,
                         'month').endOf(
                         'month')]
                 }
             });
-            $('.daterange_error_date').val('');
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            var project_id = '';
+            var sub_project_id = '';
+            var error_date = $('#error_date').val();
+            errorList(project_id, sub_project_id, error_date);
 
-            $(document).on('change', '#project_id', function() {
-                KTApp.block('#reportModal', {
-                    overlayColor: '#000000',
-                    state: 'danger',
-                    opacity: 0.1,
-                    message: 'Fetching...',
-                });
-                var project_id = $(this).val();
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
+            function errorList(project_id, sub_project_id, error_date) {
+                console.log('p1', project_id, sub_project_id, error_date);
                 $.ajax({
                     type: "POST",
-                    url: "{{ url('reports/get_sub_projects') }}",
-                    data: {
-                        project_id: project_id
-                    },
-                    success: function(res) {
-                        $("#sub_project_id").val(res.subProject);
-                        var sla_options = '<option value="">-- Select --</option>';
-                        $.each(res.subProject, function(key, value) {
-                            sla_options = sla_options + '<option value="' + key + '">' +
-                                value +
-                                '</option>';
-                        });
-                        $("#sub_project_id").html(sla_options);
-                        $("#user").val(res.resource);
-                        var user_options = '<option value="">Select User</option>';
-                        $.each(res.resource, function(key, value) {
-                            user_options = user_options + '<option value="' + key +
-                                '">' + value +
-                                '</option>';
-                        });
-                        $("#user").html(user_options);
-                        KTApp.unblock('#reportModal');
-                    },
-                    error: function(jqXHR, exception) {}
-                });
-            });
-           
-            $(document).on("click", "#search_submit_1", function(e) {
-                $('#team_list').DataTable().destroy();
-                var project_id = $('#project_list').val();
-                var sub_project_id = $('#sub_project_list').val();
-                var user = $('#user').val();
-                var error_date = $('#error_date').val();
-                teamPerformanceList(project_id, sub_project_id, user, error_date);
-            });
-            function teamPerformanceList(project_id, sub_project_id, user, error_date) {
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
-                 $.ajax({
-                    type: "POST",
-                    url: "{{ url('report/team_performance_report') }}",
+                    url: "{{ url('report/inventory_error_report') }}",
                     data: {
                         project_id: project_id,
                         sub_project_id: sub_project_id,
-                        user: user,
                         error_date: error_date
                     },
                     success: function(res) {
                         if (res.body_info) {
-                            //  $('#listData').show();
-                            $('#reportTable1').html(res.body_info);
-                            var table = $('#team_list').DataTable({
+                            $('#listData').show();
+                            $('#reportTable').html(res.body_info);
+                            var table = $('#report_list').DataTable({
                                 processing: true,
                                 lengthChange: false,
                                 clientSide: true,
@@ -234,6 +141,46 @@
                     }
                 });
             }
+            $(document).on("click", "#search_submit", function(e) {
+                $('#report_list').DataTable().destroy();
+                var project_id = $('#project_list').val();
+                var sub_project_id = $('#sub_project_list').val();
+                var error_date = $('#error_date').val();
+                errorList(project_id, sub_project_id, error_date);
+            });
+
+
+            $(document).on('change', '#project_list', function() {
+                var project_id = $(this).val();
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    type: "GET",
+                    url: "{{ url('sub_project_list') }}",
+                    data: {
+                        project_id: project_id
+                    },
+                    success: function(res) {
+                        subprojectCount = Object.keys(res.subProject).length;
+                        var myArray = res.existingSubProject;
+                        var sla_options = '<option value="">-- Select --</option>';
+                        $.each(res.subProject, function(key, value) {
+                            sla_options += '<option value="' + key + '" ' +
+                                '>' + value +
+                                '</option>';
+                        });
+                        $("#sub_project_id").html(sla_options);
+                        $('select[name="sub_project_id"]').html(sla_options);
+                    },
+                    error: function(jqXHR, exception) {}
+                });
+            });
+            $(document).on('click','#clear_submit_month',function(){
+                location.reload();
+            })
         });
     </script>
 @endpush
