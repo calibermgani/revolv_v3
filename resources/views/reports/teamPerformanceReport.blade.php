@@ -56,6 +56,18 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-2">
+                            <div class="row form-group">
+                                <div class="col-md-12">
+                                    @php $userList = []; @endphp
+                                    {!! Form::select('user', $userList, null, [
+                                        'class' => 'text-black form-control select2 user_select',
+                                        'id' => 'user',
+                                        'placeholder' => 'User',
+                                    ]) !!}
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-md-3">
                             <div class="row form-group">
                                 <div class="col-md-12">
@@ -68,67 +80,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-2">
-                            <div class="row form-group">
-                                <div class="col-md-12">
-                                    {{-- {!! Form::select(
-                                    'user',
-                                    ['No' => 'No', 'Yes' => 'Yes', 'Partial' => 'Partial'],null,
-                                    ['class' => 'text-black form-control select2 user_select', 'id' => 'user', 'placeholder'=> 'Select User']
-                                ) !!} --}}
-                                    {{-- @if (isset(request()->project_id))
-                                    @php dd(request()->project_id);$userList = App\Http\Helper\Admin\Helpers::getprojectResourceList(request()->project_id); @endphp
-                                    {!! Form::select('user',  ['' => 'User'] + $userList, null,
-                                        ['class' => 'text-black form-control select2', 'id' => 'user', 'placeholder'=> 'User']
-                                    ) !!}
-                                @else --}}
-                                    @php $userList = []; @endphp
-                                    {!! Form::select('user', $userList, null, [
-                                        'class' => 'text-black form-control select2 user_select',
-                                        'id' => 'user',
-                                        'placeholder' => 'User',
-                                    ]) !!}
-                                    {{-- @endif --}}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="row form-group">
-                                <div class="col-md-12">
-                                    {!! Form::select(
-                                        'client_status',
-                                        [
-                                            'CE_Inprocess' => 'AR Inprocess',
-                                            'CE_Pending' => 'AR Pending',
-                                            'CE_Completed' => 'AR Completed',
-                                            'CE_Hold' => 'AR Hold',
-                                            'AR_non_workable' => 'Non Workable',
-                                            'QA_Inprocess' => 'QA Inprocess',
-                                            'QA_Pending' => 'QA Pending',
-                                            'QA_Completed' => 'QA Completed',
-                                            'QA_Hold' => 'QA Hold',
-                                            'Revoke' => 'Rework',
-                                        ],
-                                        null,
-                                        [
-                                            'class' => 'text-black form-control select2 report_client_status',
-                                            'id' => 'client_status',
-                                            'placeholder' => 'Status',
-                                        ],
-                                    ) !!}
-                                </div>
-                            </div>
+                  
                       
-                <div class="modal-body m-10" id="project_assign_body">
-                    <p style="text-align: center">Select Projects to Generate Report</p>
-                </div>
-                <div class="modal-body m-10" id="no_data" style="display: none">
-                    <p style="text-align: center">No Data Available</p>
-                </div>
-                <div class="modal-body m-5" id="headers_modal" style="display: none">
-                    <div class="row" id="headers_row">
-                    </div>
-                </div>
+             
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light-danger" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn1" id="project_assign_save">Submit</button>
