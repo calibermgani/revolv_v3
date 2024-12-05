@@ -28,7 +28,7 @@
                                     @foreach ($data['hourlyCount'] as $count)
                                         <td>{{ $count }}</td>
                                     @endforeach
-                                    <td>{{ $data['slaTarget'] }}</td>
+                                    <td>{{ $data['slaTarget']['projectSLATarget'] }}</td>
                                     <td>{{ $data['reachedTarget'] }}</td>
                                     </tr>
                             @endforeach
