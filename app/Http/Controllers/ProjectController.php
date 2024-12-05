@@ -1371,7 +1371,13 @@ class ProjectController extends Controller
                         $hourlyCounts[] = $hourlyCount; 
                         $reachedTarget += $hourlyCount;
                     }
-                    $achievedPercentage=$reachedTarget/$prjSLATarget*100;
+                    if (is_numeric($reachedTarget) && is_numeric($prjSLATarget) && $prjSLATarget != 0 && $prjSLATarget != "") {
+                        $achievedPercentage = ($reachedTarget / $prjSLATarget) * 100;
+                    } else {
+                        // Handle errors or set a default value
+                        $achievedPercentage = 0;
+                    }
+                    
                     $BodyDetails[] = [
                         'user' => $user,
                        'hourlyCount' => $hourlyCounts, 
