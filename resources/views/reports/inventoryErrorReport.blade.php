@@ -114,8 +114,6 @@
                     },
                     success: function(res) {
                         if (res.body_info) {
-                            $('#reportModal').modal('hide');
-                            $('#generateReportClass').hide();
                             $('#listData').show();
                             $('#reportTable').html(res.body_info);
                             var table = $('#report_list').DataTable({

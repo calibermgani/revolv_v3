@@ -74,12 +74,8 @@
                     <div class="col-md-2">
                         <div class="row form-group">
                             <div class="col-md-12">
-                                {!! Form::text('wfcall_completed_date', null, [
-                                    'class' => 'form-control form-control daterange',
-                                    'autocomplete' => 'off',
-                                    'id' => 'work_date',
-                                    'placeholder' => 'mm/dd/yyyy - mm/dd/yyyy',
-                                ]) !!}
+                                <input type="text" name="error_date" id="error_date"
+                                class="form-control daterange_error_date" value="" autocomplete="nope">
                             </div>
                         </div>
                     </div>
@@ -99,6 +95,8 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="table-responsive" id="reportTable">
                 </div>
             </div>
         </div>
@@ -133,8 +131,8 @@
             var start = moment().startOf('month');
             var end = moment().endOf('month');
 
-            $('.daterange').attr("autocomplete", "off");
-            $('.daterange').daterangepicker({
+            $('.daterange_error_date').attr("autocomplete", "off");
+            $('.daterange_error_date').daterangepicker({
                 showOn: 'both',
                 startDate: start,
                 endDate: end,
@@ -146,7 +144,7 @@
                         'month')]
                 }
             });
-            $('.daterange').val('');
+            $('.daterange_error_date').val('');
 
             $(document).on('change', '#project_id', function() {
                 KTApp.block('#reportModal', {
@@ -217,6 +215,53 @@
                     "<'row'<'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>",
             })
             table.buttons().container().appendTo($('.dataTables_wrapper .col-md-6.text-right'));
+            $(document).on("click", "#search_submit", function(e) {
+                $('#report_list').DataTable().destroy();
+                var project_id = $('#project_list').val();
+                var sub_project_id = $('#sub_project_list').val();
+                var user = $('#user').val();
+                var error_date = $('#error_date').val();
+                teamPerformanceList(project_id, sub_project_id, user, error_date);
+            });
+            function teamPerformanceList(project_id, sub_project_id, user, error_date) {
+                 $.ajax({
+                    type: "POST",
+                    url: "{{ url('report/team_performance_report') }}",
+                    data: {
+                        project_id: project_id,
+                        sub_project_id: sub_project_id,
+                        user: user,
+                        error_date: error_date
+                    },
+                    success: function(res) {
+                        if (res.body_info) {
+                            //  $('#listData').show();
+                            $('#reportTable').html(res.body_info);
+                            var table = $('#report_list').DataTable({
+                                processing: true,
+                                lengthChange: false,
+                                clientSide: true,
+                                searching: true,
+                                pageLength: 20,
+                                scrollCollapse: true,
+                                scrollX: true,
+                                order: [],  
+                                language: {
+                                    "search": '',
+                                    "searchPlaceholder": "   Search",
+                                },
+
+                            })
+
+                        } else {
+                            console.error('Error fetching data');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error:', error);
+                    }
+                });
+            }
         });
     </script>
 @endpush

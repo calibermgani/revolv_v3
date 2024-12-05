@@ -443,13 +443,81 @@ class ReportsController extends Controller
         }
     }
 
-    public function teamPerformanceReport(Request $request) {
+    public function teamPerformanceReportList(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
             try {
                 return view("reports.teamPerformanceReport");
             } catch (Exception $e) {
                     log::debug($e->getMessage());
                 }
+        } else {
+            return redirect('/');
+        }
+    }
+    public function teamPerformanceReport(Request $request)
+    {
+
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
+            try {
+                $searchDate  = explode("-", $request['error_date']);
+
+                if (count($searchDate) > 1) {
+                    $start_date  = date('Y-m-d 00:00:00', strtotime($searchDate[0]));
+                    $end_date    = date('Y-m-d 23:59:59', strtotime($searchDate[1]));
+                } else {
+                    $start_date = "";
+                    $end_date   = "";
+                }
+                $error_data = InventoryErrorLogs::where(function ($query) use ($request) {
+                    if (isset($request['project_id']) && $request['project_id'] != '') {
+                        $query->where('project_id', $request['project_id']);
+                    } else {
+                        $query;
+                    }
+                })
+                    ->where(function ($query) use ($request) {
+                        if (isset($request['sub_project_id']) && $request['sub_project_id'] != '') {
+                            $query->where('sub_project_id', $request['sub_project_id']);
+                        } else {
+                            $query;
+                        }
+                    })
+                    ->where(function ($query) use ($request, $start_date, $end_date) {
+                        if (isset($request['error_date'])) {
+                            $query->whereBetween('error_date', [$start_date, $end_date]);
+                        } else {
+                            $query;
+                        }
+                    })
+                    ->orderBy('id', 'desc')
+                    ->get();
+                    
+                $body_info = '<table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter" id="report_list"><thead><tr>';
+                  $body_info .= '<th>Project Name</th>';
+                $body_info .= '<th>Sub Project Name</th>';
+                $body_info .= '<th>User</th>';
+                $body_info .= '<th>Date</th>';
+                $body_info .= '</tr></thead><tbody>';
+
+          
+                    $body_info .= '<tr>';
+                    $body_info .= '<td>' . 'Project' . '</td>';
+                    $body_info .= '<td>' .  'Sub Project'  . '</td>';
+                    $body_info .= '<td>' .  'User'  . '</td>';
+                    $body_info .= '<td>' .'Date'. '</td>';
+                    $body_info .= '</tr>';
+           
+
+                $body_info .= '</tbody></table>';
+
+
+                return response()->json([
+                    'success' => true,
+                    'body_info' => $body_info,
+                ]);
+            } catch (Exception $e) {
+                log::debug($e->getMessage());
+            }
         } else {
             return redirect('/');
         }
