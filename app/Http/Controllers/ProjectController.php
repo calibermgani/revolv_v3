@@ -1388,9 +1388,9 @@ class ProjectController extends Controller
                
                 }             
             }
-            // usort($BodyDetails, function ($a, $b) {
-            //     return $a['achievedPercentage'] <=> $b['achievedPercentage'];
-            // });
+            usort($BodyDetails, function ($a, $b) {
+                return $a['achievedPercentage'] <=> $b['achievedPercentage'];
+            });
             
           return view('projects.projectHourlyDetailedWeb', compact('headers', 'BodyDetails','title'));
         } catch (\Exception $e) {
