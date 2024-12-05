@@ -20,18 +20,15 @@
                     <tbody>
                         @if (isset($BodyDetails) && count($BodyDetails) > 0)
                             @foreach ($BodyDetails as $data)
-                            @php
-                            dd($data);
-                            @endphp
                                 <td>
                                     {{ $data['user'] != null ? $data['user'] . ' - ' . App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['user']) : '--' }}
                                     </td>
                                     @foreach ($data['hourlyCount'] as $count)
                                         <td>{{ $count }}</td>
                                     @endforeach
-                                    <td>{{ $data['slaTarget']['projectSLATarget'] }}</td>
+                                    <td>{{ $data['slaTarget'] }}</td>
                                     <td>{{ $data['reachedTarget'] }}</td>
-                                    <td>{{$data['achievedPercentage']}}</td>
+                                    <td>{{$data['achievedPercentage']."%"}}</td>
                                     </tr>
                             @endforeach
                         @else
