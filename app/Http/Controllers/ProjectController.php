@@ -1388,6 +1388,7 @@ class ProjectController extends Controller
                
                 }             
             }
+            dd($BodyDetails);
             usort($BodyDetails, function ($a, $b) {
                 return $a['achievedPercentage'] <=> $b['achievedPercentage'];
             });
