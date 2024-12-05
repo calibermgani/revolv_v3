@@ -26,7 +26,7 @@
                 ]) !!}
                 @csrf
                 <div class="row mr-0 ml-0">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group row row_mar_bm">
                             <div class="col-md-10">
                                 @php $projectList = App\Http\Helper\Admin\Helpers::projectList(); @endphp
@@ -38,7 +38,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group row row_mar_bm">
                             <div class="col-md-10">
                                 @if (isset(request()->project_id))
@@ -59,7 +59,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group row row_mar_bm">
                             <div class="col-md-10">
                                 @php $userList = []; @endphp
@@ -71,7 +71,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="row form-group">
                             <div class="col-md-12">
                                 {!! Form::text('wfcall_completed_date', null, [
