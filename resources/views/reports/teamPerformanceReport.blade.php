@@ -46,9 +46,9 @@
                                 </div>
                             </div>
                             <div class="col-lg-2 mb-lg-0 mb-6">
-                                 <fieldset class="form-group mb-1">
-                                    <input class="form-control" autocomplete="nope" id="month_num" name="month_num" type="month"
-                                        value="{{ date('Y-m') }}" max="{{ date('Y-m') }}">
+                                <fieldset class="form-group mb-1">
+                                    <input class="form-control" autocomplete="nope" id="month_num" name="month_num"
+                                        type="month" value="{{ date('Y-m') }}" max="{{ date('Y-m') }}">
                                 </fieldset>
                             </div>
 
@@ -120,7 +120,7 @@
                     data: {
                         project_id: project_id,
                         sub_project_id: sub_project_id,
-                        user:user,
+                        user: user,
                         month_num: month_num
                     },
                     success: function(res) {
@@ -158,11 +158,11 @@
                 var sub_project_id = $('#sub_project_list').val();
                 var user = $('#user').val();
                 var month_num = $('#month_num').val();
-                errorList(project_id, sub_project_id, user,month_num);
+                errorList(project_id, sub_project_id, user, month_num);
             });
 
             $(document).on('change', '#project_list', function() {
-                KTApp.block('#reportModal', {
+                KTApp.block('#listData', {
                     overlayColor: '#000000',
                     state: 'danger',
                     opacity: 0.1,
@@ -197,7 +197,7 @@
                                 '</option>';
                         });
                         $("#user").html(user_options);
-                        KTApp.unblock('#reportModal');
+                        KTApp.unblock('#listData');
                     },
                     error: function(jqXHR, exception) {}
                 });
