@@ -130,6 +130,45 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script>
         $(document).ready(function() {
+            $(document).on('change', '#project_id', function() {
+                KTApp.block('#reportModal', {
+                    overlayColor: '#000000',
+                    state: 'danger',
+                    opacity: 0.1,
+                    message: 'Fetching...',
+                });
+                var project_id = $(this).val();
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url('reports/get_sub_projects') }}",
+                    data: {
+                        project_id: project_id
+                    },
+                    success: function(res) {
+                         $("#sub_project_id").val(res.subProject);
+                        var sla_options = '<option value="">-- Select --</option>';
+                        $.each(res.subProject, function(key, value) {
+                            sla_options = sla_options + '<option value="' + key + '">' + value +
+                                '</option>';
+                        });
+                        $("#sub_project_id").html(sla_options);
+                        $("#user").val(res.resource);
+                        var user_options = '<option value="">Select User</option>';
+                        $.each(res.resource, function(key, value) {
+                            user_options = user_options + '<option value="' + key + '">' + value +
+                                '</option>';
+                        });
+                        $("#user").html(user_options);
+                        KTApp.unblock('#reportModal');
+                    },
+                    error: function(jqXHR, exception) {}
+                });
+            });
             var table = $('#report_list').DataTable({
                 processing: true,
                 lengthChange: false,
