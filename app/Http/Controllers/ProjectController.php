@@ -914,7 +914,7 @@ class ProjectController extends Controller
             // $toMailId = ["vijayalaxmi@caliberfocus.com"];
             // $ccMailId = ["vijayalaxmi@caliberfocus.com"];
           
-            $mailHeader = "Resolv Project Hourly Report - Trail";
+            $mailHeader = "Resolv Project Hourly Report";
             $projects = collect($this->getProjects());
 
             // Current time
@@ -1120,7 +1120,7 @@ class ProjectController extends Controller
             }
     
             $today = $request['request_date'] ? Carbon::createFromFormat('Y-m-d', $request->input('request_date'))->copy()->addDay() : Carbon::today();
-            $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y')." - Trail";
+            $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y');
             $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
             $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
 
