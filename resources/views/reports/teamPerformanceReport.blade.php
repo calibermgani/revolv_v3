@@ -1,6 +1,5 @@
 @extends('layouts.app3')
 @section('content')
-  
     <div class="card card-custom custom-card" id="listData">
         <div class="card-body  px-4">
             <div class="card-header border-0 px-4">
@@ -19,74 +18,68 @@
                     </div>
                 </div>
             </div>
-            <div class="table-responsive pt-5 pb-5" id="reportTable">
-            </div>
-      
-                    <div class="row">
-                        <div class="col-lg-3">
-                            <div class="row form-group">
-                                <div class="col-md-12">
-                                    @php $projectList = App\Http\Helper\Admin\Helpers::projectList(); @endphp
-                                    {!! Form::select('project_id', $projectList, request()->project_id, [
-                                        'class' => 'text-black form-control select2 project_select',
-                                        'id' => 'project_id',
-                                        'placeholder' => 'Select Project',
-                                    ]) !!}
-                                </div>
-                            </div>
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            @php $projectList = App\Http\Helper\Admin\Helpers::projectList(); @endphp
+                            {!! Form::select('project_id', $projectList, request()->project_id, [
+                                'class' => 'text-black form-control select2 project_select',
+                                'id' => 'project_id',
+                                'placeholder' => 'Select Project',
+                            ]) !!}
                         </div>
-                        <div class="col-lg-2">
-                            <div class="row form-group">
-                                <div class="col-md-12">
-                                    @if (isset(request()->project_id))
-                                        @php $subProjectList = App\Http\Helper\Admin\Helpers::subProjectList(request()->project_id); @endphp
-                                        {!! Form::select('sub_project_id', $subProjectList, request()->sub_project_id, [
-                                            'class' => 'text-black form-control select2 sub_project_select',
-                                            'id' => 'sub_project_id',
-                                            'placeholder' => 'Select Sub Project',
-                                        ]) !!}
-                                    @else
-                                        @php $subProjectList = []; @endphp
-                                        {!! Form::select('sub_project_id', $subProjectList, null, [
-                                            'class' => 'text-black form-control select2 sub_project_select',
-                                            'id' => 'sub_project_id',
-                                            'placeholder' => 'Select Sub Project',
-                                        ]) !!}
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="row form-group">
-                                <div class="col-md-12">
-                                    @php $userList = []; @endphp
-                                    {!! Form::select('user', $userList, null, [
-                                        'class' => 'text-black form-control select2 user_select',
-                                        'id' => 'user',
-                                        'placeholder' => 'User',
-                                    ]) !!}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="row form-group">
-                                <div class="col-md-12">
-                                    {!! Form::text('wfcall_completed_date', null, [
-                                        'class' => 'form-control form-control daterange',
-                                        'autocomplete' => 'off',
-                                        'id' => 'work_date',
-                                        'placeholder' => 'mm/dd/yyyy - mm/dd/yyyy',
-                                    ]) !!}
-                                </div>
-                            </div>
-                        </div>
-                  
-                      
-             
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light-danger" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn1" id="project_assign_save">Submit</button>
+                    </div>
                 </div>
+                <div class="col-lg-2">
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            @if (isset(request()->project_id))
+                                @php $subProjectList = App\Http\Helper\Admin\Helpers::subProjectList(request()->project_id); @endphp
+                                {!! Form::select('sub_project_id', $subProjectList, request()->sub_project_id, [
+                                    'class' => 'text-black form-control select2 sub_project_select',
+                                    'id' => 'sub_project_id',
+                                    'placeholder' => 'Select Sub Project',
+                                ]) !!}
+                            @else
+                                @php $subProjectList = []; @endphp
+                                {!! Form::select('sub_project_id', $subProjectList, null, [
+                                    'class' => 'text-black form-control select2 sub_project_select',
+                                    'id' => 'sub_project_id',
+                                    'placeholder' => 'Select Sub Project',
+                                ]) !!}
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            @php $userList = []; @endphp
+                            {!! Form::select('user', $userList, null, [
+                                'class' => 'text-black form-control select2 user_select',
+                                'id' => 'user',
+                                'placeholder' => 'User',
+                            ]) !!}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            {!! Form::text('wfcall_completed_date', null, [
+                                'class' => 'form-control form-control daterange',
+                                'autocomplete' => 'off',
+                                'id' => 'work_date',
+                                'placeholder' => 'mm/dd/yyyy - mm/dd/yyyy',
+                            ]) !!}
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-light-danger" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn1" id="project_assign_save">Submit</button>
+
             </div>
         </div>
     </div>
