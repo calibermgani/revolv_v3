@@ -492,7 +492,7 @@ class ReportsController extends Controller
                     ->orderBy('id', 'desc')
                     ->get();
                     
-                $body_info = '<table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter" id="report_list"><thead><tr>';
+                $body_info = '<table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter" id="team_list"><thead><tr>';
                   $body_info .= '<th>Project Name</th>';
                 $body_info .= '<th>Sub Project Name</th>';
                 $body_info .= '<th>User</th>';

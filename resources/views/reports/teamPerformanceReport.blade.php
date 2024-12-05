@@ -85,7 +85,7 @@
 
                             <div class="col-md-10">
                                 <button type="submit" class="btn  btn-white-black font-weight-bold"
-                                    id="search_submit">Search</button>
+                                    id="search_submit_1">Search</button>
                                 &nbsp;&nbsp; <button class="btn btn-light-danger" id="filter_clear" tabindex="10"
                                     type="button">
                                     <span>
@@ -96,7 +96,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="table-responsive" id="reportTable">
+                <div class="table-responsive" id="reportTable1">
                 </div>
             </div>
         </div>
@@ -215,7 +215,7 @@
                     "<'row'<'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>",
             })
             table.buttons().container().appendTo($('.dataTables_wrapper .col-md-6.text-right'));
-            $(document).on("click", "#search_submit", function(e) {
+            $(document).on("click", "#search_submit_1", function(e) {
                 $('#report_list').DataTable().destroy();
                 var project_id = $('#project_list').val();
                 var sub_project_id = $('#sub_project_list').val();
@@ -236,8 +236,8 @@
                     success: function(res) {
                         if (res.body_info) {
                             //  $('#listData').show();
-                            $('#reportTable').html(res.body_info);
-                            var table = $('#report_list').DataTable({
+                            $('#reportTable1').html(res.body_info);
+                            var table = $('#team_list').DataTable({
                                 processing: true,
                                 lengthChange: false,
                                 clientSide: true,
