@@ -1318,10 +1318,9 @@ class ProjectController extends Controller
     public function projectDetailedInformationWeb(Request $request){
         try {
             $prjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->project_name ?? null;
-            $aimsPrjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->aims_project_name ?? null;
-          
-                $subPrjName = Helpers::subProjectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))->sub_project_name ?? null;
-       
+            $aimsPrjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->aims_project_name ?? null;          
+            $subPrjName = Helpers::subProjectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))->sub_project_name ?? null;
+            $prjSLATarget = $this->getProjectTotalSlaTarget(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'));
             $title = $aimsPrjName . '-' . $subPrjName;
             $tableName = Str::slug(Str::lower($prjName . '_' . $subPrjName), '_');
             $modelClass = "App\\Models\\" . Str::studly($tableName);
@@ -1376,6 +1375,7 @@ class ProjectController extends Controller
                         'user' => $user,
                        'hourlyCount' => $hourlyCounts, 
                        'reachedTarget' => $reachedTarget,
+                       'slaTarget' => $prjSLATarget
                    ];
                
                 }             
@@ -1396,141 +1396,131 @@ class ProjectController extends Controller
         }
     }
 
-    public function projectWorkWeb(Request $request)
-{
-    try {
-        // Prepare variables for the project data (e.g., yesterday date)
-        $yesterday = $request['request_date'] ? Carbon::createFromFormat('Y-m-d', $request->input('request_date')) : Carbon::yesterday();
-        if ($yesterday->isSaturday()) {
-            $yesterday = $yesterday->subDay(1); // Friday
-        } elseif ($yesterday->isSunday()) {
-            $yesterday = $yesterday->subDay(2); // Friday
-        }
-        
-        $today = $request['request_date'] ? Carbon::createFromFormat('Y-m-d', $request->input('request_date'))->copy()->addDay() : Carbon::today();
-        $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
-        $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
-        // Fetch project data
-        $projects = collect($this->getProjects());
-        // $projectIds = $projects->pluck('id')->toArray();
-        $projectsPending = []; // To collect project data
-        $projectIds = [];
-        $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$projectsPending, &$projectIds) {
-            $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+    public function projectWorkWeb(Request $request) {
+        try {
+            $yesterday = $request['request_date'] ? Carbon::createFromFormat('Y-m-d', $request->input('request_date')) : Carbon::yesterday();
+            if ($yesterday->isSaturday()) {
+                $yesterday = $yesterday->subDay(1); // Friday
+            } elseif ($yesterday->isSunday()) {
+                $yesterday = $yesterday->subDay(2); // Friday
+            }
+            
+            $today = $request['request_date'] ? Carbon::createFromFormat('Y-m-d', $request->input('request_date'))->copy()->addDay() : Carbon::today();
+            $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
+            $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
+            $projects = collect($this->getProjects());
+            $projectsPending = []; 
+            $projectIds = [];
+            $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$projectsPending, &$projectIds) {
+                $prjName = Helpers::projectName($project['id'])->project_name ?? null;
 
-            if ($prjName !== null) {
-                $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
+                if ($prjName !== null) {
+                    $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
 
-                foreach ($subProjects as $subProject) {
-                    $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
-                    $modelClass = "App\\Models\\" . Str::studly($tableName);
-                    
-                    if (class_exists($modelClass)) {
-                        $aCount = $modelClass::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
-                          ->where('chart_status', 'CE_Assigned')->count();
-                        $cCount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                                    ->where('chart_status', 'CE_Completed')->count();
-                        $qCount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                                    ->where('chart_status', 'QA_Completed')->count();
-                        $productionARCount = $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today) {
-                            $query->where(function ($subQuery) use ($yesterDayStartDate, $yesterDayEndDate) {
-                                $subQuery->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                                            ->whereIn('chart_status', [
-                                                'CE_Inprocess',
-                                                'CE_Pending',
-                                                'CE_Completed',
-                                                'CE_Clarification',
-                                                'CE_Hold',
-                                                'AR_non_workable',
-                                                'Revoke'
-                                            ]);
+                    foreach ($subProjects as $subProject) {
+                        $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
+                        $modelClass = "App\\Models\\" . Str::studly($tableName);
+                        
+                        if (class_exists($modelClass)) {
+                            $aCount = $modelClass::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
+                            ->where('chart_status', 'CE_Assigned')->count();
+                            $cCount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                        ->where('chart_status', 'CE_Completed')->count();
+                            $qCount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                        ->where('chart_status', 'QA_Completed')->count();
+                            $productionARCount = $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today) {
+                                $query->where(function ($subQuery) use ($yesterDayStartDate, $yesterDayEndDate) {
+                                    $subQuery->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                                ->whereIn('chart_status', [
+                                                    'CE_Inprocess',
+                                                    'CE_Pending',
+                                                    'CE_Completed',
+                                                    'CE_Clarification',
+                                                    'CE_Hold',
+                                                    'AR_non_workable',
+                                                    'Revoke'
+                                                ]);
+                                })
+                                ->orWhere(function ($subQuery) use ($yesterday, $today) {
+                                    $subQuery->where('chart_status', 'QA_Completed')
+                                                ->where(function ($nestedQuery) use ($yesterday, $today) {
+                                                    $nestedQuery->whereDate('coder_work_date', $yesterday)
+                                                                ->orWhereDate('coder_work_date', $today);
+                                                });
+                                });
                             })
-                            ->orWhere(function ($subQuery) use ($yesterday, $today) {
-                                $subQuery->where('chart_status', 'QA_Completed')
-                                            ->where(function ($nestedQuery) use ($yesterday, $today) {
-                                                $nestedQuery->whereDate('coder_work_date', $yesterday)
-                                                            ->orWhereDate('coder_work_date', $today);
-                                            });
-                            });
-                        })
-                        ->groupBy('CE_emp_id')
-                        ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate])
-                        ->select('CE_emp_id')
-                        ->get()
-                        ->count();
-                                
-                    $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                        ->whereIn('chart_status', ['QA_Assigned', 'QA_Inprocess', 'QA_Pending', 'QA_Completed', 'QA_Clarification', 'QA_Hold'])
-                        ->whereNotNull('QA_emp_id')
-                        ->distinct('QA_emp_id')
-                        ->count('QA_emp_id'); 
+                            ->groupBy('CE_emp_id')
+                            ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate])
+                            ->select('CE_emp_id')
+                            ->get()
+                            ->count();
+                                    
+                        $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                            ->whereIn('chart_status', ['QA_Assigned', 'QA_Inprocess', 'QA_Pending', 'QA_Completed', 'QA_Clarification', 'QA_Hold'])
+                            ->whereNotNull('QA_emp_id')
+                            ->distinct('QA_emp_id')
+                            ->count('QA_emp_id'); 
 
-                        $projectsPending[] = [
-                            'project' => $project['client_name'] . '-' . $subProject,
-                            'Chats' => $aCount,
-                            'Coder' => $cCount,
-                            'QA' => $qCount,
-                            'prodcution_ar' => $productionARCount,
-                            'prodcution_qa' => $productionQACount,
-                            'project_id' => $project['id'], // Store project ID
-                        ];
-                        $projectIds[] = $project['id'];
+                            $projectsPending[] = [
+                                'project' => $project['client_name'] . '-' . $subProject,
+                                'Chats' => $aCount,
+                                'Coder' => $cCount,
+                                'QA' => $qCount,
+                                'prodcution_ar' => $productionARCount,
+                                'prodcution_qa' => $productionQACount,
+                                'project_id' => $project['id'], // Store project ID
+                            ];
+                            $projectIds[] = $project['id'];
+                        }
                     }
                 }
-            }
-            // return ['data' => $projectData, 'ids' => $project_id];
-        });
-        // Dispatch jobs to calculate AR/QA counts for each project asynchronously
-        // foreach ($projectsPending as $project) {
-        //     GetTotalARCountJob::dispatch($project['project_id'])->delay(now()->addSeconds(5));  // Delay for job processing
-        //     // GetTotalQACountJob::dispatch($project['project_id'])->delay(now()->addSeconds(5));  // Delay for job processing
-        // }
-        GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
-        GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
-        // Return the view with placeholder values
-        return view('projects.projectUtilizationWeb', compact('projectsPending', 'yesterday','yesterDayStartDate','yesterDayEndDate','projectIds'));
-    } catch (\Exception $e) {
-        Log::error('Error in ProjectWorkWeb: ' . $e->getMessage());
-        Log::debug($e->getMessage());
-    }
-}
-public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDate,$rowProjectId)
-{
-  
-    try {
-        $arCacheKey = 'project_' . str_replace(',', '_', $projectId) . '_ar_count';
-        $qaCacheKey = 'project_' . str_replace(',', '_', $projectId) . '_qa_count';      
-        $totalAR = Cache::get($arCacheKey, 0);
-        $totalQA = Cache::get($qaCacheKey, 0);
-     
-        $loggedResolvAR = 0;$totalARCount = 0;
-        foreach($totalAR['totalArList'] as $key => $arList){          
-            if($arList['client_id'] == $rowProjectId && $arList['assigned_people'] != null){
-                $totalARCount += 1;
-            $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
-                                ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                                ->distinct('user_id')
-                                ->count();
-            }
+                // return ['data' => $projectData, 'ids' => $project_id];
+            });
+            GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
+            GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
+            return view('projects.projectUtilizationWeb', compact('projectsPending', 'yesterday','yesterDayStartDate','yesterDayEndDate','projectIds'));
+        } catch (\Exception $e) {
+            Log::error('Error in ProjectWorkWeb: ' . $e->getMessage());
+            Log::debug($e->getMessage());
         }
-        $loggedResolvQA = 0;
-        foreach($totalQA['totalQAList'] as $key => $qaList){    
-            if($qaList['client_id'] == $rowProjectId && $qaList['assigned_people'] != null){
-            $loggedResolvQA +=  EmployeeLogin::where('user_id', $qaList['assigned_people'])
-                                ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                                ->distinct('user_id')
-                                ->count();
-            }
-        }
-        return response()->json([
-            'total_ar' => $totalARCount,
-            'logged_resolv_ar' => $loggedResolvAR,
-            'logged_resolv_qa' => $loggedResolvQA,
-        ]);
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()], 500);
     }
-}
+    public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDate,$rowProjectId)
+    {
+    
+        try {
+            $arCacheKey = 'project_' . str_replace(',', '_', $projectId) . '_ar_count';
+            $qaCacheKey = 'project_' . str_replace(',', '_', $projectId) . '_qa_count';      
+            $totalAR = Cache::get($arCacheKey, 0);
+            $totalQA = Cache::get($qaCacheKey, 0);
+        
+            $loggedResolvAR = 0;$totalARCount = 0;
+            foreach($totalAR['totalArList'] as $key => $arList){          
+                if($arList['client_id'] == $rowProjectId && $arList['assigned_people'] != null){
+                    $totalARCount += 1;
+                $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
+                                    ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                    ->distinct('user_id')
+                                    ->count();
+                }
+            }
+            $loggedResolvQA = 0;
+            foreach($totalQA['totalQAList'] as $key => $qaList){    
+                if($qaList['client_id'] == $rowProjectId && $qaList['assigned_people'] != null){
+                $loggedResolvQA +=  EmployeeLogin::where('user_id', $qaList['assigned_people'])
+                                    ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                    ->distinct('user_id')
+                                    ->count();
+                }
+            }
+            return response()->json([
+                'total_ar' => $totalARCount,
+                'logged_resolv_ar' => $loggedResolvAR,
+                'logged_resolv_qa' => $loggedResolvQA,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
     public function getProjectTotalARCount1($project_id)
     {
         try {
@@ -1613,5 +1603,42 @@ public function getProjectCounts($projectId,$yesterDayStartDate,$yesterDayEndDat
             Log::error('Error in getProjectTotalQACount: ' . $e->getMessage());
             return null;
         }
+    }
+    public function getProjectTotalSlaTarget($project_id,$practice_id) {
+            try {
+                $payload = [
+                    'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                    'client_id' => $project_id,
+                    'practice_id' => $practice_id
+                ];         
+                // Retry 3 times, with a 2-second delay between each attempt
+                $data = retry(3, function () use ($payload) {
+                    $client = new Client(['verify' => false]);
+                    $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_actuval_target', [
+                        'json' => $payload,
+                    ]);
+                    
+                    if ($response->getStatusCode() == 200) {
+                        $responseData = json_decode($response->getBody(), true);
+        
+                        if (isset($responseData['projectSLATarget'])) {
+                            return $responseData;
+                        } else {
+                            throw new \Exception('projectSLATarget not found in the API response');
+                        }
+                    } elseif ($response->getStatusCode() == 429) {
+                        $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
+                        sleep($retryAfter);
+                        throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
+                    } else {
+                        throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+                    }
+                }, 4000);
+                
+                return $data;
+            } catch (\Exception $e) {
+                Log::error('Error in getProjectTotalQACount: ' . $e->getMessage());
+                return null;
+            }
     }
 }

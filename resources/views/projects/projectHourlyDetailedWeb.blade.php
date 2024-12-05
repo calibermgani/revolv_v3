@@ -12,7 +12,8 @@
                                 <th>
                                     {{ $header }}</th>
                             @endforeach
-                            <th>Reached Target</th>
+                            <th>Actuval Target</th>
+                            <th>Achieved Target</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -24,6 +25,7 @@
                                     @foreach ($data['hourlyCount'] as $count)
                                         <td>{{ $count }}</td>
                                     @endforeach
+                                    <td>{{ $data['slaTarget'] }}</td>
                                     <td>{{ $data['reachedTarget'] }}</td>
                                     </tr>
                             @endforeach
