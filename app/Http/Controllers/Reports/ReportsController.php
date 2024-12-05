@@ -465,7 +465,7 @@ class ReportsController extends Controller
                 } else {
                     $start_month_number = date('Y-m-01');
                     $end_month_number = date('Y-m-d');
-                }dd($request->all());
+                }
                 $decodedClientName = $request->project_id != '' ? Helpers::projectName($request->project_id)->aims_project_name : 'Project';
                 $decodedsubProjectName = $request->sub_project_id == '' ? '--' : Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
                 $user = $request->user == '' ? '--' : $request->user;
