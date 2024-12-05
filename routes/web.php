@@ -145,6 +145,7 @@ Route::group(['prefix' => 'qa_production'], function () {
     Route::group(['prefix' => 'report'], function () {
         Route::any('inventory_error_report_list', 'App\Http\Controllers\Reports\ReportsController@inventoryErrorReportList');
         Route::any('inventory_error_report', 'App\Http\Controllers\Reports\ReportsController@inventoryErrorReport');
+        Route::any('team_performance_report', 'App\Http\Controllers\Reports\ReportsController@teamPerformanceReport');
     });
     Route::group(['prefix' => 'production'], function () {
          Route::any('ar_action_code_list', 'App\Http\Controllers\ProductionController@arActionCodeList');

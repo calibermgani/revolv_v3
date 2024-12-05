@@ -442,4 +442,16 @@ class ReportsController extends Controller
             return redirect('/');
         }
     }
+
+    public function teamPerformanceReport(Request $request) {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
+            try {
+                return("reports.teamPerformanceReport");
+            } catch (Exception $e) {
+                    log::debug($e->getMessage());
+                }
+        } else {
+            return redirect('/');
+        }
+    }
 }
