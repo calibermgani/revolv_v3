@@ -85,7 +85,7 @@
 
                             <div class="col-md-10">
                                 <button type="submit" class="btn  btn-white-black font-weight-bold"
-                                    id="filter_search">Search</button>
+                                    id="search_submit">Search</button>
                                 &nbsp;&nbsp; <button class="btn btn-light-danger" id="filter_clear" tabindex="10"
                                     type="button">
                                     <span>
