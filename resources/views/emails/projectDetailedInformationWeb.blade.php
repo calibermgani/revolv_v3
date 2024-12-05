@@ -44,7 +44,9 @@
                                             style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">
                                             {{ $header }}</th>
                                     @endforeach
-                                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;" width="8%">Reached Target</th>
+                                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;" width="8%">Actuval Target</th>
+                                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;" width="8%">Achieved Target</th>
+                                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;" width="8%">%</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -58,7 +60,10 @@
                                             @foreach ($data['hourlyCount'] as $count)
                                                 <td style="text-align: center;padding: 5px;">{{ $count }}</td>
                                             @endforeach
-                                            <td style="text-align: center;padding: 5px;" width="8%"  >{{ $data['reachedTarget'] }}</td>
+                                            <td style="text-align: center;padding: 5px;" width="8%">{{ $data['reachedTarget'] }}</td>
+                                           <td style="text-align: center;padding: 5px;" width="8%">{{ $data['slaTarget'] }}</td>
+                                           <td style="text-align: center;padding: 5px;" width="8%">{{ $data['reachedTarget'] }}</td>
+                                            <td style={{$data['achievedPercentage'] >= 95 ? "color:green" : "color:red";"text-align: center;padding: 5px;"}} width="8%">{{$data['achievedPercentage']."%"}}</td>
                                         </tr>
                                     @endforeach
                                 @else

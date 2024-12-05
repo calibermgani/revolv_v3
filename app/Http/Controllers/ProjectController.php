@@ -1026,10 +1026,10 @@ class ProjectController extends Controller
     public function projectDetailedInformation(Request $request){
         try {
             $prjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->project_name ?? null;
-            $aimsPrjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->aims_project_name ?? null;
-          
-                $subPrjName = Helpers::subProjectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))->sub_project_name ?? null;
-       
+            $aimsPrjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->aims_project_name ?? null;          
+            $subPrjName = Helpers::subProjectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))->sub_project_name ?? null;
+            $prjSLATarget = (int)$this->getProjectTotalSlaTarget(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))['projectSLATarget'];
+      
             $title = $aimsPrjName . '-' . $subPrjName;
             $tableName = Str::slug(Str::lower($prjName . '_' . $subPrjName), '_');
             $modelClass = "App\\Models\\" . Str::studly($tableName);
@@ -1098,17 +1098,28 @@ class ProjectController extends Controller
                         $hourlyCounts[] = $hourlyCount; 
                         $reachedTarget += $hourlyCount;
                     }
+                    if (is_numeric($reachedTarget) && is_numeric($prjSLATarget) && $prjSLATarget != 0 && $prjSLATarget != "") {
+                        $achievedPercentage = ($reachedTarget / $prjSLATarget) * 100;
+                    } else {
+                        // Handle errors or set a default value
+                        $achievedPercentage = 0;
+                    }
                     $BodyDetails[] = [
                         'user' => $user,
                        'hourlyCount' => $hourlyCounts, 
                        'reachedTarget' => $reachedTarget,
+                       'slaTarget' => $prjSLATarget,
+                       'achievedPercentage' => $achievedPercentage
                    ];
                
                 }             
             }  
+            usort($BodyDetails, function ($a, $b) {
+                return $a['achievedPercentage'] <=> $b['achievedPercentage'];
+            });
           return view('emails.projectDetailedInformationWeb', compact('headers', 'BodyDetails','title'));
         } catch (\Exception $e) {
-            Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
+            Log::error('Error in projectDetailedInformationWeb: ' . $e->getMessage());
             Log::debug($e->getTraceAsString());
         }
     }
@@ -1398,7 +1409,7 @@ class ProjectController extends Controller
             
           return view('projects.projectHourlyDetailedWeb', compact('headers', 'BodyDetails','title'));
         } catch (\Exception $e) {
-            Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
+            Log::error('Error in projectHourlyDetailedWeb: ' . $e->getMessage());
             Log::debug($e->getTraceAsString());
         }
     }
