@@ -477,25 +477,23 @@ class ReportsController extends Controller
                     $start_month   = date("Y-m-d", strtotime($start_month_number . ' + ' . $i . 'day'));
                     $month_numbers .= '<th style="text-align: center">' . date('d', strtotime($start_month)) . '</th>';
                     $month_days .= '<th style="text-align: center">' . date('D', strtotime($start_month)) . '</th>';
-                    $userPercentage .= '<td>' . "100%" . '</td>';
+                    $userPercentage .= '<td  style="text-align: center">' . "100%" . '</td>';
                 }
                     
                 $body_info = '<table class="table table-separate table-head-custom no-footer dtr-column dataTable" id="leaveMusterReport">
                 <thead>
                       <tr>
-                        <th rowspan="2" style="text-align: center">Project</th>
-                        <th rowspan="2" style="text-align: center">Sub Project</th>
-                        <th rowspan="2" style="text-align: center">User</th>
+                        <th style="text-align: center">Project</th>
+                        <th style="text-align: center">Sub Project</th>
+                        <th  style="text-align: center">User</th>
                      ' . $month_numbers . '
                     </tr>
-                    <tr>
-                     ' . $month_days . '
-                    </tr>
+                 
                 </thead>  <tbody >';          
                     $body_info .= '<tr>';
-                    $body_info .= '<td>' . $decodedClientName . '</td>';
-                    $body_info .= '<td>' .  $decodedsubProjectName   . '</td>';
-                    $body_info .= '<td>' .  'User'  . '</td>'.  $userPercentage.  '</tr>';
+                    $body_info .= '<td  style="text-align: center">' . $decodedClientName . '</td>';
+                    $body_info .= '<td  style="text-align: center">' .  $decodedsubProjectName   . '</td>';
+                    $body_info .= '<td  style="text-align: center">' .  'User'  . '</td>'.  $userPercentage.  '</tr>';
            
 
                 $body_info .= '</tbody></table>';
