@@ -21,19 +21,7 @@
             </div>
             <div class="table-responsive pt-5 pb-5" id="reportTable">
             </div>
-        </div>
-    </div>
-    <!-- Modal content-->
-    <div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header" style="background-color: #139AB3;height: 84px">
-                    <h5 class="modal-title" id="modalLabel" style="color: #ffffff;">Generate report</h5>
-                    <button type="button" class="close comment_close" data-dismiss="modal"
-                        aria-hidden="true">&times;</button>
-                </div>
-                <div class="modal-body" style="background-color: #139AB3;height: 84px">
+      
                     <div class="row">
                         <div class="col-lg-3">
                             <div class="row form-group">
@@ -130,9 +118,7 @@
                                     ) !!}
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
+                      
                 <div class="modal-body m-10" id="project_assign_body">
                     <p style="text-align: center">Select Projects to Generate Report</p>
                 </div>
