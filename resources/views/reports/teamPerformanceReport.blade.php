@@ -39,7 +39,7 @@
                                 <div class="form-group mb-0">
                                     @php $userList = []; @endphp
                                     {!! Form::select('user', $userList, null, [
-                                        'class' => 'text-black form-control select2 user_select',
+                                        'class' => 'text-black form-control select2',
                                         'id' => 'user',
                                         'placeholder' => 'User',
                                     ]) !!}
