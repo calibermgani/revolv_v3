@@ -75,6 +75,8 @@ use App\Models\HvccAr;
 use App\Models\HvccArDuplicates;
 use App\Models\AcrmcAr;
 use App\Models\AcrmcArDuplicates;
+use App\Models\LastsAr;
+use App\Models\LastsArDuplicates;
 
 
 class ProjectAutomationController extends Controller
@@ -3402,6 +3404,76 @@ class ProjectAutomationController extends Controller
                 'original_balance' => isset($request->original_balance) && $request->original_balance != "NULL" ? $request->original_balance : NULL,  
                 'inhouse' => isset($request->inhouse) && $request->inhouse != "NULL" ? $request->inhouse : NULL,  
                 'current_balance' => isset($request->current_balance) && $request->current_balance != "NULL" ? $request->current_balance : NULL,  
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+             ]);
+             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+
+     public function lynneAlbaSpeechTherapySolutionsAr(Request $request)
+     {
+         try {
+             $attributes = [
+                    'inv_no' => isset($request->inv_no) && $request->inv_no != "NULL" ? $request->inv_no : NULL,  
+                    'inv_date' => isset($request->inv_date) && $request->inv_date != "NULL" ? $request->inv_date : NULL,  
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+                    'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,  
+                    'inv_total' => isset($request->inv_total) && $request->inv_total != "NULL" ? $request->inv_total : NULL,  
+                    'ins_balance' => isset($request->ins_balance) && $request->ins_balance != "NULL" ? $request->ins_balance : NULL
+                ];
+ 
+             $duplicateRecordExisting  =  LastsAr::where($attributes)->exists();
+             if (!$duplicateRecordExisting) {
+                LastsAr::insert([
+                    'inv_no' => isset($request->inv_no) && $request->inv_no != "NULL" ? $request->inv_no : NULL,  
+                    'inv_date' => isset($request->inv_date) && $request->inv_date != "NULL" ? $request->inv_date : NULL,  
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+                    'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,  
+                    'inv_total' => isset($request->inv_total) && $request->inv_total != "NULL" ? $request->inv_total : NULL,  
+                    'ins_balance' => isset($request->ins_balance) && $request->ins_balance != "NULL" ? $request->ins_balance : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                     ]);
+                         return response()->json(['message' => 'Record Inserted Successfully']);
+             } else {
+                 $duplicateRecord  =  LastsAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                 if ($duplicateRecord) {
+                     $duplicateRecord->update([
+                        'inv_no' => isset($request->inv_no) && $request->inv_no != "NULL" ? $request->inv_no : NULL,  
+                        'inv_date' => isset($request->inv_date) && $request->inv_date != "NULL" ? $request->inv_date : NULL,  
+                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+                        'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,  
+                        'inv_total' => isset($request->inv_total) && $request->inv_total != "NULL" ? $request->inv_total : NULL,  
+                        'ins_balance' => isset($request->ins_balance) && $request->ins_balance != "NULL" ? $request->ins_balance : NULL,  
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                     ]);
+                 }
+                 return response()->json(['message' => 'Existing Record Updated Successfully']);
+             }
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+     public function lynneAlbaSpeechTherapySolutionsArDuplicates(Request $request)
+     {
+         try {
+            LastsArDuplicates::insert([
+                'inv_no' => isset($request->inv_no) && $request->inv_no != "NULL" ? $request->inv_no : NULL,  
+                'inv_date' => isset($request->inv_date) && $request->inv_date != "NULL" ? $request->inv_date : NULL,  
+                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+                'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,  
+                'inv_total' => isset($request->inv_total) && $request->inv_total != "NULL" ? $request->inv_total : NULL,  
+                'ins_balance' => isset($request->ins_balance) && $request->ins_balance != "NULL" ? $request->ins_balance : NULL,  
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
