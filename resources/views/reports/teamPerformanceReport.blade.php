@@ -51,8 +51,17 @@
                                         type="month" value="{{ date('Y-m') }}" max="{{ date('Y-m') }}">
                                 </fieldset>
                             </div>
-
-                            <div class="col-lg-4 mb-lg-0 mb-3 d-flex align-items-center">
+                            <div class="col-lg-2 mb-lg-0 mb-3" id="sub_project_div">
+                                <div class="form-group mb-0">
+                                    @php $utilizationList = ['utilized' => 'utilized','unutilized'=>'unutilized']; @endphp
+                                    {!! Form::select('user', $utilizationList, null, [
+                                        'class' => 'text-black form-control select2 user_select',
+                                        'id' => 'utilizationList',
+                                        'placeholder' => 'Utilization',
+                                    ]) !!}
+                                </div>
+                            </div>
+                            <div class="col-lg-2 mb-lg-0 mb-3 d-flex align-items-center">
                                 <button class="btn btn-primary-export text-white mr-2" id="search_submit" tabindex="9"
                                     type="submit" value="Search" autocomplete="nope">
                                     <span>
