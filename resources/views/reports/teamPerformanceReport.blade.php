@@ -53,7 +53,7 @@
                             </div>
                             <div class="col-lg-2 mb-lg-0 mb-3" id="sub_project_div">
                                 <div class="form-group mb-0">
-                                    @php $utilizationList = ['utilized' => 'utilized','unutilized'=>'unutilized']; @endphp
+                                    @php $utilizationList = ['utilized' => 'Utilized','unutilized'=>'Unutilized']; @endphp
                                     {!! Form::select('user', $utilizationList, null, [
                                         'class' => 'text-black form-control select2',
                                         'id' => 'utilizationList',
