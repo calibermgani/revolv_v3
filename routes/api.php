@@ -96,6 +96,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('advanced_medical_billing_collections_ambc_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@advancedMedicalBillingCollectionsAmbcArDuplicates');
     Route::any('hockanum_valley_community_council_ar', 'App\Http\Controllers\ProjectAutomationController@hockanumValleyCommunityCouncilAr');
     Route::any('hockanum_valley_community_council_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@hockanumValleyCommunityCouncilArDuplicates');
+    Route::any('adams_county_regional_medical_center_ar', 'App\Http\Controllers\ProjectAutomationController@adamsCountyRegionalMedicalCenterAr');
+    Route::any('adams_county_regional_medical_center_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@adamsCountyRegionalMedicalCenterArDuplicates');
     
     
 

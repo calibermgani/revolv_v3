@@ -73,6 +73,8 @@ use App\Models\AmbcAmbcAr;
 use App\Models\AmbcAmbcArDuplicates;
 use App\Models\HvccAr;
 use App\Models\HvccArDuplicates;
+use App\Models\AcrmcAr;
+use App\Models\AcrmcArDuplicates;
 
 
 class ProjectAutomationController extends Controller
@@ -3307,6 +3309,99 @@ class ProjectAutomationController extends Controller
                 'payment' => isset($request->payment) && $request->payment != "NULL" ? $request->payment : NULL,  
                 'ar_balance' => isset($request->ar_balance) && $request->ar_balance != "NULL" ? $request->ar_balance : NULL,  
                 'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,  
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+             ]);
+             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+     public function adamsCountyRegionalMedicalCenterAr(Request $request)
+     {
+         try {
+             $attributes = [
+                    'f_else_c' => isset($request->f_else_c) && $request->f_else_c != "NULL" ? $request->f_else_c : NULL,  
+                    'provider_no' => isset($request->provider_no) && $request->provider_no != "NULL" ? $request->provider_no : NULL,  
+                    'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL,  
+                    'patient_no' => isset($request->patient_no) && $request->patient_no != "NULL" ? $request->patient_no : NULL,  
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                    'ins_co_else_plan' => isset($request->ins_co_else_plan) && $request->ins_co_else_plan != "NULL" ? $request->ins_co_else_plan : NULL,  
+                    'derived_01' => isset($request->derived_01) && $request->derived_01 != "NULL" ? $request->derived_01 : NULL,  
+                    'a_else_r_last_payment_amount' => isset($request->a_else_r_last_payment_amount) && $request->a_else_r_last_payment_amount != "NULL" ? $request->a_else_r_last_payment_amount : NULL,  
+                    'original_balance' => isset($request->original_balance) && $request->original_balance != "NULL" ? $request->original_balance : NULL,  
+                    'inhouse' => isset($request->inhouse) && $request->inhouse != "NULL" ? $request->inhouse : NULL,  
+                    'current_balance' => isset($request->current_balance) && $request->current_balance != "NULL" ? $request->current_balance : NULL
+                ];
+ 
+             $duplicateRecordExisting  =  AcrmcAr::where($attributes)->exists();
+             if (!$duplicateRecordExisting) {
+                AcrmcAr::insert([
+                    'f_else_c' => isset($request->f_else_c) && $request->f_else_c != "NULL" ? $request->f_else_c : NULL,  
+                    'provider_no' => isset($request->provider_no) && $request->provider_no != "NULL" ? $request->provider_no : NULL,  
+                    'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL,  
+                    'patient_no' => isset($request->patient_no) && $request->patient_no != "NULL" ? $request->patient_no : NULL,  
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                    'ins_co_else_plan' => isset($request->ins_co_else_plan) && $request->ins_co_else_plan != "NULL" ? $request->ins_co_else_plan : NULL,  
+                    'derived_01' => isset($request->derived_01) && $request->derived_01 != "NULL" ? $request->derived_01 : NULL,  
+                    'a_else_r_last_payment_amount' => isset($request->a_else_r_last_payment_amount) && $request->a_else_r_last_payment_amount != "NULL" ? $request->a_else_r_last_payment_amount : NULL,  
+                    'original_balance' => isset($request->original_balance) && $request->original_balance != "NULL" ? $request->original_balance : NULL,  
+                    'inhouse' => isset($request->inhouse) && $request->inhouse != "NULL" ? $request->inhouse : NULL,  
+                    'current_balance' => isset($request->current_balance) && $request->current_balance != "NULL" ? $request->current_balance : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                     ]);
+                         return response()->json(['message' => 'Record Inserted Successfully']);
+             } else {
+                 $duplicateRecord  =  AcrmcAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                 if ($duplicateRecord) {
+                     $duplicateRecord->update([
+                        'f_else_c' => isset($request->f_else_c) && $request->f_else_c != "NULL" ? $request->f_else_c : NULL,  
+                        'provider_no' => isset($request->provider_no) && $request->provider_no != "NULL" ? $request->provider_no : NULL,  
+                        'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL,  
+                        'patient_no' => isset($request->patient_no) && $request->patient_no != "NULL" ? $request->patient_no : NULL,  
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                        'ins_co_else_plan' => isset($request->ins_co_else_plan) && $request->ins_co_else_plan != "NULL" ? $request->ins_co_else_plan : NULL,  
+                        'derived_01' => isset($request->derived_01) && $request->derived_01 != "NULL" ? $request->derived_01 : NULL,  
+                        'a_else_r_last_payment_amount' => isset($request->a_else_r_last_payment_amount) && $request->a_else_r_last_payment_amount != "NULL" ? $request->a_else_r_last_payment_amount : NULL,  
+                        'original_balance' => isset($request->original_balance) && $request->original_balance != "NULL" ? $request->original_balance : NULL,  
+                        'inhouse' => isset($request->inhouse) && $request->inhouse != "NULL" ? $request->inhouse : NULL,  
+                        'current_balance' => isset($request->current_balance) && $request->current_balance != "NULL" ? $request->current_balance : NULL,  
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                     ]);
+                 }
+                 return response()->json(['message' => 'Existing Record Updated Successfully']);
+             }
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+     public function adamsCountyRegionalMedicalCenterArDuplicates(Request $request)
+     {
+         try {
+            AcrmcArDuplicates::insert([
+               'f_else_c' => isset($request->f_else_c) && $request->f_else_c != "NULL" ? $request->f_else_c : NULL,  
+                'provider_no' => isset($request->provider_no) && $request->provider_no != "NULL" ? $request->provider_no : NULL,  
+                'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL,  
+                'patient_no' => isset($request->patient_no) && $request->patient_no != "NULL" ? $request->patient_no : NULL,  
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                'ins_co_else_plan' => isset($request->ins_co_else_plan) && $request->ins_co_else_plan != "NULL" ? $request->ins_co_else_plan : NULL,  
+                'derived_01' => isset($request->derived_01) && $request->derived_01 != "NULL" ? $request->derived_01 : NULL,  
+                'a_else_r_last_payment_amount' => isset($request->a_else_r_last_payment_amount) && $request->a_else_r_last_payment_amount != "NULL" ? $request->a_else_r_last_payment_amount : NULL,  
+                'original_balance' => isset($request->original_balance) && $request->original_balance != "NULL" ? $request->original_balance : NULL,  
+                'inhouse' => isset($request->inhouse) && $request->inhouse != "NULL" ? $request->inhouse : NULL,  
+                'current_balance' => isset($request->current_balance) && $request->current_balance != "NULL" ? $request->current_balance : NULL,  
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
