@@ -71,6 +71,9 @@ use App\Models\RhAr;
 use App\Models\RhArDuplicates;
 use App\Models\AmbcAmbcAr;
 use App\Models\AmbcAmbcArDuplicates;
+use App\Models\HvccAr;
+use App\Models\HvccArDuplicates;
+
 
 class ProjectAutomationController extends Controller
 {
@@ -3214,6 +3217,104 @@ class ProjectAutomationController extends Controller
                 'billing_provider' => isset($request->billing_provider) && $request->billing_provider != "NULL" ? $request->billing_provider : NULL,  
                 'payer_id' => isset($request->payer_id) && $request->payer_id != "NULL" ? $request->payer_id : NULL,  
                 'policy_id' => isset($request->policy_id) && $request->policy_id != "NULL" ? $request->policy_id : NULL,  
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+             ]);
+             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+
+     public function hockanumValleyCommunityCouncilAr(Request $request)
+     {
+         try {
+             $attributes = [
+                'rendering_provider' => isset($request->rendering_provider) && $request->rendering_provider != "NULL" ? $request->rendering_provider : NULL,
+                'enc_id' => isset($request->enc_id) && $request->enc_id != "NULL" ? $request->enc_id : NULL,
+                'post_date' => isset($request->post_date) && $request->post_date != "NULL" ? $request->post_date : NULL,  
+                'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,  
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL,  
+                'modifier' => isset($request->modifier) && $request->modifier != "NULL" ? $request->modifier : NULL,  
+                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+                'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,  
+                'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,  
+                'payment' => isset($request->payment) && $request->payment != "NULL" ? $request->payment : NULL,  
+                'ar_balance' => isset($request->ar_balance) && $request->ar_balance != "NULL" ? $request->ar_balance : NULL,  
+                'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,  
+                ];
+ 
+             $duplicateRecordExisting  =  HvccAr::where($attributes)->exists();
+             if (!$duplicateRecordExisting) {
+                HvccAr::insert([
+                    'rendering_provider' => isset($request->rendering_provider) && $request->rendering_provider != "NULL" ? $request->rendering_provider : NULL,
+                    'enc_id' => isset($request->enc_id) && $request->enc_id != "NULL" ? $request->enc_id : NULL,
+                    'post_date' => isset($request->post_date) && $request->post_date != "NULL" ? $request->post_date : NULL,  
+                    'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,  
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                    'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL,  
+                    'modifier' => isset($request->modifier) && $request->modifier != "NULL" ? $request->modifier : NULL,  
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,  
+                    'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,  
+                    'payment' => isset($request->payment) && $request->payment != "NULL" ? $request->payment : NULL,  
+                    'ar_balance' => isset($request->ar_balance) && $request->ar_balance != "NULL" ? $request->ar_balance : NULL,  
+                    'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,  
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                     ]);
+                         return response()->json(['message' => 'Record Inserted Successfully']);
+             } else {
+                 $duplicateRecord  =  HvccAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                 if ($duplicateRecord) {
+                     $duplicateRecord->update([
+                        'rendering_provider' => isset($request->rendering_provider) && $request->rendering_provider != "NULL" ? $request->rendering_provider : NULL,
+                        'enc_id' => isset($request->enc_id) && $request->enc_id != "NULL" ? $request->enc_id : NULL,
+                        'post_date' => isset($request->post_date) && $request->post_date != "NULL" ? $request->post_date : NULL,  
+                        'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,  
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                        'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL,  
+                        'modifier' => isset($request->modifier) && $request->modifier != "NULL" ? $request->modifier : NULL,  
+                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+                        'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,  
+                        'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,  
+                        'payment' => isset($request->payment) && $request->payment != "NULL" ? $request->payment : NULL,  
+                        'ar_balance' => isset($request->ar_balance) && $request->ar_balance != "NULL" ? $request->ar_balance : NULL,  
+                        'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,  
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                     ]);
+                 }
+                 return response()->json(['message' => 'Existing Record Updated Successfully']);
+             }
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+     public function hockanumValleyCommunityCouncilArDuplicates(Request $request)
+     {
+         try {
+            HvccArDuplicates::insert([
+                'rendering_provider' => isset($request->rendering_provider) && $request->rendering_provider != "NULL" ? $request->rendering_provider : NULL,
+                'enc_id' => isset($request->enc_id) && $request->enc_id != "NULL" ? $request->enc_id : NULL,
+                'post_date' => isset($request->post_date) && $request->post_date != "NULL" ? $request->post_date : NULL,  
+                'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,  
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL,  
+                'modifier' => isset($request->modifier) && $request->modifier != "NULL" ? $request->modifier : NULL,  
+                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+                'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,  
+                'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,  
+                'payment' => isset($request->payment) && $request->payment != "NULL" ? $request->payment : NULL,  
+                'ar_balance' => isset($request->ar_balance) && $request->ar_balance != "NULL" ? $request->ar_balance : NULL,  
+                'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,  
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
