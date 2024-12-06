@@ -3232,19 +3232,11 @@ class ProjectAutomationController extends Controller
      {
          try {
              $attributes = [
-                'rendering_provider' => isset($request->rendering_provider) && $request->rendering_provider != "NULL" ? $request->rendering_provider : NULL,
-                'enc_id' => isset($request->enc_id) && $request->enc_id != "NULL" ? $request->enc_id : NULL,
-                'post_date' => isset($request->post_date) && $request->post_date != "NULL" ? $request->post_date : NULL,  
-                'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,  
-                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
-                'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL,  
-                'modifier' => isset($request->modifier) && $request->modifier != "NULL" ? $request->modifier : NULL,  
-                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
-                'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,  
-                'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,  
-                'payment' => isset($request->payment) && $request->payment != "NULL" ? $request->payment : NULL,  
-                'ar_balance' => isset($request->ar_balance) && $request->ar_balance != "NULL" ? $request->ar_balance : NULL,  
-                'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,  
+                    'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,  
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,  
+                    'ar_balance' => isset($request->ar_balance) && $request->ar_balance != "NULL" ? $request->ar_balance : NULL,  
                 ];
  
              $duplicateRecordExisting  =  HvccAr::where($attributes)->exists();
