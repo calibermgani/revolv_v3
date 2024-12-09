@@ -143,6 +143,7 @@
                                     } else {
                                         $target = '--';
                                     }
+                                    dd($target);
                                 @endphp
                                 <tr>
                                     <td>{{ $data['CE_emp_id'] }}
