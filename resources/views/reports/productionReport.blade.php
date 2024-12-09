@@ -104,7 +104,6 @@
                     <tbody>
                         @if (!empty($finalData))
                         @php
-                        dd($finalData);
                         if ($projectId != null) {
                             $projectName = App\Models\project::where('project_id', $projectId)->first();
                         } else {
@@ -145,9 +144,6 @@
                         
                     @endphp
                             @foreach ($finalData as $data)
-                            @php
-                            dd($data);
-                            @endphp
                                 <tr>
                                     <td>{{ $data['emp_id'] }}</td>
                                     <td>{{ $data['emp_name'] }}</td>

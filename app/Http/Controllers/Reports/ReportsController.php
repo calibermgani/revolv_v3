@@ -601,7 +601,7 @@ class ReportsController extends Controller
                         ];
                     }
                 }
-                return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','workingDates',$finalData));
+                return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','workingDates','finalData'));
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
             }
