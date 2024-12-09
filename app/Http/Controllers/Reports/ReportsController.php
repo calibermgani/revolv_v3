@@ -552,16 +552,38 @@ class ReportsController extends Controller
                     if (class_exists($modelClass)) {
                         $productionReportList = $modelClass::select('CE_emp_id')->where('chart_status','CE_Completed')->groupBy('CE_emp_id')->get();
                     }
+                    foreach ($productionReportList as $data) {   
+                        $C['arName'][] = $data['CE_emp_id'] != null
+                        ? Helpers::getUserNameByEmpId($data['CE_emp_id'])
+                        : '--';
+                    }
+                }dd($productionReportList);
+                
+                $work_date = $request->work_date;
+                $workingDates = [];
+                if (isset($work_date) && !empty($work_date)) {
+                    $work_date = explode(' - ', $work_date);
+                    $start_date = new \DateTime($work_date[0]);
+                    $end_date = new \DateTime($work_date[1]);
+                    $end_date->modify('+1 day'); // Include the end date
+                
+                    while ($start_date < $end_date) {
+                        // Exclude Saturdays (6) and Sundays (0)
+                        if ($start_date->format('N') < 6) {
+                            $workingDates[] = $start_date->format('Y-m-d');
+                        }
+                        $start_date->modify('+1 day');
+                    }
                 }
-                if (isset($request->work_date) && !empty($request->work_date)) {
-                    $work_date = explode(' - ', $request->work_date);
-                    $start_date = date('Y-m-d 17:00:00', strtotime($work_date[0]));
-                    $end_date = date('Y-m-d 09:00:00', strtotime($work_date[1] . ' +1 day'));
-                }else{
-                    $start_date = "";
-                    $end_date = "";
+                
+                // Process your production report data
+                $productionReportList = []; // Replace this with your actual data
+                foreach ($workingDates as $date) {
+                    foreach ($productionReportList as &$record) {
+                        $record['working_date'][] = $date;
+                    }
                 }
-
+                
                 return view('reports.productionReport', compact('coderList', 'productionReportList','projectId','subProjectId','workDate'));
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
