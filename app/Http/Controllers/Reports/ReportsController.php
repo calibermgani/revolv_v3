@@ -576,7 +576,7 @@ class ReportsController extends Controller
                         $start_date->modify('+1 day');
                     }
                 } else {
-                    $work_dates = [];
+                    $workingDates = [];
                 }
                 
                 // Process your production report data
@@ -586,8 +586,8 @@ class ReportsController extends Controller
                 //         $record['working_date'][] = $date;
                 //     }
                 // }
-                dd($work_dates,$productionReportArray);
-                return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','work_dates'));
+                // dd($workingDates,$productionReportArray);
+                return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','workingDates'));
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
             }
