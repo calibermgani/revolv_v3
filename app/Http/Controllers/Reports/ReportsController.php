@@ -553,7 +553,7 @@ class ReportsController extends Controller
                         $productionReportList = $modelClass::select('CE_emp_id')->where('chart_status','CE_Completed')->groupBy('CE_emp_id')->get();
                     }
                     foreach ($productionReportList as $data) {   
-                        $productionReporArray['arName'][] = $data['CE_emp_id'] != null
+                        $productionReporArray['arName']= $data['CE_emp_id'] != null
                         ? Helpers::getUserNameByEmpId($data['CE_emp_id'])
                         : '--';
                     }
