@@ -587,6 +587,20 @@ class ReportsController extends Controller
                 //     }
                 // }
                 // dd($workingDates,$productionReportArray);
+             
+                $finalData = [];
+                
+                // Combine dates with employees
+                foreach ($workingDates as $date) {
+                    foreach ($productionReportList as $employee) {
+                        $finalData[] = [
+                            'date' => $date,
+                            'emp_id' => $employee->emp_id,
+                            'emp_name' => $employee->arName,
+                           
+                        ];
+                    }
+                }dd($finalData);
                 return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','workingDates'));
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
