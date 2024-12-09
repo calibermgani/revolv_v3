@@ -65,16 +65,14 @@
                             <td style="text-align: center;padding: 5px;">{{ $data['project'] }}</td>
                             <td style="text-align: center;padding: 5px;">{{ $data['Chats'] == 0 ? 'No' : 'Yes' }}</td>
                             <td style="text-align: center;padding: 5px;">{{ $data['total_ar']}}</td>
-                            {{-- <td class="total-ar"  style="text-align: center;padding: 5px;"></td> --}}
                             <td style="text-align: center;padding: 5px;">{{ $data['logged_resolv_ar']}}</td>
-                            <td class="logged_resolv_ar" style="text-align: center;padding: 5px;"></td>
                             <td style="text-align: center;padding: 5px;">{{$data['prodcution_ar']}}</td>
                             <td style="text-align: center;padding: 5px;">{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder']}}</td>
-                             <td style="text-align: center;padding: 5px;">{{ $data['logged_resolv_qa']}}</td>
-                             {{-- <td class="logged_resolv_qa" style="text-align: center;padding: 5px;"></td> --}}
+                            {{-- <td style="text-align: center;padding: 5px;">{{$data['total_qa']}}</td> --}}
+                            <td style="text-align: center;padding: 5px;">{{ $data['logged_resolv_qa']}}</td>
                             <td style="text-align: center;padding: 5px;">{{$data['prodcution_qa']}}</td>
                             <td style="text-align: center;padding: 5px;">{{ $data['QA'] == 0 ? 'No Activity' : $data['QA']}}</td>
-                            
+                            {{-- <td style="text-align: left;padding: 5px;">{{ $data['Balance'] }}</td> --}}
                         </tr>
                     @endforeach
                 @else
@@ -90,48 +88,3 @@
 </body>
 
 </html>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-{{-- <script>
-    $(document).ready(function() {
-      
-        var table = $("#project_utilization_table").DataTable({
-            processing: false,
-            ordering: false,
-            clientSide: false,
-            lengthChange: false,
-            searching: false,           
-        });
-        function processAllRows() {
-            var rows = table.rows().nodes(); // Fetch all rows across all pages
-            $(rows).each(function() {
-                var row = $(this);
-                var rowProjectId = row.data('project-id');
-                var projectId = @json($projectIds);
-                var yesterDayStartDate = @json($yesterDayStartDate);
-                var yesterDayEndDate = @json($yesterDayEndDate);
-
-                if (projectId) {
-                    fetch(`project-ar-qa-counts/` + projectId +
-                            `/${yesterDayStartDate}/${yesterDayEndDate}/${rowProjectId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.total_ar !== undefined) {
-                                row.find(".total-ar").text(data.total_ar);
-                                row.find(".logged_resolv_ar").text(data.logged_resolv_ar);
-                                row.find(".logged_resolv_qa").text(data.logged_resolv_qa);                              
-                            }
-                        })
-                        .catch(error => console.error("Error fetching AR/QA counts:", error));
-                }
-            });
-        }
-
-      
-        table.on('draw', processAllRows);
-
-   
-        processAllRows();
-    });
-  
-</script> --}}

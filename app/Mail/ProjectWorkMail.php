@@ -13,26 +13,16 @@ class ProjectWorkMail extends Mailable
     public $mailHeader;
     public $mailBody;
     public $yesterday;
-    public $totalAr;
-    public $totalQA;
-    public $yesterDayStartDate;
-    public $yesterDayEndDate;
-    public $projectIds;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($mailHeader, $mailBody, $yesterday,$totalAr,$totalQA,$yesterDayStartDate,$yesterDayEndDate,$projectIds)
+    public function __construct($mailHeader, $mailBody, $yesterday)
     {
         $this->mailHeader = $mailHeader;
         $this->mailBody = $mailBody;
         $this->yesterday = $yesterday;
-        $this->totalAr = $totalAr;
-        $this->totalQA = $totalQA;
-        $this->yesterDayStartDate = $yesterDayStartDate;
-        $this->yesterDayEndDate = $yesterDayEndDate;
-        $this->projectIds = $projectIds;
     }
 
     /**
