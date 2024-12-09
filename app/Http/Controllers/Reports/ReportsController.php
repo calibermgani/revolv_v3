@@ -586,7 +586,7 @@ class ReportsController extends Controller
                 //         $record['working_date'][] = $date;
                 //     }
                 // }
-                
+                dd($work_dates,$productionReportArray);
                 return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','work_dates'));
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
