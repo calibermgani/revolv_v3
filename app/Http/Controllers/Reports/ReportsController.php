@@ -558,7 +558,7 @@ class ReportsController extends Controller
                         ? Helpers::getUserNameByEmpId($data['CE_emp_id'])
                         : '--';
                     }
-                }dd($productionReportList,$productionReporArray);
+                }
                 
                 $work_date = $request->work_date;
                 $workingDates = [];
