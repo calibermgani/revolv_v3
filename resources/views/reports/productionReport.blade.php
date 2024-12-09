@@ -103,6 +103,7 @@
                         @if (isset($productionReportList))
                             @foreach ($productionReportList as $data)
                                 @php
+                                dd($data);
                                     if ($data['project_id'] != null) {
                                         $projectName = App\Models\project::where(
                                             'project_id',
@@ -122,16 +123,16 @@
                                         $subProjectName = '--';
                                     }
                                     $coderName =
-                                        $data['coder_emp_id'] != null
-                                            ? App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['coder_emp_id'])
+                                        $data['CE_emp_id'] != null
+                                            ? App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['CE_emp_id'])
                                             : '--';
                                 @endphp
                                 <tr>
                                     <td><input type="hidden"
-                                            value={{ $data['coder_emp_id'] != null ? $data['coder_emp_id'] : null }}>{{ $data['coder_emp_id']}}
+                                            value={{ $data['CE_emp_id'] != null ? $data['CE_emp_id'] : null }}>{{ $data['CE_emp_id']}}
                                     </td>
                                     <td><input type="hidden"
-                                            value={{ $data['coder_emp_id'] != null ? $data['coder_emp_id'] : null }}>{{ $coderName == null ? '--' : $coderName }}
+                                            value={{ $data['CE_emp_id'] != null ? $data['CE_emp_id'] : null }}>{{ $coderName == null ? '--' : $coderName }}
                                     </td>
                                     <td><input type="hidden"
                                             value={{ $data['project_id'] }}>{{ $projectName == '--' || $projectName == null ? '--' : $projectName->aims_project_name }}
