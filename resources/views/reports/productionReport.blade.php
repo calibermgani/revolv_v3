@@ -104,19 +104,13 @@
                             @foreach ($productionReportList as $data)
                                 @php
                                     if ($data['project_id'] != null) {
-                                        $projectName = App\Models\project::where(
-                                            'project_id',
-                                            $data['project_id'],
-                                        )->first();
+                                        $projectName = App\Models\project::where('project_id', $projectId)->first();
                                     } else {
                                         $projectName = '--';
                                     }
                                     if ($data['sub_project_id'] != null && $data['project_id'] != null) {
-                                        $subProjectName = App\Models\subproject::where(
-                                            'project_id',
-                                            $data['project_id'],
-                                        )
-                                            ->where('sub_project_id', $data['sub_project_id'])
+                                        $subProjectName = App\Models\subproject::where('project_id', $projectId)
+                                            ->where('sub_project_id', $subProjectId)
                                             ->first();
                                     } else {
                                         $subProjectName = '--';
@@ -127,21 +121,16 @@
                                     //         : '--';
                                 @endphp
                                 <tr>
-                                    <td><input type="hidden"
-                                            value={{ $data['CE_emp_id'] != null ? $data['CE_emp_id'] : null }}>{{ $data['CE_emp_id']}}
+                                    <td>{{ $data['CE_emp_id'] }}
                                     </td>
-                                    <td><input type="hidden"
-                                        value={{ $data['CE_emp_id'] != null ? $data['CE_emp_id'] : null }}>{{ $data['CE_emp_id']}}
-                                </td>
-                                    <td><input type="hidden"
-                                            value={{ $data['project_id'] }}>{{ $projectName == '--' || $projectName == null ? '--' : $projectName->aims_project_name }}
+                                    <td>{{ $data['CE_emp_id'] }}
                                     </td>
-                                    <td><input type="hidden"
-                                            value={{ $data['sub_project_id'] != null ? $data['sub_project_id'] : null }}>{{ $subProjectName == '--' || $subProjectName == null ? '--' : $subProjectName->sub_project_name }}
+                                    <td>{{ $projectName == '--' || $projectName == null ? '--' : $projectName->aims_project_name }}
                                     </td>
-                                    <td><input type="hidden"
-                                        value={{ $data['sub_project_id'] != null ? $data['sub_project_id'] : null }}>{{ $subProjectName == '--' || $subProjectName == null ? '--' : $subProjectName->sub_project_name }}
-                                </td>
+                                    <td>{{ $subProjectName == '--' || $subProjectName == null ? '--' : $subProjectName->sub_project_name }}
+                                    </td>
+                                    <td>{{ $subProjectName == '--' || $subProjectName == null ? '--' : $subProjectName->sub_project_name }}
+                                    </td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
