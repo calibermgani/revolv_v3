@@ -143,7 +143,7 @@
                                     } else {
                                         $target = '--';
                                     }
-                                    dd($target,$projectId,$subProjectId,$activity,$subActivity);
+
                                 @endphp
                                 <tr>
                                     <td>{{ $data['CE_emp_id'] }}
@@ -156,8 +156,8 @@
                                     </td>
                                     <td>{{ $subProjectName == '--' || $subProjectName == null ? '--' : $subProjectName->sub_project_name }}
                                     </td>
-                                    <td>{{ $target }}</td>
-                                    <td>{{ $target }}</td>
+                                    <td>{{ $target_per_day != null ? $target->target_per_day : '--' }}</td>
+                                    <td>{{ $target_per_day != null ? $target->target_per_day : '--' }}</td>
                                     <td>--</td>
                                     <td>--</td>
                                     <td>--</td>
