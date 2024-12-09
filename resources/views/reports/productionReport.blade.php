@@ -103,7 +103,6 @@
                         @if (isset($productionReportList))
                             @foreach ($productionReportList as $data)
                                 @php
-                                dd($data);
                                     if ($data['project_id'] != null) {
                                         $projectName = App\Models\project::where(
                                             'project_id',

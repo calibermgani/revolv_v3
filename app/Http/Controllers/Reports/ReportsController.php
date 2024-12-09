@@ -550,7 +550,7 @@ class ReportsController extends Controller
                     $modelName = Str::studly($table_name);
                     $modelClass = "App\\Models\\" . $modelName."Datas";
                     if (class_exists($modelClass)) {
-                        $productionReportList = $modelClass::where('chart_status','CE_Completed')->get();
+                        $productionReportList = $modelClass::select('CE_emp_id')->where('chart_status','CE_Completed')->get();
                     }
                 }
                 if (isset($request->work_date) && !empty($request->work_date)) {
