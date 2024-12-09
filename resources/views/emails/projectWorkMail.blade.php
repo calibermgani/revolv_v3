@@ -64,14 +64,14 @@
                         <tr>
                             <td style="text-align: center;padding: 5px;">{{ $data['project'] }}</td>
                             <td style="text-align: center;padding: 5px;">{{ $data['Chats'] == 0 ? 'No' : 'Yes' }}</td>
-                            {{-- <td style="text-align: center;padding: 5px;">{{ $data['total_ar']}}</td> --}}
-                            <td class="total-ar"  style="text-align: center;padding: 5px;"></td>
-                            {{-- <td style="text-align: center;padding: 5px;">{{ $data['logged_resolv_ar']}}</td> --}}
+                            <td style="text-align: center;padding: 5px;">{{ $data['total_ar']}}</td>
+                            {{-- <td class="total-ar"  style="text-align: center;padding: 5px;"></td> --}}
+                            <td style="text-align: center;padding: 5px;">{{ $data['logged_resolv_ar']}}</td>
                             <td class="logged_resolv_ar" style="text-align: center;padding: 5px;"></td>
                             <td style="text-align: center;padding: 5px;">{{$data['prodcution_ar']}}</td>
                             <td style="text-align: center;padding: 5px;">{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder']}}</td>
-                             {{-- <td style="text-align: center;padding: 5px;">{{ $data['logged_resolv_qa']}}</td> --}}
-                             <td class="logged_resolv_qa" style="text-align: center;padding: 5px;"></td>
+                             <td style="text-align: center;padding: 5px;">{{ $data['logged_resolv_qa']}}</td>
+                             {{-- <td class="logged_resolv_qa" style="text-align: center;padding: 5px;"></td> --}}
                             <td style="text-align: center;padding: 5px;">{{$data['prodcution_qa']}}</td>
                             <td style="text-align: center;padding: 5px;">{{ $data['QA'] == 0 ? 'No Activity' : $data['QA']}}</td>
                             
@@ -92,7 +92,7 @@
 </html>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-<script>
+{{-- <script>
     $(document).ready(function() {
       
         var table = $("#project_utilization_table").DataTable({
@@ -134,4 +134,4 @@
         processAllRows();
     });
   
-</script>
+</script> --}}
