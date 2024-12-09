@@ -1388,31 +1388,7 @@ class ProjectController extends Controller
                             ->whereNotNull('QA_emp_id')
                             ->distinct('QA_emp_id')
                             ->count('QA_emp_id'); 
-                            GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
-                            GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
-                             $arCacheKey = 'project_' . str_replace(',', '_', $projectIds) . '_ar_count';
-                             $qaCacheKey = 'project_' . str_replace(',', '_', $projectIds) . '_qa_count';      
-                             $totalAr = Cache::get($arCacheKey, 0);
-                             $totalQA = Cache::get($qaCacheKey, 0);
-                             $loggedResolvAR = 0;$totalARCount = 0;
-                             foreach($totalAr['totalArList'] as $key => $arList){          
-                                 if($arList['client_id'] == $project['id'] && $arList['assigned_people'] != null){
-                                     $totalARCount += 1;
-                                 $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
-                                                     ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                                                     ->distinct('user_id')
-                                                     ->count();
-                                 }
-                             }
-                             $loggedResolvQA = 0;
-                             foreach($totalQA['totalQAList'] as $key => $qaList){    
-                                 if($qaList['client_id'] == $project['id'] && $qaList['assigned_people'] != null){
-                                 $loggedResolvQA +=  EmployeeLogin::where('user_id', $qaList['assigned_people'])
-                                                     ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                                                     ->distinct('user_id')
-                                                     ->count();
-                                 }
-                             }
+                           
                             $projectsPending[] = [
                                 'project' => $project['client_name'] . '-' . $subProject,
                                 'Chats' => $aCount,
@@ -1420,10 +1396,7 @@ class ProjectController extends Controller
                                 'QA' => $qCount,
                                 'prodcution_ar' => $productionARCount,
                                 'prodcution_qa' => $productionQACount,
-                                'project_id' => $project['id'],                           
-                                'total_ar' => $totalARCount,                          
-                                'logged_resolv_ar' => $loggedResolvAR,
-                                'logged_resolv_qa' => $loggedResolvQA,
+                                'project_id' => $project['id'],   
                             ];
                             $projectIds[] = $project['id'];
                         }
@@ -1431,6 +1404,38 @@ class ProjectController extends Controller
                 }
                 // return ['data' => $projectData, 'ids' => $project_id];
             });
+            foreach($projectsPending as $data) {
+                GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
+                GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
+                $arCacheKey = 'project_' . str_replace(',', '_', $projectIds) . '_ar_count';
+                $qaCacheKey = 'project_' . str_replace(',', '_', $projectIds) . '_qa_count';      
+                $totalAr = Cache::get($arCacheKey, 0);
+                $totalQA = Cache::get($qaCacheKey, 0);
+                $loggedResolvAR = 0;$totalARCount = 0;
+                foreach($totalAr['totalArList'] as $key => $arList){          
+                    if($arList['client_id'] == $data['project_id'] && $arList['assigned_people'] != null){
+                        $totalARCount += 1;
+                    $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
+                                        ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                        ->distinct('user_id')
+                                        ->count();
+                    }
+                }
+                $loggedResolvQA = 0;
+                foreach($totalQA['totalQAList'] as $key => $qaList){    
+                    if($qaList['client_id'] == $data['project_id'] && $qaList['assigned_people'] != null){
+                    $loggedResolvQA +=  EmployeeLogin::where('user_id', $qaList['assigned_people'])
+                                        ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                        ->distinct('user_id')
+                                        ->count();
+                    }
+                }
+                $projectsPending[] = [
+                   'total_ar' => $totalARCount,
+                    'logged_resolv_ar' => $loggedResolvAR,
+                    'logged_resolv_qa' => $loggedResolvQA,
+                ];
+            }
             Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $projectsPending, $yesterday,$totalAr,$totalQA,$yesterDayStartDate,$yesterDayEndDate,$projectIds));
     
             Log::info('ProjectWorkMail executed successfully.');
