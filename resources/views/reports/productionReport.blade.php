@@ -100,88 +100,63 @@
                             <th>Achieved Target</th>
                         </tr>
                     </thead>
+                 
                     <tbody>
-                        @if (!empty($workingDates) && isset($productionReportArray))
-                        @foreach ($workingDates as $date)
-                        {{-- @if (isset($productionReportArray)) --}}
-                            @foreach ($productionReportArray as $data)
-                                @php
-                                    if ($projectId != null) {
-                                        $projectName = App\Models\project::where('project_id', $projectId)->first();
-                                    } else {
-                                        $projectName = '--';
-                                    }
-                                    if ($subProjectId != null && $projectId != null) {
-                                        $subProjectName = App\Models\subproject::where('project_id', $projectId)
-                                            ->where('sub_project_id', $subProjectId)
-                                            ->first();
-                                    } else {
-                                        $subProjectName = '--';
-                                    }
-                                    if ($subProjectId != null && $projectId != null) {
-                                        $subProjectName = App\Models\subproject::where('project_id', $projectId)
-                                            ->where('sub_project_id', $subProjectId)
-                                            ->first();
-                                    } else {
-                                        $subProjectName = '--';
-                                    }
-                                   
-                                    $activity = 'RCM - FU';
-                                    $subActivity = 'Calling';
-                                    if (
-                                        $subProjectId != null &&
-                                        $projectId != null &&
-                                        $activity != null &&
-                                        $subActivity != null
-                                    ) {
-                                        $target = App\Models\ProjectTargetSettings::where([
-                                            'project_id' => $projectId,
-                                            'sub_project_id' => $subProjectId,
-                                            'activity' => $activity,
-                                            'sub_activity' => $subActivity,
-                                        ])->first('target_per_day');
-                                    } else {
-                                        $target = '--';
-                                    }
-                                    
-                                @endphp
-                                {{-- <tr>
-                                    <td>{{ $data['CE_emp_id'] }}
-                                    </td>
-                                    <td>{{ $arName }}
-                                    </td>
-                                    <td>{{ $projectName == '--' || $projectName == null ? '--' : $projectName->aims_project_name }}
-                                    </td>
-                                    <td>{{ $subProjectName == '--' || $subProjectName == null ? '--' : $subProjectName->sub_project_name }}
-                                    </td>
-                                    <td>{{ $subProjectName == '--' || $subProjectName == null ? '--' : $subProjectName->sub_project_name }}
-                                    </td>
-                                    <td>--</td>
-                                    <td>--</td>
-                                    <td>{{ $target  != null ?  round($target->target_per_day/8,2) : '--' }}</td>
-                                    <td>{{ $target != null ? $target->target_per_day : '--' }}</td>                                  
-                                    <td>--</td>
-                                    <td>--</td>
-
-                                </tr> --}}
-                                {{-- @if (isset($data['working_date']))
-                                @foreach ($data['working_date'] as $date) --}}
-                                
-                                    <tr>
-                                        <td>{{ $data['emp_id'] }}</td>
-                                        <td>{{ $data['arName']  }}</td>
-                                        <td>{{ $projectName ? $projectName->aims_project_name : '--' }}</td>
-                                        <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
-                                        <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
-                                        <td>{{ $date }}</td>
-                                        <td>--</td>
-                                        <td>{{ $target ? round($target->target_per_day / 8, 2) : '--' }}</td>
+                        @if (!empty($finalData))
+                        @php
+                        if ($projectId != null) {
+                            $projectName = App\Models\project::where('project_id', $projectId)->first();
+                        } else {
+                            $projectName = '--';
+                        }
+                        if ($subProjectId != null && $projectId != null) {
+                            $subProjectName = App\Models\subproject::where('project_id', $projectId)
+                                ->where('sub_project_id', $subProjectId)
+                                ->first();
+                        } else {
+                            $subProjectName = '--';
+                        }
+                        if ($subProjectId != null && $projectId != null) {
+                            $subProjectName = App\Models\subproject::where('project_id', $projectId)
+                                ->where('sub_project_id', $subProjectId)
+                                ->first();
+                        } else {
+                            $subProjectName = '--';
+                        }
+                       
+                        $activity = 'RCM - FU';
+                        $subActivity = 'Calling';
+                        if (
+                            $subProjectId != null &&
+                            $projectId != null &&
+                            $activity != null &&
+                            $subActivity != null
+                        ) {
+                            $target = App\Models\ProjectTargetSettings::where([
+                                'project_id' => $projectId,
+                                'sub_project_id' => $subProjectId,
+                                'activity' => $activity,
+                                'sub_activity' => $subActivity,
+                            ])->first('target_per_day');
+                        } else {
+                            $target = '--';
+                        }
+                        
+                    @endphp
+                            @foreach ($finalData as $data)
+                                <tr>
+                                    <td>{{ $data['emp_id'] }}</td>
+                                    <td>{{ $data['emp_name'] }}</td>
+                                    <td>{{ $projectName ? $projectName->aims_project_name : '--' }}</td>
+                                    <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
+                                    <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
+                                    <td>{{ $data['date'] }}</td>
+                                    <td>--</td> {{-- Working Hours --}}
+                                    <td>{{ $target ? round($target->target_per_day / 8, 2) : '--' }}</td>
                                         <td>{{ $target ? $target->target_per_day : '--' }}</td>
-                                        <td>--</td>
-                                        <td>--</td>
-                                    </tr>
-                                @endforeach
-                            {{-- @endif --}}
+                                    <td>--</td> {{-- Production Count --}}
+                                    <td>--</td> {{-- Achieved Target --}}
+                                </tr>
                             @endforeach
                         @endif
                     </tbody>
