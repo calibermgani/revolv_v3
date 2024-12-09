@@ -542,7 +542,7 @@ class ReportsController extends Controller
                 if($request->work_date) {
                     $workDate = $request->work_date;
                 }
-                $productionReportList = collect();
+                $productionReportList = collect(); $productionReporArray =[];
                 if($request->project_id && $request->sub_project_id) {
                     $decodedClientName = Helpers::projectName($request->project_id)->project_name;
                     $decodedsubProjectName = $request->sub_project_id == null ? 'project' :Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
@@ -553,11 +553,11 @@ class ReportsController extends Controller
                         $productionReportList = $modelClass::select('CE_emp_id')->where('chart_status','CE_Completed')->groupBy('CE_emp_id')->get();
                     }
                     foreach ($productionReportList as $data) {   
-                        $productionReportList['arName'][] = $data['CE_emp_id'] != null
+                        $productionReporArray['arName'][] = $data['CE_emp_id'] != null
                         ? Helpers::getUserNameByEmpId($data['CE_emp_id'])
                         : '--';
                     }
-                }dd($productionReportList);
+                }dd($productionReportList,$productionReporArray);
                 
                 $work_date = $request->work_date;
                 $workingDates = [];
