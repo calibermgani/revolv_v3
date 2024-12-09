@@ -92,9 +92,10 @@
                             <th>Project</th>
                             <th>Sub Project</th>
                             <th>Scope</th>
-                            <th>Target</th>
-                            <th>Per Hour target</th>
+                            <th>Working Date</th>
                             <th>Working Hrs</th>
+                            <th>Target</th>
+                            <th>Per Hour target</th>                            
                             <th>Production Count</th>
                             <th>Achieved Target</th>
                         </tr>
@@ -122,10 +123,7 @@
                                     } else {
                                         $subProjectName = '--';
                                     }
-                                    $arName =
-                                        $data['CE_emp_id'] != null
-                                            ? App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['CE_emp_id'])
-                                            : '--';
+                                   
                                     $activity = 'RCM - FU';
                                     $subActivity = 'Calling';
                                     if (
@@ -143,9 +141,17 @@
                                     } else {
                                         $target = '--';
                                     }
-
+                                    if (isset($work_date) && !empty($work_date)) {
+                                        $work_date = explode(' - ', $request->work_date);
+                                        $start_date = date('Y-m-d 17:00:00', strtotime($work_date[0]));
+                                        $end_date = date('Y-m-d 09:00:00', strtotime($work_date[1] . ' +1 day'));
+                                    }else{
+                                        $start_date = "";
+                                        $end_date = "";
+                                    }
+                
                                 @endphp
-                                <tr>
+                                {{-- <tr>
                                     <td>{{ $data['CE_emp_id'] }}
                                     </td>
                                     <td>{{ $arName }}
@@ -156,13 +162,31 @@
                                     </td>
                                     <td>{{ $subProjectName == '--' || $subProjectName == null ? '--' : $subProjectName->sub_project_name }}
                                     </td>
-                                    <td>{{ $target  != null ?  round($target->target_per_day/8,2) : '--' }}</td>
-                                    <td>{{ $target != null ? $target->target_per_day : '--' }}</td>
                                     <td>--</td>
+                                    <td>--</td>
+                                    <td>{{ $target  != null ?  round($target->target_per_day/8,2) : '--' }}</td>
+                                    <td>{{ $target != null ? $target->target_per_day : '--' }}</td>                                  
                                     <td>--</td>
                                     <td>--</td>
 
-                                </tr>
+                                </tr> --}}
+                                @if (isset($data['working_date']))
+                                @foreach ($data['working_date'] as $date)
+                                    <tr>
+                                        <td>{{ $data['emp_id'] }}</td>
+                                        <td>{{ $data['arName']  }}</td>
+                                        <td>{{ $projectName ? $projectName->aims_project_name : '--' }}</td>
+                                        <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
+                                        <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
+                                        <td>{{ $date }}</td>
+                                        <td>--</td>
+                                        <td>{{ $target ? round($target->target_per_day / 8, 2) : '--' }}</td>
+                                        <td>{{ $target ? $target->target_per_day : '--' }}</td>
+                                        <td>--</td>
+                                        <td>--</td>
+                                    </tr>
+                                @endforeach
+                            @endif
                             @endforeach
                         @endif
                     </tbody>

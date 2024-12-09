@@ -583,7 +583,7 @@ class ReportsController extends Controller
                     foreach ($productionReporArray as &$record) {
                         $record['working_date'][] = $date;
                     }
-                }dd($record,$productionReporArray);
+                }
                 
                 return view('reports.productionReport', compact('coderList', 'productionReportList','projectId','subProjectId','workDate'));
             } catch (\Exception $e) {
