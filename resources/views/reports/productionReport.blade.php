@@ -115,15 +115,39 @@
                                     } else {
                                         $subProjectName = '--';
                                     }
-                                    // $coderName =
-                                    //     $data['CE_emp_id'] != null
-                                    //         ? App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['CE_emp_id'])
-                                    //         : '--';
+                                    if ($subProjectId != null && $projectId != null) {
+                                        $subProjectName = App\Models\subproject::where('project_id', $projectId)
+                                            ->where('sub_project_id', $subProjectId)
+                                            ->first();
+                                    } else {
+                                        $subProjectName = '--';
+                                    }
+                                    $arName =
+                                        $data['CE_emp_id'] != null
+                                            ? App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['CE_emp_id'])
+                                            : '--';
+                                    $activity = 'RCM - FU';
+                                    $subActivity = 'Calling';
+                                    if (
+                                        $subProjectId != null &&
+                                        $projectId != null &&
+                                        $activity != null &&
+                                        $subActivity != null
+                                    ) {
+                                        $target = App\Models\ProjectTargetSettings::where([
+                                            'project_id' => $projectId,
+                                            'sub_project_id' => $subProjectId,
+                                            'activity' => $activity,
+                                            'sub_activity' => $subActivity,
+                                        ])->first('target_per_day');
+                                    } else {
+                                        $target = '--';
+                                    }
                                 @endphp
                                 <tr>
                                     <td>{{ $data['CE_emp_id'] }}
                                     </td>
-                                    <td>{{ $data['CE_emp_id'] }}
+                                    <td>{{ $arName }}
                                     </td>
                                     <td>{{ $projectName == '--' || $projectName == null ? '--' : $projectName->aims_project_name }}
                                     </td>
@@ -131,8 +155,8 @@
                                     </td>
                                     <td>{{ $subProjectName == '--' || $subProjectName == null ? '--' : $subProjectName->sub_project_name }}
                                     </td>
-                                    <td>--</td>
-                                    <td>--</td>
+                                    <td>{{ $target }}</td>
+                                    <td>{{ $target }}</td>
                                     <td>--</td>
                                     <td>--</td>
                                     <td>--</td>
