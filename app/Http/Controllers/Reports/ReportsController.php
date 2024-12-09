@@ -550,7 +550,7 @@ class ReportsController extends Controller
                     $modelName = Str::studly($table_name);
                     $modelClass = "App\\Models\\" . $modelName."Datas";
                     if (class_exists($modelClass)) {
-                        $productionReportList = $modelClass::get();
+                        $productionReportList = $modelClass::get();dd($modelClass,$productionReportList);
                     }
                 }
                 if (isset($request->work_date) && !empty($request->work_date)) {
