@@ -143,7 +143,7 @@
                                     } else {
                                         $target = '--';
                                     }
-                                    dd($target);
+                                    dd($target,$projectId,$subProjectId,$activity,$subActivity);
                                 @endphp
                                 <tr>
                                     <td>{{ $data['CE_emp_id'] }}
