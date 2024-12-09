@@ -103,12 +103,12 @@
                         @if (isset($productionReportList))
                             @foreach ($productionReportList as $data)
                                 @php
-                                    if ($data['project_id'] != null) {
+                                    if ($projectId != null) {
                                         $projectName = App\Models\project::where('project_id', $projectId)->first();
                                     } else {
                                         $projectName = '--';
                                     }
-                                    if ($data['sub_project_id'] != null && $data['project_id'] != null) {
+                                    if ($subProjectId != null && $projectId != null) {
                                         $subProjectName = App\Models\subproject::where('project_id', $projectId)
                                             ->where('sub_project_id', $subProjectId)
                                             ->first();
@@ -131,11 +131,11 @@
                                     </td>
                                     <td>{{ $subProjectName == '--' || $subProjectName == null ? '--' : $subProjectName->sub_project_name }}
                                     </td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td>--</td>
+                                    <td>--</td>
+                                    <td>--</td>
+                                    <td>--</td>
+                                    <td>--</td>
 
                                 </tr>
                             @endforeach
