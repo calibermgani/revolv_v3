@@ -144,6 +144,9 @@
                         
                     @endphp
                             @foreach ($finalData as $data)
+                            @php
+                            dd($data);
+                            @endphp
                                 <tr>
                                     <td>{{ $data['emp_id'] }}</td>
                                     <td>{{ $data['emp_name'] }}</td>
