@@ -542,15 +542,15 @@ class ReportsController extends Controller
                 if($request->work_date) {
                     $workDate = $request->work_date;
                 }
-                $decodedClientName = Helpers::projectName($request->project_id)->project_name;
-                $decodedsubProjectName = $request->sub_project_id == null ? 'project' :Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
-                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');   
-                $modelName = Str::studly($table_name);
-                $modelClass = "App\\Models\\" . $modelName."Datas";
+                // $decodedClientName = Helpers::projectName($request->project_id)->project_name;
+                // $decodedsubProjectName = $request->sub_project_id == null ? 'project' :Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
+                // $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');   
+                // $modelName = Str::studly($table_name);
+                // $modelClass = "App\\Models\\" . $modelName."Datas";
                 $productionReportList = collect();
-                if (class_exists($modelClass)) {
-                       $productionReportList = $modelClass::get();
-                }
+                // if (class_exists($modelClass)) {
+                //        $productionReportList = $modelClass::get();
+                // }
                 if (isset($request->work_date) && !empty($request->work_date)) {
                     $work_date = explode(' - ', $request->work_date);
                     $start_date = date('Y-m-d 17:00:00', strtotime($work_date[0]));
