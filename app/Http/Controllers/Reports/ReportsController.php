@@ -593,6 +593,7 @@ class ReportsController extends Controller
                 // Combine dates with employees
                 foreach ($workingDates as $date) {
                     foreach ($productionReportArray as $employee) {
+                        dd($employee);
                         $finalData[] = [
                             'date' => $date,
                             'emp_id' => $employee->emp_id,
