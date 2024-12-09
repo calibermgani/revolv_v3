@@ -100,6 +100,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('adams_county_regional_medical_center_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@adamsCountyRegionalMedicalCenterArDuplicates');
     Route::any('lynne_alba_speech_therapy_solutions_ar', 'App\Http\Controllers\ProjectAutomationController@lynneAlbaSpeechTherapySolutionsAr');
     Route::any('lynne_alba_speech_therapy_solutions_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@lynneAlbaSpeechTherapySolutionsArDuplicates');
+    Route::any('marion_eye_center_optical_ar', 'App\Http\Controllers\ProjectAutomationController@MarionEyeCenterOpticalAR');
+    Route::any('marion_eye_center_optical_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@MarionEyeCenterOpticalARArDuplicates');
     
     
 
