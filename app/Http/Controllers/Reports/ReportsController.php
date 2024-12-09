@@ -578,12 +578,12 @@ class ReportsController extends Controller
                 }
                 
                 // Process your production report data
-                $productionReportList = []; // Replace this with your actual data
+         
                 foreach ($workingDates as $date) {
-                    foreach ($productionReportList as &$record) {
+                    foreach ($productionReporArray as &$record) {
                         $record['working_date'][] = $date;
                     }
-                }
+                }dd($record,$productionReporArray);
                 
                 return view('reports.productionReport', compact('coderList', 'productionReportList','projectId','subProjectId','workDate'));
             } catch (\Exception $e) {
