@@ -92,8 +92,8 @@
                             <th>Project</th>
                             <th>Sub Project</th>
                             <th>Scope</th>
-                            <th>Working Date</th>
-                            <th>Working Hrs</th>
+                            <th>Worked Date</th>
+                            <th>Worked Hrs</th>
                             <th>Target</th>
                             <th>Per Hour target</th>                            
                             <th>Production Count</th>
