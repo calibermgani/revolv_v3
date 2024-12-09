@@ -87,12 +87,13 @@
                 <table class="table table-separate table-head-custom no-footer dtr-column " id="prodcution_report_table">
                     <thead>
                         <tr>
+                            <th>Worked Date</th>
                             <th>Emp Id</th>
                             <th>Emp Name</th>
                             <th>Project</th>
                             <th>Sub Project</th>
                             <th>Scope</th>
-                            <th>Worked Date</th>
+                           
                             <th>Worked Hrs</th>
                             <th>Target</th>
                             <th>Per Hour target</th>                            
@@ -145,12 +146,13 @@
                     @endphp
                             @foreach ($finalData as $data)
                                 <tr>
+                                    <td>{{ $data['date'] }}</td>
                                     <td>{{ $data['emp_id'] }}</td>
                                     <td>{{ $data['emp_name'] }}</td>
                                     <td>{{ $projectName ? $projectName->aims_project_name : '--' }}</td>
                                     <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
                                     <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
-                                    <td>{{ $data['date'] }}</td>
+                                 
                                     <td>--</td> {{-- Working Hours --}}
                                     <td>{{ $target ? round($target->target_per_day / 8, 2) : '--' }}</td>
                                         <td>{{ $target ? $target->target_per_day : '--' }}</td>
