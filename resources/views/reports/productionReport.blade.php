@@ -156,7 +156,7 @@
                                     </td>
                                     <td>{{ $subProjectName == '--' || $subProjectName == null ? '--' : $subProjectName->sub_project_name }}
                                     </td>
-                                    <td>{{ $target  != null ? $target->target_per_day : '--' }}</td>
+                                    <td>{{ $target  != null ? $target->target_per_day/8 : '--' }}</td>
                                     <td>{{ $target != null ? $target->target_per_day : '--' }}</td>
                                     <td>--</td>
                                     <td>--</td>
