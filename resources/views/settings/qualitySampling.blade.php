@@ -292,7 +292,7 @@
                     var sub_project_id = $('#sub_project_list');
                     var coder_id = $('#coder_id');
                      var inputTypeValue = 0;
-                    if (project_id.val() == '' || qa_id.val() == '' || qa_percentage.val() == '' || sub_project_id.val == "") {
+                    if (project_id.val() == '' || qa_id.val() == '' || qa_percentage.val() == '' || sub_project_id.val() == "") {
                         if (project_id.val() == '') {
                             project_id.next('.select2').find(".select2-selection").css('border-color', 'red');
                         } else {
