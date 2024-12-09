@@ -101,7 +101,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if (!empty($work_dates) && isset($productionReportList))
+                        @if (!empty($work_dates) && isset($productionReportArray))
                         @foreach ($work_dates as $date)
                         {{-- @if (isset($productionReportArray)) --}}
                             @foreach ($productionReportArray as $data)
