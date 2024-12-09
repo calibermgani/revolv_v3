@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
 use App\Models\InventoryErrorLogs;
 use Carbon\Carbon;
+use App\Models\ProjectTargetSettings;
 class ReportsController extends Controller
 {
     public function reporstIndex(){
@@ -511,4 +512,74 @@ class ReportsController extends Controller
             return redirect('/');
         }
     }
+
+   
+    public function productionReports(Request $request)
+    {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
+            try {
+                $payload = [
+                    'token' => '1a32e71a46317b9cc6feb7388238c95d'
+                ];
+                $client = new Client(['verify' => false]);
+                $response = $client->request('POST',  config("constants.PRO_CODE_URL") . '/api/v1_users/get_quality_ar_emp_list', [
+                    'json' => $payload
+                ]);
+                if ($response->getStatusCode() == 200) {
+                    $data = json_decode($response->getBody(), true);
+                } else {
+                    return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+                }
+                $coderList = $data['coderList'];                         
+                $qaSamplingList = 0;
+                $projectId = $subProjectId = $workDate = 0;
+                if($request->project_id) {
+                    $projectId = $request->project_id;
+                }
+                if($request->sub_project_id) {
+                    $subProjectId = $request->sub_project_id;
+                } 
+                if($request->work_date) {
+                    $workDate = $request->work_date;
+                }
+                $decodedClientName = Helpers::projectName($request->project_id)->project_name;
+                $decodedsubProjectName = $request->sub_project_id == null ? 'project' :Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
+                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');   
+                $modelName = Str::studly($table_name);
+                $modelClass = "App\\Models\\" . $modelName."Datas";
+                $productionReportList = collect();
+                if (class_exists($modelClass)) {
+                       $productionReportList = $modelClass::get();
+                }
+                if (isset($request->work_date) && !empty($request->work_date)) {
+                    $work_date = explode(' - ', $request->work_date);
+                    $start_date = date('Y-m-d 17:00:00', strtotime($work_date[0]));
+                    $end_date = date('Y-m-d 09:00:00', strtotime($work_date[1] . ' +1 day'));
+                }else{
+                    $start_date = "";
+                    $end_date = "";
+                }
+
+                return view('reports.productionReport', compact('coderList', 'productionReportList','projectId','subProjectId','workDate'));
+            } catch (\Exception $e) {
+                Log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
+    // public function productionReportSearch(Request $request)
+    // {
+    //     if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
+    //         try {
+    //             $data =  $request->all();
+
+    //             return redirect('report/production_reports' . '?parent=' . request()->parent . '&child=' . request()->child);
+    //         } catch (\Exception $e) {
+    //             Log::debug($e->getMessage());
+    //         }
+    //     } else {
+    //         return redirect('/');
+    //     }
+    // }
 }
