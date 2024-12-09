@@ -104,6 +104,7 @@
                     <tbody>
                         @if (!empty($finalData))
                         @php
+                        dd($finalData);
                         if ($projectId != null) {
                             $projectName = App\Models\project::where('project_id', $projectId)->first();
                         } else {
