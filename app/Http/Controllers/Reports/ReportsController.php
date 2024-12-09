@@ -575,15 +575,17 @@ class ReportsController extends Controller
                         }
                         $start_date->modify('+1 day');
                     }
+                } else {
+                    $work_dates = [];
                 }
                 
                 // Process your production report data
          
-                foreach ($workingDates as $date) {
-                    foreach ($productionReportArray as &$record) {
-                        $record['working_date'][] = $date;
-                    }
-                }
+                // foreach ($workingDates as $date) {
+                //     foreach ($productionReportArray as &$record) {
+                //         $record['working_date'][] = $date;
+                //     }
+                // }
                 
                 return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate'));
             } catch (\Exception $e) {

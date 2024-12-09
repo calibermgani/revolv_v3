@@ -101,7 +101,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if (isset($productionReportArray))
+                        @if (!empty($work_dates) && isset($productionReportList))
+                        @foreach ($work_dates as $date)
+                        {{-- @if (isset($productionReportArray)) --}}
                             @foreach ($productionReportArray as $data)
                                 @php
                                     if ($projectId != null) {
@@ -141,15 +143,7 @@
                                     } else {
                                         $target = '--';
                                     }
-                                    if (isset($work_date) && !empty($work_date)) {
-                                        $work_date = explode(' - ', $request->work_date);
-                                        $start_date = date('Y-m-d 17:00:00', strtotime($work_date[0]));
-                                        $end_date = date('Y-m-d 09:00:00', strtotime($work_date[1] . ' +1 day'));
-                                    }else{
-                                        $start_date = "";
-                                        $end_date = "";
-                                    }
-                
+                                    
                                 @endphp
                                 {{-- <tr>
                                     <td>{{ $data['CE_emp_id'] }}
@@ -170,8 +164,9 @@
                                     <td>--</td>
 
                                 </tr> --}}
-                                @if (isset($data['working_date']))
-                                @foreach ($data['working_date'] as $date)
+                                {{-- @if (isset($data['working_date']))
+                                @foreach ($data['working_date'] as $date) --}}
+                                
                                     <tr>
                                         <td>{{ $data['emp_id'] }}</td>
                                         <td>{{ $data['arName']  }}</td>
@@ -186,7 +181,7 @@
                                         <td>--</td>
                                     </tr>
                                 @endforeach
-                            @endif
+                            {{-- @endif --}}
                             @endforeach
                         @endif
                     </tbody>
