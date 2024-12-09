@@ -121,18 +121,18 @@
                                     } else {
                                         $subProjectName = '--';
                                     }
-                                    $coderName =
-                                        $data['CE_emp_id'] != null
-                                            ? App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['CE_emp_id'])
-                                            : '--';
+                                    // $coderName =
+                                    //     $data['CE_emp_id'] != null
+                                    //         ? App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['CE_emp_id'])
+                                    //         : '--';
                                 @endphp
                                 <tr>
                                     <td><input type="hidden"
                                             value={{ $data['CE_emp_id'] != null ? $data['CE_emp_id'] : null }}>{{ $data['CE_emp_id']}}
                                     </td>
                                     <td><input type="hidden"
-                                            value={{ $data['CE_emp_id'] != null ? $data['CE_emp_id'] : null }}>{{ $coderName == null ? '--' : $coderName }}
-                                    </td>
+                                        value={{ $data['CE_emp_id'] != null ? $data['CE_emp_id'] : null }}>{{ $data['CE_emp_id']}}
+                                </td>
                                     <td><input type="hidden"
                                             value={{ $data['project_id'] }}>{{ $projectName == '--' || $projectName == null ? '--' : $projectName->aims_project_name }}
                                     </td>
