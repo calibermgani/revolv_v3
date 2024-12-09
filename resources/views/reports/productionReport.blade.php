@@ -101,8 +101,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if (isset($productionReportList))
-                            @foreach ($productionReportList as $data)
+                        @if (isset($productionReportArray))
+                            @foreach ($productionReportArray as $data)
                                 @php
                                     if ($projectId != null) {
                                         $projectName = App\Models\project::where('project_id', $projectId)->first();

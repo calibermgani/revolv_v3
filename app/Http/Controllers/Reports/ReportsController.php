@@ -542,7 +542,7 @@ class ReportsController extends Controller
                 if($request->work_date) {
                     $workDate = $request->work_date;
                 }
-                $productionReportList = collect(); $productionReporArray =[];
+                $productionReportList = collect(); $productionReportArray =[];
                 if($request->project_id && $request->sub_project_id) {
                     $decodedClientName = Helpers::projectName($request->project_id)->project_name;
                     $decodedsubProjectName = $request->sub_project_id == null ? 'project' :Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
@@ -553,8 +553,8 @@ class ReportsController extends Controller
                         $productionReportList = $modelClass::select('CE_emp_id')->where('chart_status','CE_Completed')->groupBy('CE_emp_id')->get();
                     }
                     foreach ($productionReportList as $key => $data) {   
-                        $productionReporArray[$key]['emp_id']= $data['CE_emp_id'];
-                        $productionReporArray[$key]['arName']= $data['CE_emp_id'] != null
+                        $productionReportArray[$key]['emp_id']= $data['CE_emp_id'];
+                        $productionReportArray[$key]['arName']= $data['CE_emp_id'] != null
                         ? Helpers::getUserNameByEmpId($data['CE_emp_id'])
                         : '--';
                     }
@@ -580,12 +580,12 @@ class ReportsController extends Controller
                 // Process your production report data
          
                 foreach ($workingDates as $date) {
-                    foreach ($productionReporArray as &$record) {
+                    foreach ($productionReportArray as &$record) {
                         $record['working_date'][] = $date;
                     }
                 }
                 
-                return view('reports.productionReport', compact('coderList', 'productionReportList','projectId','subProjectId','workDate'));
+                return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate'));
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
             }
