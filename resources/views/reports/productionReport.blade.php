@@ -228,9 +228,10 @@
                     project_id = 0;
                     sub_project_id = 0;
                     work_date = 0;
-                    $('.daterange').val('');
+                    // $('.daterange').val('');
+                    $('#prodcution_report_table').DataTable().destroy();
                 });
-                console.log(subproject_id, 'subproject_id', project_id, work_date);
+                console.log(subproject_id, 'subproject_id', project_id, work_date,start,end);
 
                 if (subproject_id != 0) {
                     subProjectNameList(project_id, subproject_id);
