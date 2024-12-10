@@ -137,12 +137,7 @@
                                         $activity != null &&
                                         $subActivity != null
                                     ) {
-                                        $target = App\Models\ProjectTargetSettings::where([
-                                            'project_id' => $projectId,
-                                            'sub_project_id' => $subProjectId,
-                                            'activity' => $activity,
-                                            'sub_activity' => $subActivity,
-                                        ])->first();
+                                        $target ='--';
                                     } else {
                                         $target = '--';
                                     }
