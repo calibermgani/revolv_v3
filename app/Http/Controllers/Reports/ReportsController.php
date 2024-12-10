@@ -561,7 +561,7 @@ class ReportsController extends Controller
                         $productionReportArray[$key]['sub_activity']= $data['sub_activity'];
                     }
                 }
-                
+                dd($productionReportList);
                 $work_date = $request->work_date;
                 $workingDates = [];
                 if (isset($work_date) && !empty($work_date)) {
