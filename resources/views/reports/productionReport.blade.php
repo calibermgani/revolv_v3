@@ -156,8 +156,8 @@
                                     <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
                                     <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
                                     <td>--</td> {{-- Working Hours --}}
-                                    <td>{{$activity}}</td>
-                                    <td>{{$subActivity}}</td>
+                                    <td>{{ $data['activity']}}</td>
+                                    <td>{{$data['sub_activity']}}</td>
                                     <td>{{ $target !== '--' &&  $target !== null ? round((int)$target->target_per_day / 8, 2) : '--' }}</td>
                                     <td>{{ $target !== '--' &&  $target !== null ? $target->target_per_day : '--' }}</td>
                                     <td>{{$data['activity'] != NULL && $data['sub_activity'] != NULL ? $data['count'] : '--'}}</td> 
