@@ -550,13 +550,15 @@ class ReportsController extends Controller
                     $modelName = Str::studly($table_name);
                     $modelClass = "App\\Models\\" . $modelName."Datas";
                     if (class_exists($modelClass)) {
-                        $productionReportList = $modelClass::select('CE_emp_id')->where('chart_status','CE_Completed')->groupBy('CE_emp_id')->get();
+                        $productionReportList = $modelClass::where('chart_status','CE_Completed')->groupBy('CE_emp_id')->get();
                     }
                     foreach ($productionReportList as $key => $data) {   
                         $productionReportArray[$key]['emp_id']= $data['CE_emp_id'];
                         $productionReportArray[$key]['arName']= $data['CE_emp_id'] != null
                         ? Helpers::getUserNameByEmpId($data['CE_emp_id'])
                         : '--';
+                        $productionReportArray[$key]['activity']= $data['activity'];
+                        $productionReportArray[$key]['sub_activity']= $data['sub_activity'];
                     }
                 }
                 
@@ -597,6 +599,8 @@ class ReportsController extends Controller
                             'date' => $date,
                             'emp_id' => $employee['emp_id'],
                             'emp_name' => $employee['arName'],
+                            'activity' => $employee['activity'],
+                            'sub_activity' => $employee['sub_activity'],
                            
                         ];
                     }
