@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Schema;
 use App\Models\InventoryErrorLogs;
 use Carbon\Carbon;
 use App\Jobs\GetUserNameByEmpId;
+use Illuminate\Support\Facades\Cache;
 class ReportsController extends Controller
 {
     public function reporstIndex(){
@@ -564,8 +565,17 @@ class ReportsController extends Controller
                         // $productionReportArray[$key]['arName']= $data['CE_emp_id'] != null
                         // ? Helpers::getUserNameByEmpId($data['CE_emp_id'])
                         // : '--';
-                        $test = GetUserNameByEmpId::dispatch($data['CE_emp_id'])->delay(now()->addSeconds(5));dd($test);
-                         $productionReportArray[$key]['arName']= $data['CE_emp_id'] ;
+                         GetUserNameByEmpId::dispatch($data['CE_emp_id'])->delay(now()->addSeconds(5));
+                            $empName = null;
+                            $cacheKey = "emp_name_{$data['CE_emp_id']}";
+                            for ($i = 0; $i < 10; $i++) { // Wait up to 10 seconds
+                                if (Cache::has($cacheKey)) {
+                                    $empName = Cache::get($cacheKey);
+                                    break;
+                                }
+                                sleep(1); // Pause for 1 second between checks
+                            }
+                         $productionReportArray[$key]['arName']= $empName ;
                         $productionReportArray[$key]['activity']= $data['activity'];
                         $productionReportArray[$key]['sub_activity']= $data['sub_activity'];
                         $productionReportArray[$key]['coder_work_date']= $data['coder_work_date'];

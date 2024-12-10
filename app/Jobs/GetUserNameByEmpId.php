@@ -36,8 +36,9 @@ class GetUserNameByEmpId implements ShouldQueue
             'id' => $this->empId,
         ]); 
         
+        Cache::put("emp_name_{$this->empId}", $data, now()->addMinutes(10));
+
         Log::info("Emp Name", ['data' => $data]);
-        dd($data);
     
     }
 }
