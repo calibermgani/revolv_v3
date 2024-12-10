@@ -1,6 +1,6 @@
 @extends('layouts.app3')
 @section('content')
-    <div class="card card-custom custom-card" id="quality_sampling">
+    <div class="card card-custom custom-card" id="page-loader">
         <div class="card-body pt-0 pb-2 pl-8" style="background-color: #ffffff !important">
             <div class="row mr-0 ml-0">
                 <div class="col-6 mt-4 pt-0 pb-0 pl-0 pr-0">
@@ -83,7 +83,7 @@
             </div>
             {!! Form::close() !!}
 
-            <div class="table-responsive pb-4" id="page-loader">
+            <div class="table-responsive pb-4">
                 <table class="table table-separate table-head-custom no-footer dtr-column " id="prodcution_report_table">
                     <thead>
                         <tr>
