@@ -551,7 +551,7 @@ class ReportsController extends Controller
                     $modelClass = "App\\Models\\" . $modelName."Datas";
                     if (class_exists($modelClass)) {
                         // $productionReportList = $modelClass::select('CE_emp_id')->where('chart_status','CE_Completed')->groupBy('CE_emp_id')->get();
-                        $productionReportList =$modelClass::select('CE_emp_id', 'activity', 'sub_activity', 'coder_work_date',DB::raw('COUNT(*) as count'))
+                        $productionReportList =$modelClass::select('CE_emp_id', 'activity', 'sub_activity', 'coder_work_date',DB::raw('COUNT(*) as count'))->where('chart_status','CE_Completed')
                             ->groupBy('CE_emp_id', 'activity', 'sub_activity','coder_work_date')
                             ->orderBy('CE_emp_id')
                             ->orderBy('activity')
@@ -568,13 +568,14 @@ class ReportsController extends Controller
                         $productionReportArray[$key]['sub_activity']= $data['sub_activity'];
                         $productionReportArray[$key]['coder_work_date']= $data['coder_work_date'];
                         $productionReportArray[$key]['count']= $data['count'];
-                        $workedRecords = $modelClass::where([
+                        $productionReportArray[$key]['workedRecords']= $modelClass::where([
                             'activity' => $data['activity'],
                             'sub_activity' => $data['sub_activity'],
                             'CE_emp_id' => $data['CE_emp_id'],
-                            'coder_work_date' => $data['coder_work_date']
+                            'coder_work_date' => $data['coder_work_date'],
+                            'chart_status'=>'CE_Completed'
                         ])->pluck('id');
-                        $productionReportArray[$key]['workedRecords']= $data['workedRecords'];
+                       
                     }
                 }
              
