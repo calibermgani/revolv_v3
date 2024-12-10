@@ -35,8 +35,9 @@ class GetUserNameByEmpId implements ShouldQueue
         $data = app()->call('App\Http\Helper\Admin\Helpers@getUserNameByEmpId', [
             'id' => $this->empId,
         ]); 
+        
         Log::info("Emp Name", ['data' => $data]);
-        dd($date);
+        dd($data);
     
     }
 }

@@ -564,7 +564,7 @@ class ReportsController extends Controller
                         // $productionReportArray[$key]['arName']= $data['CE_emp_id'] != null
                         // ? Helpers::getUserNameByEmpId($data['CE_emp_id'])
                         // : '--';
-                        GetUserNameByEmpId::dispatch($data['CE_emp_id'])->delay(now()->addSeconds(5));
+                        $test = GetUserNameByEmpId::dispatch($data['CE_emp_id'])->delay(now()->addSeconds(5));dd($test);
                          $productionReportArray[$key]['arName']= $data['CE_emp_id'] ;
                         $productionReportArray[$key]['activity']= $data['activity'];
                         $productionReportArray[$key]['sub_activity']= $data['sub_activity'];
