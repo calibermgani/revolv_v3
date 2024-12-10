@@ -716,7 +716,7 @@ class ReportsController extends Controller
     // }
     public function productionReports(Request $request)
     {
-        $productionReportArray = $finalData = [];$projectId = $subProjectId = $workDate = $workingDates = 0;
+        $productionReportArray = $finalData = [];$projectId = $subProjectId = $workDate = $workingDates = $coderList =0;
         return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','workingDates','finalData'));
         return view('reports.productionReport');
     }
