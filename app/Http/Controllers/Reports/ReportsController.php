@@ -551,7 +551,7 @@ class ReportsController extends Controller
                     $modelClass = "App\\Models\\" . $modelName."Datas";
                     if (class_exists($modelClass)) {
                         // $productionReportList = $modelClass::select('CE_emp_id')->where('chart_status','CE_Completed')->groupBy('CE_emp_id')->get();
-                        $data =$modelClass::select('emp_id', 'activity', 'sub_activity', DB::raw('COUNT(*) as count'))
+                        $productionReportList =$modelClass::select('emp_id', 'activity', 'sub_activity', DB::raw('COUNT(*) as count'))
                             ->groupBy('emp_id', 'activity', 'sub_activity')
                             ->orderBy('emp_id')
                             ->orderBy('activity')
