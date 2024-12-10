@@ -128,6 +128,7 @@
                             @endphp
                             @foreach ($finalData as $data)
                                 @php
+                                dd($data);
                                     $activity =  $data['activity'];
                                     $subActivity =  $data['sub_activity'];
                                     if (
@@ -144,7 +145,7 @@
                                         ])->first();
                                     } else {
                                         $target = '--';
-                                    }dd($data);
+                                    }
                                     $workTimes = App\Models\CallerChartsWorkLogs::
                                             ->where([
                                                 'project_id' => $projectId,
