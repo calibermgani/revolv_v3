@@ -152,13 +152,14 @@
                                             'project_id' => $projectId,
                                             'sub_project_id' => $subProjectId,
                                             'emp_id' => $data['emp_id'],
+                                             'record_status'=>'CE_Completed'
                                         ])
                                             ->whereDate('updated_at', $data['date'])
                                             ->whereIn('record_id', $workedRecords)
                                             ->pluck('work_time');
                                     } else {
                                         $workTimes = collect(); // Handle cases where workedRecords is empty or invalid.
-                                    }dd($workTimes,$data['workedRecords']);
+                                    }dd($workTimes,$workedRecords);
 
                                     $totalSeconds = $workTimes->reduce(function ($carry, $time) {
                                         [$hours, $minutes, $seconds] = explode(':', $time);
