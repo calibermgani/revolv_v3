@@ -145,8 +145,8 @@
                                         // $target = $targetList->target_per_hour;
                                     } else {
                                         $target = '--';
-                                    }
-                                    $workTimes = App\Models\CallerChartsWorkLogs::select('work_time')
+                                    }dd($data);
+                                    $workTimes = App\Models\CallerChartsWorkLogs::
                                             ->where([
                                                 'project_id' => $projectId,
                                                 'sub_project_id' => $subProjectId,
