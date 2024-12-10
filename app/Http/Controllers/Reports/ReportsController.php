@@ -571,7 +571,7 @@ class ReportsController extends Controller
                         $workedRecords = $modelClass::where([
                             'activity' => $data['activity'],
                             'sub_activity' => $data['sub_activity'],
-                            'emp_id' => $data['emp_id'],
+                            'CE_emp_id' => $data['CE_emp_id'],
                             'coder_work_date' => $data['coder_work_date']
                         ])->pluck('id');
                         $productionReportArray[$key]['workHours'] = CallerChartsWorkLogs::where([
