@@ -154,7 +154,7 @@
                                     <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
                                     <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
                                     <td>--</td> {{-- Working Hours --}}
-                                    <td>{{ $target != '--' ? round($target->target_per_day / 8, 2) : '--' }}</td>
+                                    <td>{{ $target != '--' ? round((int)$target->target_per_day / 8, 2) : '--' }}</td>
                                     <td>{{ $target != '--' ? $target->target_per_day : '--' }}</td>
                                     <td>{{$data['activity'] != NULL && $data['sub_activity'] != NULL ? $data['count'] : '--'}}</td> 
                                     <td>{{$target != '--' ? $data['count']*100/$target->target_per_day : '--'}}</td> 
@@ -209,7 +209,7 @@
                 $('#prodcution_report_table').DataTable({
                     processing: true,
                     lengthChange: false,
-                    searching: false,
+                    searching: true,
                     pageLength: 20,
 
                 });
