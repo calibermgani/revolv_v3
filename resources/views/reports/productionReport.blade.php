@@ -228,7 +228,7 @@
                     project_id = 0;
                     sub_project_id = 0;
                     work_date = 0;
-                    $('.daterange').val('');
+                    // $('.daterange').val('');
                 });
                 console.log(subproject_id, 'subproject_id', project_id, work_date);
 
