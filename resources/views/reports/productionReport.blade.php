@@ -204,7 +204,7 @@
             $(document).ready(function() {
                 var start = moment().startOf('month');
                 var end = moment().endOf('month');
-                $('.daterange').attr("autocomplete", "off");
+                // $('.daterange').attr("autocomplete", "off");
                 $('.daterange').daterangepicker({
                     showOn: 'both',
                     startDate: start,
@@ -217,7 +217,7 @@
                             'month')]
                     }
                 });
-                $('.daterange').val('');
+                // $('.daterange').val('');
                 var work_date = @json($workDate);
                 if (work_date != 0) {
                     $('.daterange').val(work_date);
