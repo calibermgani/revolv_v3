@@ -561,9 +561,10 @@ class ReportsController extends Controller
                     }  
                     foreach ($productionReportList as $key => $data) {   
                         $productionReportArray[$key]['emp_id']= $data['CE_emp_id'];
-                        $productionReportArray[$key]['arName']= $data['CE_emp_id'] != null
-                        ? Helpers::getUserNameByEmpId($data['CE_emp_id'])
-                        : '--';
+                        // $productionReportArray[$key]['arName']= $data['CE_emp_id'] != null
+                        // ? Helpers::getUserNameByEmpId($data['CE_emp_id'])
+                        // : '--';
+                        $productionReportArray[$key]['arName']= $data['CE_emp_id'] ;
                         $productionReportArray[$key]['activity']= $data['activity'];
                         $productionReportArray[$key]['sub_activity']= $data['sub_activity'];
                         $productionReportArray[$key]['coder_work_date']= $data['coder_work_date'];
