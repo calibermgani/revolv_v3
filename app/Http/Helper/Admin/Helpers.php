@@ -728,4 +728,10 @@ class Helpers
 		$data = qaClassCatScope::where('status', 'Active')->pluck('qa_scope', 'id')->toArray();
 		return $data;
 	}
+	public static function resolvProjectList()
+	{
+		$projectIds = formConfiguration::groupby('project_id') ->pluck('project_id')->toArray();
+		$data =  project::where('status', 'Active')->whereIn('project_id',$projectIds)->pluck('aims_project_name', 'project_id')->prepend(trans('Select Project'), '')->toArray();
+		return $data;
+	}
 }
