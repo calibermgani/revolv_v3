@@ -575,7 +575,7 @@ class ReportsController extends Controller
                             'CE_emp_id' => $data['CE_emp_id'],
                             'coder_work_date' => $data['coder_work_date'],
                             'chart_status'=>'CE_Completed'
-                        ])->pluck('id');
+                        ])->pluck('id')->toArray();
                        
                     }
                 }
