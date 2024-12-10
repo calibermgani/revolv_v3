@@ -83,7 +83,7 @@
             </div>
             {!! Form::close() !!}
 
-            <div class="table-responsive pb-4">
+            <div class="table-responsive pb-4" id="page-loader">>
                 <table class="table table-separate table-head-custom no-footer dtr-column " id="prodcution_report_table">
                     <thead>
                         <tr>
@@ -236,7 +236,7 @@
                     subProjectNameList(project_id, subproject_id);
                 }
                 var subprojectCount;
-                var table =  $('#prodcution_report_table').DataTable({
+                var table = $('#prodcution_report_table').DataTable({
                     processing: true,
                     lengthChange: false,
                     clientSide: true,
@@ -323,6 +323,12 @@
                     if (inputTypeValue == 0) {
                         document.querySelector('#production_report_form').submit();
                     }
+                    KTApp.block('#page-loader', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Generating Report...',
+                    });
                 });
 
             });
