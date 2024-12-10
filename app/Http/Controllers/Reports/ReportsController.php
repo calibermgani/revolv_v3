@@ -551,11 +551,12 @@ class ReportsController extends Controller
                     $modelClass = "App\\Models\\" . $modelName."Datas";
                     if (class_exists($modelClass)) {
                         // $productionReportList = $modelClass::select('CE_emp_id')->where('chart_status','CE_Completed')->groupBy('CE_emp_id')->get();
-                        $productionReportList =$modelClass::select('CE_emp_id', 'activity', 'sub_activity', DB::raw('COUNT(*) as count'))
-                            ->groupBy('CE_emp_id', 'activity', 'sub_activity')
+                        $productionReportList =$modelClass::select('CE_emp_id', 'activity', 'sub_activity', 'coder_work_date',DB::raw('COUNT(*) as count'))
+                            ->groupBy('CE_emp_id', 'activity', 'sub_activity','coder_work_date')
                             ->orderBy('CE_emp_id')
                             ->orderBy('activity')
                             ->orderBy('sub_activity')
+                            ->orderBy('coder_work_date')
                             ->get();
                     }  
                     foreach ($productionReportList as $key => $data) {   
@@ -565,6 +566,7 @@ class ReportsController extends Controller
                         : '--';
                         $productionReportArray[$key]['activity']= $data['activity'];
                         $productionReportArray[$key]['sub_activity']= $data['sub_activity'];
+                        $productionReportArray[$key]['coder_work_date']= $data['coder_work_date'];
                         $productionReportArray[$key]['count']= $data['count'];
                     }
                 }
@@ -602,15 +604,17 @@ class ReportsController extends Controller
                 // Combine dates with employees
                 foreach ($workingDates as $date) {
                     foreach ($productionReportArray as $employee) {
-                        $finalData[] = [
-                            'date' => $date,
-                            'emp_id' => $employee['emp_id'],
-                            'emp_name' => $employee['arName'],
-                            'activity' => $employee['activity'],
-                            'sub_activity' => $employee['sub_activity'],
-                            'count' => $employee['count'],
-                           
-                        ];
+                        if($date ==  $employee['coder_work_date']) {
+                            $finalData[] = [
+                                'date' => $date,
+                                'emp_id' => $employee['emp_id'],
+                                'emp_name' => $employee['arName'],
+                                'activity' => $employee['activity'],
+                                'sub_activity' => $employee['sub_activity'],
+                                'count' => $employee['count'],
+                            
+                            ];
+                        }
                     }
                 }
                 return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','workingDates','finalData'));
