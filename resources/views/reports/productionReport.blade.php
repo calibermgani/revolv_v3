@@ -334,12 +334,13 @@
                         opacity: 0.1,
                         message: 'Generating Report...',
                     });
-                });
-                window.location.href = baseUrl + 'report/production_report_search' +
+                    window.location.href = baseUrl + 'report/production_report_search' +
                     "?parent=" +
                     getUrlVars()[
                         "parent"] +
                     "&child=" + getUrlVars()["child"];
+                });
+              
             });
         </script>
     @endpush
