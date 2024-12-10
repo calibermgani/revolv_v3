@@ -641,10 +641,8 @@ class ReportsController extends Controller
 
                         }
             
-                        return response()->json($productionReportArray);
-                    } else {
-                        return response()->json(['error' => 'Model not found'], 404);
-                    }
+                      
+                    } 
                 }
              
                 $work_date = $request->work_date;
