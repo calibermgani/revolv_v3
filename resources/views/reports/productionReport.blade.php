@@ -94,6 +94,8 @@
                             <th>Sub Project</th>
                             <th>Scope</th>
                             <th>Worked Hrs</th>
+                            <th>Activity</th>
+                            <th>Sub Activity</th>
                             <th>Target</th>
                             <th>Per Hour target</th>
                             <th>Production Count</th>
@@ -154,7 +156,8 @@
                                     <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
                                     <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
                                     <td>--</td> {{-- Working Hours --}}
-                          
+                                    <td>{{$activity}}</td>
+                                    <td>{{$subActivity}}</td>
                                     <td>{{ $target !== '--' &&  $target !== null ? round((int)$target->target_per_day / 8, 2) : '--' }}</td>
                                     <td>{{ $target !== '--' &&  $target !== null ? $target->target_per_day : '--' }}</td>
                                     <td>{{$data['activity'] != NULL && $data['sub_activity'] != NULL ? $data['count'] : '--'}}</td> 
