@@ -578,7 +578,7 @@ class ReportsController extends Controller
                             'project_id' => $projectId,
                             'sub_project_id' => $subProjectId,
                             'emp_id' => $data['emp_id']
-                        ])->whereDate('updated_at', $data['date'])->whereIn($workedRecords)->pluck('work_time');
+                        ])->whereDate('updated_at', $data['date'])->whereIn('record_id',$workedRecords)->pluck('work_time');
                     }
                 }
              
