@@ -17,7 +17,7 @@
                 </div>
             </div>
             {!! Form::open([
-                'url' => url('report/production_reports') . '?parent=' . request()->parent . '&child=' . request()->child,
+                'url' => url('report/production_report_search') . '?parent=' . request()->parent . '&child=' . request()->child,
                 'id' => 'production_report_form',
                 'class' => 'form',
                 'enctype' => 'multipart/form-data',
@@ -326,12 +326,8 @@
                         return false;
                     }
                     if (inputTypeValue == 0) {
-                        // document.querySelector('#production_report_form').submit();
-                        window.location.href = baseUrl + 'report/production_report_search' +
-                    "?parent=" +
-                    getUrlVars()[
-                        "parent"] +
-                    "&child=" + getUrlVars()["child"];
+                        document.querySelector('#production_report_form').submit();
+                     
                     }
                     KTApp.block('#page-loader', {
                         overlayColor: '#000000',
