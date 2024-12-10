@@ -144,7 +144,7 @@
                                     } else {
                                         $target = '--';
                                     }
-
+                                    dd($target);
                                 @endphp
                                 <tr>
                                     <td>{{ $data['date'] }}</td>
