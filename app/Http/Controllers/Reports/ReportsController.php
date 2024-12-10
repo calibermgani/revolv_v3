@@ -723,7 +723,7 @@ class ReportsController extends Controller
     public function productionReportSearch(Request $request)
     {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
-            try {dd($request->all());
+            try {
                 $payload = [
                     'token' => '1a32e71a46317b9cc6feb7388238c95d'
                 ];
