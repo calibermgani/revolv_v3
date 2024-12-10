@@ -242,6 +242,7 @@
                     clientSide: true,
                     searching: true,
                     pageLength: 20,
+                    order: [[0, 'desc']],
                     language: {
                         "search": '',
                         "searchPlaceholder": "   Search",
