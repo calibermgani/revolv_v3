@@ -154,7 +154,7 @@
                                             'emp_id' => $data['emp_id'],
                                              'record_status'=>'CE_Completed'
                                         ])
-                                            ->whereDate('updated_at', $data['date'])
+                                            // ->whereDate('updated_at', $data['date'])
                                             ->whereIn('record_id', $workedRecords)
                                             ->pluck('work_time');
                                     } else {
