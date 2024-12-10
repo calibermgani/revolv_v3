@@ -146,7 +146,7 @@
                                     } else {
                                         $target = '--';
                                     }
-                               
+                               dd($data);
                                         $totalSeconds = $data['workHours']->reduce(function ($carry, $time) {
                                             list($hours, $minutes, $seconds) = explode(':', $time);
                                             return $carry + ($hours * 3600) + ($minutes * 60) + $seconds;
