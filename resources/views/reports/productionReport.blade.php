@@ -145,14 +145,20 @@
                                     } else {
                                         $target = '--';
                                     }
-                                    $workTimes = App\Models\CallerChartsWorkLogs::where([
-                                        'project_id' => $projectId,
-                                        'sub_project_id' => $subProjectId,
-                                        'emp_id' => $data['emp_id'],
-                                    ])
-                                        ->whereDate('updated_at', $data['date'])
-                                        ->whereIn('record_id', $data['workedRecords'])
-                                        ->pluck('work_time');dd($workTimes,$data['workedRecords']);
+                                    if (!empty($data['workedRecords']) && is_array($data['workedRecords'])) {
+                                        $workedRecords = array_map('strval', $data['workedRecords']); // Cast integers to strings
+
+                                        $workTimes = App\Models\CallerChartsWorkLogs::where([
+                                            'project_id' => $projectId,
+                                            'sub_project_id' => $subProjectId,
+                                            'emp_id' => $data['emp_id'],
+                                        ])
+                                            ->whereDate('updated_at', $data['date'])
+                                            ->whereIn('record_id', $workedRecords)
+                                            ->pluck('work_time');
+                                    } else {
+                                        $workTimes = collect(); // Handle cases where workedRecords is empty or invalid.
+                                    }dd($workTimes,$data['workedRecords']);
 
                                     $totalSeconds = $workTimes->reduce(function ($carry, $time) {
                                         [$hours, $minutes, $seconds] = explode(':', $time);
