@@ -158,7 +158,7 @@
                                     <td>{{ $target !== '--' &&  $target !== null ? round((int)$target->target_per_day / 8, 2) : '--' }}</td>
                                     <td>{{ $target !== '--' &&  $target !== null ? $target->target_per_day : '--' }}</td>
                                     <td>{{$data['activity'] != NULL && $data['sub_activity'] != NULL ? $data['count'] : '--'}}</td> 
-                                    <td>{{$target !== '--' &&  $target !== null ? $data['count']*100/$target->target_per_day : '--'}}</td> 
+                                    <td>{{$target !== '--' &&  $target !== null ? round($data['count']*100/$target->target_per_day,2) : '--'}}</td> 
                                 </tr>
                             @endforeach
                         @endif
