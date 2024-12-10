@@ -574,6 +574,7 @@ class ReportsController extends Controller
                             'CE_emp_id' => $data['CE_emp_id'],
                             'coder_work_date' => $data['coder_work_date']
                         ])->pluck('id');
+                        $productionReportArray[$key]['workedRecords']= $data['workedRecords'];
                     }
                 }
              
@@ -618,6 +619,7 @@ class ReportsController extends Controller
                                 'activity' => $employee['activity'],
                                 'sub_activity' => $employee['sub_activity'],
                                 'count' => $employee['count'],
+                                'workedRecords' => $employee['workedRecords']
                             
                             ];
                         }
