@@ -17,7 +17,7 @@
                 </div>
             </div>
             {!! Form::open([
-                'url' => url('report/production_reports') . '?parent=' . request()->parent . '&child=' . request()->child,
+                'url' => url('report/production_report_search') . '?parent=' . request()->parent . '&child=' . request()->child,
                 'id' => 'production_report_form',
                 'class' => 'form',
                 'enctype' => 'multipart/form-data',
@@ -218,25 +218,21 @@
                     }
                 });
                 // $('.daterange').val('');
-                // var work_date = @json($workDate);
-                // if (work_date != 0) {
-                //     $('.daterange').val(work_date);
-                // }
-                // var project_id = @json($projectId);
-                // var subproject_id = @json($subProjectId);
+                var work_date = @json($workDate);
+                if (work_date != 0) {
+                    $('.daterange').val(work_date);
+                }
+                var project_id = @json($projectId);
+                var subproject_id = @json($subProjectId);
                 $(document).on('click', '#clear_submit', function(e) {
-                    // project_id = 0;
-                    // sub_project_id = 0;
-                    // work_date = 0;
-                    // $('.daterange').val('');
-                    $('#project_id').val();
-                    location.reload();
+                    project_id = 0;
+                    sub_project_id = 0;
+                    work_date = 0;
                 });
-              
 
-                // if (subproject_id != 0) {
-                //     subProjectNameList(project_id, subproject_id);
-                // }
+                if (subproject_id != 0) {
+                    subProjectNameList(project_id, subproject_id);
+                }
                 var subprojectCount;
                 var table = $('#prodcution_report_table').DataTable({
                     processing: true,

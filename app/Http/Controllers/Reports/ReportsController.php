@@ -515,7 +515,7 @@ class ReportsController extends Controller
     }
 
    
-    public function productionReports(Request $request)
+    public function productionReports1(Request $request)
     {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
             try {
@@ -714,4 +714,195 @@ class ReportsController extends Controller
     //         return redirect('/');
     //     }
     // }
+    public function productionReports(Request $request)
+    {
+        $productionReportArray = $finalData = [];$projectId = $subProjectId = $workDate = $workingDates = 0;
+        return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','workingDates','finalData'));
+        return view('reports.productionReport');
+    }
+    public function productionReportSearch(Request $request)
+    {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
+            try {
+                $payload = [
+                    'token' => '1a32e71a46317b9cc6feb7388238c95d'
+                ];
+                $client = new Client(['verify' => false]);
+                $response = $client->request('POST',  config("constants.PRO_CODE_URL") . '/api/v1_users/get_quality_ar_emp_list', [
+                    'json' => $payload
+                ]);
+                if ($response->getStatusCode() == 200) {
+                    $data = json_decode($response->getBody(), true);
+                } else {
+                    return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+                }
+                $coderList = $data['coderList'];                         
+                $qaSamplingList = 0;
+                $projectId = $subProjectId = $workDate = 0;
+                if($request->project_id) {
+                    $projectId = $request->project_id;
+                }
+                if($request->sub_project_id) {
+                    $subProjectId = $request->sub_project_id;
+                } 
+                if($request->work_date) {
+                    $workDate = $request->work_date;
+                }
+                $productionReportList = collect(); $productionReportArray =[];
+                if ($request->project_id && $request->sub_project_id) {
+                    $decodedClientName = Helpers::projectName($request->project_id)->project_name;
+                    $decodedSubProjectName = $request->sub_project_id == null ? 'project' : Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
+            
+                    // Generate dynamic table/model class name
+                    $tableName = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName), '_');
+                    $modelName = Str::studly($tableName);
+                    $modelClass = "App\\Models\\" . $modelName . "Datas";
+            
+                    if (class_exists($modelClass)) {
+                        // Check if columns exist
+                        $columns = Schema::getColumnListing((new $modelClass)->getTable());
+            
+                        // Check if the necessary columns exist in the table
+                        $hasActivity = in_array('activity', $columns);
+                        $hasSubActivity = in_array('sub_activity', $columns);
+                        $hasCoderWorkDate = in_array('coder_work_date', $columns);
+            
+                        $query = $modelClass::select('CE_emp_id', DB::raw('COUNT(*) as count'))
+                            ->where('chart_status', 'CE_Completed');
+            
+                        if ($hasActivity) {
+                            $query->addSelect('activity');
+                        }
+                        if ($hasSubActivity) {
+                            $query->addSelect('sub_activity');
+                        }
+                        if ($hasCoderWorkDate) {
+                            $query->addSelect('coder_work_date');
+                        }
+            
+                        $productionReportList = $query->groupBy('CE_emp_id')
+                            ->when($hasActivity, function ($query) {
+                                return $query->groupBy('activity')->orderBy('activity');
+                            })
+                            ->when($hasSubActivity, function ($query) {
+                                return $query->groupBy('sub_activity')->orderBy('sub_activity');
+                            })
+                            ->when($hasCoderWorkDate, function ($query) {
+                                return $query->groupBy('coder_work_date')->orderBy('coder_work_date');
+                            })
+                            ->orderBy('CE_emp_id')
+                            ->get();
+            
+                        // Processing production report list as before
+                        $productionReportArray = [];
+                        $empIds = $productionReportList->pluck('CE_emp_id')->unique(); // Collect unique emp_ids
+            
+                        foreach ($empIds as $empId) {
+                            GetUserNameByEmpId::dispatch($empId)->delay(now()->addSeconds(5)); // Dispatch the job for each empId
+                        }
+            
+                        foreach ($productionReportList as $key => $data) {
+                            $productionReportArray[$key]['emp_id'] = $data['CE_emp_id'];
+            
+                            // Check if emp name is in cache
+                            $cacheKey = "emp_name_{$data['CE_emp_id']}";
+                            $empName = null;
+                            $attempts = 0;
+                            while ($attempts < 10 && !$empName) {
+                                if (Cache::has($cacheKey)) {
+                                    $empName = Cache::get($cacheKey);
+                                    break;
+                                }
+                                sleep(1); // Delay before rechecking the cache
+                                $attempts++;
+                            }
+            
+                            // Set data for the report
+                            $productionReportArray[$key]['arName'] = $empName ?? 'Unknown'; // Fallback to 'Unknown' if not found
+                            $productionReportArray[$key]['activity'] = $hasActivity ? $data['activity'] : null;
+                            $productionReportArray[$key]['sub_activity'] = $hasSubActivity ? $data['sub_activity'] : null;
+                            $productionReportArray[$key]['coder_work_date'] = $hasCoderWorkDate ? $data['coder_work_date'] : null;
+                            $productionReportArray[$key]['count'] = $data['count'];
+            
+                            // Get worked records for the report
+                            // $productionReportArray[$key]['workedRecords'] = $modelClass::where([
+                            //     'activity' => $data['activity'] ?? null,
+                            //     'sub_activity' => $data['sub_activity'] ?? null,
+                            //     'CE_emp_id' => $data['CE_emp_id'],
+                            //     'coder_work_date' => $data['coder_work_date'] ?? null,
+                            //     'chart_status' => 'CE_Completed'
+                            // ])->pluck('parent_id')->toArray();
+                            $productionReportArray[$key]['workedRecords'] = $modelClass::where('CE_emp_id', $data['CE_emp_id'])
+                                ->where('coder_work_date', $data['coder_work_date'] ?? null)
+                                ->where('chart_status', 'CE_Completed')
+                                ->when(in_array('activity', $columns), function($query) use ($data) {
+                                    return $query->where('activity', $data['activity'] ?? null);
+                                })
+                                ->when(in_array('sub_activity', $columns), function($query) use ($data) {
+                                    return $query->where('sub_activity', $data['sub_activity'] ?? null);
+                                })
+                                ->pluck('parent_id')
+                                ->toArray();
+
+                        }
+            
+                      
+                    } 
+                }
+             
+                $work_date = $request->work_date;
+                $workingDates = [];
+                if (isset($work_date) && !empty($work_date)) {
+                    $work_date = explode(' - ', $work_date);
+                    $start_date = new \DateTime($work_date[0]);
+                    $end_date = new \DateTime($work_date[1]);
+                    $end_date->modify('+1 day'); // Include the end date
+                
+                    while ($start_date < $end_date) {
+                        // Exclude Saturdays (6) and Sundays (0)
+                        if ($start_date->format('N') < 6) {
+                            $workingDates[] = $start_date->format('Y-m-d');
+                        }
+                        $start_date->modify('+1 day');
+                    }
+                } else {
+                    $workingDates = [];
+                }
+                
+                // Process your production report data
+         
+                // foreach ($workingDates as $date) {
+                //     foreach ($productionReportArray as &$record) {
+                //         $record['working_date'][] = $date;
+                //     }
+                // }
+                // dd($workingDates,$productionReportArray);
+             
+                $finalData = [];
+                
+                // Combine dates with employees
+                foreach ($workingDates as $date) {
+                    foreach ($productionReportArray as $employee) {
+                        if($date ==  $employee['coder_work_date']) {
+                            $finalData[] = [
+                                'date' => $date,
+                                'emp_id' => $employee['emp_id'],
+                                'emp_name' => $employee['arName'],
+                                'activity' => $employee['activity'],
+                                'sub_activity' => $employee['sub_activity'],
+                                'count' => $employee['count'],
+                                'workedRecords' => $employee['workedRecords']
+                            
+                            ];
+                        }
+                    }
+                }
+                return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','workingDates','finalData'));
+            } catch (\Exception $e) {
+                Log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
 }
