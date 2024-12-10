@@ -134,13 +134,13 @@
                                         $activity != null &&
                                         $subActivity != null
                                     ) {
-                                        $targetList = App\Models\ProjectTargetSettings::where([
+                                        $target = App\Models\ProjectTargetSettings::where([
                                             'project_id' => $projectId,
                                             'sub_project_id' => $subProjectId,
                                             'activity' => $activity,
                                             'sub_activity' => $subActivity,
                                         ])->first();
-                                        $target = $targetList->target_per_hour;
+                                        // $target = $targetList->target_per_hour;
                                     } else {
                                         $target = '--';
                                     }
@@ -154,8 +154,8 @@
                                     <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
                                     <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
                                     <td>--</td> {{-- Working Hours --}}
-                                    <td>--</td> 
-                                    {{-- <td>{{ $target != '--' ? round((int)$target->target_per_day / 8, 2) : '--' }}</td> --}}
+                          
+                                    <td>{{ $target != '--' ? round((int)$target->target_per_day / 8, 2) : '--' }}</td>
                                     <td>{{ $target != '--' ? $target->target_per_day : '--' }}</td>
                                     <td>{{$data['activity'] != NULL && $data['sub_activity'] != NULL ? $data['count'] : '--'}}</td> 
                                     <td>{{$target != '--' ? $data['count']*100/$target->target_per_day : '--'}}</td> 
