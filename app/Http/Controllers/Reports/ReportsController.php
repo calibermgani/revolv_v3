@@ -586,9 +586,6 @@ class ReportsController extends Controller
                                 return $query->groupBy('coder_work_date')->orderBy('coder_work_date');
                             })
                             ->orderBy('CE_emp_id')
-                            ->orderBy('activity')
-                            ->orderBy('sub_activity')
-                            ->orderBy('coder_work_date')
                             ->get();
             
                         // Processing production report list as before
