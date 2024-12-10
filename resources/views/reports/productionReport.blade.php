@@ -29,7 +29,7 @@
                     <label class="required">Project</label>
                     @php $projectIds = App\Models\formConfiguration::groupby('project_id') ->pluck('project_id')
                                 ->toArray();
-                                $projectList =  App\Models\project::where('status', 'Active')->pluck('aims_project_name', 'project_id')->whereIn('project_id',$projectIds)->prepend(trans('Select Project'), '')->toArray();
+                                $projectList =  App\Models\project::where('status', 'Active')->whereIn('project_id',$projectIds)->pluck('aims_project_name', 'project_id')->prepend(trans('Select Project'), '')->toArray();
                     //  $projectList = App\Http\Helper\Admin\Helpers::projectList(); @endphp
                     <fieldset class="form-group mb-1">
                         {!! Form::select('project_id', $projectList, $projectId != 0 ? $projectId : null, [
