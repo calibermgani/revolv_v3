@@ -544,50 +544,97 @@ class ReportsController extends Controller
                     $workDate = $request->work_date;
                 }
                 $productionReportList = collect(); $productionReportArray =[];
-                if($request->project_id && $request->sub_project_id) {
+                if ($request->project_id && $request->sub_project_id) {
                     $decodedClientName = Helpers::projectName($request->project_id)->project_name;
-                    $decodedsubProjectName = $request->sub_project_id == null ? 'project' :Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
-                    $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');   
-                    $modelName = Str::studly($table_name);
-                    $modelClass = "App\\Models\\" . $modelName."Datas";
+                    $decodedSubProjectName = $request->sub_project_id == null ? 'project' : Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
+            
+                    // Generate dynamic table/model class name
+                    $tableName = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName), '_');
+                    $modelName = Str::studly($tableName);
+                    $modelClass = "App\\Models\\" . $modelName . "Datas";
+            
                     if (class_exists($modelClass)) {
-                        // $productionReportList = $modelClass::select('CE_emp_id')->where('chart_status','CE_Completed')->groupBy('CE_emp_id')->get();
-                        $productionReportList =$modelClass::select('CE_emp_id', 'activity', 'sub_activity', 'coder_work_date',DB::raw('COUNT(*) as count'))->where('chart_status','CE_Completed')
-                            ->groupBy('CE_emp_id', 'activity', 'sub_activity','coder_work_date')
+                        // Check if columns exist
+                        $columns = Schema::getColumnListing((new $modelClass)->getTable());
+            
+                        // Check if the necessary columns exist in the table
+                        $hasActivity = in_array('activity', $columns);
+                        $hasSubActivity = in_array('sub_activity', $columns);
+                        $hasCoderWorkDate = in_array('coder_work_date', $columns);
+            
+                        $query = $modelClass::select('CE_emp_id', DB::raw('COUNT(*) as count'))
+                            ->where('chart_status', 'CE_Completed');
+            
+                        if ($hasActivity) {
+                            $query->addSelect('activity');
+                        }
+                        if ($hasSubActivity) {
+                            $query->addSelect('sub_activity');
+                        }
+                        if ($hasCoderWorkDate) {
+                            $query->addSelect('coder_work_date');
+                        }
+            
+                        $productionReportList = $query->groupBy('CE_emp_id')
+                            ->when($hasActivity, function ($query) {
+                                return $query->groupBy('activity');
+                            })
+                            ->when($hasSubActivity, function ($query) {
+                                return $query->groupBy('sub_activity');
+                            })
+                            ->when($hasCoderWorkDate, function ($query) {
+                                return $query->groupBy('coder_work_date');
+                            })
                             ->orderBy('CE_emp_id')
                             ->orderBy('activity')
                             ->orderBy('sub_activity')
                             ->orderBy('coder_work_date')
                             ->get();
-                    }  
-                    foreach ($productionReportList as $key => $data) {   
-                        $productionReportArray[$key]['emp_id']= $data['CE_emp_id'];
-                        // $productionReportArray[$key]['arName']= $data['CE_emp_id'] != null
-                        // ? Helpers::getUserNameByEmpId($data['CE_emp_id'])
-                        // : '--';
-                         GetUserNameByEmpId::dispatch($data['CE_emp_id'])->delay(now()->addSeconds(5));
-                            $empName = null;
+            
+                        // Processing production report list as before
+                        $productionReportArray = [];
+                        $empIds = $productionReportList->pluck('CE_emp_id')->unique(); // Collect unique emp_ids
+            
+                        foreach ($empIds as $empId) {
+                            GetUserNameByEmpId::dispatch($empId)->delay(now()->addSeconds(5)); // Dispatch the job for each empId
+                        }
+            
+                        foreach ($productionReportList as $key => $data) {
+                            $productionReportArray[$key]['emp_id'] = $data['CE_emp_id'];
+            
+                            // Check if emp name is in cache
                             $cacheKey = "emp_name_{$data['CE_emp_id']}";
-                            for ($i = 0; $i < 10; $i++) { // Wait up to 10 seconds
+                            $empName = null;
+                            $attempts = 0;
+                            while ($attempts < 10 && !$empName) {
                                 if (Cache::has($cacheKey)) {
                                     $empName = Cache::get($cacheKey);
                                     break;
                                 }
-                                sleep(1); // Pause for 1 second between checks
+                                sleep(1); // Delay before rechecking the cache
+                                $attempts++;
                             }
-                         $productionReportArray[$key]['arName']= $empName ;
-                        $productionReportArray[$key]['activity']= $data['activity'];
-                        $productionReportArray[$key]['sub_activity']= $data['sub_activity'];
-                        $productionReportArray[$key]['coder_work_date']= $data['coder_work_date'];
-                        $productionReportArray[$key]['count']= $data['count'];
-                        $productionReportArray[$key]['workedRecords']= $modelClass::where([
-                            'activity' => $data['activity'],
-                            'sub_activity' => $data['sub_activity'],
-                            'CE_emp_id' => $data['CE_emp_id'],
-                            'coder_work_date' => $data['coder_work_date'],
-                            'chart_status'=>'CE_Completed'
-                        ])->pluck('parent_id')->toArray();
-                       
+            
+                            // Set data for the report
+                            $productionReportArray[$key]['arName'] = $empName ?? 'Unknown'; // Fallback to 'Unknown' if not found
+                            $productionReportArray[$key]['activity'] = $hasActivity ? $data['activity'] : null;
+                            $productionReportArray[$key]['sub_activity'] = $hasSubActivity ? $data['sub_activity'] : null;
+                            $productionReportArray[$key]['coder_work_date'] = $hasCoderWorkDate ? $data['coder_work_date'] : null;
+                            $productionReportArray[$key]['count'] = $data['count'];
+            
+                            // Get worked records for the report
+                            $productionReportArray[$key]['workedRecords'] = $modelClass::where([
+                                'activity' => $data['activity'] ?? null,
+                                'sub_activity' => $data['sub_activity'] ?? null,
+                                'CE_emp_id' => $data['CE_emp_id'],
+                                'coder_work_date' => $data['coder_work_date'] ?? null,
+                                'chart_status' => 'CE_Completed'
+                            ])->pluck('parent_id')->toArray();
+                        }
+            
+                        return response()->json($productionReportArray);
+                    } else {
+                        return response()->json(['error' => 'Model not found'], 404);
                     }
                 }
              
