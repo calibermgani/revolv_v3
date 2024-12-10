@@ -620,13 +620,25 @@ class ReportsController extends Controller
                             $productionReportArray[$key]['count'] = $data['count'];
             
                             // Get worked records for the report
-                            $productionReportArray[$key]['workedRecords'] = $modelClass::where([
-                                'activity' => $data['activity'] ?? null,
-                                'sub_activity' => $data['sub_activity'] ?? null,
-                                'CE_emp_id' => $data['CE_emp_id'],
-                                'coder_work_date' => $data['coder_work_date'] ?? null,
-                                'chart_status' => 'CE_Completed'
-                            ])->pluck('parent_id')->toArray();
+                            // $productionReportArray[$key]['workedRecords'] = $modelClass::where([
+                            //     'activity' => $data['activity'] ?? null,
+                            //     'sub_activity' => $data['sub_activity'] ?? null,
+                            //     'CE_emp_id' => $data['CE_emp_id'],
+                            //     'coder_work_date' => $data['coder_work_date'] ?? null,
+                            //     'chart_status' => 'CE_Completed'
+                            // ])->pluck('parent_id')->toArray();
+                            $productionReportArray[$key]['workedRecords'] = $modelClass::where('CE_emp_id', $data['CE_emp_id'])
+                                ->where('coder_work_date', $data['coder_work_date'] ?? null)
+                                ->where('chart_status', 'CE_Completed')
+                                ->when(in_array('activity', $columns), function($query) use ($data) {
+                                    return $query->where('activity', $data['activity'] ?? null);
+                                })
+                                ->when(in_array('sub_activity', $columns), function($query) use ($data) {
+                                    return $query->where('sub_activity', $data['sub_activity'] ?? null);
+                                })
+                                ->pluck('parent_id')
+                                ->toArray();
+
                         }
             
                         return response()->json($productionReportArray);
