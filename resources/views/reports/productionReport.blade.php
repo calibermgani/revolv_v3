@@ -153,7 +153,7 @@
                                     ])
                                         ->whereDate('updated_at', $data['date'])
                                         // ->whereIn('record_id', $data['workedRecords'])
-                                        ->pluck('work_time');dd($workTimes,$data['workedRecords'],$data['date']);
+                                        ->pluck('work_time');dd($workTimes,$data['workedRecords'],$data['date'],$data);
 
                                     $totalSeconds = $workTimes->reduce(function ($carry, $time) {
                                         [$hours, $minutes, $seconds] = explode(':', $time);
