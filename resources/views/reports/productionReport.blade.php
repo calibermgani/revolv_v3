@@ -149,7 +149,7 @@
                                         'project_id' => $projectId,
                                         'sub_project_id' => $subProjectId,
                                         'emp_id' => $data['emp_id'],
-                                         'chart_status'=>'CE_Completed'
+                                         'record_status'=>'CE_Completed'
                                     ])
                                         ->whereDate('updated_at', $data['date'])
                                         // ->whereIn('record_id', $data['workedRecords'])
