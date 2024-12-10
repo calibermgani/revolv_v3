@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
 use App\Models\InventoryErrorLogs;
 use Carbon\Carbon;
-use App\Models\ProjectTargetSettings;
+use App\Jobs\GetUserNameByEmpId;
 class ReportsController extends Controller
 {
     public function reporstIndex(){
@@ -564,6 +564,7 @@ class ReportsController extends Controller
                         // $productionReportArray[$key]['arName']= $data['CE_emp_id'] != null
                         // ? Helpers::getUserNameByEmpId($data['CE_emp_id'])
                         // : '--';
+                        GetUserNameByEmpId::dispatch($data['CE_emp_id'])->delay(now()->addSeconds(5));
                          $productionReportArray[$key]['arName']= $data['CE_emp_id'] ;
                         $productionReportArray[$key]['activity']= $data['activity'];
                         $productionReportArray[$key]['sub_activity']= $data['sub_activity'];
