@@ -551,7 +551,7 @@ class ReportsController extends Controller
                     $modelClass = "App\\Models\\" . $modelName."Datas";
                     if (class_exists($modelClass)) {
                         $productionReportList = $modelClass::where('chart_status','CE_Completed')->groupBy('CE_emp_id')->get();
-                    }
+                    }   dd($productionReportList);
                     foreach ($productionReportList as $key => $data) {   
                         $productionReportArray[$key]['emp_id']= $data['CE_emp_id'];
                         $productionReportArray[$key]['arName']= $data['CE_emp_id'] != null
@@ -561,7 +561,7 @@ class ReportsController extends Controller
                         $productionReportArray[$key]['sub_activity']= $data['sub_activity'];
                     }
                 }
-                dd($productionReportList);
+             
                 $work_date = $request->work_date;
                 $workingDates = [];
                 if (isset($work_date) && !empty($work_date)) {
