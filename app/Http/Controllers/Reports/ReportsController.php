@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
 use App\Models\InventoryErrorLogs;
 use Carbon\Carbon;
-use App\Models\ProjectTargetSettings;
+use App\Models\CallerChartsWorkLogs;
 class ReportsController extends Controller
 {
     public function reporstIndex(){
@@ -568,6 +568,17 @@ class ReportsController extends Controller
                         $productionReportArray[$key]['sub_activity']= $data['sub_activity'];
                         $productionReportArray[$key]['coder_work_date']= $data['coder_work_date'];
                         $productionReportArray[$key]['count']= $data['count'];
+                        $workedRecords = $modelClass::where([
+                            'activity' => $data['activity'],
+                            'sub_activity' => $data['sub_activity'],
+                            'emp_id' => $data['emp_id'],
+                            'coder_work_date' => $data['coder_work_date']
+                        ])->pluck('id');
+                        $productionReportArray[$key]['workHours'] = CallerChartsWorkLogs::select('work_time')->where([
+                            'project_id' => $projectId,
+                            'sub_project_id' => $subProjectId,
+                            'emp_id' => $data['emp_id']
+                        ])->whereDate('updated_at', $data['date'])->whereIn($workedRecords)->pluck('work_time');
                     }
                 }
              
@@ -612,6 +623,7 @@ class ReportsController extends Controller
                                 'activity' => $employee['activity'],
                                 'sub_activity' => $employee['sub_activity'],
                                 'count' => $employee['count'],
+                                'workHours' => $employee['workHours'],
                             
                             ];
                         }

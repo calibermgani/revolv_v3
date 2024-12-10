@@ -146,7 +146,22 @@
                                     } else {
                                         $target = '--';
                                     }
-                                   
+                               
+                                        $totalSeconds = $data['workHours']->reduce(function ($carry, $time) {
+                                            list($hours, $minutes, $seconds) = explode(':', $time);
+                                            return $carry + ($hours * 3600) + ($minutes * 60) + $seconds;
+                                        }, 0);
+
+                                        // Convert total seconds back to H:i:s format
+                                        $totalWorkTime = sprintf(
+                                            '%02d:%02d:%02d',
+                                            floor($totalSeconds / 3600), // Hours
+                                            floor(($totalSeconds % 3600) / 60), // Minutes
+                                            $totalSeconds % 60 // Seconds
+                                        );
+
+                                        // echo $totalWorkTime; // This is your total work time in H:i:s format
+
                                 @endphp
                                 <tr>
                                     <td>{{ $data['date'] }}</td>
@@ -155,9 +170,9 @@
                                     <td>{{ $projectName ? $projectName->aims_project_name : '--' }}</td>
                                     <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
                                     <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
-                                    <td>--</td> {{-- Working Hours --}}
-                                    <td>{{ $data['activity']}}</td>
-                                    <td>{{$data['sub_activity']}}</td>
+                                    <td>{{$totalWorkTime}}</td>
+                                    <td>{{ $data['activity'] == NULL ? '--' : $data['activity']}}</td>
+                                    <td>{{$data['sub_activity'] == NULL ? '--' : $data['sub_activity']}}</td>
                                      <td>{{ $target !== '--' &&  $target !== null ? $target->target_per_day : '--' }}</td>
                                      <td>{{ $target !== '--' &&  $target !== null ? round((int)$target->target_per_day / 8, 2) : '--' }}</td>
                                     <td>{{$data['activity'] != NULL && $data['sub_activity'] != NULL ? $data['count'] : '--'}}</td> 
