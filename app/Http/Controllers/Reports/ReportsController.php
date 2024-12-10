@@ -577,13 +577,13 @@ class ReportsController extends Controller
             
                         $productionReportList = $query->groupBy('CE_emp_id')
                             ->when($hasActivity, function ($query) {
-                                return $query->groupBy('activity');
+                                return $query->groupBy('activity')->orderBy('activity');
                             })
                             ->when($hasSubActivity, function ($query) {
-                                return $query->groupBy('sub_activity');
+                                return $query->groupBy('sub_activity')->orderBy('sub_activity');
                             })
                             ->when($hasCoderWorkDate, function ($query) {
-                                return $query->groupBy('coder_work_date');
+                                return $query->groupBy('coder_work_date')->orderBy('coder_work_date');
                             })
                             ->orderBy('CE_emp_id')
                             ->orderBy('activity')
