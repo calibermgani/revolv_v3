@@ -17,7 +17,7 @@
                 </div>
             </div>
             {!! Form::open([
-                'url' => url('report/production_report_search') . '?parent=' . request()->parent . '&child=' . request()->child,
+                'url' => url('report/production_reports') . '?parent=' . request()->parent . '&child=' . request()->child,
                 'id' => 'production_report_form',
                 'class' => 'form',
                 'enctype' => 'multipart/form-data',
@@ -228,7 +228,9 @@
                     project_id = 0;
                     sub_project_id = 0;
                     work_date = 0;
+                    $('.daterange').val('');
                 });
+                console.log(subproject_id, 'subproject_id', project_id, work_date);
 
                 if (subproject_id != 0) {
                     subProjectNameList(project_id, subproject_id);
@@ -327,7 +329,6 @@
                     }
                     if (inputTypeValue == 0) {
                         document.querySelector('#production_report_form').submit();
-                     
                     }
                     KTApp.block('#page-loader', {
                         overlayColor: '#000000',
@@ -335,9 +336,8 @@
                         opacity: 0.1,
                         message: 'Generating Report...',
                     });
-                   
                 });
-              
+
             });
         </script>
     @endpush
