@@ -27,7 +27,7 @@
                 style="background-color: #F1F1F1;border-radius:0.42rem">
                 <div class="col-lg-2 mb-lg-0 mb-6">
                     <label class="required">Project</label>
-                    @php $projetIds = App\Models\formConfiguration::groupby('project_id') ->pluck('project_id')
+                    @php $projectIds = App\Models\formConfiguration::groupby('project_id') ->pluck('project_id')
                                 ->toArray();
                                 $projectList =  App\Models\project::where('status', 'Active')->pluck('aims_project_name', 'project_id')->whereIn('project_id',$projectIds)->prepend(trans('Select Project'), '')->toArray();
                     //  $projectList = App\Http\Helper\Admin\Helpers::projectList(); @endphp
