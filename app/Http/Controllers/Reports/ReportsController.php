@@ -557,7 +557,7 @@ class ReportsController extends Controller
                             ->orderBy('activity')
                             ->orderBy('sub_activity')
                             ->get();
-                    }   dd($productionReportList);
+                    }  
                     foreach ($productionReportList as $key => $data) {   
                         $productionReportArray[$key]['emp_id']= $data['CE_emp_id'];
                         $productionReportArray[$key]['arName']= $data['CE_emp_id'] != null
@@ -565,6 +565,7 @@ class ReportsController extends Controller
                         : '--';
                         $productionReportArray[$key]['activity']= $data['activity'];
                         $productionReportArray[$key]['sub_activity']= $data['sub_activity'];
+                        $productionReportArray[$key]['count']= $data['count'];
                     }
                 }
              
@@ -607,6 +608,7 @@ class ReportsController extends Controller
                             'emp_name' => $employee['arName'],
                             'activity' => $employee['activity'],
                             'sub_activity' => $employee['sub_activity'],
+                            'count' => $employee['count'],
                            
                         ];
                     }
