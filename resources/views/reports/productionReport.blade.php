@@ -128,8 +128,66 @@
                             @endphp
                             @foreach ($finalData as $data)
                                 @php
-                                dd($data);
-                                    @endphp
+                                    $activity = $data['activity'];
+                                    $subActivity = $data['sub_activity'];
+                                    if (
+                                        $subProjectId != null &&
+                                        $projectId != null &&
+                                        $activity != null &&
+                                        $subActivity != null
+                                    ) {
+                                        $target = App\Models\ProjectTargetSettings::where([
+                                            'project_id' => $projectId,
+                                            'sub_project_id' => $subProjectId,
+                                            'activity' => $activity,
+                                            'sub_activity' => $subActivity,
+                                        ])->first();
+                                    } else {
+                                        $target = '--';
+                                    }
+                                    $workTimes = App\Models\CallerChartsWorkLogs::where([
+                                        'project_id' => $projectId,
+                                        'sub_project_id' => $subProjectId,
+                                        'emp_id' => $data['emp_id'],
+                                    ])
+                                        ->whereDate('updated_at', $data['date'])
+                                        ->whereIn('record_id', $data['workedRecords'])
+                                        ->pluck('work_time');
+
+                                    $totalSeconds = $workTimes->reduce(function ($carry, $time) {
+                                        [$hours, $minutes, $seconds] = explode(':', $time);
+                                        return $carry + $hours * 3600 + $minutes * 60 + $seconds;
+                                    }, 0);
+
+                                    // Convert total seconds back to H:i:s format
+                                    $totalWorkTime = sprintf(
+                                        '%02d:%02d:%02d',
+                                        floor($totalSeconds / 3600), // Hours
+                                        floor(($totalSeconds % 3600) / 60), // Minutes
+                                        $totalSeconds % 60, // Seconds
+                                    );
+
+                                    // echo $totalWorkTime; // This is your total work time in H:i:s format
+
+                                @endphp
+                                <tr>
+                                    <td>{{ $data['date'] }}</td>
+                                    <td>{{ $data['emp_id'] }}</td>
+                                    <td>{{ $data['emp_name'] }}</td>
+                                    <td>{{ $projectName ? $projectName->aims_project_name : '--' }}</td>
+                                    <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
+                                    <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
+                                    <td>{{ $totalWorkTime }}</td>
+                                    <td>{{ $data['activity'] == null ? '--' : $data['activity'] }}</td>
+                                    <td>{{ $data['sub_activity'] == null ? '--' : $data['sub_activity'] }}</td>
+                                    <td>{{ $target !== '--' && $target !== null ? $target->target_per_day : '--' }}</td>
+                                    <td>{{ $target !== '--' && $target !== null ? round((int) $target->target_per_day / 8, 2) : '--' }}
+                                    </td>
+                                    <td>{{ $data['activity'] != null && $data['sub_activity'] != null ? $data['count'] : '--' }}
+                                    </td>
+                                    <td>{{ $target !== '--' && $target !== null ? round(($data['count'] * 100) / $target->target_per_day, 2) : '--' }}
+                                    </td>
+                                </tr>
                             @endforeach
                         @endif
                     </tbody>
