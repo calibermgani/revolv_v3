@@ -574,7 +574,7 @@ class ReportsController extends Controller
                             'emp_id' => $data['emp_id'],
                             'coder_work_date' => $data['coder_work_date']
                         ])->pluck('id');
-                        $productionReportArray[$key]['workHours'] = CallerChartsWorkLogs::select('work_time')->where([
+                        $productionReportArray[$key]['workHours'] = CallerChartsWorkLogs::where([
                             'project_id' => $projectId,
                             'sub_project_id' => $subProjectId,
                             'emp_id' => $data['emp_id']
