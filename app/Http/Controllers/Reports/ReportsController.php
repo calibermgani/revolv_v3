@@ -550,7 +550,13 @@ class ReportsController extends Controller
                     $modelName = Str::studly($table_name);
                     $modelClass = "App\\Models\\" . $modelName."Datas";
                     if (class_exists($modelClass)) {
-                        $productionReportList = $modelClass::where('chart_status','CE_Completed')->groupBy('CE_emp_id')->get();
+                        // $productionReportList = $modelClass::select('CE_emp_id')->where('chart_status','CE_Completed')->groupBy('CE_emp_id')->get();
+                        $data =$modelClass::select('emp_id', 'activity', 'sub_activity', DB::raw('COUNT(*) as count'))
+                            ->groupBy('emp_id', 'activity', 'sub_activity')
+                            ->orderBy('emp_id')
+                            ->orderBy('activity')
+                            ->orderBy('sub_activity')
+                            ->get();
                     }   dd($productionReportList);
                     foreach ($productionReportList as $key => $data) {   
                         $productionReportArray[$key]['emp_id']= $data['CE_emp_id'];
