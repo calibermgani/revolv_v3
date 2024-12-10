@@ -142,7 +142,6 @@
                                             'activity' => $activity,
                                             'sub_activity' => $subActivity,
                                         ])->first();
-                                        // $target = $targetList->target_per_hour;
                                     } else {
                                         $target = '--';
                                     }dd($data);
