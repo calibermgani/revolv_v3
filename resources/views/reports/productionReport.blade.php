@@ -152,9 +152,9 @@
                                          'record_status'=>'CE_Completed'
                                     ])
                                         ->whereDate('updated_at', $data['date'])
-                                        // ->whereIn('record_id', $data['workedRecords'])
-                                        ->pluck('work_time');dd($workTimes,$data['workedRecords'],$data['date'],$data);
-
+                                        ->whereIn('record_id', $data['workedRecords'])
+                                        ->pluck('work_time');
+                                        
                                     $totalSeconds = $workTimes->reduce(function ($carry, $time) {
                                         [$hours, $minutes, $seconds] = explode(':', $time);
                                         return $carry + $hours * 3600 + $minutes * 60 + $seconds;
