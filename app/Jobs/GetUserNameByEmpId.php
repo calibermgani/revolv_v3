@@ -32,13 +32,18 @@ class GetUserNameByEmpId implements ShouldQueue
      */
     public function handle()
     {
+        $cacheKey = "emp_name_{$this->empId}";
+
+        // Check if the result is already cached
+        if (Cache::has($cacheKey)) {
+            return Cache::get($cacheKey);
+        }
         $data = app()->call('App\Http\Helper\Admin\Helpers@getUserNameByEmpId', [
             'id' => $this->empId,
-        ]); 
-        
+        ]);
+
         Cache::put("emp_name_{$this->empId}", $data, now()->addMinutes(10));
 
         Log::info("Emp Name", ['data' => $data]);
-    
     }
 }
