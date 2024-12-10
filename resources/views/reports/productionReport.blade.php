@@ -258,6 +258,12 @@
                     }],
                     dom: "<'row'<'col-md-6 text-left'f><'col-md-6 text-right'B>>" +
                         "<'row'<'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>",
+                        columnDefs: [
+                        {
+                            targets: [0], // Assuming the date column is the first column (index 0)
+                            type: 'date', // Treat it as a date type column
+                        }
+                    ]
                 })
                 table.buttons().container().appendTo($('.dataTables_wrapper .col-md-6.text-right'));
                 $(document).on('change', '#project_id', function() {
