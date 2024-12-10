@@ -253,7 +253,7 @@
                                                         </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></span>`,
                         "className": 'btn btn-primary-export text-white',
                         "title": 'Production Report',
-                        "filename": 'production_report',
+                        "filename": 'resolv_production_report',
                     }],
                     dom: "<'row'<'col-md-6 text-left'f><'col-md-6 text-right'B>>" +
                         "<'row'<'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>",
