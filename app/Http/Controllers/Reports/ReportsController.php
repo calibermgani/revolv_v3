@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
 use App\Models\InventoryErrorLogs;
 use Carbon\Carbon;
-use App\Models\CallerChartsWorkLogs;
+use App\Models\ProjectTargetSettings;
 class ReportsController extends Controller
 {
     public function reporstIndex(){
@@ -574,11 +574,6 @@ class ReportsController extends Controller
                             'CE_emp_id' => $data['CE_emp_id'],
                             'coder_work_date' => $data['coder_work_date']
                         ])->pluck('id');
-                        $productionReportArray[$key]['workHours'] = CallerChartsWorkLogs::where([
-                            'project_id' => $projectId,
-                            'sub_project_id' => $subProjectId,
-                            'emp_id' => $data['emp_id']
-                        ])->whereDate('updated_at', $data['date'])->whereIn('record_id',$workedRecords)->pluck('work_time');
                     }
                 }
              
@@ -623,7 +618,6 @@ class ReportsController extends Controller
                                 'activity' => $employee['activity'],
                                 'sub_activity' => $employee['sub_activity'],
                                 'count' => $employee['count'],
-                                'workHours' => $employee['workHours'],
                             
                             ];
                         }
