@@ -17,7 +17,7 @@
                 </div>
             </div>
             {!! Form::open([
-                'url' => url('report/production_report_search') . '?parent=' . request()->parent . '&child=' . request()->child,
+                'url' => url('report/production_reports') . '?parent=' . request()->parent . '&child=' . request()->child,
                 'id' => 'production_report_form',
                 'class' => 'form',
                 'enctype' => 'multipart/form-data',
@@ -335,7 +335,11 @@
                         message: 'Generating Report...',
                     });
                 });
-
+                window.location.href = baseUrl + 'report/production_report_search' +
+                    "?parent=" +
+                    getUrlVars()[
+                        "parent"] +
+                    "&child=" + getUrlVars()["child"];
             });
         </script>
     @endpush
