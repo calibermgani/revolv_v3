@@ -229,6 +229,7 @@
                     // sub_project_id = 0;
                     // work_date = 0;
                     // $('.daterange').val('');
+                    $('#project_id').val();
                     location.reload();
                 });
               
