@@ -326,7 +326,12 @@
                         return false;
                     }
                     if (inputTypeValue == 0) {
-                        document.querySelector('#production_report_form').submit();
+                        // document.querySelector('#production_report_form').submit();
+                        window.location.href = baseUrl + 'report/production_report_search' +
+                    "?parent=" +
+                    getUrlVars()[
+                        "parent"] +
+                    "&child=" + getUrlVars()["child"];
                     }
                     KTApp.block('#page-loader', {
                         overlayColor: '#000000',
@@ -334,11 +339,7 @@
                         opacity: 0.1,
                         message: 'Generating Report...',
                     });
-                    window.location.href = baseUrl + 'report/production_report_search' +
-                    "?parent=" +
-                    getUrlVars()[
-                        "parent"] +
-                    "&child=" + getUrlVars()["child"];
+                   
                 });
               
             });
