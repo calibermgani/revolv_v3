@@ -3666,8 +3666,7 @@ class ProjectAutomationController extends Controller
          try {
              $attributes = [
                     'resp_ins_plan_type' => isset($request->resp_ins_plan_type) && $request->resp_ins_plan_type != "NULL" ? $request->resp_ins_plan_type : NULL,  
-                    'resp_ins_name' => isset($request->resp_ins_name) && $request->resp_ins_name != "NULL" ? $request->resp_ins_name : NULL,  
-                    'follow_up_status' => isset($request->follow_up_status) && $request->follow_up_status != "NULL" ? $request->follow_up_status : NULL,  
+                    'resp_ins_name' => isset($request->resp_ins_name) && $request->resp_ins_name != "NULL" ? $request->resp_ins_name : NULL,                      
                     'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
                     'follow_up_status' => isset($request->follow_up_status) && $request->follow_up_status != "NULL" ? $request->follow_up_status : NULL,  
                     'account_id' => isset($request->account_id) && $request->account_id != "NULL" ? $request->account_id : NULL,
@@ -3686,8 +3685,7 @@ class ProjectAutomationController extends Controller
              if (!$duplicateRecordExisting) {
                 IfwAr::insert([
                     'resp_ins_plan_type' => isset($request->resp_ins_plan_type) && $request->resp_ins_plan_type != "NULL" ? $request->resp_ins_plan_type : NULL,  
-                    'resp_ins_name' => isset($request->resp_ins_name) && $request->resp_ins_name != "NULL" ? $request->resp_ins_name : NULL,  
-                    'follow_up_status' => isset($request->follow_up_status) && $request->follow_up_status != "NULL" ? $request->follow_up_status : NULL,  
+                    'resp_ins_name' => isset($request->resp_ins_name) && $request->resp_ins_name != "NULL" ? $request->resp_ins_name : NULL,                      
                     'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
                     'follow_up_status' => isset($request->follow_up_status) && $request->follow_up_status != "NULL" ? $request->follow_up_status : NULL,  
                     'account_id' => isset($request->account_id) && $request->account_id != "NULL" ? $request->account_id : NULL,
@@ -3710,8 +3708,7 @@ class ProjectAutomationController extends Controller
                  if ($duplicateRecord) {
                      $duplicateRecord->update([
                         'resp_ins_plan_type' => isset($request->resp_ins_plan_type) && $request->resp_ins_plan_type != "NULL" ? $request->resp_ins_plan_type : NULL,  
-                        'resp_ins_name' => isset($request->resp_ins_name) && $request->resp_ins_name != "NULL" ? $request->resp_ins_name : NULL,  
-                        'follow_up_status' => isset($request->follow_up_status) && $request->follow_up_status != "NULL" ? $request->follow_up_status : NULL,  
+                        'resp_ins_name' => isset($request->resp_ins_name) && $request->resp_ins_name != "NULL" ? $request->resp_ins_name : NULL,                         
                         'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
                         'follow_up_status' => isset($request->follow_up_status) && $request->follow_up_status != "NULL" ? $request->follow_up_status : NULL,  
                         'account_id' => isset($request->account_id) && $request->account_id != "NULL" ? $request->account_id : NULL,
@@ -3740,8 +3737,7 @@ class ProjectAutomationController extends Controller
          try {
             IfwArDuplicates::insert([
                 'resp_ins_plan_type' => isset($request->resp_ins_plan_type) && $request->resp_ins_plan_type != "NULL" ? $request->resp_ins_plan_type : NULL,  
-                'resp_ins_name' => isset($request->resp_ins_name) && $request->resp_ins_name != "NULL" ? $request->resp_ins_name : NULL,  
-                'follow_up_status' => isset($request->follow_up_status) && $request->follow_up_status != "NULL" ? $request->follow_up_status : NULL,  
+                'resp_ins_name' => isset($request->resp_ins_name) && $request->resp_ins_name != "NULL" ? $request->resp_ins_name : NULL,                  
                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
                 'follow_up_status' => isset($request->follow_up_status) && $request->follow_up_status != "NULL" ? $request->follow_up_status : NULL,  
                 'account_id' => isset($request->account_id) && $request->account_id != "NULL" ? $request->account_id : NULL,
