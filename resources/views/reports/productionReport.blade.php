@@ -159,7 +159,7 @@
                                         [$hours, $minutes, $seconds] = explode(':', $time);
                                         return $carry + $hours * 3600 + $minutes * 60 + $seconds;
                                     }, 0);
-
+dd($totalSeconds);
                                     // Convert total seconds back to H:i:s format
                                     $totalWorkTime = sprintf(
                                         '%02d:%02d:%02d',
