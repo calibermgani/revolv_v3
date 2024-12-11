@@ -636,7 +636,8 @@ class ReportsController extends Controller
                                 ->pluck('parent_id')
                                 ->toArray();
                                 $productionReportArray[$key]['worked_time'] = $modelClass::where('CE_emp_id', $data['CE_emp_id']) 
-                                ->where('coder_work_date', $data['coder_work_date'] ?? null)
+                                // ->where('coder_work_date', $data['coder_work_date'] ?? null)
+                                ->whereNotNull('coder_work_date')
                                 ->where('chart_status', 'CE_Completed')
                                 ->when(in_array('activity', $columns), function($query) use ($data) {
                                     return $query->where('activity', $data['activity'] ?? null);
@@ -644,7 +645,11 @@ class ReportsController extends Controller
                                 ->when(in_array('sub_activity', $columns), function($query) use ($data) {
                                     return $query->where('sub_activity', $data['sub_activity'] ?? null);
                                 })
-                                ->pluck('updated_at')->toArray();
+                                ->pluck('updated_at')
+                                ->map(function ($updatedAt) {
+                                    return date('Y-m-d h:i:s', strtotime($updatedAt)); // Convert to desired format
+                                })
+                                ->toArray();
 
                         }
             
