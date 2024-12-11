@@ -194,7 +194,7 @@
                                     <td>{{ $data['activity'] != null && $data['sub_activity'] != null ? $data['count'] : '--' }}
                                     </td>
                                     {{-- <td>{{ $target !== '--' && $target !== null ? round(($data['count'] * 100) / $target->target_per_day, 2) : '--' }}</td> --}}
-                                    <td>{{ $achievedPercentage   !== '--' ? $achievedPercentage : $achievedPercentage.'%'}}</td>
+                                    <td>{{ $achievedPercentage   !== '--' ? $achievedPercentage.'%' : $achievedPercentage}}</td>
                                 </tr>
                             @endforeach
                         @endif
