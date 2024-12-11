@@ -654,8 +654,8 @@ class ReportsController extends Controller
                                 ->pluck('parent_id')
                                 ->toArray();
                                 $productionReportArray[$key]['worked_time'] = $modelClass::where('CE_emp_id', $data['CE_emp_id']) 
-                                // ->where('coder_work_date', $data['coder_work_date'] ?? null)
-                                ->whereIn('coder_work_date',$workingDates)
+                                 ->where('coder_work_date', $data['coder_work_date'] ?? null)
+                                //->whereIn('coder_work_date',$workingDates)
                                 ->where('chart_status', 'CE_Completed')
                                 ->when(in_array('activity', $columns), function($query) use ($data) {
                                     return $query->where('activity', $data['activity'] ?? null);
@@ -673,7 +673,7 @@ class ReportsController extends Controller
             
                       
                     } 
-                }dd($productionReportArray);
+                }
              
                 $finalData = [];
             
@@ -731,10 +731,10 @@ class ReportsController extends Controller
                     }
                 }
                 
-                dd($finalData); // Output the final data for verification
+                dd($finalData,$productionReportArray); // Output the final data for verification
                 
                 
-                dd($finalData); // Final output after processing all data
+             
                 
                 return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','workingDates','finalData','excel_name'));
             } catch (\Exception $e) {
