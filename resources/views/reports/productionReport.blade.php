@@ -166,16 +166,16 @@
                                         floor($totalSeconds / 3600), // Hours
                                         floor(($totalSeconds % 3600) / 60), // Minutes
                                         $totalSeconds % 60, // Seconds
-                                    );dd($workTimes,$data['emp_id'],$totalWorkTime,$totalSeconds);
-                                    if($target !== '--' && $target !== null) {                                    
-                                        $target_per_second = (int) $target->target_per_day / 28800;//8hrs equal to 28800 seconds                                           
-                                        $achievedPercentage = round(($data['count'] * 100) / ($target_per_second*$totalSeconds), 2); 
-                                        // /dd($totalWorkTime,$totalSeconds,$target_per_hour,$target_per_minute,$target_per_second$achievedPercentage,$$data['count'] ,$totalSeconds);
+                                    );
+                                    if ($target !== '--' && $target !== null && $totalSeconds !== 0) {
+                                        $target_per_second = (int) $target->target_per_day / 28800; //8hrs equal to 28800 seconds
+                                        $achievedPercentage = round(
+                                            ($data['count'] * 100) / ($target_per_second * $totalSeconds),
+                                            2,
+                                        );
                                     } else {
                                         $achievedPercentage = '--';
                                     }
-                                
-
                                 @endphp
                                 <tr>
                                     <td>{{ $data['date'] }}</td>
@@ -193,7 +193,8 @@
                                     <td>{{ $data['activity'] != null && $data['sub_activity'] != null ? $data['count'] : '--' }}
                                     </td>
                                     {{-- <td>{{ $target !== '--' && $target !== null ? round(($data['count'] * 100) / $target->target_per_day, 2) : '--' }}</td> --}}
-                                    <td>{{ $achievedPercentage   !== '--' ? $achievedPercentage.'%' : $achievedPercentage}}</td>
+                                    <td>{{ $achievedPercentage !== '--' ? $achievedPercentage . '%' : $achievedPercentage }}
+                                    </td>
                                 </tr>
                             @endforeach
                         @endif
@@ -241,14 +242,17 @@
                 if (subproject_id != 0) {
                     subProjectNameList(project_id, subproject_id);
                 }
-                var subprojectCount;var excel_name = @json($excel_name);
+                var subprojectCount;
+                var excel_name = @json($excel_name);
                 var table = $('#prodcution_report_table').DataTable({
                     processing: true,
                     lengthChange: false,
                     clientSide: true,
                     searching: true,
                     pageLength: 20,
-                    order: [[0, 'desc']],
+                    order: [
+                        [0, 'desc']
+                    ],
                     language: {
                         "search": '',
                         "searchPlaceholder": "   Search",
@@ -264,12 +268,10 @@
                     }],
                     dom: "<'row'<'col-md-6 text-left'f><'col-md-6 text-right'B>>" +
                         "<'row'<'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>",
-                        columnDefs: [
-                        {
-                            targets: [0], // Assuming the date column is the first column (index 0)
-                            type: 'date', // Treat it as a date type column
-                        }
-                    ]
+                    columnDefs: [{
+                        targets: [0], // Assuming the date column is the first column (index 0)
+                        type: 'date', // Treat it as a date type column
+                    }]
                 })
                 table.buttons().container().appendTo($('.dataTables_wrapper .col-md-6.text-right'));
                 $(document).on('change', '#project_id', function() {
