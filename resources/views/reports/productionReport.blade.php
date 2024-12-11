@@ -167,7 +167,7 @@
                                         floor(($totalSeconds % 3600) / 60), // Minutes
                                         $totalSeconds % 60, // Seconds
                                     );
-                                    if($target !== '--') {
+                                    if($target !== '--' && $target !== null) {
                                         $target_per_hour = (int) $target->target_per_day / 8;
                                         list($hours, $minutes, $seconds) = explode(':', $totalWorkTime);
                                         $totalWorkTimeInHours = $hours + ($minutes / 60) + ($seconds / 3600);
