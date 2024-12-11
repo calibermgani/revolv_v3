@@ -696,9 +696,9 @@ class ReportsController extends Controller
                 // }
                
                 foreach ($workingDates as $date) {              
-                    $start_date = $data['date'] . " 17:00:00";
-                    $end_date = date('Y-m-d', strtotime($data['date'] . ' +1 day')) . " 05:00:00";
-                    foreach ($productionReportArray as $employee) {dd($date,$start_date,$end_date,$employee['worked_time']);
+                    $start_date = $date . " 17:00:00";
+                    $end_date = date('Y-m-d', strtotime($date. ' +1 day')) . " 05:00:00";
+                    foreach ($productionReportArray as $employee) {
                         foreach ($employee['worked_time'] as $time) {
                            if (strtotime($time) >= strtotime($start_date) && strtotime($time) <= strtotime($end_date)) {
                                 $finalData[] = [
