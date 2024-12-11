@@ -145,13 +145,16 @@
                                     } else {
                                         $target = '--';
                                     }
+                                    $start_date = $date . " 17:00:00";
+                                    $end_date = date('Y-m-d', strtotime($date . ' +1 day')) . " 05:00:00";
                                     $workTimes = App\Models\CallerChartsWorkLogs::where([
                                         'project_id' => $projectId,
                                         'sub_project_id' => $subProjectId,
                                         'emp_id' => $data['emp_id'],
                                         'record_status' => 'CE_Completed',
                                     ])
-                                        ->whereDate('updated_at', $data['date'])
+                                        // ->whereDate('updated_at', $data['date'])
+                                        ->whereBetween('updated_at', [$start_date, $end_date])
                                         ->whereIn('record_id', $data['workedRecords'])
                                         ->pluck('work_time');
 
