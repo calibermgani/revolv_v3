@@ -543,6 +543,24 @@ class ReportsController extends Controller
                 if($request->work_date) {
                     $workDate = $request->work_date;
                 }
+                $work_date = $request->work_date;
+                $workingDates = [];
+                if (isset($work_date) && !empty($work_date)) {
+                    $work_date = explode(' - ', $work_date);
+                    $start_date = new \DateTime($work_date[0]);
+                    $end_date = new \DateTime($work_date[1]);
+                    $end_date->modify('+1 day'); // Include the end date
+                
+                    while ($start_date < $end_date) {
+                        // Exclude Saturdays (6) and Sundays (0)
+                        if ($start_date->format('N') < 6) {
+                            $workingDates[] = $start_date->format('Y-m-d');
+                        }
+                        $start_date->modify('+1 day');
+                    }
+                } else {
+                    $workingDates = [];
+                }
                 $productionReportList = collect(); $productionReportArray =[]; $excel_name = 'Resolv';
                 if ($request->project_id && $request->sub_project_id) {
                     $decodedClientName = Helpers::projectName($request->project_id)->project_name;
@@ -637,7 +655,7 @@ class ReportsController extends Controller
                                 ->toArray();
                                 $productionReportArray[$key]['worked_time'] = $modelClass::where('CE_emp_id', $data['CE_emp_id']) 
                                 // ->where('coder_work_date', $data['coder_work_date'] ?? null)
-                                ->whereNotNull('coder_work_date')
+                                ->whereIn('coder_work_date',$workingDates)
                                 ->where('chart_status', 'CE_Completed')
                                 ->when(in_array('activity', $columns), function($query) use ($data) {
                                     return $query->where('activity', $data['activity'] ?? null);
@@ -657,24 +675,7 @@ class ReportsController extends Controller
                     } 
                 }
              
-                $work_date = $request->work_date;
-                $workingDates = [];
-                if (isset($work_date) && !empty($work_date)) {
-                    $work_date = explode(' - ', $work_date);
-                    $start_date = new \DateTime($work_date[0]);
-                    $end_date = new \DateTime($work_date[1]);
-                    $end_date->modify('+1 day'); // Include the end date
-                
-                    while ($start_date < $end_date) {
-                        // Exclude Saturdays (6) and Sundays (0)
-                        if ($start_date->format('N') < 6) {
-                            $workingDates[] = $start_date->format('Y-m-d');
-                        }
-                        $start_date->modify('+1 day');
-                    }
-                } else {
-                    $workingDates = [];
-                }
+               
                 
                 // Process your production report data
          
