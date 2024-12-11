@@ -673,7 +673,7 @@ class ReportsController extends Controller
             
                       
                     } 
-                }
+                }dd($productionReportArray);
              
                 $finalData = [];
             
