@@ -683,7 +683,7 @@ class ReportsController extends Controller
                 //         $record['working_date'][] = $date;
                 //     }
                 // }
-                // dd($workingDates,$productionReportArray);
+                /// dd($workingDates,$productionReportArray);
              
                 $finalData = [];
                 dd($workingDates,$productionReportArray);
