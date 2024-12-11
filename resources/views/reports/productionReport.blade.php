@@ -170,7 +170,7 @@
                                     if($target !== '--' && $target !== null) {
                                         $target_per_hour = (int) $target->target_per_day / 8;
                                         list($hours, $minutes, $seconds) = explode(':', $totalWorkTime);
-                                        $totalWorkTimeInHours = $hours + ($minutes / 60) + ($seconds / 3600);
+                                        $totalWorkTimeInHours = $hours + ($minutes / 60) + ($seconds / 3600);dd($totalWorkTimeInHours);
                                         $achievedPercentage = round(($data['count'] * 100) / ($target_per_hour * $totalWorkTimeInHours), 2);
                                     } else {
                                         $achievedPercentage = '--';
