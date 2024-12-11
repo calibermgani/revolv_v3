@@ -703,7 +703,7 @@ class ReportsController extends Controller
                         foreach ($employee['worked_time'] as $time) {
                            if (strtotime($time) >= strtotime($start_date) && strtotime($time) <= strtotime($end_date)) {
                                 $date1 =$date;
-                                $final_work_time['worked_time'] = $time;                                
+                                $final_work_time['worked_time'] = $time; dd($date,$final_work_time);                               
                             }
 
                         }
