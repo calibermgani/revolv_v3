@@ -665,7 +665,7 @@ class ReportsController extends Controller
                                 })
                                 ->pluck('updated_at')
                                 ->map(function ($updatedAt) {
-                                    return date('Y-m-d h:i:s', strtotime($updatedAt)); // Convert to desired format
+                                    return date('Y-m-d H:i:s', strtotime($updatedAt)); // Convert to desired format
                                 })
                                 ->toArray();
 
