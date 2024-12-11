@@ -686,7 +686,7 @@ class ReportsController extends Controller
                 // dd($workingDates,$productionReportArray);
              
                 $finalData = [];
-                
+                dd($workingDates,$productionReportArray);
                 // Combine dates with employees
                 foreach ($workingDates as $date) {
                     foreach ($productionReportArray as $employee) {
