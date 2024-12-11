@@ -729,11 +729,7 @@ class ReportsController extends Controller
                             ];
                         }
                     }
-                }
-                
-                dd($finalData,$productionReportArray); // Output the final data for verification
-                
-                
+                }               
              
                 
                 return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','workingDates','finalData','excel_name'));
