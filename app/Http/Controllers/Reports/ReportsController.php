@@ -715,7 +715,7 @@ class ReportsController extends Controller
                             }
                         }
                     }               
-                }
+                }dd($finalData);
                 return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','workingDates','finalData','excel_name'));
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
