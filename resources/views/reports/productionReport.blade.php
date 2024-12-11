@@ -160,7 +160,7 @@
                                         return $carry + $hours * 3600 + $minutes * 60 + $seconds;
                                     }, 0);
 
-                                    // Convert total seconds back to H:i:s format
+                                    /// Convert total seconds back to H:i:s format
                                     $totalWorkTime = sprintf(
                                         '%02d:%02d:%02d',
                                         floor($totalSeconds / 3600), // Hours
