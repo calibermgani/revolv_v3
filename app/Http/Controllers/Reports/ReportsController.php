@@ -723,7 +723,7 @@ class ReportsController extends Controller
                             'activity' => $employee['activity'],
                             'sub_activity' => $employee['sub_activity'],
                             'count' => $employee['count'],
-                            'workedRecords' => $employee['workedRecords'],
+                            // 'workedRecords' => $employee['workedRecords'],
                             'worked_time' => $final_work_time
                         ];
                     }
