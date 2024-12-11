@@ -177,7 +177,7 @@
                                         $target_per_minute = (int) $target->target_per_hour / 60;
                                         $target_per_second = (int) $target->target_per_minute / 60;
                                         $achievedPercentage = round(($data['count'] * 100) / ($target_per_second), 2); 
-                                        dd($totalWorkTime,$totalSeconds,$target_per_hour,$target_per_minute,$target_per_second$achievedPercentage,$$data['count'] );
+                                        // dd($totalWorkTime,$totalSeconds,$target_per_hour,$target_per_minute,$target_per_second$achievedPercentage,$$data['count'] );
                                     } else {
                                         $achievedPercentage = '--';
                                     }
