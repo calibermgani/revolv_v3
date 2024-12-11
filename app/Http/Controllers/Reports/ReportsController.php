@@ -698,8 +698,7 @@ class ReportsController extends Controller
 
                 foreach ($workingDates as $date) {
                     $start_date = $date . " 17:00:00";
-                    $end_date = date('Y-m-d', strtotime($date . ' +1 day')) . " 05:00:00";
-                
+                    $end_date = date('Y-m-d', strtotime($date . ' +1 day')) . " 05:00:00";                
                     foreach ($productionReportArray as $employee) {
                         $final_work_time = [];
                         $date1 = ''; // Reset date1 for each employee
