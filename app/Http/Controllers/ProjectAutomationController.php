@@ -81,7 +81,8 @@ use App\Models\MecoAr;
 use App\Models\MecoArDuplicates;
 use App\Models\MosiDrElsamad;
 use App\Models\MosiDrElsamadDuplicates;
-
+use App\Models\IfwAr;
+use App\Models\IfwArDuplicates;
 
 class ProjectAutomationController extends Controller
 {
@@ -3655,6 +3656,118 @@ class ProjectAutomationController extends Controller
              $e->getMessage();
          }
      }
+
+
+     // Imaging for Women
+
+
+     public function ImagingforWomenAR(Request $request)
+     {
+         try {
+             $attributes = [
+                    'resp_ins_plan_type' => isset($request->resp_ins_plan_type) && $request->resp_ins_plan_type != "NULL" ? $request->resp_ins_plan_type : NULL,  
+                    'resp_ins_name' => isset($request->resp_ins_name) && $request->resp_ins_name != "NULL" ? $request->resp_ins_name : NULL,  
+                    'follow_up_status' => isset($request->follow_up_status) && $request->follow_up_status != "NULL" ? $request->follow_up_status : NULL,  
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                    'follow_up_status' => isset($request->follow_up_status) && $request->follow_up_status != "NULL" ? $request->follow_up_status : NULL,  
+                    'account_id' => isset($request->account_id) && $request->account_id != "NULL" ? $request->account_id : NULL,
+                    'current' => isset($request->current) && $request->current != "NULL" ? $request->current : NULL,
+                    '30_days' => isset($request->to_30_days) && $request->to_30_days != "NULL" ? $request->to_30_days : NULL,
+                    '60_days' => isset($request->to_60_days) && $request->to_60_days != "NULL" ? $request->to_60_days : NULL,
+                    '90_days' => isset($request->to_90_days) && $request->to_90_days != "NULL" ? $request->to_90_days : NULL,
+                    '120_days' => isset($request->to_120_days) && $request->to_120_days != "NULL" ? $request->to_120_days : NULL,
+                    '150_days' => isset($request->to_150_days) && $request->to_150_days != "NULL" ? $request->to_150_days : NULL,
+                    'total' => isset($request->total) && $request->total != "NULL" ? $request->total : NULL,
+                    '60_greater' => isset($request->greater_60) && $request->greater_60 != "NULL" ? $request->greater_60 : NULL,
+                    
+                ];
+ 
+             $duplicateRecordExisting  =  IfwAr::where($attributes)->exists();
+             if (!$duplicateRecordExisting) {
+                IfwAr::insert([
+                    'resp_ins_plan_type' => isset($request->resp_ins_plan_type) && $request->resp_ins_plan_type != "NULL" ? $request->resp_ins_plan_type : NULL,  
+                    'resp_ins_name' => isset($request->resp_ins_name) && $request->resp_ins_name != "NULL" ? $request->resp_ins_name : NULL,  
+                    'follow_up_status' => isset($request->follow_up_status) && $request->follow_up_status != "NULL" ? $request->follow_up_status : NULL,  
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                    'follow_up_status' => isset($request->follow_up_status) && $request->follow_up_status != "NULL" ? $request->follow_up_status : NULL,  
+                    'account_id' => isset($request->account_id) && $request->account_id != "NULL" ? $request->account_id : NULL,
+                    'current' => isset($request->current) && $request->current != "NULL" ? $request->current : NULL,
+                    '30_days' => isset($request->to_30_days) && $request->to_30_days != "NULL" ? $request->to_30_days : NULL,
+                    '60_days' => isset($request->to_60_days) && $request->to_60_days != "NULL" ? $request->to_60_days : NULL,
+                    '90_days' => isset($request->to_90_days) && $request->to_90_days != "NULL" ? $request->to_90_days : NULL,
+                    '120_days' => isset($request->to_120_days) && $request->to_120_days != "NULL" ? $request->to_120_days : NULL,
+                    '150_days' => isset($request->to_150_days) && $request->to_150_days != "NULL" ? $request->to_150_days : NULL,
+                    'total' => isset($request->total) && $request->total != "NULL" ? $request->total : NULL,
+                    '60_greater' => isset($request->greater_60) && $request->greater_60 != "NULL" ? $request->greater_60 : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                     ]);
+                         return response()->json(['message' => 'Record Inserted Successfully']);
+             } else {
+                 $duplicateRecord  =  IfwAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                 if ($duplicateRecord) {
+                     $duplicateRecord->update([
+                        'resp_ins_plan_type' => isset($request->resp_ins_plan_type) && $request->resp_ins_plan_type != "NULL" ? $request->resp_ins_plan_type : NULL,  
+                        'resp_ins_name' => isset($request->resp_ins_name) && $request->resp_ins_name != "NULL" ? $request->resp_ins_name : NULL,  
+                        'follow_up_status' => isset($request->follow_up_status) && $request->follow_up_status != "NULL" ? $request->follow_up_status : NULL,  
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                        'follow_up_status' => isset($request->follow_up_status) && $request->follow_up_status != "NULL" ? $request->follow_up_status : NULL,  
+                        'account_id' => isset($request->account_id) && $request->account_id != "NULL" ? $request->account_id : NULL,
+                        'current' => isset($request->current) && $request->current != "NULL" ? $request->current : NULL,
+                        '30_days' => isset($request->to_30_days) && $request->to_30_days != "NULL" ? $request->to_30_days : NULL,
+                        '60_days' => isset($request->to_60_days) && $request->to_60_days != "NULL" ? $request->to_60_days : NULL,
+                        '90_days' => isset($request->to_90_days) && $request->to_90_days != "NULL" ? $request->to_90_days : NULL,
+                        '120_days' => isset($request->to_120_days) && $request->to_120_days != "NULL" ? $request->to_120_days : NULL,
+                        '150_days' => isset($request->to_150_days) && $request->to_150_days != "NULL" ? $request->to_150_days : NULL,
+                        'total' => isset($request->total) && $request->total != "NULL" ? $request->total : NULL,
+                        '60_greater' => isset($request->greater_60) && $request->greater_60 != "NULL" ? $request->greater_60 : NULL,                 
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                     ]);
+                 }
+                 return response()->json(['message' => 'Existing Record Updated Successfully']);
+             }
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+     public function ImagingforWomenArDuplicates(Request $request)
+     {
+         try {
+            IfwArDuplicates::insert([
+                'resp_ins_plan_type' => isset($request->resp_ins_plan_type) && $request->resp_ins_plan_type != "NULL" ? $request->resp_ins_plan_type : NULL,  
+                'resp_ins_name' => isset($request->resp_ins_name) && $request->resp_ins_name != "NULL" ? $request->resp_ins_name : NULL,  
+                'follow_up_status' => isset($request->follow_up_status) && $request->follow_up_status != "NULL" ? $request->follow_up_status : NULL,  
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                'follow_up_status' => isset($request->follow_up_status) && $request->follow_up_status != "NULL" ? $request->follow_up_status : NULL,  
+                'account_id' => isset($request->account_id) && $request->account_id != "NULL" ? $request->account_id : NULL,
+                'current' => isset($request->current) && $request->current != "NULL" ? $request->current : NULL,
+                '30_days' => isset($request->to_30_days) && $request->to_30_days != "NULL" ? $request->to_30_days : NULL,
+                '60_days' => isset($request->to_60_days) && $request->to_60_days != "NULL" ? $request->to_60_days : NULL,
+                '90_days' => isset($request->to_90_days) && $request->to_90_days != "NULL" ? $request->to_90_days : NULL,
+                '120_days' => isset($request->to_120_days) && $request->to_120_days != "NULL" ? $request->to_120_days : NULL,
+                '150_days' => isset($request->to_150_days) && $request->to_150_days != "NULL" ? $request->to_150_days : NULL,
+                'total' => isset($request->total) && $request->total != "NULL" ? $request->total : NULL,
+                '60_greater' => isset($request->greater_60) && $request->greater_60 != "NULL" ? $request->greater_60 : NULL,                   
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+             ]);
+             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+
+
+
+
+
 
 
 }
