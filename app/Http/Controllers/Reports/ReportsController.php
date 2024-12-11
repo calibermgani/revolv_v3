@@ -706,14 +706,17 @@ class ReportsController extends Controller
                         foreach ($employee['worked_time'] as $time) {
                             // Check if the worked time falls within the date range
                             if (strtotime($time) >= strtotime($start_date) && strtotime($time) <= strtotime($end_date)) {
-                                $date1 = $date; // Assign the current date if there is a match
+                                // $date1 = $date; // Assign the current date if there is a match
                                 $final_work_time[] = $time; // Add the worked time to the final array
                             }
                         }
                 
                         // If there is no matching worked time, skip adding to finalData
-                        if (empty($final_work_time)) {
-                            continue;
+                        // if (empty($final_work_time)) {
+                        //     continue;
+                        // }
+                        if (!empty($final_work_time)) {
+                            $date1 = $date; // Assign the current date
                         }
                 
                         $finalData[] = [
