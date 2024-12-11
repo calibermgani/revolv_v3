@@ -543,21 +543,35 @@ class ReportsController extends Controller
                 if($request->work_date) {
                     $workDate = $request->work_date;
                 }
+                $work_date = $request->work_date;
+                $workingDates = [];
+                if (isset($work_date) && !empty($work_date)) {
+                    $work_date = explode(' - ', $work_date);
+                    $start_date = new \DateTime($work_date[0]);
+                    $end_date = new \DateTime($work_date[1]);
+                    $end_date->modify('+1 day'); // Include the end date
+                
+                    while ($start_date < $end_date) {
+                        // Exclude Saturdays (6) and Sundays (0)
+                        if ($start_date->format('N') < 6) {
+                            $workingDates[] = $start_date->format('Y-m-d');
+                        }
+                        $start_date->modify('+1 day');
+                    }
+                } else {
+                    $workingDates = [];
+                }
                 $productionReportList = collect(); $productionReportArray =[]; $excel_name = 'Resolv';
                 if ($request->project_id && $request->sub_project_id) {
                     $decodedClientName = Helpers::projectName($request->project_id)->project_name;
                     $decodedSubProjectName = $request->sub_project_id == null ? 'project' : Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
                     $excel_name = $decodedClientName.'-'.$decodedSubProjectName;
-            
-                    // Generate dynamic table/model class name
                     $tableName = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName), '_');
                     $modelName = Str::studly($tableName);
-                    $modelClass = "App\\Models\\" . $modelName . "Datas";
-            
+                    $modelClass = "App\\Models\\" . $modelName . "Datas";            
                     if (class_exists($modelClass)) {
                         // Check if columns exist
-                        $columns = Schema::getColumnListing((new $modelClass)->getTable());
-            
+                        $columns = Schema::getColumnListing((new $modelClass)->getTable());            
                         // Check if the necessary columns exist in the table
                         $hasActivity = in_array('activity', $columns);
                         $hasSubActivity = in_array('sub_activity', $columns);
@@ -639,6 +653,21 @@ class ReportsController extends Controller
                                 })
                                 ->pluck('parent_id')
                                 ->toArray();
+                                $productionReportArray[$key]['worked_time'] = $modelClass::where('CE_emp_id', $data['CE_emp_id']) 
+                                // ->where('coder_work_date', $data['coder_work_date'] ?? null)
+                                ->whereIn('coder_work_date',$workingDates)
+                                ->where('chart_status', 'CE_Completed')
+                                ->when(in_array('activity', $columns), function($query) use ($data) {
+                                    return $query->where('activity', $data['activity'] ?? null);
+                                })
+                                ->when(in_array('sub_activity', $columns), function($query) use ($data) {
+                                    return $query->where('sub_activity', $data['sub_activity'] ?? null);
+                                })
+                                ->pluck('updated_at')
+                                ->map(function ($updatedAt) {
+                                    return date('Y-m-d H:i:s', strtotime($updatedAt)); // Convert to desired format
+                                })
+                                ->toArray();
 
                         }
             
@@ -646,24 +675,7 @@ class ReportsController extends Controller
                     } 
                 }
              
-                $work_date = $request->work_date;
-                $workingDates = [];
-                if (isset($work_date) && !empty($work_date)) {
-                    $work_date = explode(' - ', $work_date);
-                    $start_date = new \DateTime($work_date[0]);
-                    $end_date = new \DateTime($work_date[1]);
-                    $end_date->modify('+1 day'); // Include the end date
-                
-                    while ($start_date < $end_date) {
-                        // Exclude Saturdays (6) and Sundays (0)
-                        if ($start_date->format('N') < 6) {
-                            $workingDates[] = $start_date->format('Y-m-d');
-                        }
-                        $start_date->modify('+1 day');
-                    }
-                } else {
-                    $workingDates = [];
-                }
+               
                 
                 // Process your production report data
          
@@ -672,10 +684,10 @@ class ReportsController extends Controller
                 //         $record['working_date'][] = $date;
                 //     }
                 // }
-                // dd($workingDates,$productionReportArray);
+                /// dd($workingDates,$productionReportArray);
              
                 $finalData = [];
-                
+                // dd($workingDates,$productionReportArray);
                 // Combine dates with employees
                 foreach ($workingDates as $date) {
                     foreach ($productionReportArray as $employee) {
@@ -687,7 +699,8 @@ class ReportsController extends Controller
                                 'activity' => $employee['activity'],
                                 'sub_activity' => $employee['sub_activity'],
                                 'count' => $employee['count'],
-                                'workedRecords' => $employee['workedRecords']
+                                'workedRecords' => $employee['workedRecords'],
+                                'worked_time' => $employee['worked_time']
                             
                             ];
                         }

@@ -106,6 +106,7 @@
                     <tbody>
                         @if (!empty($finalData))
                             @php
+                            dd($finalData);
                                 if ($projectId != null) {
                                     $projectName = App\Models\project::where('project_id', $projectId)->first();
                                 } else {
@@ -144,14 +145,17 @@
                                         ])->first();
                                     } else {
                                         $target = '--';
-                                    }
+                                    }dd($data);
+                                    $start_date = $data['date'] . " 17:00:00";
+                                    $end_date = date('Y-m-d', strtotime($data['date'] . ' +1 day')) . " 05:00:00";
                                     $workTimes = App\Models\CallerChartsWorkLogs::where([
                                         'project_id' => $projectId,
                                         'sub_project_id' => $subProjectId,
                                         'emp_id' => $data['emp_id'],
                                         'record_status' => 'CE_Completed',
                                     ])
-                                        ->whereDate('updated_at', $data['date'])
+                                        // ->whereDate('updated_at', $data['date'])
+                                        ->whereBetween('updated_at', [$start_date, $end_date])
                                         ->whereIn('record_id', $data['workedRecords'])
                                         ->pluck('work_time');
 
@@ -160,23 +164,22 @@
                                         return $carry + $hours * 3600 + $minutes * 60 + $seconds;
                                     }, 0);
 
-                                    // Convert total seconds back to H:i:s format
+                                    /// Convert total seconds back to H:i:s format
                                     $totalWorkTime = sprintf(
                                         '%02d:%02d:%02d',
                                         floor($totalSeconds / 3600), // Hours
                                         floor(($totalSeconds % 3600) / 60), // Minutes
                                         $totalSeconds % 60, // Seconds
                                     );
-                                    if($target !== '--' && $target !== null) {
-                                        $target_per_hour = (int) $target->target_per_day / 8;
-                                        list($hours, $minutes, $seconds) = explode(':', $totalWorkTime);
-                                        $totalWorkTimeInHours = $hours + ($minutes / 60) + ($seconds / 3600);
-                                        $achievedPercentage = round(($data['count'] * 100) / ($target_per_hour * $totalWorkTimeInHours), 2);
+                                    if ($target !== '--' && $target !== null && $totalSeconds !== 0) {
+                                        $target_per_second = (int) $target->target_per_day / 28800; //8hrs equal to 28800 seconds
+                                        $achievedPercentage = round(
+                                            ($data['count'] * 100) / ($target_per_second * $totalSeconds),
+                                            2,
+                                        );
                                     } else {
                                         $achievedPercentage = '--';
                                     }
-                                
-
                                 @endphp
                                 <tr>
                                     <td>{{ $data['date'] }}</td>
@@ -194,7 +197,8 @@
                                     <td>{{ $data['activity'] != null && $data['sub_activity'] != null ? $data['count'] : '--' }}
                                     </td>
                                     {{-- <td>{{ $target !== '--' && $target !== null ? round(($data['count'] * 100) / $target->target_per_day, 2) : '--' }}</td> --}}
-                                    <td>{{ $achievedPercentage   !== '--' ? $achievedPercentage.'%' : $achievedPercentage}}</td>
+                                    <td>{{ $achievedPercentage !== '--' ? $achievedPercentage . '%' : $achievedPercentage }}
+                                    </td>
                                 </tr>
                             @endforeach
                         @endif
@@ -242,14 +246,17 @@
                 if (subproject_id != 0) {
                     subProjectNameList(project_id, subproject_id);
                 }
-                var subprojectCount;var excel_name = @json($excel_name);
+                var subprojectCount;
+                var excel_name = @json($excel_name);
                 var table = $('#prodcution_report_table').DataTable({
                     processing: true,
                     lengthChange: false,
                     clientSide: true,
                     searching: true,
                     pageLength: 20,
-                    order: [[0, 'desc']],
+                    order: [
+                        [0, 'desc']
+                    ],
                     language: {
                         "search": '',
                         "searchPlaceholder": "   Search",
@@ -265,12 +272,10 @@
                     }],
                     dom: "<'row'<'col-md-6 text-left'f><'col-md-6 text-right'B>>" +
                         "<'row'<'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>",
-                        columnDefs: [
-                        {
-                            targets: [0], // Assuming the date column is the first column (index 0)
-                            type: 'date', // Treat it as a date type column
-                        }
-                    ]
+                    columnDefs: [{
+                        targets: [0], // Assuming the date column is the first column (index 0)
+                        type: 'date', // Treat it as a date type column
+                    }]
                 })
                 table.buttons().container().appendTo($('.dataTables_wrapper .col-md-6.text-right'));
                 $(document).on('change', '#project_id', function() {
