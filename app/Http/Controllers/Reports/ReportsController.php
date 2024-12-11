@@ -697,37 +697,42 @@ class ReportsController extends Controller
                 $finalData = [];
 
                 foreach ($workingDates as $date) {
-                    $start_date = $date . " 17:00:00";
-                    $end_date = date('Y-m-d', strtotime($date . ' +1 day')) . " 05:00:00";                
+                    $start_date = $date . " 17:00:00"; // Start time for the date
+                    $end_date = date('Y-m-d', strtotime($date . ' +1 day')) . " 05:00:00"; // End time for the next day
+                
                     foreach ($productionReportArray as $employee) {
                         $final_work_time = [];
                         $date1 = ''; // Reset date1 for each employee
                 
+                        // Loop through the worked_time for each employee
                         foreach ($employee['worked_time'] as $time) {
-                            // Check if the worked time falls within the date range
+                            // Check if the worked time falls within the specified date range
                             if (strtotime($time) >= strtotime($start_date) && strtotime($time) <= strtotime($end_date)) {
-                                $date1 = $date; // Assign the current date if there is a match
-                                $final_work_time[] = $time; // Add the worked time to the final array
+                                // Assign the date1 only if it's not already assigned (we want to assign it once)
+                                if (!$date1) {
+                                    $date1 = $date;
+                                }
+                                $final_work_time[] = $time; // Add the valid worked time to the final array
                             }
                         }
                 
-                        // If there is no matching worked time, skip adding to finalData
-                        if (empty($final_work_time)) {
-                            continue;
+                        // Only add to finalData if we have valid worked_time
+                        if (!empty($final_work_time)) {
+                            $finalData[] = [
+                                'date' => $date1, // The date1 assigned for this employee
+                                'emp_id' => $employee['emp_id'],
+                                'emp_name' => $employee['arName'],
+                                'activity' => $employee['activity'],
+                                'sub_activity' => $employee['sub_activity'],
+                                'count' => $employee['count'],
+                                'worked_time' => $final_work_time
+                            ];
                         }
-                
-                        $finalData[] = [
-                            'date' => $date1,
-                            'emp_id' => $employee['emp_id'],
-                            'emp_name' => $employee['arName'],
-                            'activity' => $employee['activity'],
-                            'sub_activity' => $employee['sub_activity'],
-                            'count' => $employee['count'],
-                            // 'workedRecords' => $employee['workedRecords'],
-                            'worked_time' => $final_work_time
-                        ];
                     }
                 }
+                
+                dd($finalData); // Output the final data for verification
+                
                 
                 dd($finalData); // Final output after processing all data
                 
