@@ -166,16 +166,9 @@
                                         floor($totalSeconds / 3600), // Hours
                                         floor(($totalSeconds % 3600) / 60), // Minutes
                                         $totalSeconds % 60, // Seconds
-                                    );dd($workTimes,$data['emp_id'],$totalWorkTime);
-                                    if($target !== '--' && $target !== null) {
-                                        $target_per_hour = (int) $target->target_per_day / 8;
-                                        $target_per_minute = (int) $target->target_per_day / 480;
-                                        $target_per_second = (int) $target->target_per_day / 28800;
-                                  
-                                      
-                                
-                                        // $target_per_hour = (int) $target->target_per_day / 8;
-                                       
+                                    );dd($workTimes,$data['emp_id'],$totalWorkTime,$totalSeconds);
+                                    if($target !== '--' && $target !== null) {                                    
+                                        $target_per_second = (int) $target->target_per_day / 28800;//8hrs equal to 28800 seconds                                           
                                         $achievedPercentage = round(($data['count'] * 100) / ($target_per_second*$totalSeconds), 2); 
                                         // /dd($totalWorkTime,$totalSeconds,$target_per_hour,$target_per_minute,$target_per_second$achievedPercentage,$$data['count'] ,$totalSeconds);
                                     } else {
