@@ -717,6 +717,7 @@ class ReportsController extends Controller
                         // }
                         if (!empty($final_work_time)) {
                             $date1 = $date; // Assign the current date
+                            continue;
                         }
                 
                         $finalData[] = [
