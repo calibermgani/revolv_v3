@@ -144,7 +144,7 @@
                                         ])->first();
                                     } else {
                                         $target = '--';
-                                    }
+                                    }dd($data);
                                     $start_date = $data['date'] . " 17:00:00";
                                     $end_date = date('Y-m-d', strtotime($data['date'] . ' +1 day')) . " 05:00:00";
                                     $workTimes = App\Models\CallerChartsWorkLogs::where([

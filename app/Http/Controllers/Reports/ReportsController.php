@@ -548,16 +548,12 @@ class ReportsController extends Controller
                     $decodedClientName = Helpers::projectName($request->project_id)->project_name;
                     $decodedSubProjectName = $request->sub_project_id == null ? 'project' : Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
                     $excel_name = $decodedClientName.'-'.$decodedSubProjectName;
-            
-                    // Generate dynamic table/model class name
                     $tableName = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName), '_');
                     $modelName = Str::studly($tableName);
-                    $modelClass = "App\\Models\\" . $modelName . "Datas";
-            
+                    $modelClass = "App\\Models\\" . $modelName . "Datas";            
                     if (class_exists($modelClass)) {
                         // Check if columns exist
-                        $columns = Schema::getColumnListing((new $modelClass)->getTable());
-            
+                        $columns = Schema::getColumnListing((new $modelClass)->getTable());            
                         // Check if the necessary columns exist in the table
                         $hasActivity = in_array('activity', $columns);
                         $hasSubActivity = in_array('sub_activity', $columns);
@@ -639,6 +635,10 @@ class ReportsController extends Controller
                                 })
                                 ->pluck('parent_id')
                                 ->toArray();
+                                $productionReportArray[$key]['worked_time'] = $modelClass::where('CE_emp_id', $data['CE_emp_id']) 
+                                ->where('coder_work_date', $data['coder_work_date'] ?? null)
+                                ->where('chart_status', 'CE_Completed')
+                                ->pluck('updated_at')->toArray();
 
                         }
             
@@ -687,7 +687,8 @@ class ReportsController extends Controller
                                 'activity' => $employee['activity'],
                                 'sub_activity' => $employee['sub_activity'],
                                 'count' => $employee['count'],
-                                'workedRecords' => $employee['workedRecords']
+                                'workedRecords' => $employee['workedRecords'],
+                                'worked_time' => $employee['worked_time']
                             
                             ];
                         }
