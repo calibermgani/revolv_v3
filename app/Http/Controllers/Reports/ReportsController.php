@@ -675,36 +675,46 @@ class ReportsController extends Controller
                     } 
                 }
              
-               
-                
-                // Process your production report data
-         
+                $finalData = [];
+            
                 // foreach ($workingDates as $date) {
-                //     foreach ($productionReportArray as &$record) {
-                //         $record['working_date'][] = $date;
+                //     foreach ($productionReportArray as $employee) {
+                //         if($date ==  $employee['coder_work_date']) {
+                //             $finalData[] = [
+                //                 'date' => $date,
+                //                 'emp_id' => $employee['emp_id'],
+                //                 'emp_name' => $employee['arName'],
+                //                 'activity' => $employee['activity'],
+                //                 'sub_activity' => $employee['sub_activity'],
+                //                 'count' => $employee['count'],
+                //                 'workedRecords' => $employee['workedRecords'],
+                //                 'worked_time' => $employee['worked_time']
+                            
+                //             ];
+                //         }
                 //     }
                 // }
-                /// dd($workingDates,$productionReportArray);
-             
-                $finalData = [];
-                // dd($workingDates,$productionReportArray);
-                // Combine dates with employees
-                foreach ($workingDates as $date) {
+               
+                foreach ($workingDates as $date) {              
+                    $start_date = $data['date'] . " 17:00:00";
+                    $end_date = date('Y-m-d', strtotime($data['date'] . ' +1 day')) . " 05:00:00";
                     foreach ($productionReportArray as $employee) {
-                        if($date ==  $employee['coder_work_date']) {
-                            $finalData[] = [
-                                'date' => $date,
-                                'emp_id' => $employee['emp_id'],
-                                'emp_name' => $employee['arName'],
-                                'activity' => $employee['activity'],
-                                'sub_activity' => $employee['sub_activity'],
-                                'count' => $employee['count'],
-                                'workedRecords' => $employee['workedRecords'],
-                                'worked_time' => $employee['worked_time']
-                            
-                            ];
+                        foreach ($employee['worked_time'] as $time) {
+                           if (strtotime($time) >= strtotime($start_date) && strtotime($time) <= strtotime($end_date)) {
+                                $finalData[] = [
+                                    'date' => $date,
+                                    'emp_id' => $employee['emp_id'],
+                                    'emp_name' => $employee['arName'],
+                                    'activity' => $employee['activity'],
+                                    'sub_activity' => $employee['sub_activity'],
+                                    'count' => $employee['count'],
+                                    'workedRecords' => $employee['workedRecords'],
+                                    'worked_time' => $time
+                                
+                                ];
+                            }
                         }
-                    }
+                    }               
                 }
                 return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','workingDates','finalData','excel_name'));
             } catch (\Exception $e) {
