@@ -716,10 +716,6 @@ class ReportsController extends Controller
                             continue;
                         }
                 
-                        // Debugging: Check final values before pushing to finalData
-                        dd($date, $final_work_time); // Check values here after inner loop
-                
-                        // Add to finalData array for each employee
                         $finalData[] = [
                             'date' => $date1,
                             'emp_id' => $employee['emp_id'],
