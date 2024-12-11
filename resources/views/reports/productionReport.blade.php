@@ -166,7 +166,7 @@
                                         floor($totalSeconds / 3600), // Hours
                                         floor(($totalSeconds % 3600) / 60), // Minutes
                                         $totalSeconds % 60, // Seconds
-                                    );
+                                    );dd($workTimes,$data['emp_id'],$totalWorkTime);
                                     if($target !== '--' && $target !== null) {
                                         $target_per_hour = (int) $target->target_per_day / 8;
                                         $target_per_minute = (int) $target->target_per_day / 480;
