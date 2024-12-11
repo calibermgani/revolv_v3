@@ -102,6 +102,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('lynne_alba_speech_therapy_solutions_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@lynneAlbaSpeechTherapySolutionsArDuplicates');
     Route::any('marion_eye_center_optical_ar', 'App\Http\Controllers\ProjectAutomationController@MarionEyeCenterOpticalAR');
     Route::any('marion_eye_center_optical_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@MarionEyeCenterOpticalARArDuplicates');
+    Route::any('medValue_offshore_solutions_inc_ar', 'App\Http\Controllers\ProjectAutomationController@MedValueOffshoreSolutionsIncAR');
+    Route::any('medValue_offshore_solutions_inc_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@MedValueOffshoreSolutionsIncArDuplicates');
     
     
 
