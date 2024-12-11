@@ -694,19 +694,33 @@ class ReportsController extends Controller
                 //         }
                 //     }
                 // }
-               
-                foreach ($workingDates as $date) {              
-                    $start_date = $date . " 17:00:00";
-                    $end_date = date('Y-m-d', strtotime($date. ' +1 day')) . " 05:00:00";
-                    foreach ($productionReportArray as $employee) {
-                        $final_work_time =[];$date1 = '';
-                        foreach ($employee['worked_time'] as $time) {
-                           if (strtotime($time) >= strtotime($start_date) && strtotime($time) <= strtotime($end_date)) {
-                                $date1 =$date;
-                                $final_work_time['worked_time'] = $time; dd($date,$final_work_time);                               
-                            }
+                $finalData = [];
 
+                foreach ($workingDates as $date) {
+                    $start_date = $date . " 17:00:00";
+                    $end_date = date('Y-m-d', strtotime($date . ' +1 day')) . " 05:00:00";
+                
+                    foreach ($productionReportArray as $employee) {
+                        $final_work_time = [];
+                        $date1 = ''; // Reset date1 for each employee
+                
+                        foreach ($employee['worked_time'] as $time) {
+                            // Check if the worked time falls within the date range
+                            if (strtotime($time) >= strtotime($start_date) && strtotime($time) <= strtotime($end_date)) {
+                                $date1 = $date; // Assign the current date if there is a match
+                                $final_work_time[] = $time; // Add the worked time to the final array
+                            }
                         }
+                
+                        // If there is no matching worked time, skip adding to finalData
+                        if (empty($final_work_time)) {
+                            continue;
+                        }
+                
+                        // Debugging: Check final values before pushing to finalData
+                        dd($date, $final_work_time); // Check values here after inner loop
+                
+                        // Add to finalData array for each employee
                         $finalData[] = [
                             'date' => $date1,
                             'emp_id' => $employee['emp_id'],
@@ -716,10 +730,12 @@ class ReportsController extends Controller
                             'count' => $employee['count'],
                             'workedRecords' => $employee['workedRecords'],
                             'worked_time' => $final_work_time
-                        
                         ];
-                    }               
-                }dd($finalData);
+                    }
+                }
+                
+                dd($finalData); // Final output after processing all data
+                
                 return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','workingDates','finalData','excel_name'));
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
