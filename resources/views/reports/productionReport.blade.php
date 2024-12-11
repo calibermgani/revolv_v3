@@ -170,7 +170,7 @@
                                     if($target !== '--' && $target !== null) {
                                         $target_per_hour = (int) $target->target_per_day / 8;
                                   
-                                         $totalSeconds = (8 * 3600) ;
+                                        // $totalSeconds = (8 * 3600) ;
                                 
                                         // $target_per_hour = (int) $target->target_per_day / 8;
                                         $target_per_minute = (int) $target->target_per_hour / 60;
