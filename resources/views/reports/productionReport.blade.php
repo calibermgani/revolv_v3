@@ -159,7 +159,7 @@
                                         [$hours, $minutes, $seconds] = explode(':', $time);
                                         return $carry + $hours * 3600 + $minutes * 60 + $seconds;
                                     }, 0);
-dd($totalSeconds,$workTimes);
+
                                     // Convert total seconds back to H:i:s format
                                     $totalWorkTime = sprintf(
                                         '%02d:%02d:%02d',
@@ -170,13 +170,13 @@ dd($totalSeconds,$workTimes);
                                     if($target !== '--' && $target !== null) {
                                         $target_per_hour = (int) $target->target_per_day / 8;
                                         $target_per_minute = (int) $target->target_per_day / 480;
-                                        $target_per_second = (int) $target->target_per_day / 28800;dd($target_per_hour,$target_per_minute,$target_per_second);
+                                        $target_per_second = (int) $target->target_per_day / 28800;
                                   
                                       
                                 
                                         // $target_per_hour = (int) $target->target_per_day / 8;
                                        
-                                        $achievedPercentage = round(($data['count'] * 100) / ($target_per_second), 2); 
+                                        $achievedPercentage = round(($data['count'] * 100) / ($target_per_second*$totalSeconds), 2); 
                                         // /dd($totalWorkTime,$totalSeconds,$target_per_hour,$target_per_minute,$target_per_second$achievedPercentage,$$data['count'] ,$totalSeconds);
                                     } else {
                                         $achievedPercentage = '--';
