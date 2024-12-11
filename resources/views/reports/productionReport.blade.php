@@ -106,7 +106,6 @@
                     <tbody>
                         @if (!empty($finalData))
                             @php
-                            dd($finalData);
                                 if ($projectId != null) {
                                     $projectName = App\Models\project::where('project_id', $projectId)->first();
                                 } else {
@@ -129,7 +128,7 @@
                             @endphp
                             @foreach ($finalData as $data)
                         
-                                @php    dd($data);
+                                @php   
                                     $activity = $data['activity'];
                                     $subActivity = $data['sub_activity'];
                                     if (
@@ -146,7 +145,7 @@
                                         ])->first();
                                     } else {
                                         $target = '--';
-                                    }dd($data);
+                                    }
                                     $start_date = $data['date'] . " 17:00:00";
                                     $end_date = date('Y-m-d', strtotime($data['date'] . ' +1 day')) . " 05:00:00";
                                     $workTimes = App\Models\CallerChartsWorkLogs::where([
