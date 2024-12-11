@@ -169,12 +169,13 @@
                                     );
                                     if($target !== '--' && $target !== null) {
                                         $target_per_hour = (int) $target->target_per_day / 8;
+                                        $target_per_minute = (int) $target->target_per_hour / 60;
+                                        $target_per_second = (int) $target->target_per_minute / 60;dd($target_per_hour,$target_per_minute,$target_per_second);
                                   
                                       
                                 
                                         // $target_per_hour = (int) $target->target_per_day / 8;
-                                        $target_per_minute = (int) $target->target_per_hour / 60;
-                                        $target_per_second = (int) $target->target_per_minute / 60;
+                                       
                                         $achievedPercentage = round(($data['count'] * 100) / ($target_per_second), 2); 
                                         // /dd($totalWorkTime,$totalSeconds,$target_per_hour,$target_per_minute,$target_per_second$achievedPercentage,$$data['count'] ,$totalSeconds);
                                     } else {
