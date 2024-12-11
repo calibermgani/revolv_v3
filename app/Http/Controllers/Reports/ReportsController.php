@@ -543,7 +543,7 @@ class ReportsController extends Controller
                 if($request->work_date) {
                     $workDate = $request->work_date;
                 }
-                $productionReportList = collect(); $productionReportArray =[];
+                $productionReportList = collect(); $productionReportArray =[]; $excel_name = 'Resolv';
                 if ($request->project_id && $request->sub_project_id) {
                     $decodedClientName = Helpers::projectName($request->project_id)->project_name;
                     $decodedSubProjectName = $request->sub_project_id == null ? 'project' : Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
