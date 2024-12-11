@@ -99,7 +99,7 @@
                             <th>Target</th>
                             <th>Per Hour target</th>
                             <th>Production Count</th>
-                            <th>Achieved Target</th>
+                            <th>Achieved Percentage</th>
                         </tr>
                     </thead>
 
@@ -167,8 +167,15 @@
                                         floor(($totalSeconds % 3600) / 60), // Minutes
                                         $totalSeconds % 60, // Seconds
                                     );
-
-                                    // echo $totalWorkTime; // This is your total work time in H:i:s format
+                                    if($target !== '--') {
+                                        $target_per_hour = (int) $target->target_per_day / 8;
+                                        list($hours, $minutes, $seconds) = explode(':', $totalWorkTime);
+                                        $totalWorkTimeInHours = $hours + ($minutes / 60) + ($seconds / 3600);
+                                        $achievedPercentage = round(($data['count'] * 100) / ($target_per_hour * $totalWorkTimeInHours), 2);
+                                    } else {
+                                        $achievedPercentage = '--';
+                                    }
+                                
 
                                 @endphp
                                 <tr>
@@ -186,8 +193,8 @@
                                     </td>
                                     <td>{{ $data['activity'] != null && $data['sub_activity'] != null ? $data['count'] : '--' }}
                                     </td>
-                                    <td>{{ $target !== '--' && $target !== null ? round(($data['count'] * 100) / $target->target_per_day, 2) : '--' }}
-                                    </td>
+                                    {{-- <td>{{ $target !== '--' && $target !== null ? round(($data['count'] * 100) / $target->target_per_day, 2) : '--' }}</td> --}}
+                                    <td>{{ $achievedPercentage   !== '--' ? $achievedPercentage : $achievedPercentage.'%'}}</td>
                                 </tr>
                             @endforeach
                         @endif
@@ -235,7 +242,7 @@
                 if (subproject_id != 0) {
                     subProjectNameList(project_id, subproject_id);
                 }
-                var subprojectCount;
+                var subprojectCount;var excel_name = @json($excel_name);
                 var table = $('#prodcution_report_table').DataTable({
                     processing: true,
                     lengthChange: false,
@@ -254,7 +261,7 @@
                                                         </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></span>`,
                         "className": 'btn btn-primary-export text-white',
                         "title": 'Production Report',
-                        "filename": 'resolv_production_report',
+                        "filename": excel_name + '_production_report',
                     }],
                     dom: "<'row'<'col-md-6 text-left'f><'col-md-6 text-right'B>>" +
                         "<'row'<'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>",

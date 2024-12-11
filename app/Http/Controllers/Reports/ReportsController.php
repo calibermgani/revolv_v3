@@ -547,6 +547,7 @@ class ReportsController extends Controller
                 if ($request->project_id && $request->sub_project_id) {
                     $decodedClientName = Helpers::projectName($request->project_id)->project_name;
                     $decodedSubProjectName = $request->sub_project_id == null ? 'project' : Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
+                    $excel_name = $decodedClientName.'-'.$decodedSubProjectName;
             
                     // Generate dynamic table/model class name
                     $tableName = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName), '_');
@@ -692,7 +693,7 @@ class ReportsController extends Controller
                         }
                     }
                 }
-                return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','workingDates','finalData'));
+                return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','workingDates','finalData','excel_name'));
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
             }
