@@ -79,6 +79,8 @@ use App\Models\LastsAr;
 use App\Models\LastsArDuplicates;
 use App\Models\MecoAr;
 use App\Models\MecoArDuplicates;
+use App\Models\MosiDrElsamad;
+use App\Models\MosiDrElsamadDuplicates;
 
 
 class ProjectAutomationController extends Controller
@@ -3566,9 +3568,93 @@ class ProjectAutomationController extends Controller
      }
 
 
+ // MedValue Offshore Solutions Inc.
 
 
-
+ public function MedValueOffshoreSolutionsIncAR(Request $request)
+     {
+         try {
+             $attributes = [
+                    'follow_up_visit' => isset($request->follow_up_visit) && $request->follow_up_visit != "NULL" ? $request->follow_up_visit : NULL,  
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                    'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL,  
+                    'plan_balance' => isset($request->plan_balance) && $request->plan_balance != "NULL" ? $request->plan_balance : NULL,  
+                    
+                ];
+ 
+             $duplicateRecordExisting  =  MosiDrElsamad::where($attributes)->exists();
+             if (!$duplicateRecordExisting) {
+                MosiDrElsamad::insert([
+                    'follow_up_visit' => isset($request->follow_up_visit) && $request->follow_up_visit != "NULL" ? $request->follow_up_visit : NULL,  
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                    'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL,  
+                    'plan' => isset($request->plan) && $request->plan != "NULL" ? $request->plan : NULL,  
+                    'group_name' => isset($request->group_name) && $request->group_name != "NULL" ? $request->group_name : NULL,
+                    'denial_category' => isset($request->denial_category) && $request->denial_category != "NULL" ? $request->denial_category : NULL,
+                    'reason' => isset($request->reason) && $request->reason != "NULL" ? $request->reason : NULL,
+                    'remit_code' => isset($request->remit_code) && $request->remit_code != "NULL" ? $request->remit_code : NULL,
+                    'plan_balance' => isset($request->plan_balance) && $request->plan_balance != "NULL" ? $request->plan_balance : NULL,
+                    'submit_date' => isset($request->submit_date) && $request->submit_date != "NULL" ? $request->submit_date : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                     ]);
+                         return response()->json(['message' => 'Record Inserted Successfully']);
+             } else {
+                 $duplicateRecord  =  MosiDrElsamad::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                 if ($duplicateRecord) {
+                     $duplicateRecord->update([
+                        'follow_up_visit' => isset($request->follow_up_visit) && $request->follow_up_visit != "NULL" ? $request->follow_up_visit : NULL,  
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                        'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL,  
+                        'plan' => isset($request->plan) && $request->plan != "NULL" ? $request->plan : NULL,  
+                        'group_name' => isset($request->group_name) && $request->group_name != "NULL" ? $request->group_name : NULL,
+                        'denial_category' => isset($request->denial_category) && $request->denial_category != "NULL" ? $request->denial_category : NULL,
+                        'reason' => isset($request->reason) && $request->reason != "NULL" ? $request->reason : NULL,
+                        'remit_code' => isset($request->remit_code) && $request->remit_code != "NULL" ? $request->remit_code : NULL,
+                        'plan_balance' => isset($request->plan_balance) && $request->plan_balance != "NULL" ? $request->plan_balance : NULL,
+                        'submit_date' => isset($request->submit_date) && $request->submit_date != "NULL" ? $request->submit_date : NULL,                   
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                     ]);
+                 }
+                 return response()->json(['message' => 'Existing Record Updated Successfully']);
+             }
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
+     public function MedValueOffshoreSolutionsIncArDuplicates(Request $request)
+     {
+         try {
+            MosiDrElsamadDuplicates::insert([
+                'follow_up_visit' => isset($request->follow_up_visit) && $request->follow_up_visit != "NULL" ? $request->follow_up_visit : NULL,  
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL,  
+                'plan' => isset($request->plan) && $request->plan != "NULL" ? $request->plan : NULL,  
+                'group_name' => isset($request->group_name) && $request->group_name != "NULL" ? $request->group_name : NULL,
+                'denial_category' => isset($request->denial_category) && $request->denial_category != "NULL" ? $request->denial_category : NULL,
+                'reason' => isset($request->reason) && $request->reason != "NULL" ? $request->reason : NULL,
+                'remit_code' => isset($request->remit_code) && $request->remit_code != "NULL" ? $request->remit_code : NULL,
+                'plan_balance' => isset($request->plan_balance) && $request->plan_balance != "NULL" ? $request->plan_balance : NULL,
+                'submit_date' => isset($request->submit_date) && $request->submit_date != "NULL" ? $request->submit_date : NULL,                    
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+             ]);
+             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+         } catch (\Exception $e) {
+             $e->getMessage();
+         }
+     }
 
 
 }
