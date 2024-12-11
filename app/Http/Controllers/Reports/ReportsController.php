@@ -699,21 +699,25 @@ class ReportsController extends Controller
                     $start_date = $date . " 17:00:00";
                     $end_date = date('Y-m-d', strtotime($date. ' +1 day')) . " 05:00:00";
                     foreach ($productionReportArray as $employee) {
+                        $final_work_time =[];$date1 = '';
                         foreach ($employee['worked_time'] as $time) {
                            if (strtotime($time) >= strtotime($start_date) && strtotime($time) <= strtotime($end_date)) {
-                                $finalData[] = [
-                                    'date' => $date,
-                                    'emp_id' => $employee['emp_id'],
-                                    'emp_name' => $employee['arName'],
-                                    'activity' => $employee['activity'],
-                                    'sub_activity' => $employee['sub_activity'],
-                                    'count' => $employee['count'],
-                                    'workedRecords' => $employee['workedRecords'],
-                                    'worked_time' => $time
-                                
-                                ];
+                                $date1 =$date;
+                                $final_work_time['worked_time'] = $time;                                
                             }
+
                         }
+                        $finalData[] = [
+                            'date' => $date1,
+                            'emp_id' => $employee['emp_id'],
+                            'emp_name' => $employee['arName'],
+                            'activity' => $employee['activity'],
+                            'sub_activity' => $employee['sub_activity'],
+                            'count' => $employee['count'],
+                            'workedRecords' => $employee['workedRecords'],
+                            'worked_time' => $final_work_time
+                        
+                        ];
                     }               
                 }dd($finalData);
                 return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','workingDates','finalData','excel_name'));
