@@ -643,7 +643,7 @@ class ReportsController extends Controller
                             //     'chart_status' => 'CE_Completed'
                             // ])->pluck('parent_id')->toArray();
                             $productionReportArray[$key]['workedRecords'] = $modelClass::where('CE_emp_id', $data['CE_emp_id'])
-                                // ->where('coder_work_date', $data['coder_work_date'] ?? null)
+                                 ->where('coder_work_date', $data['coder_work_date'] ?? null)
                                 ->where('chart_status', 'CE_Completed')
                                 ->when(in_array('activity', $columns), function($query) use ($data) {
                                     return $query->where('activity', $data['activity'] ?? null);
