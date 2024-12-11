@@ -128,7 +128,8 @@
                                 }
                             @endphp
                             @foreach ($finalData as $data)
-                                @php
+                        
+                                @php    dd($data);
                                     $activity = $data['activity'];
                                     $subActivity = $data['sub_activity'];
                                     if (
