@@ -171,8 +171,8 @@
                                         $target_per_hour = (int) $target->target_per_day / 8;
                                         $totalWorkTime = $totalWorkTime ?: '00:00:01'; 
                                         list($hours, $minutes, $seconds) = explode(':', $totalWorkTime);
-                                        $totalWorkTimeInHours = $hours + ($minutes / 60) + ($seconds / 3600);
-                                        $totalSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
+                                        // $totalWorkTimeInHours = $hours + ($minutes / 60) + ($seconds / 3600);
+                                        $totalSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;dd($totalSeconds);
                                 
                                         // $target_per_hour = (int) $target->target_per_day / 8;
                                         $target_per_minute = (int) $target->target_per_hour / 60;
