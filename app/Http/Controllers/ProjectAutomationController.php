@@ -83,6 +83,9 @@ use App\Models\MosiDrElsamad;
 use App\Models\MosiDrElsamadDuplicates;
 use App\Models\IfwAr;
 use App\Models\IfwArDuplicates;
+use App\Models\MbjsclMbjHst;
+use App\Models\MbjsclMbjHstDuplicates;
+
 
 class ProjectAutomationController extends Controller
 {
@@ -3762,7 +3765,87 @@ class ProjectAutomationController extends Controller
 
 
 
+// Missoula Bone & Joint Surgery Center, LLC
 
+
+public function MissoulaBoneANDJointSurgeryCenterLLCAR(Request $request)
+{
+    try {
+        $attributes = [
+               'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+               'acct_no' => isset($request->acct_no) && $request->acct_no != "NULL" ? $request->acct_no : NULL,                      
+               'ptid_vst_no' => isset($request->ptid_vst_no) && $request->ptid_vst_no != "NULL" ? $request->ptid_vst_no : NULL,  
+               'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+               'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
+               'balance_due' => isset($request->balance_due) && $request->balance_due != "NULL" ? $request->balance_due : NULL,
+              
+               
+           ];
+           
+
+        $duplicateRecordExisting  =  MbjsclMbjHst::where($attributes)->exists();
+        if (!$duplicateRecordExisting) {
+            MbjsclMbjHst::insert([
+               'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+               'acct_no' => isset($request->acct_no) && $request->acct_no != "NULL" ? $request->acct_no : NULL, 
+               'ptid_vst_no' => isset($request->ptid_vst_no) && $request->ptid_vst_no != "NULL" ? $request->ptid_vst_no : NULL,                      
+               'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+               'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,  
+               'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
+               'policy_no' => isset($request->policy_no) && $request->policy_no != "NULL" ? $request->policy_no : NULL,
+               'balance_due' => isset($request->balance_due) && $request->balance_due != "NULL" ? $request->balance_due : NULL,               
+               'invoke_date' => date('Y-m-d'),
+               'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+               'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+               'chart_status' => "CE_Assigned",
+                ]);
+                    return response()->json(['message' => 'Record Inserted Successfully']);
+        } else {
+            $duplicateRecord  =  MbjsclMbjHst::where($attributes)->where('chart_status',"CE_Assigned")->first();
+            if ($duplicateRecord) {
+                $duplicateRecord->update([
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                    'acct_no' => isset($request->acct_no) && $request->acct_no != "NULL" ? $request->acct_no : NULL, 
+                    'ptid_vst_no' => isset($request->ptid_vst_no) && $request->ptid_vst_no != "NULL" ? $request->ptid_vst_no : NULL,                      
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                    'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,  
+                    'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
+                    'policy_no' => isset($request->policy_no) && $request->policy_no != "NULL" ? $request->policy_no : NULL,
+                    'balance_due' => isset($request->balance_due) && $request->balance_due != "NULL" ? $request->balance_due : NULL,                 
+                   'invoke_date' => date('Y-m-d'),
+                   'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                   'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                   'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                ]);
+            }
+            return response()->json(['message' => 'Existing Record Updated Successfully']);
+        }
+    } catch (\Exception $e) {
+        $e->getMessage();
+    }
+}
+public function MissoulaBoneANDJointSurgeryCenterLLCArDuplicates(Request $request)
+{
+    try {
+        MbjsclMbjHstDuplicates::insert([
+            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+            'acct_no' => isset($request->acct_no) && $request->acct_no != "NULL" ? $request->acct_no : NULL, 
+            'ptid_vst_no' => isset($request->ptid_vst_no) && $request->ptid_vst_no != "NULL" ? $request->ptid_vst_no : NULL,                      
+            'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+            'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,  
+            'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
+            'policy_no' => isset($request->policy_no) && $request->policy_no != "NULL" ? $request->policy_no : NULL,
+            'balance_due' => isset($request->balance_due) && $request->balance_due != "NULL" ? $request->balance_due : NULL,                     
+            'invoke_date' => date('Y-m-d'),
+            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+            'chart_status' => "CE_Assigned",
+        ]);
+        return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+    } catch (\Exception $e) {
+        $e->getMessage();
+    }
+}
 
 
 
