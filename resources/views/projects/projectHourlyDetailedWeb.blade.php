@@ -12,7 +12,7 @@
                                 <th>
                                     {{ $header }}</th>
                             @endforeach
-                            <th>Actuval Target</th>
+                            <th>Actual Target</th>
                             <th>Achieved Target</th>
                             <th>%</th>
                         </tr>

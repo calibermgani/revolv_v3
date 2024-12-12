@@ -44,7 +44,7 @@
                                             style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">
                                             {{ $header }}</th>
                                     @endforeach
-                                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;" width="8%">Actuval Target</th>
+                                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;" width="8%">Actual Target</th>
                                      <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;" width="8%">Achieved Target</th>
                                      <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;" width="8%">%</th>
                                 </tr>
