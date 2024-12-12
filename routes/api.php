@@ -106,9 +106,10 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('medValue_offshore_solutions_inc_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@MedValueOffshoreSolutionsIncArDuplicates');
     Route::any('imaging_for_women_ar', 'App\Http\Controllers\ProjectAutomationController@ImagingforWomenAR');
     Route::any('imaging_for_women_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@ImagingforWomenArDuplicates');
-
     Route::any('missoula_bone_and_joint_surgery_center_llc_ar', 'App\Http\Controllers\ProjectAutomationController@MissoulaBoneANDJointSurgeryCenterLLCAR');
     Route::any('missoula_bone_and_joint_surgery_center_llc_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@MissoulaBoneANDJointSurgeryCenterLLCArDuplicates');
+    Route::any('missoula_bone_and_joint_surgery_center_llc_modmed_ar', 'App\Http\Controllers\ProjectAutomationController@MissoulaBoneANDJointSurgeryCenterLLCModmedAR');
+    Route::any('missoula_bone_and_joint_surgery_center_llc_modmed_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@MissoulaBoneANDJointSurgeryCenterLLCModmedArDuplicates');
     
     
 
