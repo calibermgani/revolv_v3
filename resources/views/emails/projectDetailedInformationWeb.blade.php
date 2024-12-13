@@ -63,7 +63,7 @@
                                             <td style="text-align: center;padding: 5px;" width="8%">{{ $data['slaTarget'] }}</td>
                                            <td style="text-align: center;padding: 5px;" width="8%">{{ $data['reachedTarget'] }}</td>
                                            <td style="{{ $data['achievedPercentage'] >= 95 ? 'color: green;' : 'color: red;' }} text-align: center; padding: 5px;" width="8%">
-                                            {{ $data['achievedPercentage'] . '%' }}
+                                            {{ round($data['achievedPercentage'],2) . '%' }}
                                         </td>
                                         
                                         </tr>
