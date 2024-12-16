@@ -4037,6 +4037,7 @@ public function NexTrustBillingAR(Request $request)
         $attributes = [
                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
                'patient_no' => isset($request->patient_no) && $request->patient_no != "NULL" ? $request->patient_no : NULL,                                             
+               'invoice_no' => isset($request->invoice_no) && $request->invoice_no != "NULL" ? $request->invoice_no : NULL,  
                
            ];
            
