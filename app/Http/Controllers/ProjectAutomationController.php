@@ -87,6 +87,8 @@ use App\Models\MbjsclMbjHst;
 use App\Models\MbjsclMbjHstDuplicates;
 use App\Models\MbjsclMbjModmed;
 use App\Models\MbjsclMbjModmedDuplicates;
+use App\Models\OhAr;
+use App\Models\OhArDuplicates;
 use App\Models\NmbAr;
 use App\Models\NmbArDuplicates;
 use App\Models\NbAr;
@@ -3928,6 +3930,93 @@ public function MissoulaBoneANDJointSurgeryCenterLLCModmedArDuplicates(Request $
             'patient_dob' => isset($request->patient_dob) && $request->patient_dob != "NULL" ? $request->patient_dob : NULL,
             'payer_policy_number' => isset($request->payer_policy_number) && $request->payer_policy_number != "NULL" ? $request->payer_policy_number : NULL,
             'total_ar_aging' => isset($request->total_ar_aging) && $request->total_ar_aging != "NULL" ? $request->total_ar_aging : NULL,                      
+            'invoke_date' => date('Y-m-d'),
+            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+            'chart_status' => "CE_Assigned",
+        ]);
+        return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+    } catch (\Exception $e) {
+        $e->getMessage();
+    }
+}
+
+public function omniHealthcareAr(Request $request)
+{
+    try {
+        $attributes = [
+               'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,  
+               'patient_last_name' => isset($request->patient_last_name) && $request->patient_last_name != "NULL" ? $request->patient_last_name : NULL,                      
+               'patient_first_name' => isset($request->patient_first_name) && $request->patient_first_name != "NULL" ? $request->patient_first_name : NULL,  
+               'voucher_number' => isset($request->voucher_number) && $request->voucher_number != "NULL" ? $request->voucher_number : NULL,     
+               'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,                            
+               'vch_fees' => isset($request->vch_fees) && $request->vch_fees != "NULL" ? $request->vch_fees : NULL,     
+               'carrier_name' => isset($request->carrier_name) && $request->carrier_name != "NULL" ? $request->carrier_name : NULL,     
+               'patient_dob' => isset($request->patient_dob) && $request->patient_dob != "NULL" ? $request->patient_dob : NULL,     
+               'actual_prov_abbr' => isset($request->actual_prov_abbr) && $request->actual_prov_abbr != "NULL" ? $request->actual_prov_abbr : NULL,     
+               'carrier_phone' => isset($request->carrier_phone) && $request->carrier_phone != "NULL" ? $request->carrier_phone : NULL
+           ];
+           
+
+        $duplicateRecordExisting  =  OhAr::where($attributes)->exists();
+        if (!$duplicateRecordExisting) {
+            OhAr::insert([
+               'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,  
+               'patient_last_name' => isset($request->patient_last_name) && $request->patient_last_name != "NULL" ? $request->patient_last_name : NULL,                      
+               'patient_first_name' => isset($request->patient_first_name) && $request->patient_first_name != "NULL" ? $request->patient_first_name : NULL,  
+               'voucher_number' => isset($request->voucher_number) && $request->voucher_number != "NULL" ? $request->voucher_number : NULL,     
+               'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,                            
+               'vch_fees' => isset($request->vch_fees) && $request->vch_fees != "NULL" ? $request->vch_fees : NULL,     
+               'carrier_name' => isset($request->carrier_name) && $request->carrier_name != "NULL" ? $request->carrier_name : NULL,     
+               'patient_dob' => isset($request->patient_dob) && $request->patient_dob != "NULL" ? $request->patient_dob : NULL,     
+               'actual_prov_abbr' => isset($request->actual_prov_abbr) && $request->actual_prov_abbr != "NULL" ? $request->actual_prov_abbr : NULL,     
+               'carrier_phone' => isset($request->carrier_phone) && $request->carrier_phone != "NULL" ? $request->carrier_phone : NULL,         
+               'invoke_date' => date('Y-m-d'),
+               'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+               'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+               'chart_status' => "CE_Assigned",
+                ]);
+                    return response()->json(['message' => 'Record Inserted Successfully']);
+        } else {
+            $duplicateRecord  =  OhAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+            if ($duplicateRecord) {
+                $duplicateRecord->update([
+                    'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,  
+                    'patient_last_name' => isset($request->patient_last_name) && $request->patient_last_name != "NULL" ? $request->patient_last_name : NULL,                      
+                    'patient_first_name' => isset($request->patient_first_name) && $request->patient_first_name != "NULL" ? $request->patient_first_name : NULL,  
+                    'voucher_number' => isset($request->voucher_number) && $request->voucher_number != "NULL" ? $request->voucher_number : NULL,     
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,                            
+                    'vch_fees' => isset($request->vch_fees) && $request->vch_fees != "NULL" ? $request->vch_fees : NULL,     
+                    'carrier_name' => isset($request->carrier_name) && $request->carrier_name != "NULL" ? $request->carrier_name : NULL,     
+                    'patient_dob' => isset($request->patient_dob) && $request->patient_dob != "NULL" ? $request->patient_dob : NULL,     
+                    'actual_prov_abbr' => isset($request->actual_prov_abbr) && $request->actual_prov_abbr != "NULL" ? $request->actual_prov_abbr : NULL,     
+                    'carrier_phone' => isset($request->carrier_phone) && $request->carrier_phone != "NULL" ? $request->carrier_phone : NULL,               
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                ]);
+            }
+            return response()->json(['message' => 'Existing Record Updated Successfully']);
+        }
+    } catch (\Exception $e) {
+        $e->getMessage();
+    }
+}
+public function omniHealthcareArDuplicates(Request $request)
+{
+    try {
+        OhArDuplicates::insert([
+            'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,  
+            'patient_last_name' => isset($request->patient_last_name) && $request->patient_last_name != "NULL" ? $request->patient_last_name : NULL,                      
+            'patient_first_name' => isset($request->patient_first_name) && $request->patient_first_name != "NULL" ? $request->patient_first_name : NULL,  
+            'voucher_number' => isset($request->voucher_number) && $request->voucher_number != "NULL" ? $request->voucher_number : NULL,     
+            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,                            
+            'vch_fees' => isset($request->vch_fees) && $request->vch_fees != "NULL" ? $request->vch_fees : NULL,     
+            'carrier_name' => isset($request->carrier_name) && $request->carrier_name != "NULL" ? $request->carrier_name : NULL,     
+            'patient_dob' => isset($request->patient_dob) && $request->patient_dob != "NULL" ? $request->patient_dob : NULL,     
+            'actual_prov_abbr' => isset($request->actual_prov_abbr) && $request->actual_prov_abbr != "NULL" ? $request->actual_prov_abbr : NULL,     
+            'carrier_phone' => isset($request->carrier_phone) && $request->carrier_phone != "NULL" ? $request->carrier_phone : NULL,                      
             'invoke_date' => date('Y-m-d'),
             'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
             'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
