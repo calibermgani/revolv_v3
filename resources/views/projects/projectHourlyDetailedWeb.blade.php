@@ -28,7 +28,7 @@
                                     @endforeach
                                     <td>{{ $data['slaTarget'] }}</td>
                                     <td>{{ $data['reachedTarget'] }}</td>
-                                    <td style={{$data['achievedPercentage'] >= 95 ? "color:green" : "color:red"}}>{{$data['achievedPercentage']."%"}}</td>
+                                    <td style={{$data['achievedPercentage'] >= 95 ? "color:green" : "color:red"}}>{{round($data['achievedPercentage'],2)."%"}}</td>
                                     </tr>
                             @endforeach
                         @else
