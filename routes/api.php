@@ -112,6 +112,10 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('missoula_bone_and_joint_surgery_center_llc_modmed_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@MissoulaBoneANDJointSurgeryCenterLLCModmedArDuplicates');
     Route::any('omni_healthcare_ar', 'App\Http\Controllers\ProjectAutomationController@omniHealthcareAr');
     Route::any('omni_healthcare_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@omniHealthcareArDuplicates');
+    Route::any('nationwide_medical_billing_ar', 'App\Http\Controllers\ProjectAutomationController@NationwideMedicalBillingAR');
+    Route::any('nationwide_medical_billing_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NationwideMedicalBillingArDuplicates');
+    Route::any('nex_trust_billing_ar', 'App\Http\Controllers\ProjectAutomationController@NexTrustBillingAR');
+    Route::any('nex_trust_billing_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NexTrustBillingArDuplicates');
     
     
 

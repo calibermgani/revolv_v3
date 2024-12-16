@@ -89,6 +89,11 @@ use App\Models\MbjsclMbjModmed;
 use App\Models\MbjsclMbjModmedDuplicates;
 use App\Models\OhAr;
 use App\Models\OhArDuplicates;
+use App\Models\NmbAr;
+use App\Models\NmbArDuplicates;
+use App\Models\NbAr;
+use App\Models\NbArDuplicates;
+
 
 class ProjectAutomationController extends Controller
 {
@@ -4023,6 +4028,177 @@ public function omniHealthcareArDuplicates(Request $request)
     }
 }
 
+
+
+// Nationwide Medical Billing
+
+
+
+public function NationwideMedicalBillingAR(Request $request)
+{
+    try {
+        $attributes = [
+               'unique_code' => isset($request->unique_code) && $request->unique_code != "NULL" ? $request->unique_code : NULL,  
+               'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,                      
+               'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+               'acc_no' => isset($request->acc_no) && $request->acc_no != "NULL" ? $request->acc_no : NULL,               
+               'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+               'encounter' => isset($request->encounter) && $request->encounter != "NULL" ? $request->encounter : NULL, 
+               'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+               'balance_amount' => isset($request->balance_amount) && $request->balance_amount != "NULL" ? $request->balance_amount : NULL,             
+               
+           ];
+           
+
+        $duplicateRecordExisting  =  NmbAr::where($attributes)->exists();
+        if (!$duplicateRecordExisting) {
+            NmbAr::insert([
+               'unique_code' => isset($request->unique_code) && $request->unique_code != "NULL" ? $request->unique_code : NULL,  
+               'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL, 
+               'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,                      
+               'acc_no' => isset($request->acc_no) && $request->acc_no != "NULL" ? $request->acc_no : NULL,  
+               'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+               'encounter' => isset($request->encounter) && $request->encounter != "NULL" ? $request->encounter : NULL,  
+               'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+               'balance_amount' => isset($request->balance_amount) && $request->balance_amount != "NULL" ? $request->balance_amount : NULL,               
+               'invoke_date' => date('Y-m-d'),
+               'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+               'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+               'chart_status' => "CE_Assigned",
+                ]);
+                    return response()->json(['message' => 'Record Inserted Successfully']);
+        } else {
+            $duplicateRecord  =  NmbAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+            if ($duplicateRecord) {
+                $duplicateRecord->update([
+                    'unique_code' => isset($request->unique_code) && $request->unique_code != "NULL" ? $request->unique_code : NULL,  
+                    'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL, 
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,                      
+                    'acc_no' => isset($request->acc_no) && $request->acc_no != "NULL" ? $request->acc_no : NULL,  
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                    'encounter' => isset($request->encounter) && $request->encounter != "NULL" ? $request->encounter : NULL,  
+                    'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+                    'balance_amount' => isset($request->balance_amount) && $request->balance_amount != "NULL" ? $request->balance_amount : NULL,               
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                ]);
+            }
+            return response()->json(['message' => 'Existing Record Updated Successfully']);
+        }
+    } catch (\Exception $e) {
+        $e->getMessage();
+    }
+}
+public function NationwideMedicalBillingArDuplicates(Request $request)
+{
+    try {
+        NmbArDuplicates::insert([
+            'unique_code' => isset($request->unique_code) && $request->unique_code != "NULL" ? $request->unique_code : NULL,  
+            'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL, 
+            'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,                      
+            'acc_no' => isset($request->acc_no) && $request->acc_no != "NULL" ? $request->acc_no : NULL,  
+            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+            'encounter' => isset($request->encounter) && $request->encounter != "NULL" ? $request->encounter : NULL,  
+            'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+            'balance_amount' => isset($request->balance_amount) && $request->balance_amount != "NULL" ? $request->balance_amount : NULL,                      
+            'invoke_date' => date('Y-m-d'),
+            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+            'chart_status' => "CE_Assigned",
+        ]);
+        return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+    } catch (\Exception $e) {
+        $e->getMessage();
+    }
+}
+
+
+
+
+// NexTrust Billing
+
+
+public function NexTrustBillingAR(Request $request)
+{
+    try {
+        $attributes = [
+               'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+               'patient_no' => isset($request->patient_no) && $request->patient_no != "NULL" ? $request->patient_no : NULL,                                             
+               
+           ];
+           
+
+        $duplicateRecordExisting  =  NbAr::where($attributes)->exists();
+        if (!$duplicateRecordExisting) {
+            NbAr::insert([
+               'invoice_no' => isset($request->invoice_no) && $request->invoice_no != "NULL" ? $request->invoice_no : NULL,  
+               'invoice_date' => isset($request->invoice_date) && $request->invoice_date != "NULL" ? $request->invoice_date : NULL, 
+               'service_date' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,                      
+               'total_amount' => isset($request->total_amount) && $request->total_amount != "NULL" ? $request->total_amount : NULL,  
+               'balance_amount' => isset($request->balance_amount) && $request->balance_amount != "NULL" ? $request->balance_amount : NULL,  
+               'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,  
+               'patient_no' => isset($request->patient_no) && $request->patient_no != "NULL" ? $request->patient_no : NULL,
+               'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,               
+               'ins_name' => isset($request->ins_name) && $request->ins_name != "NULL" ? $request->ins_name : NULL,
+               'ins_priority' => isset($request->ins_priority) && $request->ins_priority != "NULL" ? $request->ins_priority : NULL,
+               'invoke_date' => date('Y-m-d'),
+               'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+               'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+               'chart_status' => "CE_Assigned",
+                ]);
+                    return response()->json(['message' => 'Record Inserted Successfully']);
+        } else {
+            $duplicateRecord  =  NbAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+            if ($duplicateRecord) {
+                $duplicateRecord->update([
+                    'invoice_no' => isset($request->invoice_no) && $request->invoice_no != "NULL" ? $request->invoice_no : NULL,  
+                    'invoice_date' => isset($request->invoice_date) && $request->invoice_date != "NULL" ? $request->invoice_date : NULL, 
+                    'service_date' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,                      
+                    'total_amount' => isset($request->total_amount) && $request->total_amount != "NULL" ? $request->total_amount : NULL,  
+                    'balance_amount' => isset($request->balance_amount) && $request->balance_amount != "NULL" ? $request->balance_amount : NULL,  
+                    'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,  
+                    'patient_no' => isset($request->patient_no) && $request->patient_no != "NULL" ? $request->patient_no : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,               
+                    'ins_name' => isset($request->ins_name) && $request->ins_name != "NULL" ? $request->ins_name : NULL,
+                    'ins_priority' => isset($request->ins_priority) && $request->ins_priority != "NULL" ? $request->ins_priority : NULL,               
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                ]);
+            }
+            return response()->json(['message' => 'Existing Record Updated Successfully']);
+        }
+    } catch (\Exception $e) {
+        $e->getMessage();
+    }
+}
+public function NexTrustBillingArDuplicates(Request $request)
+{
+    try {
+        NbArDuplicates::insert([
+            'invoice_no' => isset($request->invoice_no) && $request->invoice_no != "NULL" ? $request->invoice_no : NULL,  
+            'invoice_date' => isset($request->invoice_date) && $request->invoice_date != "NULL" ? $request->invoice_date : NULL, 
+            'service_date' => isset($request->service_date) && $request->service_date != "NULL" ? $request->service_date : NULL,                      
+            'total_amount' => isset($request->total_amount) && $request->total_amount != "NULL" ? $request->total_amount : NULL,  
+            'balance_amount' => isset($request->balance_amount) && $request->balance_amount != "NULL" ? $request->balance_amount : NULL,  
+            'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,  
+            'patient_no' => isset($request->patient_no) && $request->patient_no != "NULL" ? $request->patient_no : NULL,
+            'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,               
+            'ins_name' => isset($request->ins_name) && $request->ins_name != "NULL" ? $request->ins_name : NULL,
+            'ins_priority' => isset($request->ins_priority) && $request->ins_priority != "NULL" ? $request->ins_priority : NULL,                   
+            'invoke_date' => date('Y-m-d'),
+            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+            'chart_status' => "CE_Assigned",
+        ]);
+        return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+    } catch (\Exception $e) {
+        $e->getMessage();
+    }
+}
 
 
 }
