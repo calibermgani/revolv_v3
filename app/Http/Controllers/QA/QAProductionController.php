@@ -1035,17 +1035,28 @@ class QAProductionController extends Controller
                     }
                 }
                  $currentTime = Carbon::now();
-                $callChartWorkLogExistingRecord = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
+                // $callChartWorkLogExistingRecord = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
+                // ->where('project_id', $decodedProjectName)
+                // ->where('sub_project_id', $decodedPracticeName)
+                // ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->first();
+                // if($callChartWorkLogExistingRecord && $callChartWorkLogExistingRecord != null) {
+                //     $start_time = Carbon::parse($callChartWorkLogExistingRecord->start_time);
+                //     $time_difference = $currentTime->diff($start_time);
+                //     $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
+                //     $callChartWorkLogExistingRecord->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time] );
+
+                // }
+                $callChartWorkLogExistingRecords = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
                 ->where('project_id', $decodedProjectName)
                 ->where('sub_project_id', $decodedPracticeName)
-                ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->first();
-                if($callChartWorkLogExistingRecord && $callChartWorkLogExistingRecord != null) {
-                    $start_time = Carbon::parse($callChartWorkLogExistingRecord->start_time);
-                    $time_difference = $currentTime->diff($start_time);
-                    $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
-                    $callChartWorkLogExistingRecord->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time] );
-
-                }
+                ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->get();
+                    if ($callChartWorkLogExistingRecords->isNotEmpty()) {
+                        foreach ($callChartWorkLogExistingRecords as $callChartWorkLog) {
+                            $start_time = Carbon::parse($callChartWorkLog->start_time);
+                            $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
+                            $callChartWorkLog->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time] );
+                        }
+                   }
                 return redirect('qa_production/qa_projects_assigned/'.$clientName.'/'.$subProjectName);
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -1186,20 +1197,32 @@ class QAProductionController extends Controller
                     }
                 }
                 $currentTime = Carbon::now();
-                $callChartWorkLogExistingRecord = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
+                // $callChartWorkLogExistingRecord = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
+                // ->where('record_status',$data['record_old_status'])
+                // ->where('project_id', $decodedProjectName)
+                // ->where('sub_project_id', $decodedPracticeName)
+                // ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->first();
+                // $start_time = Carbon::parse($callChartWorkLogExistingRecord->start_time);
+                // $time_difference = $currentTime->diff($start_time);
+                // $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
+                // if($callChartWorkLogExistingRecord && $callChartWorkLogExistingRecord != null) {
+                //     $callChartWorkLogExistingRecord->update([
+                //         'record_status' => $data['chart_status'],
+                //         'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time
+                //     ]);
+                // }
+                $callChartWorkLogExistingRecords = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
                 ->where('record_status',$data['record_old_status'])
                 ->where('project_id', $decodedProjectName)
                 ->where('sub_project_id', $decodedPracticeName)
-                ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->first();
-                $start_time = Carbon::parse($callChartWorkLogExistingRecord->start_time);
-                $time_difference = $currentTime->diff($start_time);
-                $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
-                if($callChartWorkLogExistingRecord && $callChartWorkLogExistingRecord != null) {
-                    $callChartWorkLogExistingRecord->update([
-                        'record_status' => $data['chart_status'],
-                        'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time
-                    ]);
-                }
+                ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->get();
+                    if ($callChartWorkLogExistingRecords->isNotEmpty()) {
+                        foreach ($callChartWorkLogExistingRecords as $callChartWorkLog) {
+                            $start_time = Carbon::parse($callChartWorkLog->start_time);
+                            $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
+                            $callChartWorkLog->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time] );
+                        }
+                   }
                 $tabUrl = lcfirst(str_replace('QA_', '', $data['record_old_status']));
                 return redirect('qa_production/qa_projects_'.$tabUrl.'/'.$clientName.'/'.$subProjectName);
              } catch (\Exception $e) {
