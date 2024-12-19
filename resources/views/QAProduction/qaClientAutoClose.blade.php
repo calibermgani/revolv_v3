@@ -66,105 +66,127 @@ use Carbon\Carbon;
                 </div>
             </div>
             <div class="wizard wizard-4 custom-wizard" id="kt_wizard_v4" data-wizard-state="step-first"
-                data-wizard-clickable="true" style="margin-top:-2rem !important">
-                <div class="wizard-nav">
-                    <div class="wizard-steps">
-                        <div class="wizard-step mb-0 one" data-wizard-type="done">
-                            <div class="wizard-wrapper py-2">
-                                <div class="wizard-label p-2 mt-2">
-                                    <div class="wizard-title" style="display: flex; align-items: center;">
-                                        <h6 style="margin-right: 5px;">Assigned</h6>
-                                        @include('CountVar.countRectangle', ['count' => $assignedCount])
-                                    </div>
-
+            data-wizard-clickable="true" style="margin-top:-2rem !important">
+            <div class="wizard-nav">
+                <div class="wizard-steps">
+                    <div class="wizard-step mb-0 one" data-wizard-type="done">
+                        <div class="wizard-wrapper py-2">
+                            <div class="wizard-label p-2 mt-2">
+                                <div class="wizard-title" style="display: flex; align-items: center;">
+                                    <h6 style="margin-right: 5px;">Assigned</h6>
+                                    @include('CountVar.countRectangle', ['count' => $assignedCount])
                                 </div>
                             </div>
                         </div>
-                        @if (
-                            $loginEmpId == 'Admin' ||
-                                strpos($empDesignation, 'Manager') !== false ||
-                                strpos($empDesignation, 'VP') !== false ||
-                                strpos($empDesignation, 'Leader') !== false ||
-                                strpos($empDesignation, 'Team Lead') !== false ||
-                                strpos($empDesignation, 'CEO') !== false ||
-                                strpos($empDesignation, 'Vice') !== false)
-                            <div class="wizard-step mb-0 five" data-wizard-type="done">
-                                <div class="wizard-wrapper py-2">
-                                    <div class="wizard-label p-2 mt-2">
-                                        <div class="wizard-title" style="display: flex; align-items: center;">
-                                            <h6 style="margin-right: 5px;">UnAssigned</h6>
-                                            @include('CountVar.countRectangle', [
-                                                'count' => $unAssignedCount,
-                                            ])
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
-                        <div class="wizard-step mb-0 two" data-wizard-type="done">
-                            <div class="wizard-wrapper py-2">
-                                <div class="wizard-label p-2 mt-2">
-                                    <div class="wizard-title" style="display: flex; align-items: center;">
-                                        <h6 style="margin-right: 5px;">Pending</h6>
-                                        @include('CountVar.countRectangle', ['count' => $pendingCount])
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="wizard-step mb-0 three" data-wizard-type="done">
-                            <div class="wizard-wrapper py-2">
-                                <div class="wizard-label p-2 mt-2">
-                                    <div class="wizard-title" style="display: flex; align-items: center;">
-                                        <h6 style="margin-right: 5px;">Hold</h6>
-                                        @include('CountVar.countRectangle', ['count' => $holdCount])
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="wizard-step mb-0 four" data-wizard-type="done">
-                            <div class="wizard-wrapper py-2">
-                                <div class="wizard-label p-2 mt-2">
-                                    <div class="wizard-title" style="display: flex; align-items: center;">
-                                        <h6 style="margin-right: 5px;">Completed</h6>
-                                        @include('CountVar.countRectangle', ['count' => $completedCount])
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="wizard-step mb-0 seven" data-wizard-type="step">
-                            <div class="wizard-wrapper py-2">
-                                <div class="wizard-label p-2 mt-2">
-                                    <div class="wizard-title" style="display: flex; align-items: center;">
-                                        <h6 style="margin-right: 5px;">Auto Close</h6>
-                                        @include('CountVar.countRectangle', ['count' => $autoCloseCount])
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        @if (
-                            $loginEmpId == 'Admin' ||
+                    </div>
+                    @if (
+                        $loginEmpId == 'Admin' ||
                             strpos($empDesignation, 'Manager') !== false ||
                             strpos($empDesignation, 'VP') !== false ||
                             strpos($empDesignation, 'Leader') !== false ||
                             strpos($empDesignation, 'Team Lead') !== false ||
                             strpos($empDesignation, 'CEO') !== false ||
                             strpos($empDesignation, 'Vice') !== false)
-                            <div class="wizard-step mb-0 eight" data-wizard-type="done">
-                                <div class="wizard-wrapper py-2">
-                                    <div class="wizard-label p-2 mt-2">
-                                        <div class="wizard-title" style="display: flex; align-items: center;">
-                                            <h6 style="margin-right: 5px;">Rebuttal</h6>
-                                            @include('CountVar.countRectangle', [
-                                                'count' => $rebuttalCount,
-                                            ])
-                                        </div>
+                        <div class="wizard-step mb-0 five" data-wizard-type="done">
+                            <div class="wizard-wrapper py-2">
+                                <div class="wizard-label p-2 mt-2">
+                                    <div class="wizard-title" style="display: flex; align-items: center;">
+                                        <h6 style="margin-right: 5px;">UnAssigned</h6>
+                                        @include('CountVar.countRectangle', [
+                                            'count' => $unAssignedCount,
+                                        ])
                                     </div>
                                 </div>
                             </div>
-                        @endif
+                        </div>
+                    @endif
+                    <div class="wizard-step mb-0 two" data-wizard-type="done">
+                        <div class="wizard-wrapper py-2">
+                            <div class="wizard-label p-2 mt-2">
+                                <div class="wizard-title" style="display: flex; align-items: center;">
+                                    <h6 style="margin-right: 5px;">Pending</h6>
+                                    @include('CountVar.countRectangle', ['count' => $pendingCount])
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    <div class="wizard-step mb-0 three" data-wizard-type="done">
+                        <div class="wizard-wrapper py-2">
+                            <div class="wizard-label p-2 mt-2">
+                                <div class="wizard-title" style="display: flex; align-items: center;">
+                                    <h6 style="margin-right: 5px;">Hold</h6>
+                                    @include('CountVar.countRectangle', ['count' => $holdCount])
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wizard-step mb-0 four" data-wizard-type="done">
+                        <div class="wizard-wrapper py-2">
+                            <div class="wizard-label p-2 mt-2">
+                                <div class="wizard-title" style="display: flex; align-items: center;">
+                                    <h6 style="margin-right: 5px;">Completed</h6>
+                                    @include('CountVar.countRectangle', ['count' => $completedCount])
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wizard-step mb-0 seven" data-wizard-type="step">
+                        <div class="wizard-wrapper py-2">
+                            <div class="wizard-label p-2 mt-2">
+                                <div class="wizard-title" style="display: flex; align-items: center;">
+                                    <h6 style="margin-right: 5px;">Auto Close</h6>
+                                    @include('CountVar.countRectangle', ['count' => $autoCloseCount])
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (
+                        $loginEmpId == 'Admin' ||
+                        strpos($empDesignation, 'Manager') !== false ||
+                        strpos($empDesignation, 'VP') !== false ||
+                        strpos($empDesignation, 'Leader') !== false ||
+                        strpos($empDesignation, 'Team Lead') !== false ||
+                        strpos($empDesignation, 'CEO') !== false ||
+                        strpos($empDesignation, 'Vice') !== false)
+                        <div class="wizard-step mb-0 eight" data-wizard-type="done">
+                            <div class="wizard-wrapper py-2">
+                                <div class="wizard-label p-2 mt-2">
+                                    <div class="wizard-title" style="display: flex; align-items: center;">
+                                        <h6 style="margin-right: 5px;">Rebuttal</h6>
+                                        @include('CountVar.countRectangle', [
+                                            'count' => $rebuttalCount,
+                                        ])
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                   
+                    {{-- <div class="wizard-step mb-0 five" data-wizard-type="done">
+                                    <div class="wizard-wrapper py-2">
+                                        <div class="wizard-label p-2 mt-2">
+                                            <div class="wizard-title" style="display: flex; align-items: center;">
+                                                <h6 style="margin-right: 5px;">Rework</h6>
+                                                    @include('CountVar.countRectangle', ['count' => $reworkCount])
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> --}}
+                    {{-- @if ($loginEmpId == 'Admin' || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)
+                                    <div class="wizard-step mb-0 six" data-wizard-type="done">
+                                        <div class="wizard-wrapper py-2">
+                                            <div class="wizard-label p-2 mt-2">
+                                                <div class="wizard-title" style="display: flex; align-items: center;">
+                                                    <h6 style="margin-right: 5px;">Duplicate</h6>
+                                                       @include('CountVar.countRectangle', ['count' => $duplicateCount])
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif --}}
                 </div>
             </div>
+        </div>
             <div class="card card-custom custom-top-border">
                 <div><span type="button" id="filterExpandButton" class="float-right mr-8 mt-5">
                     <i class="ki ki-arrow-down icon-nm"></i></span></div>
