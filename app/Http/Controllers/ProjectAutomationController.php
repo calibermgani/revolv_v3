@@ -95,6 +95,8 @@ use App\Models\NbAr;
 use App\Models\NbArDuplicates;
 use App\Models\WbrAr;
 use App\Models\WbrArDuplicates;
+use App\Models\PhAr;
+use App\Models\PhArDuplicates;
 
 class ProjectAutomationController extends Controller
 {
@@ -4212,8 +4214,7 @@ public function williamBeeRirieAR(Request $request)
                 'amount' => isset($request->amount) && $request->amount != "NULL" ? $request->amount : NULL,  
                'responsible_provider' => isset($request->responsible_provider) && $request->responsible_provider != "NULL" ? $request->responsible_provider : NULL,  
                'reg_date' => isset($request->reg_date) && $request->reg_date != "NULL" ? $request->reg_date : NULL,  
-               'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
-               'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL               
+               'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL        
            ];           
 
         $duplicateRecordExisting  =  WbrAr::where($attributes)->exists();
@@ -4225,8 +4226,7 @@ public function williamBeeRirieAR(Request $request)
                 'amount' => isset($request->amount) && $request->amount != "NULL" ? $request->amount : NULL,  
                'responsible_provider' => isset($request->responsible_provider) && $request->responsible_provider != "NULL" ? $request->responsible_provider : NULL,  
                'reg_date' => isset($request->reg_date) && $request->reg_date != "NULL" ? $request->reg_date : NULL,  
-               'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
-               'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,      
+               'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,   
                'invoke_date' => date('Y-m-d'),
                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
@@ -4243,8 +4243,7 @@ public function williamBeeRirieAR(Request $request)
                     'amount' => isset($request->amount) && $request->amount != "NULL" ? $request->amount : NULL,  
                     'responsible_provider' => isset($request->responsible_provider) && $request->responsible_provider != "NULL" ? $request->responsible_provider : NULL,  
                     'reg_date' => isset($request->reg_date) && $request->reg_date != "NULL" ? $request->reg_date : NULL,  
-                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
-                    'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL       ,               
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,              
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
@@ -4268,7 +4267,6 @@ public function williamBeeRirieARDuplicates(Request $request)
             'responsible_provider' => isset($request->responsible_provider) && $request->responsible_provider != "NULL" ? $request->responsible_provider : NULL,  
             'reg_date' => isset($request->reg_date) && $request->reg_date != "NULL" ? $request->reg_date : NULL,  
             'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
-            'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,                   
             'invoke_date' => date('Y-m-d'),
             'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
             'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
@@ -4280,4 +4278,93 @@ public function williamBeeRirieARDuplicates(Request $request)
     }
 }
 
+public function prineHealthAr(Request $request)
+{
+    try {
+        $attributes = [
+               'organization' => isset($request->organization) && $request->organization != "NULL" ? $request->organization : NULL,  
+               'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL, 
+               'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+                'responsible_plan' => isset($request->responsible_plan) && $request->responsible_plan != "NULL" ? $request->responsible_plan : NULL,  
+               'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,                 
+               'address' => isset($request->address) && $request->address != "NULL" ? $request->address : NULL ,              
+               'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+               'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed : NULL,  
+               'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL, 
+               'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,  
+               'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL
+           ];           
+
+        $duplicateRecordExisting  =  PhAr::where($attributes)->exists();
+        if (!$duplicateRecordExisting) {
+            PhAr::insert([
+                    'organization' => isset($request->organization) && $request->organization != "NULL" ? $request->organization : NULL,  
+                    'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL, 
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+                    'responsible_plan' => isset($request->responsible_plan) && $request->responsible_plan != "NULL" ? $request->responsible_plan : NULL,  
+                    'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,                 
+                    'address' => isset($request->address) && $request->address != "NULL" ? $request->address : NULL ,              
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                    'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed : NULL,  
+                    'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL, 
+                    'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,  
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL, 
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                ]);
+                    return response()->json(['message' => 'Record Inserted Successfully']);
+        } else {
+            $duplicateRecord  =  PhAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+            if ($duplicateRecord) {
+                $duplicateRecord->update([
+                    'organization' => isset($request->organization) && $request->organization != "NULL" ? $request->organization : NULL,  
+                    'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL, 
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+                    'responsible_plan' => isset($request->responsible_plan) && $request->responsible_plan != "NULL" ? $request->responsible_plan : NULL,  
+                    'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,                 
+                    'address' => isset($request->address) && $request->address != "NULL" ? $request->address : NULL ,              
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                    'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed : NULL,  
+                    'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL, 
+                    'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,  
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,           
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                ]);
+            }
+            return response()->json(['message' => 'Existing Record Updated Successfully']);
+        }
+    } catch (\Exception $e) {
+        $e->getMessage();
+    }
+}
+public function prineHealthArDuplicates(Request $request)
+{
+    try {
+         PhArDuplicates::insert([
+            'organization' => isset($request->organization) && $request->organization != "NULL" ? $request->organization : NULL,  
+            'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL, 
+            'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+            'responsible_plan' => isset($request->responsible_plan) && $request->responsible_plan != "NULL" ? $request->responsible_plan : NULL,  
+            'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,                 
+            'address' => isset($request->address) && $request->address != "NULL" ? $request->address : NULL ,              
+            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+            'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed : NULL,  
+            'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL, 
+            'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,  
+            'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,                   
+            'invoke_date' => date('Y-m-d'),
+            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+            'chart_status' => "CE_Assigned",
+        ]);
+        return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+    } catch (\Exception $e) {
+        $e->getMessage();
+    }
+}
 }
