@@ -2881,20 +2881,6 @@ use Carbon\Carbon;
             });
         })
 
-        function updateTime() {
-            var now = new Date();
-            var hours = now.getHours();
-            var minutes = now.getMinutes();
-            var seconds = now.getSeconds();
-            var startTime = new Date(startTime_db).getTime();
-            var elapsedTimeMs = new Date().getTime() - startTime;
-            var elapsedHours = Math.floor(elapsedTimeMs / (1000 * 60 * 60));
-            var remainingMinutes = Math.floor((elapsedTimeMs % (1000 * 60 * 60)) / (1000 * 60));
-            elapsedHours = (elapsedHours < 10 ? "0" : "") + elapsedHours;
-            remainingMinutes = (remainingMinutes < 10 ? "0" : "") + remainingMinutes;
-            document.getElementById("elapsedTime").innerHTML = elapsedHours + " : " + remainingMinutes;
-            setTimeout(updateTime, 1000);
-        }
-        updateTime();
+      
     </script>
 @endpush
