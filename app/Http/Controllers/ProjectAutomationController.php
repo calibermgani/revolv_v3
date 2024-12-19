@@ -93,7 +93,8 @@ use App\Models\NmbAr;
 use App\Models\NmbArDuplicates;
 use App\Models\NbAr;
 use App\Models\NbArDuplicates;
-
+use App\Models\WbrAr;
+use App\Models\WbrArDuplicates;
 
 class ProjectAutomationController extends Controller
 {
@@ -4200,5 +4201,83 @@ public function NexTrustBillingArDuplicates(Request $request)
     }
 }
 
+
+public function williamBeeRirieAR(Request $request)
+{
+    try {
+        $attributes = [
+               'account_num' => isset($request->account_num) && $request->account_num != "NULL" ? $request->account_num : NULL,  
+               'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL, 
+               'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,  
+                'amount' => isset($request->amount) && $request->amount != "NULL" ? $request->amount : NULL,  
+               'responsible_provider' => isset($request->responsible_provider) && $request->responsible_provider != "NULL" ? $request->responsible_provider : NULL,  
+               'reg_date' => isset($request->reg_date) && $request->reg_date != "NULL" ? $request->reg_date : NULL,  
+               'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+               'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL               
+           ];           
+
+        $duplicateRecordExisting  =  WbrAr::where($attributes)->exists();
+        if (!$duplicateRecordExisting) {
+            WbrAr::insert([
+               'account_num' => isset($request->account_num) && $request->account_num != "NULL" ? $request->account_num : NULL,  
+               'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL, 
+               'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,  
+                'amount' => isset($request->amount) && $request->amount != "NULL" ? $request->amount : NULL,  
+               'responsible_provider' => isset($request->responsible_provider) && $request->responsible_provider != "NULL" ? $request->responsible_provider : NULL,  
+               'reg_date' => isset($request->reg_date) && $request->reg_date != "NULL" ? $request->reg_date : NULL,  
+               'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+               'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,      
+               'invoke_date' => date('Y-m-d'),
+               'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+               'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+               'chart_status' => "CE_Assigned",
+                ]);
+                    return response()->json(['message' => 'Record Inserted Successfully']);
+        } else {
+            $duplicateRecord  =  WbrAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+            if ($duplicateRecord) {
+                $duplicateRecord->update([
+                    'account_num' => isset($request->account_num) && $request->account_num != "NULL" ? $request->account_num : NULL,  
+                    'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL, 
+                    'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,  
+                    'amount' => isset($request->amount) && $request->amount != "NULL" ? $request->amount : NULL,  
+                    'responsible_provider' => isset($request->responsible_provider) && $request->responsible_provider != "NULL" ? $request->responsible_provider : NULL,  
+                    'reg_date' => isset($request->reg_date) && $request->reg_date != "NULL" ? $request->reg_date : NULL,  
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                    'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL       ,               
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                ]);
+            }
+            return response()->json(['message' => 'Existing Record Updated Successfully']);
+        }
+    } catch (\Exception $e) {
+        $e->getMessage();
+    }
+}
+public function williamBeeRirieARDuplicates(Request $request)
+{
+    try {
+        WbrArDuplicates::insert([
+            'account_num' => isset($request->account_num) && $request->account_num != "NULL" ? $request->account_num : NULL,  
+            'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL, 
+            'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,  
+            'amount' => isset($request->amount) && $request->amount != "NULL" ? $request->amount : NULL,  
+            'responsible_provider' => isset($request->responsible_provider) && $request->responsible_provider != "NULL" ? $request->responsible_provider : NULL,  
+            'reg_date' => isset($request->reg_date) && $request->reg_date != "NULL" ? $request->reg_date : NULL,  
+            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+            'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,                   
+            'invoke_date' => date('Y-m-d'),
+            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+            'chart_status' => "CE_Assigned",
+        ]);
+        return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+    } catch (\Exception $e) {
+        $e->getMessage();
+    }
+}
 
 }

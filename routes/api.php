@@ -116,6 +116,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('nationwide_medical_billing_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NationwideMedicalBillingArDuplicates');
     Route::any('nex_trust_billing_ar', 'App\Http\Controllers\ProjectAutomationController@NexTrustBillingAR');
     Route::any('nex_trust_billing_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NexTrustBillingArDuplicates');
+    Route::any('william_beeRirie_ar', 'App\Http\Controllers\ProjectAutomationController@    ');
+    Route::any('william_beeRirie_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@williamBeeRirieARDuplicates');
     
     
 
