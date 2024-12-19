@@ -1830,7 +1830,12 @@ class QAProductionController extends Controller
                         $exportResult = $query->where('qa_work_status','Auto_Close')->get();
                         $exStatus = 'Auto_Close';
                     }  else {
-                        $exportResult = $query->where('chart_status',$request->chart_status)->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->get();
+                        if($request->chart_status == "Rebuttal") {
+                            $exportResult = $query->where('chart_status',$request->chart_status)->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->get();
+                        } else {
+                            $exportResult = $query->where('chart_status',$request->chart_status)->whereBetween('updated_at',[$startDate,$endDate])->get();
+                        }
+                        // $exportResult = $query->where('chart_status',$request->chart_status)->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->get();
                         $exStatus = str_replace('QA_', '', $request['chart_status']);
                     }
                 } else if ($loginEmpId) {
