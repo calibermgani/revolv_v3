@@ -308,9 +308,7 @@ use Carbon\Carbon;
                             <thead>
                                 @if (!empty($columnsHeader))
                                     <tr>
-                                            <th class='notexport'><input type="checkbox" id="ckbCheckAll"
-                                                    class="cursor_hand">
-                                            </th>
+                                          
                                         <th class='notexport' style="color:white !important">Action</th>
                                         @foreach ($columnsHeader as $columnName => $columnValue)
                                             @if ($columnValue != 'id')
