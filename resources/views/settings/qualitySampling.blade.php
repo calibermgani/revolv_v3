@@ -1,4 +1,8 @@
 @extends('layouts.app3')
+@php
+use Illuminate\Support\Facades\Cache;
+use App\Jobs\GetUserNameByEmpId;
+@endphp
 @section('content')
     <div class="card card-custom custom-card" id="quality_sampling">
         <div class="card-body pt-0 pb-2 pl-8" style="background-color: #ffffff !important">
@@ -144,14 +148,30 @@
                                     } else {
                                         $subProjectName = '--';
                                     }
-                                    $coderName =
-                                        $data['coder_emp_id'] != null
-                                            ? App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['coder_emp_id'])
-                                            : '--';
-                                    $qaName =
-                                        $data['qa_emp_id'] != null
-                                            ? App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['qa_emp_id'])
-                                            : '--';
+                                    if (!is_null($data['coder_emp_id'])) {
+                                        GetUserNameByEmpId::dispatch($data['coder_emp_id'])->delay(now()->addSeconds(5));
+                                    }
+
+                                    if (!is_null($data['qa_emp_id'])) {
+                                        GetUserNameByEmpId::dispatch($data['qa_emp_id'])->delay(now()->addSeconds(5));
+                                    }
+                                    $cacheArKey = "emp_name_{$data['coder_emp_id']}";
+                                    $cacheQaKey = "emp_name_{$data['qa_emp_id']}";
+                                    $coderName = !is_null($data['coder_emp_id'])
+                                        ? (Cache::has($cacheArKey) ? Cache::get($cacheArKey) : '--')
+                                        : '--';
+
+                                    $qaName = !is_null($data['qa_emp_id'])
+                                        ? (Cache::has($cacheQaKey) ? Cache::get($cacheQaKey) : '--')
+                                        : '--';
+                                    // $coderName =
+                                    //     $data['coder_emp_id'] != null
+                                    //         ? App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['coder_emp_id'])
+                                    //         : '--';
+                                    // $qaName =
+                                    //     $data['qa_emp_id'] != null
+                                    //         ? App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['qa_emp_id'])
+                                    //         : '--';
                                 @endphp
                                 <tr class="clickable-row" data-toggle="modal" style="cursor:pointer">
                                     <td><input type="hidden"
