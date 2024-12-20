@@ -120,5 +120,7 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('william_beeRirie_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@williamBeeRirieARDuplicates');    
     Route::any('prine_health_ar', 'App\Http\Controllers\ProjectAutomationController@prineHealthAr');
     Route::any('prine_health_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@prineHealthArDuplicates');
+    Route::any('preferred_behavioral_health_group_ar', 'App\Http\Controllers\ProjectAutomationController@preferredBehavioralHealthGroupAr');
+    Route::any('preferred_behavioral_health_group_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@preferredBehavioralHealthGroupArDuplicates');
 
 });
