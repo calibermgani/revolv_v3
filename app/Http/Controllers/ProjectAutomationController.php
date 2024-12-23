@@ -4474,7 +4474,7 @@ public function NexTrustBillingArDuplicates(Request $request)
     }
     public function veinInstituteAr(Request $request)
     {
-        try {
+        try {dd($request->all());
             $attributes = [
                 'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,  
                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
