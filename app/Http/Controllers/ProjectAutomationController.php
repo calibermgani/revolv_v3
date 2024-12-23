@@ -4373,7 +4373,7 @@ public function NexTrustBillingArDuplicates(Request $request)
     }
     public function preferredBehavioralHealthGroupAr(Request $request)
     {
-        try {
+        try {dd($request->all());
             $attributes = [
                 'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,  
                 'client' => isset($request->client) && $request->client != "NULL" ? $request->client : NULL, 
