@@ -122,5 +122,7 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('prine_health_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@prineHealthArDuplicates');
     Route::any('preferred_behavioral_health_group_ar', 'App\Http\Controllers\ProjectAutomationController@preferredBehavioralHealthGroupAr');
     Route::any('preferred_behavioral_health_group_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@preferredBehavioralHealthGroupArDuplicates');
+    Route::any('vein_institute_ar', 'App\Http\Controllers\ProjectAutomationController@veinInstituteAr');
+    Route::any('vein_institute_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@veinInstituteArDuplicates');
 
 });

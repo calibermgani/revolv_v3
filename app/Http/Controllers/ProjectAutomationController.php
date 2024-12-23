@@ -99,6 +99,8 @@ use App\Models\PhAr;
 use App\Models\PhArDuplicates;
 use App\Models\PbhgAr;
 use App\Models\PbhgArDuplicates;
+use App\Models\ViAr;
+use App\Models\ViArDuplicates;
 
 class ProjectAutomationController extends Controller
 {
@@ -4376,7 +4378,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,  
                 'client' => isset($request->client) && $request->client != "NULL" ? $request->client : NULL, 
                 'staff' => isset($request->staff) && $request->staff != "NULL" ? $request->staff : NULL,  
-                    'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,  
+                'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,  
                 'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,                 
                 'item_id' => isset($request->item_id) && $request->item_id != "NULL" ? $request->item_id : NULL ,              
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
@@ -4460,6 +4462,91 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'prj_errors' => isset($request->prj_errors) && $request->prj_errors != "NULL" ? $request->prj_errors : NULL,  
                 'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL,  
                 'client_activity' => isset($request->client_activity) && $request->client_activity != "NULL" ? $request->client_activity : NULL,                   
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function veinInstituteAr(Request $request)
+    {
+        try {
+            $attributes = [
+                'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,  
+                'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL, 
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,                 
+                'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL ,              
+                'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,  
+                'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,  
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL, 
+                'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,  
+            ];           
+
+            $duplicateRecordExisting  =  ViAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                ViAr::insert([
+                    'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,  
+                    'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL, 
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                    'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,                 
+                    'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL ,              
+                    'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,  
+                    'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,  
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL, 
+                    'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  ViAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                if ($duplicateRecord) {
+                    $duplicateRecord->update([
+                        'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,  
+                        'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL, 
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                        'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,                 
+                        'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL ,              
+                        'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,  
+                        'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,  
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL, 
+                        'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,         
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function veinInstituteArDuplicates(Request $request)
+    {
+        try {
+            ViArrDuplicates::insert([
+                'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,  
+                'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL, 
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,                 
+                'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL ,              
+                'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,  
+                'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,  
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL, 
+                'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,                   
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
