@@ -4528,7 +4528,7 @@ public function NexTrustBillingArDuplicates(Request $request)
     public function veinInstituteArDuplicates(Request $request)
     {
         try {
-            ViArrDuplicates::insert([
+            ViArDuplicates::insert([
                 'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,  
                 'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL, 
                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
