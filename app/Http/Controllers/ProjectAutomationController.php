@@ -4283,8 +4283,8 @@ public function NexTrustBillingArDuplicates(Request $request)
     }
 
     public function prineHealthAr(Request $request)
-    {dd($request->all());
-        try {dd($request->all());
+    {
+        try {
             $attributes = [
                 'organization' => isset($request->organization) && $request->organization != "NULL" ? $request->organization : NULL,  
                 'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL, 
@@ -4373,7 +4373,7 @@ public function NexTrustBillingArDuplicates(Request $request)
     }
     public function preferredBehavioralHealthGroupAr(Request $request)
     {
-        try {dd($request->all());
+        try {
             $attributes = [
                 'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,  
                 'client' => isset($request->client) && $request->client != "NULL" ? $request->client : NULL, 
@@ -4474,7 +4474,7 @@ public function NexTrustBillingArDuplicates(Request $request)
     }
     public function veinInstituteAr(Request $request)
     {
-        try {dd($request->all());
+        try {
             $attributes = [
                 'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,  
                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
