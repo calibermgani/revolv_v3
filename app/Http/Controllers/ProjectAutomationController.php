@@ -101,6 +101,8 @@ use App\Models\PbhgAr;
 use App\Models\PbhgArDuplicates;
 use App\Models\ViAr;
 use App\Models\ViArDuplicates;
+use App\Models\SegAr;
+use App\Models\SegArDuplicates;
 
 class ProjectAutomationController extends Controller
 {
@@ -4538,6 +4540,93 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,  
                 'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,  
                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL, 
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+    public function sewickleyEyeGroupAr(Request $request)
+    {
+        try {
+            $attributes = [
+                'acc_no' => isset($request->acc_no) && $request->acc_no != "NULL" ? $request->acc_no : NULL,  
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL, 
+                'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL
+             ];          
+
+            $duplicateRecordExisting  =  SegAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                SegAr::insert([
+                    'acc_no' => isset($request->acc_no) && $request->acc_no != "NULL" ? $request->acc_no : NULL,  
+                    'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL,  
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                    'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL, 
+                    'grand_total' => isset($request->grand_total) && $request->grand_total != "NULL" ? $request->grand_total : NULL, 
+                    'billed_date' => isset($request->billed_date) && $request->billed_date != "NULL" ? $request->billed_date : NULL, 
+                    'outstanding_balance' => isset($request->outstanding_balance) && $request->outstanding_balance != "NULL" ? $request->outstanding_balance : NULL, 
+                    'policy_no' => isset($request->policy_no) && $request->policy_no != "NULL" ? $request->policy_no : NULL, 
+                    'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL, 
+                    'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL, 
+                    'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,  
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  SegAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                if ($duplicateRecord) {
+                    $duplicateRecord->update([
+                        'acc_no' => isset($request->acc_no) && $request->acc_no != "NULL" ? $request->acc_no : NULL,  
+                        'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL,  
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                        'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL, 
+                        'grand_total' => isset($request->grand_total) && $request->grand_total != "NULL" ? $request->grand_total : NULL, 
+                        'billed_date' => isset($request->billed_date) && $request->billed_date != "NULL" ? $request->billed_date : NULL, 
+                        'outstanding_balance' => isset($request->outstanding_balance) && $request->outstanding_balance != "NULL" ? $request->outstanding_balance : NULL, 
+                        'policy_no' => isset($request->policy_no) && $request->policy_no != "NULL" ? $request->policy_no : NULL, 
+                        'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL, 
+                        'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL, 
+                        'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL, 
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function sewickleyEyeGroupArDuplicates(Request $request)
+    {
+        try {
+            SegArDuplicates::insert([
+                'acc_no' => isset($request->acc_no) && $request->acc_no != "NULL" ? $request->acc_no : NULL,  
+                'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL,  
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL, 
+                'grand_total' => isset($request->grand_total) && $request->grand_total != "NULL" ? $request->grand_total : NULL, 
+                'billed_date' => isset($request->billed_date) && $request->billed_date != "NULL" ? $request->billed_date : NULL, 
+                'outstanding_balance' => isset($request->outstanding_balance) && $request->outstanding_balance != "NULL" ? $request->outstanding_balance : NULL, 
+                'policy_no' => isset($request->policy_no) && $request->policy_no != "NULL" ? $request->policy_no : NULL, 
+                'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL, 
+                'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL, 
+                'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL, 
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
