@@ -4485,8 +4485,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,  
                 'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,  
                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL, 
-                'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,  
-            ];           
+             ];           
 
             $duplicateRecordExisting  =  ViAr::where($attributes)->exists();
             if (!$duplicateRecordExisting) {
@@ -4500,7 +4499,6 @@ public function NexTrustBillingArDuplicates(Request $request)
                     'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,  
                     'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,  
                     'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL, 
-                    'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
@@ -4520,7 +4518,6 @@ public function NexTrustBillingArDuplicates(Request $request)
                         'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,  
                         'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,  
                         'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL, 
-                        'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,         
                         'invoke_date' => date('Y-m-d'),
                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
@@ -4546,7 +4543,6 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,  
                 'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,  
                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL, 
-                'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,                   
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
