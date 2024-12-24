@@ -105,6 +105,8 @@ use App\Models\SegAr;
 use App\Models\SegArDuplicates;
 use App\Models\PbcslAr;
 use App\Models\PbcslArDuplicates;
+use App\Models\SmhcAr;
+use App\Models\SmhcArDuplicates;
 
 class ProjectAutomationController extends Controller
 {
@@ -4722,4 +4724,130 @@ public function NexTrustBillingArDuplicates(Request $request)
             $e->getMessage();
         }
     }
-}
+
+
+
+    //
+
+
+   // Siouxland Mental Health Center
+
+
+   public function SiouxlandMentalHealthCenterAR(Request $request)
+    {
+        try {
+            $attributes = [
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                'claims_no' => isset($request->claims_no) && $request->claims_no != "NULL" ? $request->claims_no : NULL,  
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL
+             ];          
+
+            $duplicateRecordExisting  =  SmhcAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                SmhcAr::insert([
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                    'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,  
+                    'claims_no' => isset($request->claims_no) && $request->claims_no != "NULL" ? $request->claims_no : NULL,  
+                    'line_item' => isset($request->line_item) && $request->line_item != "NULL" ? $request->line_item : NULL, 
+                    'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL, 
+                    'denial_code' => isset($request->denial_code) && $request->denial_code != "NULL" ? $request->denial_code : NULL, 
+                    'denial_reason' => isset($request->denial_reason) && $request->denial_reason != "NULL" ? $request->denial_reason : NULL, 
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                    'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL, 
+                    'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL, 
+                    'responsibility_insurance' => isset($request->responsibility_insurance) && $request->responsibility_insurance != "NULL" ? $request->responsibility_insurance : NULL, 
+                    'policy_no' => isset($request->policy_no) && $request->policy_no != "NULL" ? $request->policy_no : NULL, 
+                    'last_submission_date' => isset($request->last_submission_date) && $request->last_submission_date != "NULL" ? $request->last_submission_date : NULL, 
+                    'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL, 
+                    'allowable' => isset($request->allowable) && $request->allowable != "NULL" ? $request->allowable : NULL, 
+                    'ins_pay' => isset($request->ins_pay) && $request->ins_pay != "NULL" ? $request->ins_pay : NULL, 
+                    'pat_pay' => isset($request->pat_pay) && $request->pat_pay != "NULL" ? $request->pat_pay : NULL, 
+                    'credit_adj' => isset($request->credit_adj) && $request->credit_adj != "NULL" ? $request->credit_adj : NULL, 
+                    'debit_adj' => isset($request->debit_adj) && $request->debit_adj != "NULL" ? $request->debit_adj : NULL, 
+                    'refund' => isset($request->refund) && $request->refund != "NULL" ? $request->refund : NULL,
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  SmhcAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                if ($duplicateRecord) {
+                    $duplicateRecord->update([
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                    'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,  
+                    'claims_no' => isset($request->claims_no) && $request->claims_no != "NULL" ? $request->claims_no : NULL,  
+                    'line_item' => isset($request->line_item) && $request->line_item != "NULL" ? $request->line_item : NULL, 
+                    'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL, 
+                    'denial_code' => isset($request->denial_code) && $request->denial_code != "NULL" ? $request->denial_code : NULL, 
+                    'denial_reason' => isset($request->denial_reason) && $request->denial_reason != "NULL" ? $request->denial_reason : NULL, 
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                    'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL, 
+                    'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL, 
+                    'responsibility_insurance' => isset($request->responsibility_insurance) && $request->responsibility_insurance != "NULL" ? $request->responsibility_insurance : NULL, 
+                    'policy_no' => isset($request->policy_no) && $request->policy_no != "NULL" ? $request->policy_no : NULL, 
+                    'last_submission_date' => isset($request->last_submission_date) && $request->last_submission_date != "NULL" ? $request->last_submission_date : NULL, 
+                    'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL, 
+                    'allowable' => isset($request->allowable) && $request->allowable != "NULL" ? $request->allowable : NULL, 
+                    'ins_pay' => isset($request->ins_pay) && $request->ins_pay != "NULL" ? $request->ins_pay : NULL, 
+                    'pat_pay' => isset($request->pat_pay) && $request->pat_pay != "NULL" ? $request->pat_pay : NULL, 
+                    'credit_adj' => isset($request->credit_adj) && $request->credit_adj != "NULL" ? $request->credit_adj : NULL, 
+                    'debit_adj' => isset($request->debit_adj) && $request->debit_adj != "NULL" ? $request->debit_adj : NULL, 
+                    'refund' => isset($request->refund) && $request->refund != "NULL" ? $request->refund : NULL,
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function SiouxlandMentalHealthCenterARArDuplicates(Request $request)
+    {
+        try {
+            SmhcArDuplicates::insert([
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                    'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,  
+                    'claims_no' => isset($request->claims_no) && $request->claims_no != "NULL" ? $request->claims_no : NULL,  
+                    'line_item' => isset($request->line_item) && $request->line_item != "NULL" ? $request->line_item : NULL, 
+                    'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL, 
+                    'denial_code' => isset($request->denial_code) && $request->denial_code != "NULL" ? $request->denial_code : NULL, 
+                    'denial_reason' => isset($request->denial_reason) && $request->denial_reason != "NULL" ? $request->denial_reason : NULL, 
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                    'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL, 
+                    'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL, 
+                    'responsibility_insurance' => isset($request->responsibility_insurance) && $request->responsibility_insurance != "NULL" ? $request->responsibility_insurance : NULL, 
+                    'policy_no' => isset($request->policy_no) && $request->policy_no != "NULL" ? $request->policy_no : NULL, 
+                    'last_submission_date' => isset($request->last_submission_date) && $request->last_submission_date != "NULL" ? $request->last_submission_date : NULL, 
+                    'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL, 
+                    'allowable' => isset($request->allowable) && $request->allowable != "NULL" ? $request->allowable : NULL, 
+                    'ins_pay' => isset($request->ins_pay) && $request->ins_pay != "NULL" ? $request->ins_pay : NULL, 
+                    'pat_pay' => isset($request->pat_pay) && $request->pat_pay != "NULL" ? $request->pat_pay : NULL, 
+                    'credit_adj' => isset($request->credit_adj) && $request->credit_adj != "NULL" ? $request->credit_adj : NULL, 
+                    'debit_adj' => isset($request->debit_adj) && $request->debit_adj != "NULL" ? $request->debit_adj : NULL, 
+                    'refund' => isset($request->refund) && $request->refund != "NULL" ? $request->refund : NULL,
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+
+
+
+
+} // Main Close
