@@ -649,6 +649,8 @@ use Carbon\Carbon;
                                         <div class="col-md-3" data-scroll="true" data-height="400">
                                             <h6 class="title-h6">Basic Information</h6>&nbsp;&nbsp;
                                             <input type="hidden" name="idValue">
+                                            <input type="hidden" name="parentId">
+                                            <input type="hidden" name="record_old_status">
                                             @if (count($popupNonEditableFields) > 0)
                                                 @php $count = 0; @endphp
                                                 @foreach ($popupNonEditableFields as $data)
@@ -2171,19 +2173,22 @@ use Carbon\Carbon;
                             $('select[name="' + header + '[]"]').val(value).trigger('change');
                         } else {
                              $('input[name="idValue"]').val(clientData['parent_id']);
-                            $('input[name="record_old_status"]').val(clientData['chart_status']);
+                             $('input[name="parentId"]').val(clientData['parent_id']);
+                             $('input[name="record_old_status"]').val('QA_Assigned');
                             if (header === 'chart_status' && value.includes('CE_')) {
                                 claimStatus = value;
                                 value = value.replace('CE_', '');
                                 $('select[name="chart_status"]').val('QA_Inprocess').trigger(
                                     'change');
                                 $('#title_status').text("In Process");
+                                $('input[name="record_old_status"]').val('QA_Assigned');
                             } else if(header === 'chart_status' && value.includes('QA_')) {
                                 claimStatus = value;
                                 value = value.replace('QA_', '');
                                 $('select[name="chart_status"]').val('QA_Inprocess').trigger(
                                     'change');
                                 $('#title_status').text("In Process");
+                                $('input[name="record_old_status"]').val('QA_Inprocess');
                             }
                             // if (header == 'id') {
                             //     $('input[name="idValue"]').val(value);
