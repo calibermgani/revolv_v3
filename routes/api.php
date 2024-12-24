@@ -126,5 +126,7 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('vein_institute_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@veinInstituteArDuplicates');
     Route::any('sewickley_eye_group_ar', 'App\Http\Controllers\ProjectAutomationController@sewickleyEyeGroupAr');
     Route::any('sewickley_eye_group_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@sewickleyEyeGroupArDuplicates');
+    Route::any('precision_billing_and_consulting_services_ar', 'App\Http\Controllers\ProjectAutomationController@precisionBillingAndConsultingServicesAr');
+    Route::any('precision_billing_and_consulting_services_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@precisionBillingAndConsultingServicesArDuplicates');
 
 });

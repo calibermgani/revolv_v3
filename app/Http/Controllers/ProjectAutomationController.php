@@ -103,6 +103,8 @@ use App\Models\ViAr;
 use App\Models\ViArDuplicates;
 use App\Models\SegAr;
 use App\Models\SegArDuplicates;
+use App\Models\PbcslAr;
+use App\Models\PbcslArDuplicates;
 
 class ProjectAutomationController extends Controller
 {
@@ -4627,6 +4629,88 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL, 
                 'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL, 
                 'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL, 
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function precisionBillingAndConsultingServicesAr(Request $request)
+    {
+        try {
+            $attributes = [
+                'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL,  
+                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL
+             ];          
+
+            $duplicateRecordExisting  =  PbcslAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                PbcslAr::insert([
+                    'practice' => isset($request->practice) && $request->practice != "NULL" ? $request->practice : NULL,  
+                    'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL,  
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+                    'responsible' => isset($request->responsible) && $request->responsible != "NULL" ? $request->responsible : NULL, 
+                    'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL, 
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                    'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed : NULL, 
+                    'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL, 
+                    'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL, 
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL, 
+                    'category' => isset($request->category) && $request->category != "NULL" ? $request->category : NULL, 
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  PbcslAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                if ($duplicateRecord) {
+                    $duplicateRecord->update([
+                        'practice' => isset($request->practice) && $request->practice != "NULL" ? $request->practice : NULL,  
+                        'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL,  
+                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+                        'responsible' => isset($request->responsible) && $request->responsible != "NULL" ? $request->responsible : NULL, 
+                        'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL, 
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                        'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed : NULL, 
+                        'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL, 
+                        'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL, 
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL, 
+                        'category' => isset($request->category) && $request->category != "NULL" ? $request->category : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function precisionBillingAndConsultingServicesArDuplicates(Request $request)
+    {
+        try {
+            PbcslArDuplicates::insert([
+                'practice' => isset($request->practice) && $request->practice != "NULL" ? $request->practice : NULL,  
+                'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL,  
+                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+                'responsible' => isset($request->responsible) && $request->responsible != "NULL" ? $request->responsible : NULL, 
+                'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL, 
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed : NULL, 
+                'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL, 
+                'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL, 
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL, 
+                'category' => isset($request->category) && $request->category != "NULL" ? $request->category : NULL,
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
