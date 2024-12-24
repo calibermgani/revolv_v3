@@ -998,7 +998,19 @@ class QAProductionController extends Controller
                 } else {
                     $data['coder_error_count'] = $datasRecord['coder_error_count'];
                 }
-
+                $currentTime = Carbon::now();
+                $callChartWorkLogExistingRecords = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
+                ->where('record_status',$data['record_old_status'])
+                ->where('project_id', $decodedProjectName)
+                ->where('sub_project_id', $decodedPracticeName)
+                ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->get();
+                    if ($callChartWorkLogExistingRecords->isNotEmpty()) {
+                        foreach ($callChartWorkLogExistingRecords as $callChartWorkLog) {
+                            $start_time = Carbon::parse($callChartWorkLog->start_time);
+                            $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
+                            $callChartWorkLog->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time] );
+                        }
+                   }
                 if($datasRecord != null) {
                     $datasRecord->update($data);
                     $record->update( ['chart_status' => $data['chart_status'],'qa_hold_reason' => $data['qa_hold_reason'],'QA_rework_comments' => $data['QA_rework_comments'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_error_count' => $data['tl_error_count'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'QA_comments_count' => $data['QA_comments_count'],
@@ -1034,18 +1046,29 @@ class QAProductionController extends Controller
                        Mail::to($toMailId)->cc($ccMailId)->send(new ManagerRebuttalMail($mailHeader, $mailBody, $reportingPerson));
                     }
                 }
-                 $currentTime = Carbon::now();
-                $callChartWorkLogExistingRecord = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
-                ->where('project_id', $decodedProjectName)
-                ->where('sub_project_id', $decodedPracticeName)
-                ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->first();
-                if($callChartWorkLogExistingRecord && $callChartWorkLogExistingRecord != null) {
-                    $start_time = Carbon::parse($callChartWorkLogExistingRecord->start_time);
-                    $time_difference = $currentTime->diff($start_time);
-                    $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
-                    $callChartWorkLogExistingRecord->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time] );
+                
+                // $callChartWorkLogExistingRecord = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
+                // ->where('project_id', $decodedProjectName)
+                // ->where('sub_project_id', $decodedPracticeName)
+                // ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->first();
+                // if($callChartWorkLogExistingRecord && $callChartWorkLogExistingRecord != null) {
+                //     $start_time = Carbon::parse($callChartWorkLogExistingRecord->start_time);
+                //     $time_difference = $currentTime->diff($start_time);
+                //     $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
+                //     $callChartWorkLogExistingRecord->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time] );
 
-                }
+                // }
+                // $callChartWorkLogExistingRecords = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
+                // ->where('project_id', $decodedProjectName)
+                // ->where('sub_project_id', $decodedPracticeName)
+                // ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->get();
+                //     if ($callChartWorkLogExistingRecords->isNotEmpty()) {
+                //         foreach ($callChartWorkLogExistingRecords as $callChartWorkLog) {
+                //             $start_time = Carbon::parse($callChartWorkLog->start_time);
+                //             $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
+                //             $callChartWorkLog->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time] );
+                //         }
+                //    }
                 return redirect('qa_production/qa_projects_assigned/'.$clientName.'/'.$subProjectName);
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -1186,20 +1209,32 @@ class QAProductionController extends Controller
                     }
                 }
                 $currentTime = Carbon::now();
-                $callChartWorkLogExistingRecord = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
+                // $callChartWorkLogExistingRecord = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
+                // ->where('record_status',$data['record_old_status'])
+                // ->where('project_id', $decodedProjectName)
+                // ->where('sub_project_id', $decodedPracticeName)
+                // ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->first();
+                // $start_time = Carbon::parse($callChartWorkLogExistingRecord->start_time);
+                // $time_difference = $currentTime->diff($start_time);
+                // $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
+                // if($callChartWorkLogExistingRecord && $callChartWorkLogExistingRecord != null) {
+                //     $callChartWorkLogExistingRecord->update([
+                //         'record_status' => $data['chart_status'],
+                //         'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time
+                //     ]);
+                // }
+                $callChartWorkLogExistingRecords = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
                 ->where('record_status',$data['record_old_status'])
                 ->where('project_id', $decodedProjectName)
                 ->where('sub_project_id', $decodedPracticeName)
-                ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->first();
-                $start_time = Carbon::parse($callChartWorkLogExistingRecord->start_time);
-                $time_difference = $currentTime->diff($start_time);
-                $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
-                if($callChartWorkLogExistingRecord && $callChartWorkLogExistingRecord != null) {
-                    $callChartWorkLogExistingRecord->update([
-                        'record_status' => $data['chart_status'],
-                        'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time
-                    ]);
-                }
+                ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->get();
+                    if ($callChartWorkLogExistingRecords->isNotEmpty()) {
+                        foreach ($callChartWorkLogExistingRecords as $callChartWorkLog) {
+                            $start_time = Carbon::parse($callChartWorkLog->start_time);
+                            $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
+                            $callChartWorkLog->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time] );
+                        }
+                   }
                 $tabUrl = lcfirst(str_replace('QA_', '', $data['record_old_status']));
                 return redirect('qa_production/qa_projects_'.$tabUrl.'/'.$clientName.'/'.$subProjectName);
              } catch (\Exception $e) {
@@ -1241,8 +1276,7 @@ class QAProductionController extends Controller
                 if (Schema::hasTable($table_name)) {
                     $column_names = DB::select("DESCRIBE $table_name");
                     $columns = array_column($column_names, 'Field');
-                    $columnsToExclude = ['ce_hold_reason','qa_hold_reason','qa_work_status','QA_rework_comments','QA_required_sampling','QA_rework_comments','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date', 'coder_rework_status','QA_status_code','QA_sub_status_code',
-                    'qa_classification','qa_category','qa_scope',
+                    $columnsToExclude = ['ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
                     'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                     'updated_at', 'created_at', 'deleted_at'];
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
@@ -1807,7 +1841,12 @@ class QAProductionController extends Controller
                         $exportResult = $query->where('qa_work_status','Auto_Close')->get();
                         $exStatus = 'Auto_Close';
                     }  else {
-                        $exportResult = $query->where('chart_status',$request->chart_status)->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->get();
+                        if($request->chart_status == "Rebuttal") {
+                            $exportResult = $query->where('chart_status',$request->chart_status)->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->get();
+                        } else {
+                            $exportResult = $query->where('chart_status',$request->chart_status)->whereBetween('updated_at',[$startDate,$endDate])->get();
+                        }
+                        // $exportResult = $query->where('chart_status',$request->chart_status)->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->get();
                         $exStatus = str_replace('QA_', '', $request['chart_status']);
                     }
                 } else if ($loginEmpId) {

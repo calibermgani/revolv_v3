@@ -116,7 +116,17 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('nationwide_medical_billing_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NationwideMedicalBillingArDuplicates');
     Route::any('nex_trust_billing_ar', 'App\Http\Controllers\ProjectAutomationController@NexTrustBillingAR');
     Route::any('nex_trust_billing_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NexTrustBillingArDuplicates');
-    
-    
+    Route::any('william_beeRirie_ar', 'App\Http\Controllers\ProjectAutomationController@williamBeeRirieAR');
+    Route::any('william_beeRirie_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@williamBeeRirieARDuplicates');    
+    Route::any('prine_health_ar', 'App\Http\Controllers\ProjectAutomationController@prineHealthAr');
+    Route::any('prine_health_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@prineHealthArDuplicates');
+    Route::any('preferred_behavioral_health_group_ar', 'App\Http\Controllers\ProjectAutomationController@preferredBehavioralHealthGroupAr');
+    Route::any('preferred_behavioral_health_group_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@preferredBehavioralHealthGroupArDuplicates');
+    Route::any('vein_institute_ar', 'App\Http\Controllers\ProjectAutomationController@veinInstituteAr');
+    Route::any('vein_institute_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@veinInstituteArDuplicates');
+    Route::any('sewickley_eye_group_ar', 'App\Http\Controllers\ProjectAutomationController@sewickleyEyeGroupAr');
+    Route::any('sewickley_eye_group_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@sewickleyEyeGroupArDuplicates');
+    Route::any('precision_billing_and_consulting_services_ar', 'App\Http\Controllers\ProjectAutomationController@precisionBillingAndConsultingServicesAr');
+    Route::any('precision_billing_and_consulting_services_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@precisionBillingAndConsultingServicesArDuplicates');
 
 });
