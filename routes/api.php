@@ -128,5 +128,11 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('sewickley_eye_group_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@sewickleyEyeGroupArDuplicates');
     Route::any('precision_billing_and_consulting_services_ar', 'App\Http\Controllers\ProjectAutomationController@precisionBillingAndConsultingServicesAr');
     Route::any('precision_billing_and_consulting_services_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@precisionBillingAndConsultingServicesArDuplicates');
+    Route::any('siouxland_mental_health_center_ar', 'App\Http\Controllers\ProjectAutomationController@SiouxlandMentalHealthCenterAR');
+    Route::any('siouxland_mental_health_center_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@SiouxlandMentalHealthCenterARArDuplicates');
+    Route::any('the_queens_health_system_ar', 'App\Http\Controllers\ProjectAutomationController@TheQueensHealthSystemAR');
+    Route::any('the_queens_health_system_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@TheQueensHealthSystemArDuplicates');
+    
+
 
 });
