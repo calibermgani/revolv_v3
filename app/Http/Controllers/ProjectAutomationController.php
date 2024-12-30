@@ -2789,8 +2789,7 @@ class ProjectAutomationController extends Controller
              $attributes = [
                 'charge_id' => isset($request->charge_id) && $request->charge_id != "NULL" ? $request->charge_id : NULL,
                 'client_name' => isset($request->client_name) && $request->client_name != "NULL" ? $request->client_name : NULL,  
-                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
-                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance: NULL
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL
                 ];
  
              $duplicateRecordExisting  =  BncmhcAr::where($attributes)->exists();
