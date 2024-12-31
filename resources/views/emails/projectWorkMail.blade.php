@@ -62,8 +62,8 @@
                 @if (isset($mailBody) && count($mailBody) > 0)
                     @foreach ($mailBody as $data)
                     @php
-                         $arCacheKey = 'project_' . str_replace(',', '_', $data['id']) . '_ar_count';
-                        $qaCacheKey = 'project_' . str_replace(',', '_', $data['id']) . '_qa_count';      
+                         $arCacheKey = 'project_' . str_replace(',', '_', $data['project_id']) . '_ar_count';
+                        $qaCacheKey = 'project_' . str_replace(',', '_', $data['project_id']) . '_qa_count';      
                         $totalAR = Illuminate\Support\Facades\Cache::get($arCacheKey, 0);
                         $totalQA = Illuminate\Support\Facades\Cache::get($qaCacheKey, 0);
                     
