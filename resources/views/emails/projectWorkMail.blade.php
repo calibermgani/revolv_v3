@@ -62,7 +62,7 @@
                 @if (isset($mailBody) && count($mailBody) > 0)
                     @foreach ($mailBody as $data)
                     @php
-                    $projectIdsString = implode(" ",$projectIds);
+                    $projectIdsString = implode(",",$projectIds);
                          $arCacheKey = 'project_' . str_replace(',', '_', $projectIdsString) . '_ar_count';
                         $qaCacheKey = 'project_' . str_replace(',', '_', $projectIdsString) . '_qa_count';      
                         $totalAR = Illuminate\Support\Facades\Cache::get($arCacheKey, 0);dd($arCacheKey,$totalAR);
