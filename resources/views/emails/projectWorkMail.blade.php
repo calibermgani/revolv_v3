@@ -65,7 +65,7 @@
                     $projectIdsString = implode(",",$projectIds);
                          $arCacheKey = 'project_' . str_replace(',', '_', $projectIdsString) . '_ar_count';
                         $qaCacheKey = 'project_' . str_replace(',', '_', $projectIdsString) . '_qa_count';      
-                        $totalAR = Illuminate\Support\Facades\Cache::get($arCacheKey, 0);dd($arCacheKey,$totalAR);
+                        $totalAR = Illuminate\Support\Facades\Cache::get($arCacheKey, 0);
                         $totalQA = Illuminate\Support\Facades\Cache::get($qaCacheKey, 0);
                     
                         $loggedResolvAR = 0;$totalARCount = 0;
