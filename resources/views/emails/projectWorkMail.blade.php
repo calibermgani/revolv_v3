@@ -62,8 +62,8 @@
                 @if (isset($mailBody) && count($mailBody) > 0)
                     @foreach ($mailBody as $data)
                     @php
-                         $arCacheKey = 'project_' . str_replace(',', '_', $project['id']) . '_ar_count';
-                        $qaCacheKey = 'project_' . str_replace(',', '_', $project['id']) . '_qa_count';      
+                         $arCacheKey = 'project_' . str_replace(',', '_', $data['id']) . '_ar_count';
+                        $qaCacheKey = 'project_' . str_replace(',', '_', $data['id']) . '_qa_count';      
                         $totalAR = Illuminate\Support\Facades\Cache::get($arCacheKey, 0);
                         $totalQA = Illuminate\Support\Facades\Cache::get($qaCacheKey, 0);
                     
@@ -72,7 +72,7 @@
                             if($arList['client_id'] == $rowProjectId && $arList['assigned_people'] != null){
                                 $totalARCount += 1;
                             $loggedResolvAR +=  App\Models\EmployeeLogin::where('user_id', $arList['assigned_people'])
-                                                ->whereBetween('updated_at', [$project['yesterDayStartDate'], $project['yesterDayEndDate']])
+                                                ->whereBetween('updated_at', [$data['yesterDayStartDate'], $data['yesterDayEndDate']])
                                                 ->distinct('user_id')
                                                 ->count();
                             }
@@ -81,7 +81,7 @@
                         foreach($totalQA['totalQAList'] as $key => $qaList){    
                             if($qaList['client_id'] == $rowProjectId && $qaList['assigned_people'] != null){
                             $loggedResolvQA +=  App\Models\EmployeeLogin::where('user_id', $qaList['assigned_people'])
-                                                ->whereBetween('updated_at', [$project['yesterDayStartDate'], $project['yesterDayEndDate']])
+                                                ->whereBetween('updated_at', [$data['yesterDayStartDate'], $data['yesterDayEndDate']])
                                                 ->distinct('user_id')
                                                 ->count();
                             }
