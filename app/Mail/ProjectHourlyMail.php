@@ -14,17 +14,21 @@ class ProjectHourlyMail extends Mailable
     public $mailBody;
     public $timeSlots;
     public $today;
+    public $startTime;
+    public $endTime;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($mailHeader, $mailBody, $timeSlots, $today)
+    public function __construct($mailHeader, $mailBody, $timeSlots, $today,$startTime,$endTime)
     {
         $this->mailHeader = $mailHeader;
         $this->mailBody = $mailBody;
         $this->timeSlots = $timeSlots;
         $this->today = $today;
+        $this->startTime = $startTime;
+        $this->endTime = $endTime;
     }
 
     /**

@@ -761,7 +761,7 @@ class ProjectController extends Controller
             $today = Carbon::now();
 
             // Send mail
-            Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $headers, $today));
+            Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $headers, $today,$startTime,$endTime));
             Log::info('ProjectHourlyMail executed successfully.');
         } catch (\Exception $e) {
             Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
