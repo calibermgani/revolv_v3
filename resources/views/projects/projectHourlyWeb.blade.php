@@ -76,12 +76,17 @@
                                     <th>
                                         {{ $timeSlot }}</th>
                                 @endforeach
+                                <th>Reason</th>
                             </tr>
                         </thead>
                         <tbody>
 
                             @if (isset($mailBody) && count($mailBody) > 0)
                                 @foreach ($mailBody as $data)
+                                @php
+                                dd($timeSlots);
+                                $reason = App\Models\ProjectReason::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->get();
+                                @endphp
                                     <tr>
                                         <td>
                                             <a target="_blank"
@@ -92,6 +97,7 @@
                                         @foreach ($data['hourlyCount'] as $count)
                                             <td>{{ $count }}</td>
                                         @endforeach
+                                        <td></td>
                                     </tr>
                                 @endforeach
                             @else
