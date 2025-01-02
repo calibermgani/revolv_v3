@@ -86,13 +86,16 @@
                                 @php
                               
                                 $reasonList = App\Models\ProjectReason::with('project_reason_type')->where('project_id',$data['project_id'])->where('sub_project_id',$data['subproject_id'])->whereBetween('updated_at', [$startTime, $endTime])->get();
+                                $reasons = []; 
                                 if(count($reasonList) > 0) {
                                     foreach($reasonList as $reasonData) {
                                      $reason=isset($reasonData) && isset($reasonData->project_reason_type) ? $reasonData->project_reason_type->reason_type : '--';
+                                     $reasons[] = $reason; 
                                     }
-
+                                    $reasonString = implode(', ', $reasons);
                                 } else {
-                                    $reason='--';
+                                    $reasons[] = '--'; 
+                                    $reasonString = '--';
                                 }
                                 @endphp
                                     <tr>
@@ -105,7 +108,7 @@
                                         @foreach ($data['hourlyCount'] as $count)
                                             <td>{{ $count }}</td>
                                         @endforeach
-                                        <td>{{$reason}}</td>
+                                        <td>{{$reasonString}}</td>
                                     </tr>
                                 @endforeach
                             @else
