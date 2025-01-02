@@ -495,7 +495,7 @@
                             </div>
                         </div>
                     </div>
-                        <div class="col-md-6 mt-2">
+                        <div class="col-md-12 mt-2">
                             <div class="form-group mb-1">
                                 <textarea id="other_comments" rows="4" class="form-control" maxlength="250" style="display:none !important" required></textarea>
                            </div>
