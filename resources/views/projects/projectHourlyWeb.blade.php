@@ -86,7 +86,7 @@
                                 @php
                               
                                 $reasonList = App\Models\ProjectReason::where('project_id',$data['project_id'])->where('sub_project_id',$data['subproject_id'])->whereBetween('updated_at', [$startTime, $endTime])->get();
-                                if(isnotEmpty($reasonList)) {
+                                if(count($reasonList) > 0) {
                                      $reason=$reasonList;
                                 } else {
                                     $reason='--';
