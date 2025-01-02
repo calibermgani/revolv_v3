@@ -83,24 +83,23 @@
 
                             @if (isset($mailBody) && count($mailBody) > 0)
                                 @foreach ($mailBody as $data)
-                                @php
-                              
-                                $reasonList = App\Models\ProjectReason::with('project_reason_type')->where('project_id',$data['project_id'])->where('sub_project_id',$data['subproject_id'])->whereBetween('updated_at', [$startTime, $endTime])->get();
-                                $reasons = []; 
-                                if(count($reasonList) > 0) {
-                                    foreach($reasonList as $reasonData) {
-                                     $reason=isset($reasonData) && isset($reasonData->project_reason_type) ? $reasonData->project_reason_type->reason_type : '--';
-                                     if($reasonData->others_comments != NULL){
-                                     $reasons[] = $reason.' - '.$reasonData->others_comments; 
+                                @php                              
+                                    $reasonList = App\Models\ProjectReason::with('project_reason_type')->where('project_id',$data['project_id'])->where('sub_project_id',$data['subproject_id'])->whereBetween('updated_at', [$startTime, $endTime])->get();
+                                    $reasons = []; 
+                                    if(count($reasonList) > 0) {
+                                        foreach($reasonList as $reasonData) {
+                                            $reason=isset($reasonData) && isset($reasonData->project_reason_type) ? $reasonData->project_reason_type->reason_type : '--';
+                                            if($reasonData->others_comments != NULL){
+                                                $reasons[] = $reason.' - '.$reasonData->others_comments; 
+                                            } else {
+                                                $reasons[] = $reason;
+                                            }
+                                        }
+                                        $reasonString = implode(', ', $reasons);
                                     } else {
-                                        $reasons[] = $reason;
+                                        $reasons[] = '--'; 
+                                        $reasonString = '--';
                                     }
-                                }
-                                    $reasonString = implode(', ', $reasons);
-                                } else {
-                                    $reasons[] = '--'; 
-                                    $reasonString = '--';
-                                }
                                 @endphp
                                     <tr>
                                         <td>
