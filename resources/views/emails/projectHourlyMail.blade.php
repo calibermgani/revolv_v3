@@ -47,13 +47,31 @@
                     @foreach ($timeSlots as $timeSlot)
                         <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">{{ $timeSlot }}</th>
                     @endforeach
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Reason</th>
                 </tr>
             </thead>
             <tbody>
 
                 @if (isset($mailBody) && count($mailBody) > 0)
                     @foreach ($mailBody as $data)
-                  
+                    @php                              
+                        $reasonList = App\Models\ProjectReason::with('project_reason_type')->where('project_id',$data['project_id'])->where('sub_project_id',$data['subproject_id'])->whereBetween('updated_at', [$startTime, $endTime])->get();
+                        $reasons = []; 
+                        if(count($reasonList) > 0) {
+                            foreach($reasonList as $reasonData) {
+                                $reason=isset($reasonData) && isset($reasonData->project_reason_type) ? $reasonData->project_reason_type->reason_type : '--';
+                                if($reasonData->others_comments != NULL){
+                                    $reasons[] = $reason.' - '.$reasonData->others_comments.'('.date('m/d/Y h:i A',strtotime($reasonData->updated_at)).')'; 
+                                } else {
+                                    $reasons[] = $reason.'('.date('m/d/Y h:i A',strtotime($reasonData->updated_at)).')';
+                                }
+                            }
+                            $reasonString = implode(', ', $reasons);
+                        } else {
+                            $reasons[] = '--'; 
+                            $reasonString = '--';
+                        }
+                    @endphp
                         <tr>
                             <td style="text-align: center; padding: 5px;">
                                 <a href="http://resolv-aims.com/projects/project_detailed_information?project_id={{ App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data['project_id'],'encode') }}&subproject_id={{ App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data['subproject_id'],'encode') }}&requested_date={{ $formattedDate }}">
@@ -70,8 +88,9 @@
                                 {{-- <td style="text-align: center;padding: 5px;">{{ $data['hourlyCount'] }}</td> --}}
                             {{-- @endforeach --}}
                             @foreach ($data['hourlyCount'] as $count)
-                            <td style="text-align: center;padding: 5px;">{{ $count }}</td>
-                        @endforeach
+                               <td style="text-align: center;padding: 5px;">{{ $count }}</td>
+                           @endforeach
+                           <td style="text-align: center;padding: 5px;">{{$reasonString}}</td>
                         </tr>
                     @endforeach
                 @else
