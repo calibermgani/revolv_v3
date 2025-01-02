@@ -487,7 +487,7 @@
                                 $projectReasonTypeList,
                                 null,
                                 [
-                                    'class' => 'form-control white-smoke kt_select2_project_reason_type',
+                                    'class' => 'form-control kt_select2_project_reason_type',
                                     'id' => 'project_reason',
                                 ],
                             ) !!}
@@ -1130,12 +1130,9 @@
 
             })
           
-            $(document).on('click','.clickable-row td:not(:first-child)',function(e){
-                console.log('click');
-                
+            $(document).on('click','.clickable-row td:nth-child(2)',function(e){                
                 $("#projectReasonModal").modal('show');
                 var project_id = $(this).closest('tr').find('td:eq(1) input').val();
-                console.log("Project ID:  ", project_id);
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -1152,10 +1149,7 @@
                         var myArray = res.existingSubProject;
                         var sla_options = '<option value="">-- Select --</option>';
                         $.each(res.subProject, function(key, value) {
-                            sla_options += '<option value="' + key + '" ' +
-                                                (myArray.length >0 && $.inArray(key, myArray) !== -1 ? 'disabled' :
-                                                    '') +
-                                                '>' + value +
+                            sla_options += '<option value="' + key + '">' + value +
                                 '</option>';
                         });
                         $("#sub_project_list").html(sla_options);
