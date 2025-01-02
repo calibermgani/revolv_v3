@@ -90,9 +90,9 @@
                                         foreach($reasonList as $reasonData) {
                                             $reason=isset($reasonData) && isset($reasonData->project_reason_type) ? $reasonData->project_reason_type->reason_type : '--';
                                             if($reasonData->others_comments != NULL){
-                                                $reasons[] = $reason.' - '.$reasonData->others_comments; 
+                                                $reasons[] = $reason.' - '.$reasonData->others_comments.'('.date('m/d/Y h:i A',strtime($reasonData->updated_at)).')'; 
                                             } else {
-                                                $reasons[] = $reason;
+                                                $reasons[] = $reason.'('.date('m/d/Y h:i A',strtime($reasonData->updated_at)).')';
                                             }
                                         }
                                         $reasonString = implode(', ', $reasons);
