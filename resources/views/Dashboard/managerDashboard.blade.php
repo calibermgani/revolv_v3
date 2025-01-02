@@ -467,7 +467,7 @@
                 <div class="modal-body text-center p-3" style="">
                     <div class="col-md-6">
                         <div class="form-group mb-1">
-                            @php $subProjectList = ['Select'=>'Select Sub Project','1'=>'sub']; @endphp
+                            @php $subProjectList = []; @endphp
                            {!! Form::select(
                                'sub_project_list',
                                $subProjectList,
@@ -487,8 +487,9 @@
                                 $projectReasonTypeList,
                                 null,
                                 [
-                                    'class' => 'form-control kt_select2_project_reason_type',
+                                    'class' => 'form-control white-smoke kt_select2_project_reason_type',
                                     'id' => 'project_reason',
+                                    'style' => 'display:none !important'
                                 ],
                             ) !!}
                         </div>
@@ -1162,7 +1163,7 @@
                 var project_id = $(this).closest('tr').find('td:eq(1) input').val();
                 var sub_project_id = $('#sub_project_list').val();
                 var project_reason = $('#project_reason').val();
-                var other_comments = $('#other_comments').val();console.log(sub_project_id,'sub_project_id');
+                var other_comments = $('#other_comments').val();console.log(sub_project_id,'sub_project_id',project_reason);
                 
                  if (sub_project_id == '' || project_reason == '' || (project_reason == 9 && other_comments == '')) {
                     if (sub_project_id == '') {
@@ -1171,6 +1172,8 @@
                         $('#sub_project_list').next('.select2').find(".select2-selection").css('border-color', '');
                     }
                     if (project_reason == '') {
+                        console.log(project_reason,'project_reason');
+                        
                         $('#project_reason').next('.select2').find(".select2-selection").css('border-color', 'red');
                     } else {
                         $('#project_reason').next('.select2').find(".select2-selection").css('border-color', '');
