@@ -1133,10 +1133,10 @@
                 }
 
             })
-          
+            var project_id;
             $(document).on('click','.clickable-row td:nth-child(2)',function(e){                
                 $("#projectReasonModal").modal('show');
-                var project_id = $(this).closest('tr').find('td:eq(1) input').val();
+                 project_id = $(this).closest('tr').find('td:eq(1) input').val();
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -1163,7 +1163,7 @@
                 });
             });
             $('#project_reason_save').on('click', function() {
-                var project_id = $(this).closest('tr').find('td:eq(1) input').val();
+               
                 var sub_project_id = $('#sub_project_list').val();
                 var project_reason = $('#project_reason').val();
                 var other_comments = $('#other_comments').val();console.log(sub_project_id,'sub_project_id',project_reason);
