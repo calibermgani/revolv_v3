@@ -677,7 +677,7 @@
             }
         });
         $(document).ready(function() {
-           
+            $('#project_reason').css('display', 'none !important');
             var subprojectCountData;
             KTApp.block('#mDashboard', {
                 overlayColor: '#000000',
