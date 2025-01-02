@@ -676,8 +676,7 @@
             }
         });
         $(document).ready(function() {
-            $("#projectReasonModal").modal('show');
-
+           
             var subprojectCountData;
             KTApp.block('#mDashboard', {
                 overlayColor: '#000000',
@@ -1132,6 +1131,7 @@
             })
           
             $('#mDashboard_clients_list tbody').on('click', 'td.project-details-control', function() {
+                $("#projectReasonModal").modal('show');
                 var project_id = $(this).closest('tr').find('td:eq(1) input').val();
                 $.ajaxSetup({
                     headers: {
