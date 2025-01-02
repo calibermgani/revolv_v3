@@ -155,28 +155,32 @@ class QAProductionController extends Controller
                 }
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName;
-                $query = $modelClass::query();
-                $searchData = [];   
-                if($request['_token'] != null) {
-                    foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
-                       $searchData[$key] = $value;
-                        if (is_array($value)) {
-                            $value = implode('_el_', $value); 
-                        }
+                if (class_exists($modelClass)) {
+                    $query = $modelClass::query();
+                    $searchData = [];   
+                    if($request['_token'] != null) {
+                        foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
+                        $searchData[$key] = $value;
+                            if (is_array($value)) {
+                                $value = implode('_el_', $value); 
+                            }
 
-                        // Assuming 'like' is needed for partial match searches (optional), adjust based on requirements
-                        if (is_numeric($value) || is_bool($value)) {
-                            $query->where($key, $value);  // Exact match for numeric/boolean
-                        } elseif ($this->isDate($value)) {  // Check if it's a date
-                            $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
-                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
-                            $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
-                        } else {
-                            if($value != null) {
-                              $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
+                            // Assuming 'like' is needed for partial match searches (optional), adjust based on requirements
+                            if (is_numeric($value) || is_bool($value)) {
+                                $query->where($key, $value);  // Exact match for numeric/boolean
+                            } elseif ($this->isDate($value)) {  // Check if it's a date
+                                $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
+                            } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                                $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
+                            } else {
+                                if($value != null) {
+                                $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
+                                }
                             }
                         }
                     }
+                } else {
+                    return redirect()->back();
                 }
                 $modelClassDatas = "App\\Models\\" . $modelName . 'Datas';
                 $assignedProjectDetails = collect();
