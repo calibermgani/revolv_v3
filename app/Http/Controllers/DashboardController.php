@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use App\Http\Helper\Admin\Helpers as Helpers;
 use App\Models\InventoryExeFile;
+use App\Models\ProjectReason;
 class DashboardController extends Controller
 {
     public function dashboard(Request $request)
@@ -917,7 +918,7 @@ class DashboardController extends Controller
                         }
                         if ($modelTFlag > 0) {
                             $body_info .= '<tr class="clickable-client cursor_hand"><td class="details-control"></td>';
-                            $body_info .= '<td>' . $data['client_name'] . '<input type="hidden" value=' . $data['id'] . '></td>';
+                            $body_info .= '<td class="project-details-control">' . $data['client_name'] . '<input type="hidden" value=' . $data['id'] . '></td>';
                             $body_info .= '<td>' . $assignedTotalCount . '</td>';
                             $body_info .= '<td>' . $completedTotalCount . '</td>';
                             $body_info .= '<td>' . $pendingTotalCount . '</td>';
@@ -1005,6 +1006,30 @@ class DashboardController extends Controller
                     'success' => true,
                     'body_info' => $body_info,
                 ]);
+            } catch (Exception $e) {
+                log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
+    public function projectReasonSave(Request $request) {
+        
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+            try {
+                $data = $request->all();
+                $data['manager_id'] = Session::get('loginDetails')['userDetail']['id'];
+                $projectReason = ProjectReason::create($data);
+                if ($projectReason) {
+                    return response()->json([
+                        'success' => true
+                    ]);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Failed to save project reason'
+                        ]);
+                }
             } catch (Exception $e) {
                 log::debug($e->getMessage());
             }

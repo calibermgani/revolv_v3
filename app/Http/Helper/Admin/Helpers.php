@@ -30,6 +30,7 @@ use GuzzleHttp\Client;
 use App\Models\ARStatusCodes;
 use App\Models\ARActionCodes;
 use App\Models\qaClassCatScope;
+use App\Models\ProjectReasonType;
 
 class Helpers
 {
@@ -732,6 +733,12 @@ class Helpers
 	{
 		$projectIds = formConfiguration::groupby('project_id') ->pluck('project_id')->toArray();
 		$data =  project::where('status', 'Active')->whereIn('project_id',$projectIds)->pluck('aims_project_name', 'project_id')->prepend(trans('Select Project'), '')->toArray();
+		return $data;
+	}
+
+	public static function projectReasonTypeList()
+	{
+		$data = ProjectReasonType::pluck('reason_type', 'id')->prepend(trans('Select Project Reason'), '')->toArray();
 		return $data;
 	}
 }

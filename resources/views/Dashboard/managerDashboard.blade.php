@@ -460,6 +460,52 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="projectReasonModal" tabindex="-1" role="dialog" aria-labelledby="projectReasonModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content p-5">        
+                <h5 class="modal-title text-center mt-2" id="exampleModalLongTitle">Reason Type</h5>              
+                <div class="modal-body text-center p-3" style="">
+                    <div class="col-md-6">
+                        <div class="form-group mb-1">
+                            @php $subProjectList = ['Select'=>'Select Sub Project','1'=>'sub']; @endphp
+                           {!! Form::select(
+                               'sub_project_list',
+                               $subProjectList,
+                               null,
+                               [
+                                   'class' => 'form-control  kt_select2_sub_project',
+                                   'id' => 'sub_project_list',
+                               ],
+                           ) !!}
+                       </div>
+                   </div>
+                     <div class="col-md-6 mt-2">
+                         <div class="form-group mb-1">
+                            @php $projectReasonTypeList = App\Http\Helper\Admin\Helpers::projectReasonTypeList(); @endphp
+                            {!! Form::select(
+                                'project_reason',
+                                $projectReasonTypeList,
+                                null,
+                                [
+                                    'class' => 'form-control white-smoke kt_select2_project_reason_type',
+                                    'id' => 'project_reason',
+                                ],
+                            ) !!}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-2">
+                        <div class="form-group mb-1">
+                            <textarea id="other_comments" rows="4" class="form-control" maxlength="250" style="display:none !important" required></textarea>
+                       </div>
+                   </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="remindMeLater">Close</button>
+                    <button type="button" class="btn btn-primary font-weight-bold" id="project_reason_save">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 <style>
     .scrollable {
@@ -630,6 +676,8 @@
             }
         });
         $(document).ready(function() {
+            $("#projectReasonModal").modal('show');
+
             var subprojectCountData;
             KTApp.block('#mDashboard', {
                 overlayColor: '#000000',
@@ -1073,6 +1121,100 @@
                     }
                 });                                 
             }
+            $('#project_reason').on('change', function() {
+                var projectReason = $(this).val();
+                if(projectReason == 9) {
+                    $('#other_comments').css('display', 'block');
+                } else {
+                    $('#other_comments').css('display', 'none');
+                }
+
+            })
+          
+            $('#mDashboard_clients_list tbody').on('click', 'td.project-details-control', function() {
+                var project_id = $(this).closest('tr').find('td:eq(1) input').val();
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    type: "GET",
+                    url: "{{ url('sub_project_list') }}",
+                    data: {
+                        project_id: project_id
+                    },
+                    success: function(res) {
+                         subprojectCount = Object.keys(res.subProject).length;
+                        var myArray = res.existingSubProject;
+                        var sla_options = '<option value="">-- Select --</option>';
+                        $.each(res.subProject, function(key, value) {
+                            sla_options += '<option value="' + key + '" ' +
+                                                (myArray.length >0 && $.inArray(key, myArray) !== -1 ? 'disabled' :
+                                                    '') +
+                                                '>' + value +
+                                '</option>';
+                        });
+                        $("#sub_project_list").html(sla_options);
+                        $('select[name="sub_project_list"]').html(sla_options);
+                    },
+                    error: function(jqXHR, exception) {}
+                });
+            });
+            $('#project_reason_save').on('click', function() {
+                var project_id = $(this).closest('tr').find('td:eq(1) input').val();
+                var sub_project_id = $('#sub_project_list').val();
+                var project_reason = $('#project_reason').val();
+                var other_comments = $('#other_comments').val();console.log(sub_project_id,'sub_project_id');
+                
+                 if (sub_project_id == '' || project_reason == '' || (project_reason == 9 && other_comments == '')) {
+                    if (sub_project_id == '') {
+                        $('#sub_project_list').next('.select2').find(".select2-selection").css('border-color', 'red');
+                    } else {
+                        $('#sub_project_list').next('.select2').find(".select2-selection").css('border-color', '');
+                    }
+                    if (project_reason == '') {
+                        $('#project_reason').next('.select2').find(".select2-selection").css('border-color', 'red');
+                    } else {
+                        $('#project_reason').next('.select2').find(".select2-selection").css('border-color', '');
+                    }
+                    if (project_reason == 9 && other_comments == '') {
+                        $('#other_comments').css('border-color', 'red');
+                    } else {
+                        $('#other_comments').css('border-color', '');
+                    }
+                    return false;
+                 }
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+                $.ajax({
+                    url: baseUrl + "project_reason_save",
+                    type: 'POST',
+                    data: {
+                        project_id: project_id,
+                        sub_project_id:sub_project_id,
+                        project_reason:project_reason,
+                        others_comments: other_comments,
+                    },
+                    success: function(res) {
+                        if (res.success == true) {
+                            js_notification('success', 'Reason has been submitted');
+                            setTimeout(function() {
+                                location.reload();
+                           }, 500);
+                        } else {
+                            js_notification('error', 'Reason has been failed to submit');
+                            setTimeout(function() {
+                                location.reload();
+                           }, 500);
+                        }
+                    }
+                });
+            });
         })
     </script>
 @endpush

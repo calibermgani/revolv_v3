@@ -77,6 +77,7 @@ Route::any('ar_rebuttal/{clientName}/{subProjectName}', 'App\Http\Controllers\Pr
 Route::any('ar_rebuttal_update', 'App\Http\Controllers\ProductionController@arRebuttalUpdate');
 Route::any('client_export', 'App\Http\Controllers\ProductionController@clientExport');
 Route::any('client_duplicate_xport', 'App\Http\Controllers\ProductionController@clientDuplicateExport');
+Route::any('project_reason_save', 'App\Http\Controllers\DashboardController@projectReasonSave');
 
 Route::group(['prefix' => 'qa_production'], function () {
     Route::any('qa_clients', 'App\Http\Controllers\QA\QAProductionController@clients')->name('qaClients');

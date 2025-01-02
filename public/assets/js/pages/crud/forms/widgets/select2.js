@@ -80,6 +80,9 @@ var KTSelect2 = function() {
         $('.kt_select2_ar_action_code').select2({
             placeholder: "Action"
         });
+        $('.kt_select2_project_reason_type').select2({
+            placeholder: "Select Project Reason"
+        });
         // loading data from array
         // var data = [{
         //     id: 0,
