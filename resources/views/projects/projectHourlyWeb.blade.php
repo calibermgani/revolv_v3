@@ -85,8 +85,12 @@
                                 @foreach ($mailBody as $data)
                                 @php
                               
-                                $reason = App\Models\ProjectReason::where('project_id',$data['project_id'])->where('sub_project_id',$data['subproject_id'])->whereBetween('updated_at', [$startTime, $endTime])->get();
-                                dd($startTime,$endTime,$reason);
+                                $reasonList = App\Models\ProjectReason::where('project_id',$data['project_id'])->where('sub_project_id',$data['subproject_id'])->whereBetween('updated_at', [$startTime, $endTime])->get();
+                                if($reasonList) {
+                                     $reason=$reasonList;
+                                } else {
+                                    $reason='--';
+                                }
                                 @endphp
                                     <tr>
                                         <td>
@@ -98,7 +102,7 @@
                                         @foreach ($data['hourlyCount'] as $count)
                                             <td>{{ $count }}</td>
                                         @endforeach
-                                        <td></td>
+                                        <td>{{$reason}}</td>
                                     </tr>
                                 @endforeach
                             @else
