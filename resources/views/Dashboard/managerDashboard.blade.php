@@ -1188,6 +1188,12 @@
                     }
                     return false;
                  }
+                 KTApp.block('#projectReasonModal', {
+                    overlayColor: '#000000',
+                    state: 'danger',
+                    opacity: 0.1,
+                    message: 'Fetching...',
+                });
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -1206,6 +1212,7 @@
                     success: function(res) {
                         if (res.success == true) {
                             js_notification('success', 'Reason has been submitted');
+                            KTApp.unblock('#projectReasonModal');
                             setTimeout(function() {
                                 location.reload();
                            }, 500);
