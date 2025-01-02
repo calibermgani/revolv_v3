@@ -677,7 +677,7 @@
             }
         });
         $(document).ready(function() {
-            $('#project_reason').css('display', 'none !important');
+            $('#project_reason').next('.select2').find(".select2-selection").css('display', 'none !important');
             var subprojectCountData;
             KTApp.block('#mDashboard', {
                 overlayColor: '#000000',
@@ -1124,9 +1124,9 @@
             $('#sub_project_list').on('change', function() {
                 var subProject = $(this).val();
                 if(subProject == '') {
-                    $('#project_reason').css('display', 'none');
+                    $('#project_reason').next('.select2').find(".select2-selection").css('display', 'none');
                 } else {
-                    $('#project_reason').css('display', 'block');
+                    $('#project_reason').next('.select2').find(".select2-selection").css('display', 'block');
                 }
 
             })
