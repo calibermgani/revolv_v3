@@ -1130,7 +1130,7 @@
 
             })
           
-            $('#mDashboard_clients_list tbody').on('click', 'td', function() {
+            $(document).on('click','.clickable-row td:not(:first-child)',function(e){
                 console.log('click');
                 
                 $("#projectReasonModal").modal('show');
