@@ -1130,7 +1130,7 @@
 
             })
           
-            $('#mDashboard_clients_list tbody').on('click', 'td.project-details-control', function() {
+            $('#mDashboard_clients_list tbody').on('click', 'td', function() {
                 console.log('click');
                 
                 $("#projectReasonModal").modal('show');
