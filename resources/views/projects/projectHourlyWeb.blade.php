@@ -92,7 +92,7 @@
                                             if($reasonData->others_comments != NULL){
                                                 $reasons[] = $reason.' - '.$reasonData->others_comments.'('.date('m/d/Y h:i A',strtime($reasonData->updated_at)).')'; 
                                             } else {
-                                                $reasons[] = $reason.'('.date('m/d/Y h:i A',strtime($reasonData->updated_at)).')';
+                                                $reasons[] = $reason.'('.date('m/d/Y h:i A',strtotime($reasonData->updated_at)).')';
                                             }
                                         }
                                         $reasonString = implode(', ', $reasons);
