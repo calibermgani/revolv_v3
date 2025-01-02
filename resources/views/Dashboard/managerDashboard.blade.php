@@ -464,7 +464,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content p-5">        
                 <h5 class="modal-title text-center mt-2" id="exampleModalLongTitle">Reason Type</h5>              
-                <div class="modal-body text-center p-3">
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group mb-1">
@@ -490,7 +490,6 @@
                                     [
                                         'class' => 'form-control kt_select2_project_reason_type',
                                         'id' => 'project_reason',
-                                        'style' => 'display:none !important'
                                     ],
                                 ) !!}
                             </div>
@@ -1124,15 +1123,7 @@
                     }
                 });                                 
             }
-            $('#sub_project_list').on('change', function() {
-                var subProject = $(this).val();
-                if(subProject == '') {
-                    $('#project_reason').next('.select2').find(".select2-selection").css('display', 'none');
-                } else {
-                    $('#project_reason').next('.select2').find(".select2-selection").css('display', 'block');
-                }
-
-            })
+         
             $('#project_reason').on('change', function() {
                 var projectReason = $(this).val();
                 if(projectReason == 9) {
