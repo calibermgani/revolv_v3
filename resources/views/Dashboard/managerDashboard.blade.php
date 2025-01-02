@@ -460,7 +460,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="projectReasonModal" tabindex="-1" role="dialog" aria-labelledby="projectReasonModalTitle" aria-hidden="true">
+    <div class="modal fade" id="projectReasonModal" tabindex="-1" role="dialog" aria-labelledby="projectReasonModalTitle" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content p-5">        
                 <h5 class="modal-title text-center mt-2" id="exampleModalLongTitle">Reason Type</h5>              
