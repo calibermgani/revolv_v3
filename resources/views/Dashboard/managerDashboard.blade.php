@@ -487,7 +487,7 @@
                                 $projectReasonTypeList,
                                 null,
                                 [
-                                    'class' => 'form-control white-smoke kt_select2_project_reason_type',
+                                    'class' => 'form-control kt_select2_project_reason_type',
                                     'id' => 'project_reason',
                                     'style' => 'display:none !important'
                                 ],
