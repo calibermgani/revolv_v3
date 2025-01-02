@@ -84,8 +84,9 @@
                             @if (isset($mailBody) && count($mailBody) > 0)
                                 @foreach ($mailBody as $data)
                                 @php
-                                dd($startTime,$endTime);
-                                $reason = App\Models\ProjectReason::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->get();
+                              
+                                $reason = App\Models\ProjectReason::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])whereBetween('updated_at', [$startTime, $endTime])->get();
+                                dd($startTime,$endTime,$reason);
                                 @endphp
                                     <tr>
                                         <td>

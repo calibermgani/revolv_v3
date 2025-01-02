@@ -1050,7 +1050,7 @@ class ProjectController extends Controller
                     $hourlyCounts = [];
                     foreach ($timeSlots as $slot) {
                         $slotStart = $slot['start'];
-                        $slotEnd = $slot['end'];dd($slotStart,$slotEnd);
+                        $slotEnd = $slot['end'];
                         $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
                             ->where('chart_status', 'CE_Completed')
                             ->count();
