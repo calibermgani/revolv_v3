@@ -838,8 +838,8 @@ class DashboardController extends Controller
                 <thead>
                     <tr>
                         <th width="15px"></th>
-                        <th>Client Namee</th>
-                        <th>Assignedd</th>
+                        <th>Client Name</th>
+                        <th>Assigned</th>
                         <th>Completed</th>
                         <th>Pending</th>
                         <th>On Hold</th>

@@ -1131,6 +1131,8 @@
             })
           
             $('#mDashboard_clients_list tbody').on('click', 'td.project-details-control', function() {
+                console.log('click');
+                
                 $("#projectReasonModal").modal('show');
                 var project_id = $(this).closest('tr').find('td:eq(1) input').val();
                 console.log("Project ID:  ", project_id);
