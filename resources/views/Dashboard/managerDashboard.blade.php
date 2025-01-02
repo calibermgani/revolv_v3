@@ -1121,6 +1121,15 @@
                     }
                 });                                 
             }
+            $('#sub_project_list').on('change', function() {
+                var subProject = $(this).val();
+                if(subProject == '') {
+                    $('#project_reason').css('display', 'none');
+                } else {
+                    $('#project_reason').css('display', 'block');
+                }
+
+            })
             $('#project_reason').on('change', function() {
                 var projectReason = $(this).val();
                 if(projectReason == 9) {
