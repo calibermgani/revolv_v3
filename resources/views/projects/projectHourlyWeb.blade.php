@@ -90,7 +90,10 @@
                                 if(count($reasonList) > 0) {
                                     foreach($reasonList as $reasonData) {
                                      $reason=isset($reasonData) && isset($reasonData->project_reason_type) ? $reasonData->project_reason_type->reason_type : '--';
-                                     $reasons[] = $reason; 
+                                     if($reasonData->others_comments != NULL)
+                                     $reasons[] = $reason.' - '.$reasonData->others_comments; 
+                                    } else {
+                                        $reasons[] = $reason;
                                     }
                                     $reasonString = implode(', ', $reasons);
                                 } else {
