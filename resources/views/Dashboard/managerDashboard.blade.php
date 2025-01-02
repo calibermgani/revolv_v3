@@ -1133,7 +1133,7 @@
             $('#mDashboard_clients_list tbody').on('click', 'td.project-details-control', function() {
                 $("#projectReasonModal").modal('show');
                 var project_id = $(this).closest('tr').find('td:eq(1) input').val();
-                console.log("Project ID: ", project_id);
+                console.log("Project ID:  ", project_id);
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
