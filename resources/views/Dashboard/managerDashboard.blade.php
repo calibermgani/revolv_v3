@@ -464,41 +464,44 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content p-5">        
                 <h5 class="modal-title text-center mt-2" id="exampleModalLongTitle">Reason Type</h5>              
-                <div class="modal-body text-center p-3" style="">
-                    <div class="col-md-6">
-                        <div class="form-group mb-1">
-                            @php $subProjectList = []; @endphp
-                           {!! Form::select(
-                               'sub_project_list',
-                               $subProjectList,
-                               null,
-                               [
-                                   'class' => 'form-control  kt_select2_sub_project',
-                                   'id' => 'sub_project_list',
-                               ],
-                           ) !!}
-                       </div>
-                   </div>
-                     <div class="col-md-6 mt-2">
-                         <div class="form-group mb-1">
-                            @php $projectReasonTypeList = App\Http\Helper\Admin\Helpers::projectReasonTypeList(); @endphp
+                <div class="modal-body text-center p-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-1">
+                                @php $subProjectList = []; @endphp
                             {!! Form::select(
-                                'project_reason',
-                                $projectReasonTypeList,
+                                'sub_project_list',
+                                $subProjectList,
                                 null,
                                 [
-                                    'class' => 'form-control kt_select2_project_reason_type',
-                                    'id' => 'project_reason',
-                                    'style' => 'display:none !important'
+                                    'class' => 'form-control  kt_select2_sub_project',
+                                    'id' => 'sub_project_list',
                                 ],
                             ) !!}
                         </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-1">
+                                @php $projectReasonTypeList = App\Http\Helper\Admin\Helpers::projectReasonTypeList(); @endphp
+                                {!! Form::select(
+                                    'project_reason',
+                                    $projectReasonTypeList,
+                                    null,
+                                    [
+                                        'class' => 'form-control kt_select2_project_reason_type',
+                                        'id' => 'project_reason',
+                                        'style' => 'display:none !important'
+                                    ],
+                                ) !!}
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-6 mt-2">
-                        <div class="form-group mb-1">
-                            <textarea id="other_comments" rows="4" class="form-control" maxlength="250" style="display:none !important" required></textarea>
-                       </div>
-                   </div>
+                        <div class="col-md-6 mt-2">
+                            <div class="form-group mb-1">
+                                <textarea id="other_comments" rows="4" class="form-control" maxlength="250" style="display:none !important" required></textarea>
+                           </div>
+                        </div>
+                    
                 </div>
                 <div class="modal-footer justify-content-center">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal" id="remindMeLater">Close</button>
