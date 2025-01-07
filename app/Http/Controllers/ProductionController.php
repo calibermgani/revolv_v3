@@ -1082,7 +1082,7 @@ class ProductionController extends Controller
                     }
                 }
                 $duplicateRecordExisting = $originalModelClass::where($attributes)->exists();
-                if (!$duplicateRecordExisting) {dd($duplicateRecordExisting,$attributes);
+                if (!$duplicateRecordExisting) {
                     $orginalData = $originalModelClass::create($originalData);
                     $data['parent_id'] =   $orginalData->id;
                     $modelClass::create($data);
