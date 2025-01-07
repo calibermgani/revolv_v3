@@ -44,14 +44,14 @@ class ReportsController extends Controller
                     if ($decodedsubProjectName == 'project' && count($subProject) == 1) {
                         $column_names = DB::select("DESCRIBE $table_name");
                         $columns = array_column($column_names, 'Field');
-                        $columnsToExclude = ['QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends', 'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers', 'CE_status_code', 'CE_sub_status_code', 'CE_followup_date', 'updated_at', 'created_at', 'deleted_at'];
+                        $columnsToExclude = ['QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends', 'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers', 'CE_status_code', 'CE_sub_status_code', 'CE_followup_date', 'updated_at', 'created_at', 'deleted_at','cpt_trends','icd_trends','modifiers'];
                         $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                             return !in_array($column, $columnsToExclude);
                         });
                     } else if ($decodedsubProjectName !== 'project') {
                         $column_names = DB::select("DESCRIBE $table_name");
                         $columns = array_column($column_names, 'Field');
-                        $columnsToExclude = ['QA_required_sampling','QA_followup_date', 'annex_coder_trends', 'annex_qa_trends','qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers', 'CE_status_code','CE_sub_status_code','CE_followup_date','updated_at','created_at', 'deleted_at'];
+                        $columnsToExclude = ['QA_required_sampling','QA_followup_date', 'annex_coder_trends', 'annex_qa_trends','qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers', 'CE_status_code','CE_sub_status_code','CE_followup_date','updated_at','created_at', 'deleted_at','cpt_trends','icd_trends','modifiers'];
                         $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                             return !in_array($column, $columnsToExclude);
                         });
@@ -154,12 +154,6 @@ class ReportsController extends Controller
                 foreach ($checkedValues as $key => $header) {
                     if ($header == 'chart_status') {
                         $body_info .= '<th>Charge Status </th>';
-                    } else if ($header == 'coder_cpt_trends') {
-                        $body_info .= '<th>CPT Trends </th>';
-                    } else if ($header == 'coder_icd_trends') {
-                        $body_info .= '<th>ICD Trends </th>';
-                    } else if ($header == 'coder_modifiers') {
-                        $body_info .= '<th>Modifiers </th>';
                     } else if ($header == 'CE_emp_id') {
                         $body_info .= '<th>AR Emp Id </th>';
                     } else if ($header == 'ce_hold_reason') {
@@ -284,27 +278,6 @@ class ReportsController extends Controller
                             }
                         }
 
-                        if ($header === 'coder_icd_trends' && ($row->{'qa_icd_trends'} == NULL)) {
-                            $data = $data ;
-                        } else if ($header === 'coder_icd_trends' && ($row->{'qa_icd_trends'} != NULL)) {
-                            $data = isset($row->{'qa_icd_trends'}) && !empty($row->{'qa_icd_trends'}) ? $row->{'qa_icd_trends'} : "--";
-                            if (strpos($data, '_el_') !== false) {
-                                $data = str_replace('_el_', ' , ', $data);
-                            } else {
-                                $data = $data;
-                            }
-                        }
-
-                        if ($header === 'coder_modifiers' && ($row->{'qa_modifiers'} == NULL)) {
-                            $data = $data ;
-                        } else if ($header === 'coder_modifiers' && ($row->{'qa_modifiers'} != NULL)) {
-                            $data = isset($row->{'qa_modifiers'}) && !empty($row->{'qa_modifiers'}) ? $row->{'qa_modifiers'} : "--";
-                            if (strpos($data, '_el_') !== false) {
-                                $data = str_replace('_el_', ' , ', $data);
-                            } else {
-                                $data = $data;
-                            }
-                        }
                        
                         if ($header === 'dos') {
                             $data = $data != '--' ? date('m/d/y',strtotime($data)) : '--';

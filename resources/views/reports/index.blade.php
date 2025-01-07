@@ -256,13 +256,7 @@
                                 if (columnName !== 'id') {
                                     if(columnName === "chart_status") {
                                         var displayName = "Charge Status";
-                                    } else if(columnName === "coder_cpt_trends") {
-                                        var displayName = "CPT trends";
-                                    } else if(columnName === "coder_icd_trends") {
-                                        var displayName = "ICD trends";
-                                    } else if(columnName === "coder_modifiers") {
-                                        var displayName = "Modifiers";
-                                    } else if(columnName === "CE_emp_id") {
+                                    }  else if(columnName === "CE_emp_id") {
                                         var displayName = "AR Emp Id";
                                     } else if(columnName === "ce_hold_reason") {
                                         var displayName = "AR Hold Reason";
