@@ -28,6 +28,12 @@ use Carbon\Carbon;
                                                     ]) !!}
                                                 </fieldset>
                                             </div>
+                                        @else
+                                                @if($projectTypeSettings['project_type'] == 2)
+                                                    <div class="d-flex align-items-center" id="add">
+                                                        <button type="button" class="btn text-white mr-3 manual-clickable-row" style="background-color:#139AB3">Add</button>
+                                                    </div>
+                                                @endif
                                         @endif
                                         &nbsp;&nbsp;
                                             <div>
@@ -172,6 +178,15 @@ use Carbon\Carbon;
                             </div>
                         </div>
                         <div class="card card-custom custom-top-border">
+                            @if(session('error'))
+                            <div class="alert alert-danger alert-dismissible fade show m-5" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                {{ session('error') }}                               
+                            </div>
+                        @endif
+                        
                             <div><span type="button" id="filterExpandButton" class="float-right mr-8 mt-5">
                                 <i class="ki ki-arrow-down icon-nm"></i></span></div>
                                
@@ -772,6 +787,25 @@ use Carbon\Carbon;
                                                                                     Charge Status
                                                                                 </label>
                                                                                 <div class="col-md-10">
+                                                                                    @if($projectTypeSettings['project_type'] == 2)
+                                                                                    {!! Form::Select(
+                                                                                        'chart_status',
+                                                                                        [
+                                                                                            '' => '--Select--',
+                                                                                            'CE_Pending' => 'Pending',
+                                                                                            'CE_Completed' => 'Completed',
+                                                                                            'CE_Hold' => 'Hold',
+                                                                                            'AR_non_workable'=>'Non Workable'
+                                                                                        ],
+                                                                                        null,
+                                                                                        [
+                                                                                            'class' => 'form-control white-smoke  pop-non-edt-val ',
+                                                                                            'autocomplete' => 'none',
+                                                                                            'id' => 'chart_status',
+                                                                                            'style' => 'cursor:pointer',
+                                                                                        ],
+                                                                                    ) !!}
+                                                                                    @else
                                                                                     {!! Form::Select(
                                                                                         'chart_status',
                                                                                         [
@@ -791,6 +825,7 @@ use Carbon\Carbon;
                                                                                             'style' => 'cursor:pointer',
                                                                                         ],
                                                                                     ) !!}
+                                                                                    @endif
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -1471,11 +1506,18 @@ nav{
                     $('#myModal_view').removeClass('modal-right');
                 });
             });
-
+            var manualProjectDuplicateColumns = @json($attributes);var duplicateColumnData = []; 
             $(document).on('click', '#project_assign_save', function(e) {
                 e.preventDefault();
                 $('#formConfiguration').serializeArray().map(function(input) {
-                    labelName = input.name;
+                    labelName = input.name.replace('[]', '');
+                    if (Object.keys(manualProjectDuplicateColumns).length > 0 && manualProjectDuplicateColumns[labelName]) {                  
+                        duplicateColumnData['clientName'] =clientName;
+                        duplicateColumnData['subProjectName'] =subProjectName;
+                        duplicateColumnData[labelName] = input.value;                       
+                        
+                    }                                                                   
+                    
                         if(labelName.substring(0, 3).toLowerCase() == "cpt") {
                             var textValue = input.value;
                             if(textValue.length < 5) {
@@ -1490,11 +1532,51 @@ nav{
                                 js_notification('error', "The ICD value must be at least 3 characters long" );
                             }
                         }
-                        return labelName;
+                        return duplicateColumnData;
                 });
+              
+                 //var duplicateValue = 0; 
+                // if(Object.keys(duplicateColumnData).length > 0) {
+                //     e.preventDefault();
+                //     const duplicateObj = { ...duplicateColumnData };
+                //            $.ajaxSetup({
+                //                 headers: {
+                //                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                //                         'content')
+                //                 }
+                //             });
+
+                //             $.ajax({
+                //                 url: "{{ url('manual_duplicate_column_check') }}",
+                //                 method: 'POST',
+                //                 data: duplicateObj,          
+                                        
+                //                 success: function(response) {
+                //                     if (response.success == true) {
+                //                       //  duplicateValue = 0;console.log(duplicateValue,'duplicateValue success');
+                                        
+                //                     } else {
+                //                         duplicateValue = 1;
+                //                         js_notification('error', 'Duplicate Entryy');
+                //                         console.log(duplicateValue,'duplicateValue error in ');
+                //                     }
+                                      
+                                   
+                //                 },
+                //                 complete: function () {
+                //                     duplicateValue1 = duplicateValue;
+                //                     // This executes after the AJAX call finishes
+                //                     console.log(duplicateValue1, 'duplicateValue1 error out1'); // Log after AJAX completion
+                //                     console.log(duplicateValue1, 'duplicateValue1 error out'); // Log again if needed
+                //                 },
+                //             });
+                //             console.log(duplicateValue1,'duplicateValue error out1');
+                // } console.log(duplicateValue1,'duplicateValue error out');               
+                
                 var fieldNames = $('#formConfiguration').serializeArray().map(function(input) {
                     return input.name;
                 });
+                
                 var requiredFields = {};
                 var requiredFieldsType = {};
                 var inputclass = [];
@@ -1635,42 +1717,79 @@ nav{
                         }).appendTo('form#formConfiguration');
                     });
                 });
-
-
-                if (inputTypeValue == 0 && inputTypeRadioValue == 0) {
-
-                    swal.fire({
-                        text: "Do you want to update?",
-                        icon: "success",
-                        buttonsStyling: false,
-                        showCancelButton: true,
-                        confirmButtonText: "Yes",
-                        cancelButtonText: "No",
-                        reverseButtons: true,
-                        customClass: {
-                            confirmButton: "btn font-weight-bold btn-white-black",
-                            cancelButton: "btn font-weight-bold btn-light-danger",
-                        }
-
-                    }).then(function(result) {
-                        if (result.value == true) {
-                            KTApp.block('#myModal_status', {
-                                overlayColor: '#000000',
-                                state: 'danger',
-                                opacity: 0.1,
-                                message: 'Fetching...',
+                function checkDuplicate(duplicateColumnData) {
+                    return new Promise((resolve, reject) => {
+                        if (Object.keys(duplicateColumnData).length > 0) {
+                            const duplicateObj = { ...duplicateColumnData };
+                            $.ajaxSetup({
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                                },
                             });
-                            document.querySelector('#formConfiguration').submit();
-                            KTApp.unblock('#myModal_status');
 
+                            $.ajax({
+                                url: "{{ url('manual_duplicate_column_check') }}",
+                                method: 'POST',
+                                data: duplicateObj,
+                                success: function (response) {
+                                    if (response.success === true) {
+                                        resolve(0); // No duplicate
+                                    } else {
+                                        js_notification('error', 'Duplicate Entry');
+                                        resolve(1); // Duplicate found
+                                    }
+                                },
+                                error: function () {
+                                    reject(-1); // Handle error scenario
+                                },
+                            });
                         } else {
-
+                            resolve(0); // No data to check
                         }
                     });
-
-                } else {
-                    return false;
                 }
+
+                // Usage
+                checkDuplicate(duplicateColumnData)
+                    .then((duplicateValue) => {
+                         if (inputTypeValue == 0 && inputTypeRadioValue == 0 && duplicateValue == 0)  {
+                            swal.fire({
+                                text: "Do you want to update?",
+                                icon: "success",
+                                buttonsStyling: false,
+                                showCancelButton: true,
+                                confirmButtonText: "Yes",
+                                cancelButtonText: "No",
+                                reverseButtons: true,
+                                customClass: {
+                                    confirmButton: "btn font-weight-bold btn-white-black",
+                                    cancelButton: "btn font-weight-bold btn-light-danger",
+                                }
+
+                            }).then(function(result) {
+                                if (result.value == true) {
+                                    KTApp.block('#myModal_status', {
+                                        overlayColor: '#000000',
+                                        state: 'danger',
+                                        opacity: 0.1,
+                                        message: 'Fetching...',
+                                    });
+                                    document.querySelector('#formConfiguration').submit();
+                                    KTApp.unblock('#myModal_status');
+
+                                } else {
+
+                                }
+                            });
+
+                          } else {
+                            return false;
+                         }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+        
             });
             $("#ckbCheckAll").click(function() {
                 var isChecked = $(this).prop('checked');
@@ -2277,6 +2396,41 @@ nav{
 
             });
            
+            // $(document).on('click', '.manual-clickable-row', function(e) {
+            //     $('#myModal_status').modal('show');
+            // });
+            $(document).on('click', '.manual-clickable-row', function(e) {
+                $existingCallerChartsWorkLogsInprocessCount = @json($existingCallerChartsWorkLogs);
+                
+                if($existingCallerChartsWorkLogsInprocessCount.length > 0 && $existingCallerChartsWorkLogsInprocessCount[0] !== null) {console.log($existingCallerChartsWorkLogsInprocessCount[0],'existingCallerChartsWorkLogsInprocessCount');
+                    return  js_notification('error', 'Alreday one record is inprocess please change that record status');
+                }
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                            'content')
+                    }
+                });
+
+                $.ajax({
+                    url: "{{ url('manual_caller_chart_work_logs') }}",
+                    method: 'POST',
+                    data: {
+                        clientName: clientName,
+                        subProjectName: subProjectName
+                    },
+                    success: function(response) {
+                        if (response.success == true) {
+                            $('#myModal_status').modal('show');
+                            startTime_db = response.startTimeVal;
+                            $('select[name="chart_status"]').val('CE_Completed').trigger('change');
+                        } else {
+                            $('#myModal_status').modal('hide');
+                            js_notification('error', 'Something went wrong');
+                        }
+                    },
+                });           
+           });
         })
 
         function updateTime() {

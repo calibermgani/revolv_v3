@@ -25,6 +25,7 @@ use App\Models\ARActionCodes;
 use App\Models\ProjectColSearchConfig;
 use App\Exports\ProductionExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\ManualProjectDuplicate;
 ini_set('memory_limit', '1024M');
 class ProductionController extends Controller
 {
@@ -214,10 +215,10 @@ class ProductionController extends Controller
                                     $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','CE_Inprocess')->orderBy('id','desc')->pluck('record_id')->toArray();
                                     $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','desc')->pluck('record_id')->toArray();
                                     $assignedProjectDetails = $query->whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$resourceName);
-                                    if (!empty($existingCallerChartsWorkLogs)) {
+                                    if (!empty($existingCallerChartsWorkLogs) && $existingCallerChartsWorkLogs[0] != null) {
                                         $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
                                     }
-                                    if (!empty($existingCallerChartsWorkLogsInprocess)) {
+                                    if (!empty($existingCallerChartsWorkLogsInprocess) && $existingCallerChartsWorkLogsInprocess[0] != null) {
                                         $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogsInprocess) . ') DESC');
                                     }
                                     $assignedProjectDetails = $assignedProjectDetails->orderBy('id', 'ASC')->paginate(50);
@@ -239,12 +240,12 @@ class ProductionController extends Controller
                                     $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','CE_Inprocess')->orderBy('id','desc')->pluck('record_id')->toArray();
                                     $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','desc')->pluck('record_id')->toArray();
                                     $assignedProjectDetails = $query->whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->whereNotNull('CE_emp_id');                        
-                                        if (!empty($existingCallerChartsWorkLogs)) {
+                                    if (!empty($existingCallerChartsWorkLogs) && $existingCallerChartsWorkLogs[0] != null) {
                                             $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
-                                        }
-                                        if (!empty($existingCallerChartsWorkLogsInprocess)) {
-                                            $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogsInprocess) . ') DESC');
-                                        }
+                                    }
+                                    if (!empty($existingCallerChartsWorkLogsInprocess) && $existingCallerChartsWorkLogsInprocess[0] != null) {
+                                        $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogsInprocess) . ') DESC');
+                                    }
                                     $assignedProjectDetails = $assignedProjectDetails->orderBy('id', 'ASC')->paginate(50);
                                     $assignedProjectDetails = $query->whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->whereNotNull('CE_emp_id')->orderBy('id','ASC')->paginate(50);
                                     $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->whereNotNull('CE_emp_id')->count();
@@ -270,10 +271,10 @@ class ProductionController extends Controller
                        $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','CE_Inprocess')->orderBy('id','desc')->pluck('record_id')->toArray();
                        $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','desc')->pluck('record_id')->toArray();
                        $assignedProjectDetails = $query->whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId);
-                        if (!empty($existingCallerChartsWorkLogs)) {
+                        if (!empty($existingCallerChartsWorkLogs) && $existingCallerChartsWorkLogs[0] != null) {
                             $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
                         }
-                        if (!empty($existingCallerChartsWorkLogsInprocess)) {
+                        if (!empty($existingCallerChartsWorkLogsInprocess) && $existingCallerChartsWorkLogsInprocess[0] != null) {
                             $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogsInprocess) . ') DESC');
                         }
                        $assignedProjectDetails = $assignedProjectDetails->orderBy('id', 'ASC')->paginate(50);
@@ -301,7 +302,14 @@ class ProductionController extends Controller
                $popupEditableFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('field_type_3','popup_visible')->where('field_type','editable')->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->get();
                $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
-               return view('productions/clientAssignedTab',compact('assignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','assignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','searchData','resourceName'));
+               $projectTypeSettings = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->first();
+               $attributes = [];
+               $manualDuplciate = ManualProjectDuplicate::select('duplicate_column')->where('project_id', $decodedProjectName)
+               ->where('sub_project_id', $decodedPracticeName)->get();
+               foreach($manualDuplciate as $duplicateColumn) {              
+                    $attributes[$duplicateColumn['duplicate_column']]= $duplicateColumn['duplicate_column'];
+                }
+               return view('productions/clientAssignedTab',compact('assignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','assignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','searchData','resourceName','projectTypeSettings','existingCallerChartsWorkLogsInprocess','attributes'));
            } catch (\Exception $e) {
                log::debug($e->getMessage());
            }
@@ -992,7 +1000,7 @@ class ProductionController extends Controller
                                 $qarecords = $coderCompletedRecordsCount*$qaPercentage/100;
                                 $samplingRecord = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])->where('qa_work_status','Sampling')->get();
                                 $samplingRecordCount =  count($samplingRecord);
-                                if($qarecords > $samplingRecordCount ) {
+                                if($qarecords >= $samplingRecordCount ) {
                                     $data['QA_emp_id'] =  $qasamplingDetails["qa_emp_id"];
                                     $data['qa_work_status'] = "Sampling";
                                     $data['chart_status'] = "CE_Completed";
@@ -1009,6 +1017,7 @@ class ProductionController extends Controller
 
                 }
                 $record = $originalModelClass::where('id', $data['parent_id'])->first();
+                if($record != null) {
                 $qaData = $originalModelClass::where('id', $data['parent_id'])->first()->toArray();
                 $excludeKeys = ['id', 'created_at', 'updated_at', 'deleted_at'];
                 $filteredQAData = collect($qaData)->except($excludeKeys)->toArray();
@@ -1042,21 +1051,7 @@ class ProductionController extends Controller
                    ($data['chart_status'] == "CE_Completed") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'coder_work_date' => $data['coder_work_date']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason']] );
                    $modelClass::create($data);
                 }
-                // $originalModelClass = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',ucfirst($decodedClientName).ucfirst($decodedsubProjectName));
-
-                // $record = $originalModelClass::where('id', $data['parent_id'])->first();//dd($record);
-                // $record->update( ['chart_status' => $data['chart_status']] );
                 $currentTime = Carbon::now();
-                // $callChartWorkLogExistingRecord = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
-                // ->where('project_id', $decodedProjectName)
-                // ->where('sub_project_id', $decodedPracticeName)
-                // ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->first();
-                // if($callChartWorkLogExistingRecord && $callChartWorkLogExistingRecord != null) {
-                //     $start_time = Carbon::parse($callChartWorkLogExistingRecord->start_time);
-                //     $time_difference = $currentTime->diff($start_time);
-                //     $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
-                //     $callChartWorkLogExistingRecord->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time] );
-                // }
                 $callChartWorkLogExistingRecords = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
                 ->where('project_id', $decodedProjectName)
                 ->where('sub_project_id', $decodedPracticeName)
@@ -1068,7 +1063,76 @@ class ProductionController extends Controller
                             $callChartWorkLog->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time] );
                         }
                    }
+                   return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName);
+            } else {
+                $data['invoke_date'] = date('Y-m-d');
+                $data['CE_emp_id'] =  Session::get('loginDetails')['userDetail']['emp_id'];
+                $originalData= $data;
+                $originalData['ar_status_code'] = NULL;
+                $originalData['ar_action_code'] = NULL;
+               $manualDuplciate = ManualProjectDuplicate::where('project_id', $decodedProjectName)
+               ->where('sub_project_id', $decodedPracticeName)->get();
+               $attributes = [];
+               foreach($manualDuplciate as $duplicateColumn) {              
+                    $attributes [$duplicateColumn['duplicate_column']]= isset($data[$duplicateColumn['duplicate_column']]) && $data[$duplicateColumn['duplicate_column']] != "NULL" ? $data[$duplicateColumn['duplicate_column']] : NULL;
+                    $attributes ['CE_emp_id'] = $data['CE_emp_id'];
+                }
+                $duplicateRecordExisting = $originalModelClass::where($attributes)->exists();
+                if (!$duplicateRecordExisting) {
+                    $orginalData = $originalModelClass::create($originalData);
+                    $data['parent_id'] =   $orginalData->id;
+                    $modelClass::create($data);
+                    $currentTime = Carbon::now();                
+                    $callChartWorkLogExistingRecords = CallerChartsWorkLogs::where('project_id', $decodedProjectName)
+                    ->where('sub_project_id', $decodedPracticeName)
+                    ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->get();
+                    if($data['chart_status'] != 'CE_Inprocess') {
+                        if ($callChartWorkLogExistingRecords->isNotEmpty()) {
+                            foreach ($callChartWorkLogExistingRecords as $callChartWorkLog) {
+                                $start_time = Carbon::parse($callChartWorkLog->start_time);
+                                $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
+                                $callChartWorkLog->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time,'record_id' => $orginalData->id] );
+                            }
+                    }
+                    } else {
+                        if ($callChartWorkLogExistingRecords->isNotEmpty()) {
+                            foreach ($callChartWorkLogExistingRecords as $callChartWorkLog) {
+                                $start_time = Carbon::parse($callChartWorkLog->start_time);
+                                $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
+                                $callChartWorkLog->update( ['record_status' => $data['chart_status'],'record_id' => $orginalData->id] );
+                            }
+                        }
+                    }
+                } else {
+                    $duplicateParentRecord  =  $originalModelClass::where($attributes)->where('chart_status',"CE_Inprocess")->first();
+                    $duplicateDatasRecord  =  $modelClass::where($attributes)->where('chart_status',"CE_Inprocess")->first();
+                    if ($duplicateParentRecord) {
+                        $duplicateParentRecord->update($originalData);
+                    } 
+                    if ($duplicateDatasRecord) {
+                        $duplicateDatasRecord->update($data);
+                    } 
+                    $duplicateMsg = 'Duplicate Entry';
+                    return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName)->with('error', $duplicateMsg);
+                }
+                
                 return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName);
+            }
+                // $originalModelClass = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',ucfirst($decodedClientName).ucfirst($decodedsubProjectName));
+
+                // $record = $originalModelClass::where('id', $data['parent_id'])->first();//dd($record);
+                // $record->update( ['chart_status' => $data['chart_status']] );
+                // $callChartWorkLogExistingRecord = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
+                // ->where('project_id', $decodedProjectName)
+                // ->where('sub_project_id', $decodedPracticeName)
+                // ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->first();
+                // if($callChartWorkLogExistingRecord && $callChartWorkLogExistingRecord != null) {
+                //     $start_time = Carbon::parse($callChartWorkLogExistingRecord->start_time);
+                //     $time_difference = $currentTime->diff($start_time);
+                //     $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
+                //     $callChartWorkLogExistingRecord->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time] );
+                // }
+                
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
             }
@@ -2219,6 +2283,73 @@ class ProductionController extends Controller
     }
     protected function isDate($value) {
         return strtotime($value) ? true : false;
+    }
+
+    public function manualCallerChartWorkLogs(Request $request) {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+            try {
+                $data =  $request->all();
+                $currentTime = Carbon::now();
+                $data['emp_id'] = Session::get('loginDetails')['userDetail']['emp_id'];
+                $data['project_id'] = Helpers::encodeAndDecodeID($request['clientName'], 'decode');
+                $data['sub_project_id'] = $data['subProjectName'] == '--' ? NULL : Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
+                $data['start_time'] = $currentTime->format('Y-m-d H:i:s');
+                $data['record_status'] = "CE_Inprocess";
+                // $existingRecordId = CallerChartsWorkLogs::where('record_id',$data['record_id'])->where('record_status',"CE_Assigned")->first();
+                $existingRecordId = CallerChartsWorkLogs::where('project_id', $data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('emp_id',$data['emp_id'] )
+                ->where('record_status',$data['record_status'])->where('end_time',NULL)->first();
+
+                // if(empty($existingRecordId) || !isset($existingRecordId->start_time) || $existingRecordId->start_time == null) {
+                if (!$existingRecordId) {
+                        $save_flag = CallerChartsWorkLogs::create($data);
+                        $startTimeVal = $data['start_time'];          
+                } else {
+                    $startTimeVal =  $data['start_time'];
+                    $save_flag = 1;
+                }
+                if($save_flag) {
+                   return response()->json(['success' => true,'startTimeVal'=>$startTimeVal]);
+                } else {
+                    return response()->json(['success' => false]);
+                }
+            } catch (\Exception $e) {
+                log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
+
+    public function manualDuplicateColumnCheck(Request $request) {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+            try {
+                $data =  $request->all();
+                $decodedProjectName = Helpers::encodeAndDecodeID($request->clientName, 'decode');
+                $decodedPracticeName =  $request->subProjectName == '--' ? NULL : Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $decodedsubProjectName = $decodedPracticeName == NULL ? 'project':Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
+                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
+                $modelName = Str::studly($table_name);
+                $modelClass = "App\\Models\\" . $modelName.'Datas';
+                $originalModelClass = "App\\Models\\" . $modelName;
+                // $duplicateParentRecord  =  $originalModelClass::where($request->duplicateColumnData)->first();
+                // $duplicateDatasRecord  =  $modelClass::where($request->duplicateColumnData)->first();
+                unset($data['clientName'], $data['subProjectName']);
+                $duplicateRecordExisting = $originalModelClass::where($data)->exists();
+            //    if($duplicateParentRecord || $duplicateDatasRecord) {
+                if($duplicateRecordExisting) {
+                    $duplicateMsg = 'Duplicate Entry';
+                    return response()->json(['error' => true,'responseText'=>$duplicateMsg]);
+               }else {
+                return response()->json(['success' => true]);
+               }
+            
+            } catch (\Exception $e) {
+                log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
     }
     
 }

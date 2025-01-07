@@ -78,6 +78,8 @@ Route::any('ar_rebuttal_update', 'App\Http\Controllers\ProductionController@arRe
 Route::any('client_export', 'App\Http\Controllers\ProductionController@clientExport');
 Route::any('client_duplicate_xport', 'App\Http\Controllers\ProductionController@clientDuplicateExport');
 Route::any('project_reason_save', 'App\Http\Controllers\DashboardController@projectReasonSave');
+Route::any('manual_caller_chart_work_logs', 'App\Http\Controllers\ProductionController@manualCallerChartWorkLogs');
+Route::any('manual_duplicate_column_check', 'App\Http\Controllers\ProductionController@manualDuplicateColumnCheck');
 
 Route::group(['prefix' => 'qa_production'], function () {
     Route::any('qa_clients', 'App\Http\Controllers\QA\QAProductionController@clients')->name('qaClients');
