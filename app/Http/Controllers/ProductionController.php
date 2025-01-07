@@ -306,8 +306,10 @@ class ProductionController extends Controller
                $attributes = [];
                $manualDuplciate = ManualProjectDuplicate::select('duplicate_column')->where('project_id', $decodedProjectName)
                ->where('sub_project_id', $decodedPracticeName)->get();
-               foreach($manualDuplciate as $duplicateColumn) {              
-                    $attributes[$duplicateColumn['duplicate_column']]= $duplicateColumn['duplicate_column'];
+               if(count($manualDuplciate) > 0) {
+                    foreach($manualDuplciate as $duplicateColumn) {        
+                            $attributes[$duplicateColumn['duplicate_column']]= $duplicateColumn['duplicate_column'];
+                    }
                 }
                return view('productions/clientAssignedTab',compact('assignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','assignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','searchData','resourceName','projectTypeSettings','existingCallerChartsWorkLogsInprocess','attributes'));
            } catch (\Exception $e) {
@@ -1073,12 +1075,14 @@ class ProductionController extends Controller
                $manualDuplciate = ManualProjectDuplicate::where('project_id', $decodedProjectName)
                ->where('sub_project_id', $decodedPracticeName)->get();
                $attributes = [];
-               foreach($manualDuplciate as $duplicateColumn) {              
-                    $attributes [$duplicateColumn['duplicate_column']]= isset($data[$duplicateColumn['duplicate_column']]) && $data[$duplicateColumn['duplicate_column']] != "NULL" ? $data[$duplicateColumn['duplicate_column']] : NULL;
-                    $attributes ['CE_emp_id'] = $data['CE_emp_id'];
+               if(count($manualDuplciate) > 0) {
+                    foreach($manualDuplciate as $duplicateColumn) {              
+                        $attributes [$duplicateColumn['duplicate_column']]= isset($data[$duplicateColumn['duplicate_column']]) && $data[$duplicateColumn['duplicate_column']] != "NULL" ? $data[$duplicateColumn['duplicate_column']] : NULL;
+                        $attributes ['CE_emp_id'] = $data['CE_emp_id'];
+                    }
                 }
                 $duplicateRecordExisting = $originalModelClass::where($attributes)->exists();
-                if (!$duplicateRecordExisting) {
+                if (!$duplicateRecordExisting) {dd($duplicateRecordExisting,$attributes);
                     $orginalData = $originalModelClass::create($originalData);
                     $data['parent_id'] =   $orginalData->id;
                     $modelClass::create($data);
@@ -1104,16 +1108,43 @@ class ProductionController extends Controller
                         }
                     }
                 } else {
-                    $duplicateParentRecord  =  $originalModelClass::where($attributes)->where('chart_status',"CE_Inprocess")->first();
-                    $duplicateDatasRecord  =  $modelClass::where($attributes)->where('chart_status',"CE_Inprocess")->first();
-                    if ($duplicateParentRecord) {
-                        $duplicateParentRecord->update($originalData);
-                    } 
-                    if ($duplicateDatasRecord) {
-                        $duplicateDatasRecord->update($data);
-                    } 
-                    $duplicateMsg = 'Duplicate Entry';
-                    return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName)->with('error', $duplicateMsg);
+                    if(!empty($attributes) && count($attributes) > 0) {
+                        // $duplicateParentRecord  =  $originalModelClass::where($attributes)->where('chart_status',"CE_Inprocess")->first();
+                        // $duplicateDatasRecord  =  $modelClass::where($attributes)->where('chart_status',"CE_Inprocess")->first();
+                        // if ($duplicateParentRecord) {
+                        //     $duplicateParentRecord->update($originalData);
+                        // } 
+                        // if ($duplicateDatasRecord) {
+                        //     $duplicateDatasRecord->update($data);
+                        // } 
+                        $duplicateMsg = 'Duplicate Entry';
+                        return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName)->with('error', $duplicateMsg);
+                    } else {
+                        $orginalData = $originalModelClass::create($originalData);
+                        $data['parent_id'] =   $orginalData->id;
+                        $modelClass::create($data);
+                        $currentTime = Carbon::now();                
+                        $callChartWorkLogExistingRecords = CallerChartsWorkLogs::where('project_id', $decodedProjectName)
+                        ->where('sub_project_id', $decodedPracticeName)
+                        ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->get();
+                        if($data['chart_status'] != 'CE_Inprocess') {
+                            if ($callChartWorkLogExistingRecords->isNotEmpty()) {
+                                foreach ($callChartWorkLogExistingRecords as $callChartWorkLog) {
+                                    $start_time = Carbon::parse($callChartWorkLog->start_time);
+                                    $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
+                                    $callChartWorkLog->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time,'record_id' => $orginalData->id] );
+                                }
+                        }
+                        } else {
+                            if ($callChartWorkLogExistingRecords->isNotEmpty()) {
+                                foreach ($callChartWorkLogExistingRecords as $callChartWorkLog) {
+                                    $start_time = Carbon::parse($callChartWorkLog->start_time);
+                                    $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
+                                    $callChartWorkLog->update( ['record_status' => $data['chart_status'],'record_id' => $orginalData->id] );
+                                }
+                            }
+                        }
+                    }
                 }
                 
                 return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName);
