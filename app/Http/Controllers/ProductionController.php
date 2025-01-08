@@ -924,6 +924,7 @@ class ProductionController extends Controller
     }
 
     public function clientsStore(Request $request,$clientName,$subProjectName) {
+        Log::debug('Duplication Existing Check');
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
             try {
                 // $data = $request->all();
@@ -1067,7 +1068,7 @@ class ProductionController extends Controller
                    }
                    return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName);
             } else {
-                Log::debug('Duplication Existing Check');
+                
                 $data['invoke_date'] = date('Y-m-d');
                 $data['CE_emp_id'] =  Session::get('loginDetails')['userDetail']['emp_id'];
                 $originalData= $data;
