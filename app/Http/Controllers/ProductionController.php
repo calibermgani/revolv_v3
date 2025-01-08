@@ -1067,6 +1067,7 @@ class ProductionController extends Controller
                    }
                    return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName);
             } else {
+                Log::debug('Duplication Existing Check');
                 $data['invoke_date'] = date('Y-m-d');
                 $data['CE_emp_id'] =  Session::get('loginDetails')['userDetail']['emp_id'];
                 $originalData= $data;
@@ -1085,7 +1086,7 @@ class ProductionController extends Controller
                 
                 if (!$duplicateRecordExisting) {
                     $orginalData = $originalModelClass::create($originalData);
-                    Log::debug('Duplication Existing Check'.$orginalData->id);
+                    
                     $data['parent_id'] =   $orginalData->id;
                     $modelClass::create($data);
                     $currentTime = Carbon::now();                
