@@ -1508,6 +1508,7 @@ nav{
             });
             var manualProjectDuplicateColumns = @json($attributes);var duplicateColumnData = []; 
             $(document).on('click', '#project_assign_save', function(e) {
+                console.log(inputTypeValue + inputTypeRadioValue + duplicateValue);
                 e.preventDefault();
                 $('#formConfiguration').serializeArray().map(function(input) {
                     labelName = input.name.replace('[]', '');
@@ -1752,7 +1753,7 @@ nav{
                 // Usage
                 checkDuplicate(duplicateColumnData)
                     .then((duplicateValue) => {
-                    console.log(inputTypeValue + inputTypeRadioValue + duplicateValue);
+                   
                          if (inputTypeValue == 0 && inputTypeRadioValue == 0 && duplicateValue == 0)  {
                             swal.fire({
                                 text: "Do you want to update?",
