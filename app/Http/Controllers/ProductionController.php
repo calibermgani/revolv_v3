@@ -1082,8 +1082,10 @@ class ProductionController extends Controller
                     }
                 }
                 $duplicateRecordExisting = $originalModelClass::where($attributes)->exists();
+                
                 if (!$duplicateRecordExisting) {
                     $orginalData = $originalModelClass::create($originalData);
+                    Log::debug('Duplication Existing Check'.$orginalData->id);
                     $data['parent_id'] =   $orginalData->id;
                     $modelClass::create($data);
                     $currentTime = Carbon::now();                
