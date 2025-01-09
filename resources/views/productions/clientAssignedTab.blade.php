@@ -1639,8 +1639,17 @@ nav{
                             if (classValue !== undefined) {
                                 var classes = classValue.split(' ');
                                 // inputclass.push($('.' + classes[1]));
-                                inclass = $('.' + classes[1]);
-                                console.log(classes[1],'inclass',inclass);
+                                let seenElements = new Set();
+inclass = $('.' + classes[1]).filter(function () {
+    if (seenElements.has(this)) {
+        return false; // Exclude duplicates
+    }
+    seenElements.add(this); // Mark element as seen
+    return true; // Include unique elements
+});
+
+console.log(inclass, 'Unique elements');
+
                                 inclass.each(function() {
 
                                     var label_id = $(this).attr('id');console.log(label_id,'val',$('#'+label_id).val());
