@@ -1754,7 +1754,7 @@ nav{
                 // Usage
                 checkDuplicate(duplicateColumnData)
                     .then((duplicateValue) => {
-                   console.log(duplicateColumnData,'duplicateColumnData',duplicateValue);
+                   console.log(inputTypeValue,'duplicateColumnData',inputTypeRadioValue,duplicateValue);
                    
                          if (inputTypeValue == 0 && inputTypeRadioValue == 0 && duplicateValue == 0)  {
                             swal.fire({
