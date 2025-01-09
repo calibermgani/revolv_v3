@@ -1637,26 +1637,43 @@ nav{
                                 .attr(
                                     'class');
                             if (classValue !== undefined) {
-                                var classes = classValue.split(' ');console.log(classValue,'classes',classes);
-                                
-                                // inputclass.push($('.' + classes[1]));
-                                inclass = $('.' + classes[1]);console.log(classes[1],'inclass',$('.' + classes[1]));
-                                inclass.each(function(element) {
+                                var classes = classValue.split(' ');
+                                var inclass = $(`${fieldType}[name="${fieldNameVal}"]`);
+                                    console.log(classes[1], 'inclass', inclass);
 
-                                    var label_id = $(this).attr('id');
-                                    if ($(this).val() === '') {console.log($(this).val(),'val');
-                                    
-                                        if ($(this).val() === '') {
+                                    inclass.each(function () {
+                                        var $this = $(this);
+                                        var label_id = $this.attr('id');
+                                        var value = $this.val();
+
+                                        if (value === '') {
                                             e.preventDefault();
-                                            $(this).css('border-color', 'red', '!important');
-                                            inputTypeValue =1;console.log(inputTypeValue,'class Value',$(this).val());
-                                                
+                                            $this.css('border-color', 'red');
+                                            inputTypeValue = 1;
+                                            console.log(inputTypeValue, 'class Value', value);
                                         } else {
-                                            $(this).css('border-color', '');
+                                            $this.css('border-color', '');
                                             inputTypeValue = 0;
                                         }
-                                        return false;
-                                    }
+                                    });
+                                // inputclass.push($('.' + classes[1]));
+                                // inclass = $('.' + classes[1]);console.log(inputTypeValue,'inclass',inclass);
+                                // inclass.each(function(element) {
+
+                                //     var label_id = $(this).attr('id');
+                                    // if ($(this).val() === '') {console.log($(this).val(),'val');
+                                    
+                                    //     if ($(this).val() === '') {
+                                    //         e.preventDefault();
+                                    //         $(this).css('border-color', 'red', '!important');
+                                    //         inputTypeValue =1;console.log(inputTypeValue,'class Value',classValue,$(this).val());
+                                                
+                                    //     } else {
+                                    //         $(this).css('border-color', '');
+                                    //         inputTypeValue = 0;console.log(inputTypeValue,'class Value 0',classValue);
+                                    //     }
+                                    //     return false;
+                                    // }
                                     // if(label_id.substring(0, 3) == "cpt") {
                                     //     var textValue = $(this).val();
                                     //     if(textValue.length < 4) {
@@ -1669,7 +1686,7 @@ nav{
                                     //         js_notification('error', "The ICD value must be between 3 and 7 characters long" );
                                     //     }
                                     // }
-                                });
+                                // });
                             }
                         });
 
