@@ -1639,9 +1639,10 @@ nav{
                             if (classValue !== undefined) {
                                 var classes = classValue.split(' ');
                                 // inputclass.push($('.' + classes[1]));
-                                inclass = $('.' + classes[1]);
-                                inclass = Array.from(new Set(inclass)); // Remove duplicates using Set
-inclass = $(inclass);
+                                inclass = $('.' + classes[1]).get(); // Convert jQuery object to an array
+                                inclass = Array.from(new Set(inclass)); console.log(inclass,'inclass Array');
+                                
+                                inclass = $(inclass); 
                                 console.log(inputTypeValue,'inclass',inclass);
                                 inclass.each(function() {
 
