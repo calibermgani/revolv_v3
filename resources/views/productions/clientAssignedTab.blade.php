@@ -1639,8 +1639,8 @@ nav{
                             if (classValue !== undefined) {
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
-                                inclass = $('.' + classes[1]);console.log(inputTypeValue,'inclass',inclass);
-                                inclass.each(function(element) {
+                                inclass1 = $('.' + classes[1]);console.log(inputTypeValue,'inclass1',inclass1);
+                                inclass1.each(function(element) {
 
                                     var label_id = $(this).attr('id');
                                     if ($(this).val() === '') {console.log(element,'val');
