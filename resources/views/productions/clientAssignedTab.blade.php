@@ -1639,11 +1639,11 @@ nav{
                             if (classValue !== undefined) {
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
-                                inclass1 = $('.' + classes[1]);console.log(inputTypeValue,'inclass1',inclass1);
-                                inclass1.each(function(element) {
-                                 if(element == 0) {
+                                inclass = $('.' + classes[1]);console.log(inputTypeValue,'inclass',inclass);
+                                inclass.each(function(element) {
+
                                     var label_id = $(this).attr('id');
-                                    if ($(this).val() === '') {console.log(element,'val');
+                                    if ($(this).val() === '') {console.log(label_id,'val');
                                     
                                         if ($(this).val() === '') {
                                             e.preventDefault();
@@ -1655,7 +1655,7 @@ nav{
                                             inputTypeValue = 0;console.log(inputTypeValue,'class Value 0',classValue);
                                         }
                                         return false;
-                                    } 
+                                    }
                                     // if(label_id.substring(0, 3) == "cpt") {
                                     //     var textValue = $(this).val();
                                     //     if(textValue.length < 4) {
@@ -1668,9 +1668,6 @@ nav{
                                     //         js_notification('error', "The ICD value must be between 3 and 7 characters long" );
                                     //     }
                                     // }
-                                } else {
-                                    console.log(element,'val else');
-                                }
                                 });
                             }
                         });
