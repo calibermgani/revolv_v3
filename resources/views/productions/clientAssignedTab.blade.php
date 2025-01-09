@@ -1642,8 +1642,8 @@ nav{
                                 inclass = $('.' + classes[1]);console.log(inputTypeValue,'inclass',inclass);
                                 inclass.each(function(element) {
 
-                                    var label_id = $(this).attr('id');
-                                    if ($(this).val() === '') {console.log(label_id,'val',$('#'+label_id).val());
+                                    var label_id = $(this).attr('id');console.log(label_id,'val',$('#'+label_id).val());
+                                    if ($(this).val() === '') {
                                     
                                         if ($('#'+label_id).val() === '') {
                                             e.preventDefault();
