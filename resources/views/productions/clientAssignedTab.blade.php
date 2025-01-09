@@ -1639,13 +1639,8 @@ nav{
                             if (classValue !== undefined) {
                                 var classes = classValue.split(' ');
                                 // inputclass.push($('.' + classes[1]));
-                                inclass = $('.' + classes[1]).get(); // Convert jQuery object to an array
-                                inclass = $('.' + classes[1]).filter(function (index, element) {
-    return $('.' + classes[1]).index(element) === index;
-});console.log(inclass,'inclass Array');
-                                
-                                inclass = $(inclass); 
-                                console.log(inputTypeValue,'inclass',inclass);
+                                inclass = $('.' + classes[1]);
+                                console.log(classes[1],'inclass',inclass);
                                 inclass.each(function() {
 
                                     var label_id = $(this).attr('id');console.log(label_id,'val',$('#'+label_id).val());
