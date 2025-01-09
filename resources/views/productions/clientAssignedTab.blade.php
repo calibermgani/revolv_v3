@@ -1640,7 +1640,9 @@ nav{
                                 var classes = classValue.split(' ');
                                 // inputclass.push($('.' + classes[1]));
                                 inclass = $('.' + classes[1]).get(); // Convert jQuery object to an array
-                                inclass = Array.from(new Set(inclass)); console.log(inclass,'inclass Array');
+                                inclass = $('.' + classes[1]).filter(function (index, element) {
+    return $('.' + classes[1]).index(element) === index;
+});console.log(inclass,'inclass Array');
                                 
                                 inclass = $(inclass); 
                                 console.log(inputTypeValue,'inclass',inclass);
