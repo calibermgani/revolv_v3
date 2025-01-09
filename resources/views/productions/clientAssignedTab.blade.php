@@ -1531,7 +1531,7 @@ nav{
                             if(textValue.length < 3) {
                                 js_notification('error', "The ICD value must be at least 3 characters long" );
                             }
-                        }console.log(duplicateColumnData);
+                        }console.log(duplicateColumnData,'duplicateColumnData');
                         
                         return duplicateColumnData;
                 });
@@ -1735,6 +1735,7 @@ nav{
                                 success: function (response) {
                                     if (response.success === true) {
                                         resolve(0); // No duplicate
+                                        
                                     } else {
                                         js_notification('error', 'Duplicate Entry');
                                         resolve(1); // Duplicate found
@@ -1753,6 +1754,7 @@ nav{
                 // Usage
                 checkDuplicate(duplicateColumnData)
                     .then((duplicateValue) => {
+                   console.log(duplicateColumnData,'duplicateColumnData',duplicateValue);
                    
                          if (inputTypeValue == 0 && inputTypeRadioValue == 0 && duplicateValue == 0)  {
                             swal.fire({
