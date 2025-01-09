@@ -1640,7 +1640,7 @@ nav{
                                 var classes = classValue.split(' ');console.log(classValue,'classes',classes);
                                 
                                 // inputclass.push($('.' + classes[1]));
-                                inclass = $('.' + classes[1]);console.log(inputTypeValue,'inclass',inclass);
+                                inclass = $('.' + classes[1]);console.log(inputTypeValue,'inclass',$('.' + classes[1]));
                                 inclass.each(function(element) {
 
                                     var label_id = $(this).attr('id');
