@@ -924,7 +924,6 @@ class ProductionController extends Controller
     }
 
     public function clientsStore(Request $request,$clientName,$subProjectName) {
-        Log::error('Duplication Existing Check');
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
             try {
                 // $data = $request->all();
