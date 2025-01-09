@@ -1114,7 +1114,7 @@ nav{
         var startTime_db;
         $(document).ready(function() {
             var indvidualSearchFieldsCount = Object.keys(@json($projectColSearchFields)).length;
-            var resourceName = @json($resourceName);console.log('resourceName',resourceName);
+            var resourceName = @json($resourceName);
             $("#expandButton").click(function() {
                  var modalContent = $(".modal-content");
                 if (modalContent.width() === 800) {
@@ -1531,7 +1531,7 @@ nav{
                             if(textValue.length < 3) {
                                 js_notification('error', "The ICD value must be at least 3 characters long" );
                             }
-                        }console.log(duplicateColumnData,'duplicateColumnData');
+                        }
                         
                         return duplicateColumnData;
                 });
@@ -1554,12 +1554,12 @@ nav{
                                         
                 //                 success: function(response) {
                 //                     if (response.success == true) {
-                //                       //  duplicateValue = 0;console.log(duplicateValue,'duplicateValue success');
+                //                       //  duplicateValue = 0;
                                         
                 //                     } else {
                 //                         duplicateValue = 1;
                 //                         js_notification('error', 'Duplicate Entryy');
-                //                         console.log(duplicateValue,'duplicateValue error in ');
+                //                         
                 //                     }
                                       
                                    
@@ -1567,12 +1567,11 @@ nav{
                 //                 complete: function () {
                 //                     duplicateValue1 = duplicateValue;
                 //                     // This executes after the AJAX call finishes
-                //                     console.log(duplicateValue1, 'duplicateValue1 error out1'); // Log after AJAX completion
-                //                     console.log(duplicateValue1, 'duplicateValue1 error out'); // Log again if needed
+                //                   
                 //                 },
                 //             });
-                //             console.log(duplicateValue1,'duplicateValue error out1');
-                // } console.log(duplicateValue1,'duplicateValue error out');               
+                //          
+                // }      
                 
                 var fieldNames = $('#formConfiguration').serializeArray().map(function(input) {
                     return input.name;
@@ -1587,7 +1586,7 @@ nav{
                     var ceHoldReason = $('#ce_hold_reason');
                     if(ceHoldReason.val() == '') {
                         ceHoldReason.css('border-color', 'red', 'important');
-                            inputTypeValue = 1;console.log(inputTypeValue,'Hold');
+                            inputTypeValue = 1;
                             
                     } else {
                             ceHoldReason.css('border-color', '');
@@ -1629,7 +1628,7 @@ nav{
                             if ($('input[type="checkbox"][id="' + groupName + '"]:checked').length ===
                                 0 && mandatory === true) {
                                 $('#check_p1').css('display', 'block');
-                                inputTypeValue = 1;console.log(inputTypeValue,'checkbox');
+                                inputTypeValue = 1;
                             } else {
                                 $('#check_p1').css('display', 'none');
                                 inputTypeValue = 0;
@@ -1825,7 +1824,6 @@ nav{
                 } else {
                     $("#ckbCheckAll").prop('checked', false);
                 }
-                //console.log(allCheckboxesChecked, 'allCheckboxesChecked', anyCheckboxChecked);
                 $('#assigneeDropdown').prop('disabled', !(anyCheckboxChecked || allCheckboxesChecked));
                 if ($(this).prop('checked') == true) {
                   assigneeDropdown();
@@ -2082,7 +2080,7 @@ nav{
                                             notes = lines.filter(lines => lines !== matchedLine).join('\n');
                                         } 
                                         if(client1 !== annex1) {
-                                            notesMap[i] = processedText + ' - ' + client1 + ' changed to ' + annex1;//console.log('else if',client1,annex1,notesMap,notes);
+                                            notesMap[i] = processedText + ' - ' + client1 + ' changed to ' + annex1;
                                             previousValue[client1] = processedText + ' - ' + client1;
                                         }
 
