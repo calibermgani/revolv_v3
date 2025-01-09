@@ -1662,11 +1662,11 @@ nav{
                                         if ($(this).val() == '') {
                                             e.preventDefault();
                                             $(this).css('border-color', 'red', 'important');
-                                            inputTypeValue =1;console.log(inputTypeValue,'class Value');
+                                            inputTypeValue =1;console.log(inputTypeValue,'class Value',classValue);
                                                 
                                         } else {
                                             $(this).css('border-color', '');
-                                            inputTypeValue = 0;
+                                            inputTypeValue = 0;console.log(inputTypeValue,'class Value 0',classValue);
                                         }
                                         return false;
                                     }
