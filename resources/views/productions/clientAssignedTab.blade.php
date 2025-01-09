@@ -1643,9 +1643,9 @@ nav{
                                 inclass.each(function(element) {
 
                                     var label_id = $(this).attr('id');
-                                    if ($(this).val() === '') {console.log(label_id,'val');
+                                    if ($(this).val() === '') {console.log(label_id,'val',$('#'+label_id).val());
                                     
-                                        if ($(this).val() === '') {
+                                        if ($('#'+label_id).val() === '') {
                                             e.preventDefault();
                                             $(this).css('border-color', 'red', '!important');
                                             inputTypeValue =1;console.log(inputTypeValue,'class Value',classValue,$(this).val());
