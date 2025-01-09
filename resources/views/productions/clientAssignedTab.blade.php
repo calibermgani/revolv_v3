@@ -1637,8 +1637,9 @@ nav{
                                 .attr(
                                     'class');
                             if (classValue !== undefined) {
-                                var classes = classValue.split(' ');
-                                inputclass.push($('.' + classes[1]));
+                                var classes = classValue.split(' ');console.log(classValue,'classes',classes);
+                                
+                                // inputclass.push($('.' + classes[1]));
                                 inclass = $('.' + classes[1]);console.log(inputTypeValue,'inclass',inclass);
                                 inclass.each(function(element) {
 
@@ -1648,11 +1649,11 @@ nav{
                                         if ($(this).val() === '') {
                                             e.preventDefault();
                                             $(this).css('border-color', 'red', '!important');
-                                            inputTypeValue =1;console.log(inputTypeValue,'class Value',classValue,$(this).val());
+                                            inputTypeValue =1;console.log(inputTypeValue,'class Value',$(this).val());
                                                 
                                         } else {
                                             $(this).css('border-color', '');
-                                            inputTypeValue = 0;console.log(inputTypeValue,'class Value 0',classValue);
+                                            inputTypeValue = 0;
                                         }
                                         return false;
                                     }
