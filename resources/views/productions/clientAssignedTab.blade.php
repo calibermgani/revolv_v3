@@ -1531,7 +1531,8 @@ nav{
                             if(textValue.length < 3) {
                                 js_notification('error', "The ICD value must be at least 3 characters long" );
                             }
-                        }
+                        }console.log(duplicateColumnData);
+                        
                         return duplicateColumnData;
                 });
               
