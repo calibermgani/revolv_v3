@@ -1587,7 +1587,8 @@ nav{
                     var ceHoldReason = $('#ce_hold_reason');
                     if(ceHoldReason.val() == '') {
                         ceHoldReason.css('border-color', 'red', 'important');
-                            inputTypeValue = 1;
+                            inputTypeValue = 1;console.log(inputTypeValue,'Hold');
+                            
                     } else {
                             ceHoldReason.css('border-color', '');
                             inputTypeValue = 0;
@@ -1628,7 +1629,7 @@ nav{
                             if ($('input[type="checkbox"][id="' + groupName + '"]:checked').length ===
                                 0 && mandatory === true) {
                                 $('#check_p1').css('display', 'block');
-                                inputTypeValue = 1;
+                                inputTypeValue = 1;console.log(inputTypeValue,'checkbox');
                             } else {
                                 $('#check_p1').css('display', 'none');
                                 inputTypeValue = 0;
@@ -1661,12 +1662,11 @@ nav{
                                         if ($(this).val() == '') {
                                             e.preventDefault();
                                             $(this).css('border-color', 'red', 'important');
-                                            inputTypeValue =
-                                                1;
+                                            inputTypeValue =1;console.log(inputTypeValue,'class Value');
+                                                
                                         } else {
                                             $(this).css('border-color', '');
-                                            inputTypeValue =
-                                                0;
+                                            inputTypeValue = 0;
                                         }
                                         return false;
                                     }
@@ -1754,7 +1754,7 @@ nav{
                 // Usage
                 checkDuplicate(duplicateColumnData)
                     .then((duplicateValue) => {
-                   console.log(inputTypeValue,'duplicateColumnData',inputTypeRadioValue,duplicateValue);
+                   console.log(inputTypeValue,'inputTypeValue');
                    
                          if (inputTypeValue == 0 && inputTypeRadioValue == 0 && duplicateValue == 0)  {
                             swal.fire({
