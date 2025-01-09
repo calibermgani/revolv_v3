@@ -1639,7 +1639,10 @@ nav{
                             if (classValue !== undefined) {
                                 var classes = classValue.split(' ');
                                 // inputclass.push($('.' + classes[1]));
-                                inclass = $('.' + classes[1]);console.log(inputTypeValue,'inclass',inclass);
+                                inclass = $('.' + classes[1]);
+                                inclass = Array.from(new Set(inclass)); // Remove duplicates using Set
+inclass = $(inclass);
+                                console.log(inputTypeValue,'inclass',inclass);
                                 inclass.each(function() {
 
                                     var label_id = $(this).attr('id');console.log(label_id,'val',$('#'+label_id).val());
