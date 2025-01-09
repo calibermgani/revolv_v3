@@ -1662,7 +1662,7 @@ nav{
                                         if ($(this).val() == '') {
                                             e.preventDefault();
                                             $(this).css('border-color', 'red', 'important');
-                                            inputTypeValue =1;console.log(inputTypeValue,'class Value',classValue);
+                                            inputTypeValue =1;console.log(inputTypeValue,'class Value',classValue,$(this).val());
                                                 
                                         } else {
                                             $(this).css('border-color', '');
