@@ -1655,7 +1655,7 @@ nav{
                                             inputTypeValue = 0;console.log(inputTypeValue,'class Value 0',classValue);
                                         }
                                         return false;
-                                    }
+                                    } 
                                     // if(label_id.substring(0, 3) == "cpt") {
                                     //     var textValue = $(this).val();
                                     //     if(textValue.length < 4) {
@@ -1668,6 +1668,8 @@ nav{
                                     //         js_notification('error', "The ICD value must be between 3 and 7 characters long" );
                                     //     }
                                     // }
+                                } else {
+                                    console.log(element,'val else');
                                 }
                                 });
                             }
