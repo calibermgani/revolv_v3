@@ -1626,7 +1626,7 @@ nav{
                 for (var fieldType in requiredFields) {
                     if (requiredFields.hasOwnProperty(
                             fieldType)) {
-                        var fieldNames = requiredFields[fieldType];console.log(fieldNames);
+                        var fieldNames = requiredFields[fieldType];console.log(fieldNames,'fieldType',fieldType);
                         
                         fieldNames.forEach(function(fieldNameVal) {
                             var label_id = $('' + fieldType + '[name="' + fieldNameVal + '"]').attr(
