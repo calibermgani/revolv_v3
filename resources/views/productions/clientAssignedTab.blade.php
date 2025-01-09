@@ -1641,7 +1641,7 @@ nav{
                                 inputclass.push($('.' + classes[1]));
                                 inclass1 = $('.' + classes[1]);console.log(inputTypeValue,'inclass1',inclass1);
                                 inclass1.each(function(element) {
-
+                                 if(element == 0) {
                                     var label_id = $(this).attr('id');
                                     if ($(this).val() === '') {console.log(element,'val');
                                     
@@ -1668,6 +1668,7 @@ nav{
                                     //         js_notification('error', "The ICD value must be between 3 and 7 characters long" );
                                     //     }
                                     // }
+                                }
                                 });
                             }
                         });
