@@ -1516,23 +1516,8 @@ nav{
                         duplicateColumnData['subProjectName'] =subProjectName;
                         duplicateColumnData[labelName] = input.value;                       
                         
-                    }                                                                   
-                    
-                        if(labelName.substring(0, 3).toLowerCase() == "cpt") {
-                            var textValue = input.value;
-                            if(textValue.length < 5) {
-                                js_notification('error',"The CPT value must be at least 5 characters long" );
-                            }
-                        }
-                        if(labelName.substring(0, 3).toLowerCase() == "icd") {
-                            var textValue = input.value;
-                            // if(textValue.length < 3 || textValue.length > 7) {
-                            //     js_notification('error', "The ICD value must be between 3 and 7 characters long" );
-                            if(textValue.length < 3) {
-                                js_notification('error', "The ICD value must be at least 3 characters long" );
-                            }
-                        }
-                        
+                    }                                                                 
+                                           
                         return duplicateColumnData;
                 });
               
@@ -1654,7 +1639,7 @@ nav{
                             if (classValue !== undefined) {
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
-                                inclass = $('.' + classes[1]);console.log(inputTypeValue,'inclass',classValue,$(this).val());
+                                inclass = $('.' + classes[1]);console.log(inputTypeValue,'inclass',classValue);
                                 inclass.each(function(element) {
 
                                     var label_id = $(this).attr('id');
