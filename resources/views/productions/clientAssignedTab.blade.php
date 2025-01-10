@@ -1508,7 +1508,6 @@ nav{
             });
             var manualProjectDuplicateColumns = @json($attributes);var duplicateColumnData = []; 
             $(document).on('click', '#project_assign_save', function(e) {
-                 console.log(inputTypeValue + inputTypeRadioValue + duplicateValue );
                 e.preventDefault();
                 $('#formConfiguration').serializeArray().map(function(input) {
                     labelName = input.name.replace('[]', '');
