@@ -1654,9 +1654,16 @@ nav{
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
                                 inclass = $('.' + classes[1]);console.log(inclass,'inclass');
-                                inclass = inclass.filter(function() {
-                                    return this.tagName.toLowerCase() !== 'input';
+                                // Assuming `inclass` contains duplicate inputs
+                                inclass = inclass.filter(function(index, element) {
+                                    return inclass.toArray().findIndex((el) => {
+                                        // Check if the element has the same tagName and attributes
+                                        return el.tagName === element.tagName && $(el).is(element);
+                                    }) === index; // Keep only the first occurrence
                                 });
+
+                                // Log the updated `inclass` to verify
+                                   console.log(inclass,'inclass afete');
 
                                 inclass.each(function(element) {
 
