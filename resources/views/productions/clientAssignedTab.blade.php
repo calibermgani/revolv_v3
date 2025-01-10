@@ -1656,7 +1656,11 @@ nav{
                                 inclass = $('.' + classes[1]);console.log(inclass,'inclass');
                                 // Assuming `inclass` contains duplicate inputs
                                 inclass = inclass.filter(function(index, element) {
+                                    console.log(index, element,'index, element');
+                                    
                                     return inclass.toArray().findIndex((el) => {
+                                        console.log(el.tagName ,element.tagName,'el.tagName === element.tagName');
+                                        
                                         // Check if the element has the same tagName and attributes
                                         return el.tagName === element.tagName && $(el).is(element);
                                     }) === index; // Keep only the first occurrence
