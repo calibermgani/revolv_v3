@@ -1508,7 +1508,7 @@ nav{
             });
             var manualProjectDuplicateColumns = @json($attributes);var duplicateColumnData = []; 
             $(document).on('click', '#project_assign_save', function(e) {
-              
+                 console.log(inputTypeValue + inputTypeRadioValue + duplicateValue );
                 e.preventDefault();
                 $('#formConfiguration').serializeArray().map(function(input) {
                     labelName = input.name.replace('[]', '');
@@ -1654,21 +1654,7 @@ nav{
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
                                 inclass = $('.' + classes[1]);console.log(inclass,'inclass');
-                                // Assuming `inclass` contains duplicate inputs
-                                inclass = inclass.filter(function(index, element) {
-                                    console.log(index, element,'index, element');
-                                    
-                                    return inclass.toArray().findIndex((el) => {
-                                        console.log(el.tagName ,element.tagName,'el.tagName === element.tagName');
-                                        
-                                        // Check if the element has the same tagName and attributes
-                                        return el.tagName === element.tagName && $(el).is(element);
-                                    }) === index; // Keep only the first occurrence
-                                });
-
-                                // Log the updated `inclass` to verify
-                                   console.log(inclass,'inclass afete');
-
+                                
                                 inclass.each(function(element) {
 
                                     var label_id = $(this).attr('id');
