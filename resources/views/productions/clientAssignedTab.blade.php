@@ -1508,6 +1508,7 @@ nav{
             });
             var manualProjectDuplicateColumns = @json($attributes);var duplicateColumnData = []; 
             $(document).on('click', '#project_assign_save', function(e) {
+              
                 e.preventDefault();
                 $('#formConfiguration').serializeArray().map(function(input) {
                     labelName = input.name.replace('[]', '');
@@ -1644,9 +1645,11 @@ nav{
                         fieldNames.forEach(function(fieldNameVal) {
                             var label_id = $('' + fieldType + '[name="' + fieldNameVal + '"]').attr(
                                 'class');
-                          
-                                var classValue = $('' + fieldType + '[name="' + fieldNameVal + '"]')
-                                .attr('class');
+                            var classValue = (fieldType == 'text' || fieldType == 'date') ? $(
+                                    'input' + '[name="' + fieldNameVal + '"]').attr(
+                                    'class') : $('' + fieldType + '[name="' + fieldNameVal + '"]')
+                                .attr(
+                                    'class');
                             if (classValue !== undefined) {
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
