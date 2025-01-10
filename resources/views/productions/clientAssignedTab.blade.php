@@ -1605,8 +1605,7 @@ nav{
                         }
 
                         // Add the field name to the corresponding field type
-                        requiredFields[fieldType].push(fieldName);console.log(requiredFields,'requiredFields');
-                        
+                        requiredFields[fieldType].push(fieldName);
                     });
                 $('input[type="radio"]').each(function() {
                     var groupName = $(this).attr("name");
@@ -1647,7 +1646,7 @@ nav{
                             var label_id = $('' + fieldType + '[name="' + fieldNameVal + '"]').attr(
                                 'class');
                             var classValue = (fieldType == 'text' || fieldType == 'date') ? $(
-                                    'input' + '[name="' + fieldNameVal + '"]').attr(
+                                    '' + '[name="' + fieldNameVal + '"]').attr(
                                     'class') : $('' + fieldType + '[name="' + fieldNameVal + '"]')
                                 .attr(
                                     'class');
