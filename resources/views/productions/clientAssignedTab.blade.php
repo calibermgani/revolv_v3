@@ -1657,7 +1657,6 @@ nav{
                                 inclass.each(function(element) {
 
                                     var label_id = $(this).attr('id');
-                                    if($(this).length == 1) {
                                     if ($(this).val() == '') {
                                         if ($(this).val() == '') {
                                             e.preventDefault();
@@ -1670,7 +1669,6 @@ nav{
                                         }
                                         return false;
                                     }
-                                }
                                     // if(label_id.substring(0, 3) == "cpt") {
                                     //     var textValue = $(this).val();
                                     //     if(textValue.length < 4) {
