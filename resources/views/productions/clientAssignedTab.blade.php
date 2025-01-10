@@ -1646,7 +1646,7 @@ nav{
                             var label_id = $('' + fieldType + '[name="' + fieldNameVal + '"]').attr(
                                 'class');
                             var classValue = (fieldType == 'text' || fieldType == 'date') ? $(
-                                    '' + '[name="' + fieldNameVal + '"]').attr(
+                                    'input' + '[name="' + fieldNameVal + '"]').attr(
                                     'class') : $('' + fieldType + '[name="' + fieldNameVal + '"]')
                                 .attr(
                                     'class');
@@ -1654,7 +1654,10 @@ nav{
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
                                 inclass = $('.' + classes[1]);console.log(inclass,'inclass');
-                                
+                                inclass = inclass.filter(function() {
+                                    return this.tagName.toLowerCase() !== 'input';
+                                });
+
                                 inclass.each(function(element) {
 
                                     var label_id = $(this).attr('id');
