@@ -1508,7 +1508,7 @@ nav{
             });
             var manualProjectDuplicateColumns = @json($attributes);var duplicateColumnData = []; 
             $(document).on('click', '#project_assign_save', function(e) {
-                console.log(inputTypeValue + inputTypeRadioValue + duplicateValue );
+                // console.log(inputTypeValue + inputTypeRadioValue + duplicateValue );
                 e.preventDefault();
                 $('#formConfiguration').serializeArray().map(function(input) {
                     labelName = input.name.replace('[]', '');
@@ -1519,20 +1519,20 @@ nav{
                         
                     }                                                                   
                     
-                        if(labelName.substring(0, 3).toLowerCase() == "cpt") {
-                            var textValue = input.value;
-                            if(textValue.length < 5) {
-                                js_notification('error',"The CPT value must be at least 5 characters long" );
-                            }
-                        }
-                        if(labelName.substring(0, 3).toLowerCase() == "icd") {
-                            var textValue = input.value;
-                            // if(textValue.length < 3 || textValue.length > 7) {
-                            //     js_notification('error', "The ICD value must be between 3 and 7 characters long" );
-                            if(textValue.length < 3) {
-                                js_notification('error', "The ICD value must be at least 3 characters long" );
-                            }
-                        }
+                        // if(labelName.substring(0, 3).toLowerCase() == "cpt") {
+                        //     var textValue = input.value;
+                        //     if(textValue.length < 5) {
+                        //         js_notification('error',"The CPT value must be at least 5 characters long" );
+                        //     }
+                        // }
+                        // if(labelName.substring(0, 3).toLowerCase() == "icd") {
+                        //     var textValue = input.value;
+                        //     // if(textValue.length < 3 || textValue.length > 7) {
+                        //     //     js_notification('error', "The ICD value must be between 3 and 7 characters long" );
+                        //     if(textValue.length < 3) {
+                        //         js_notification('error', "The ICD value must be at least 3 characters long" );
+                        //     }
+                        // }
                         return duplicateColumnData;
                 });
               
@@ -1653,7 +1653,8 @@ nav{
                             if (classValue !== undefined) {
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
-                                inclass = $('.' + classes[1]);
+                                inclass = $('.' + classes[1]);console.log(inclass,'inclass');
+                                
                                 inclass.each(function(element) {
 
                                     var label_id = $(this).attr('id');
@@ -1661,8 +1662,7 @@ nav{
                                         if ($(this).val() == '') {
                                             e.preventDefault();
                                             $(this).css('border-color', 'red', 'important');
-                                            inputTypeValue =
-                                                1;
+                                            inputTypeValue =1;                                                1;
                                         } else {
                                             $(this).css('border-color', '');
                                             inputTypeValue =
