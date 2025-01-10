@@ -1605,7 +1605,8 @@ nav{
                         }
 
                         // Add the field name to the corresponding field type
-                        requiredFields[fieldType].push(fieldName);
+                        requiredFields[fieldType].push(fieldName);console.log(requiredFields,'requiredFields');
+                        
                     });
                 $('input[type="radio"]').each(function() {
                     var groupName = $(this).attr("name");
