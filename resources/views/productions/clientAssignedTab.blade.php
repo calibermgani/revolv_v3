@@ -1654,22 +1654,21 @@ nav{
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
                                 inclass = $('.' + classes[1]);
-                              console.log(inclass,'inclass');
-                                // inclass = $('.' + classes[1]);
+                                  // inclass = $('.' + classes[1]);
                                 
-                                inclass.each(function(element) {
-                                    var label_id = $(this).attr('id');
+                                inclass.each(function(index,element) {
+                                  
+                                    
+                                    var label_id = $(this).attr('id');  console.log(label_id,index,element);
                                     if ($(this).val() == '') {
                                         if ($(this).val() == '') {
                                             e.preventDefault();
                                             $(this).css('border-color', 'red', 'important');
-                                            inputTypeValue =1; 
-                                            return false;                                              
+                                            inputTypeValue =1;                                               
                                         } else {
                                             $(this).css('border-color', '');
                                             inputTypeValue =
                                                 0;
-                                                return false;
                                         }
                                         return false;
                                     }
