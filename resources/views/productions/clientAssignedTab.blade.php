@@ -1661,11 +1661,11 @@ nav{
                                     if ($(this).val() == '') {console.log($(this).val(),' value');
                                     
                                         if ($(this).val() == '') {
-                                            e.preventDefault();
+                                            e.preventDefault();console.log($(this).val(),' value1');
                                             $(this).css('border-color', 'red', 'important');
                                             inputTypeValue =1;                                               
                                         } else {
-                                            $(this).css('border-color', 'green');
+                                            $(this).css('border-color', 'green', 'important');
                                             inputTypeValue =
                                                 0;
                                         }
