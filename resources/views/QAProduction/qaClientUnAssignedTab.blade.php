@@ -242,27 +242,23 @@ use Carbon\Carbon;
                                                 @if ($options == null)
                                                     @if ($inputType != 'date_range')
                                                         {!! Form::$inputType($columnName,isset($searchData) && !empty($searchData) && isset($searchData[$columnName]) && $searchData[$columnName]  ? $searchData[$columnName] : null, [
-                                                            'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val',
+                                                            'class' => 'form-control white-smoke pop-non-edt-val',
                                                             'autocomplete' => 'none',
                                                             'style' => 'cursor:pointer',
-                                                            'rows' => 3,
-                                                            'id' => $columnName,
+                                                            'rows' => 3
                                                         ]) !!}
                                                     @else
                                                         {!! Form::text($columnName, null, [
-                                                            'class' => 'form-control date_range daterange_' . $columnName . ' white-smoke pop-non-edt-val',
+                                                            'class' => 'form-control date_range white-smoke pop-non-edt-val',
                                                             'autocomplete' => 'none',
-                                                            'style' => 'cursor:pointer',
-                                                            'id' => 'date_range',                
+                                                            'style' => 'cursor:pointer'       
                                                         ]) !!}
                                                     @endif
                                                 @else
                                                     @if ($inputType == 'select')
                                                         {!! Form::$inputType($columnName, ['' => '-- Select --'] + $associativeOptions, isset($searchData) && !empty($searchData) && isset($searchData[$columnName]) && $searchData[$columnName]  ? $searchData[$columnName] : null, [
-                                                            'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val select2',
-                                                            'autocomplete' => 'none',
-                                                        
-                                                            'id' => $columnName,                                                        
+                                                            'class' => 'form-control white-smoke pop-non-edt-val select2',
+                                                            'autocomplete' => 'none'                                                
                                                         ]) !!}
                                                 @endif
                                                 @endif

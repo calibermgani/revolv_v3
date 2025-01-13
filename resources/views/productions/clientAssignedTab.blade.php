@@ -254,24 +254,20 @@ use Carbon\Carbon;
                                                                         'class' => 'form-control white-smoke pop-non-edt-val',
                                                                         'autocomplete' => 'none',
                                                                         'style' => 'cursor:pointer',
-                                                                        'rows' => 3,
-                                                                        'id' => $columnName,
+                                                                        'rows' => 3
                                                                     ]) !!}
                                                                 @else
                                                                     {!! Form::text($columnName, null, [
-                                                                        'class' => 'form-control date_range daterange_' . $columnName . ' white-smoke pop-non-edt-val',
+                                                                        'class' => 'form-control date_range white-smoke pop-non-edt-val',
                                                                         'autocomplete' => 'none',
-                                                                        'style' => 'cursor:pointer',
-                                                                        'id' => 'date_range',                
+                                                                        'style' => 'cursor:pointer'      
                                                                     ]) !!}
                                                                 @endif
                                                             @else
                                                                 @if ($inputType == 'select')
                                                                     {!! Form::$inputType($columnName, ['' => '-- Select --'] + $associativeOptions, isset($searchData) && !empty($searchData) && isset($searchData[$columnName]) && $searchData[$columnName] ? $searchData[$columnName] : null, [
-                                                                        'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val select2',
-                                                                        'autocomplete' => 'none',
-                                                                    
-                                                                        'id' => $columnName,                                                        
+                                                                        'class' => 'form-control white-smoke pop-non-edt-val select2',
+                                                                        'autocomplete' => 'none'                                               
                                                                     ]) !!}
                                                             @endif
                                                             @endif
@@ -1654,20 +1650,6 @@ nav{
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
                                 inclass = $('.' + classes[1]);
-                                let uniqueElements = new Set();
-
-                inclass = inclass.filter(function(index, element) {
-                    let uniqueKey = element.outerHTML; // Use a unique property to identify the element
-                    console.log(uniqueKey,'uniqueKey');
-                    
-                    if (uniqueElements.has(uniqueKey)) {
-                        return false; // Duplicate found, exclude it
-                    }
-                    uniqueElements.add(uniqueKey); // Add to the Set
-                    return true; // Keep unique element
-                });
-                                  console.log(classes[1],'inclass',inclass);
-                                // inclass = $('.' + classes[1]);
                                 
                                 inclass.each(function(element) {
 
