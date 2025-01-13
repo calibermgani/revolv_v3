@@ -1653,14 +1653,20 @@ nav{
                             if (classValue !== undefined) {
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
-                           
-                                 inclass = $('.' + classes[1]);  
-                                 inclass = jQuery.unique( inclass ); console.log(inclass,'inclass');
+                          
+                                 inclass = $('.' + classes[1]);    console.log(inclass,'inclass');
+                                 var seen = {};
+                                    inclass.each(function() {
+                                        var id = $(this).attr('id');
+                                        if (seen[id])
+                                        $(this).remove();
+                                        else
+                                        seen[id] = true;
+                                    });console.log(seen,'seen');
+                                    
                                 inclass.each(function(index,element) {
+// console.log(index,'index',element);
 
-                                    if (index > 0) { 
-                                        $(this).remove(); 
-                                    }    
                                     var label_id = $(this).attr('id');
                                     if ($(this).val() == '') {
                                         if ($(this).val() == '') {
