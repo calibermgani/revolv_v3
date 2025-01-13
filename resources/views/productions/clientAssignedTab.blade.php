@@ -1668,7 +1668,7 @@ nav{
     
     return true; // Keep unique element
 });
-                                  console.log(classes[1],'inclass',inclass);
+                                
                                 // inclass = $('.' + classes[1]);
                                 
                                 inclass.each(function(element) {
