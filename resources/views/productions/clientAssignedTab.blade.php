@@ -1653,22 +1653,10 @@ nav{
                             if (classValue !== undefined) {
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
-                               inclass = $('.' + classes[1]);//console.log(inclass,'inclass');
-                               var result = [];
-                            $.each(inclass, function (i, e) {
-                                var matchingItems = $.grep(result, function (item) {
-                                return item.name === e.name && item.label === e.label;
-                                });
-                                if (matchingItems.length === 0){
-                                    result.push(e);
-                                }
-                            });
-                            var myNewArray = result.filter(function(elem, index, self) {
-
-                                return index === self.indexOf(elem);
-
-                                });                               
-                            console.log(JSON.stringify(result),'result',result,'myNewArray',myNewArray);
+                                inclass = $('.' + classes[1]);
+                                  console.log(classes[1],'inclass',inclass);
+                                // inclass = $('.' + classes[1]);
+                                
                                 inclass.each(function(element) {
 
                                     var label_id = $(this).attr('id');
