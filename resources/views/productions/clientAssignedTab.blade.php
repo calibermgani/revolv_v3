@@ -1673,6 +1673,12 @@ nav{
                                                 0;
                                         }
                                         return false;
+                                    } else {
+                                        console.log(label_id,'else if');
+                                            
+                                            $(this).css('border-color', '');
+                                            inputTypeValue =
+                                                0;
                                     }
                                     // if(label_id.substring(0, 3) == "cpt") {
                                     //     var textValue = $(this).val();
