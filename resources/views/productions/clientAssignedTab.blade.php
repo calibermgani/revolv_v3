@@ -1654,56 +1654,36 @@ nav{
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
                                 inclass = $('.' + classes[1]);
-                                let uniqueKeys = new Set();
+let uniqueKeys = new Set();
 
-                                inclass = inclass.filter(function(index, element) {
-    let uniqueKey = $(element).attr('id'); // Use the `name` attribute as a unique identifier
-    console.log(uniqueKey);
-    
-    if (uniqueKeys.has(uniqueKey)) {
-        return false; // Duplicate found, exclude it
+// Filter out duplicate elements based on their `id`
+inclass = inclass.filter(function (index, element) {
+    let uniqueKey = $(element).attr('id'); // Use `id` as a unique identifier
+    if (!uniqueKey || uniqueKeys.has(uniqueKey)) {
+        return false; // Exclude if no `id` or duplicate `id`
     }
     uniqueKeys.add(uniqueKey); // Add to the Set
-    console.log(uniqueKeys,'uniqueKeys');
-    
     return true; // Keep unique element
 });
-                                
-                                // inclass = $('.' + classes[1]);
-                                
-                                inclass.each(function(element) {
 
-                                    var label_id = $(this).attr('id');
-                                    if ($(this).val() == '') {
-                                        if ($(this).val() == '') {
-                                            e.preventDefault();
-                                            $(this).css('border-color', 'red', 'important');
-                                            inputTypeValue =1;                                               
-                                        } else {
-                                            $(this).css('border-color', '');
-                                            inputTypeValue =
-                                                0;
-                                        }
-                                        return false;
-                                    }
-                                    // if(label_id.substring(0, 3) == "cpt") {
-                                    //     var textValue = $(this).val();
-                                    //     if(textValue.length < 4) {
-                                    //         js_notification('error',"The CPT value must be at least 4 characters long" );
-                                    //     }
-                                    // }
-                                    // if(label_id.substring(0, 3) == "icd") {
-                                    //     var textValue = $(this).val();
-                                    //     if(textValue.length < 3 || textValue.length > 7) {
-                                    //         js_notification('error', "The ICD value must be between 3 and 7 characters long" );
-                                    //     }
-                                    // }
-                                });
-                            }
-                        });
+// Initialize `inputTypeValue` to 0
+let inputTypeValue = 0;
 
-                    }
-                }
+// Check each unique element
+inclass.each(function () {
+    let elementValue = $(this).val().trim(); // Trim to ignore leading/trailing spaces
+
+    if (elementValue === '') {
+        // If any input is empty, set `inputTypeValue = 1` and highlight the border
+        inputTypeValue = 1;
+        $(this).css('border-color', 'red'); // Highlight the invalid field
+    } else {
+        $(this).css('border-color', ''); // Reset the border color for valid fields
+    }
+});
+
+// Log the final value of `inputTypeValue` for debugging
+console.log('Final inputTypeValue:', inputTypeValue);
 
                 var fieldValuesByFieldName = {};
 
