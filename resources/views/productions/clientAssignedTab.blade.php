@@ -1655,6 +1655,8 @@ nav{
                                 inputclass.push($('.' + classes[1]));
                                 inclass = $('.' + classes[1]);
                                 inclass = inclass.filter(function(index, element) {
+                                    console.log(inclass,index, element);
+                                    
                                     return inclass.toArray().findIndex((el) => el.isEqualNode(element)) === index;
                                 });console.log(inclass,'inclass');
                                 
