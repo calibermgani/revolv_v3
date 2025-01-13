@@ -1659,10 +1659,13 @@ nav{
                                     inclass.each(function() {
                                         var id = $(this).attr('id');
                                         if (seen[id])
+                                        console.log(seen,'if',seen[id]);
+                                        
                                         $(this).remove();
                                         else {
-                                            console.log(seen,'else');
+                                        
                                         seen[id] = true;
+                                        console.log(seen,'else',seen[id]);
                                         }
                                     });console.log(seen,'seen');
                                     
