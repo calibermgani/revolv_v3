@@ -1654,7 +1654,16 @@ nav{
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
                                 inclass = $('.' + classes[1]);
-                                inclass = $($.unique(inclass.get()));
+                                let uniqueElements = new Set();
+
+inclass = inclass.filter(function(index, element) {
+    let uniqueKey = element.outerHTML; // Use a unique property to identify the element
+    if (uniqueElements.has(uniqueKey)) {
+        return false; // Duplicate found, exclude it
+    }
+    uniqueElements.add(uniqueKey); // Add to the Set
+    return true; // Keep unique element
+});
                                   console.log(classes[1],'inclass',inclass);
                                 // inclass = $('.' + classes[1]);
                                 
