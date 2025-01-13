@@ -1666,6 +1666,8 @@ nav{
                                             $(this).css('border-color', 'red', 'important');
                                             inputTypeValue =1;                                               
                                         } else {
+                                            console.log(label_id,'else');
+                                            
                                             $(this).css('border-color', '');
                                             inputTypeValue =
                                                 0;
