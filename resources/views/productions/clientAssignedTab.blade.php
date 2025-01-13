@@ -1658,6 +1658,8 @@ nav{
 
 inclass = inclass.filter(function(index, element) {
     let uniqueKey = element.outerHTML; // Use a unique property to identify the element
+    console.log(uniqueKey,'uniqueKey');
+    
     if (uniqueElements.has(uniqueKey)) {
         return false; // Duplicate found, exclude it
     }
