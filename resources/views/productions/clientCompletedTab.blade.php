@@ -211,7 +211,6 @@ use Carbon\Carbon;
                                             }
                                          $clientName = App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->project_id, 'encode');
                                          $subProjectName = $data->sub_project_id != null ? App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->sub_project_id, 'encode') : '--';
-                                        //  dd($projectColSearchFields,$data);
                                             @endphp
                                              {!! Form::open([
                                                 'url' =>
@@ -243,7 +242,7 @@ use Carbon\Carbon;
                                                             @if ($options == null)
                                                                 @if ($inputType != 'date_range')
                                                                     {!! Form::$inputType($columnName,isset($searchData) && !empty($searchData) && isset($searchData[$columnName]) && $searchData[$columnName]  ? $searchData[$columnName] : null, [
-                                                                        'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val',
+                                                                        'class' => 'form-control  white-smoke pop-non-edt-val',
                                                                         'autocomplete' => 'none',
                                                                         'style' => 'cursor:pointer',
                                                                         'rows' => 3,
@@ -251,7 +250,7 @@ use Carbon\Carbon;
                                                                     ]) !!}
                                                                 @else
                                                                     {!! Form::text($columnName, null, [
-                                                                        'class' => 'form-control date_range daterange_' . $columnName . ' white-smoke pop-non-edt-val',
+                                                                        'class' => 'form-control date_range  white-smoke pop-non-edt-val',
                                                                         'autocomplete' => 'none',
                                                                         'style' => 'cursor:pointer',
                                                                         'id' => 'date_range',                
@@ -260,7 +259,7 @@ use Carbon\Carbon;
                                                             @else
                                                                 @if ($inputType == 'select')
                                                                     {!! Form::$inputType($columnName, ['' => '-- Select --'] + $associativeOptions, isset($searchData) && !empty($searchData) && isset($searchData[$columnName]) && $searchData[$columnName] ? $searchData[$columnName] : null, [
-                                                                        'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val select2',
+                                                                        'class' => 'form-control  white-smoke pop-non-edt-val select2',
                                                                         'autocomplete' => 'none',
                                                                     
                                                                         'id' => $columnName,                                                        
