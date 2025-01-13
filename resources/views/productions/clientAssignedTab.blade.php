@@ -1654,7 +1654,7 @@ nav{
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
                                 inclass = $('.' + classes[1]);
-                                let uniqueElements = new Set();
+                                let uniqueKeys = new Set();
 
                                 inclass = inclass.filter(function(index, element) {
     let uniqueKey = $(element).attr('name'); // Use the `name` attribute as a unique identifier
