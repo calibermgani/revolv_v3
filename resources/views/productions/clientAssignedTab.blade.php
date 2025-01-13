@@ -1662,9 +1662,9 @@ nav{
                                     
                                         if ($(this).val() == '') {
                                             e.preventDefault();
-                                           // $(this).css('border-color', 'red', 'important');
-                                            console.log($(this).val(),' value1',label_id);
-                                           // inputTypeValue =1;                                               
+                                            $(this).css('border-color', 'red', '!important');
+                                            console.log($(this).val(),' value1',label_id, $(this).css());
+                                            inputTypeValue =1;                                               
                                         } else {
                                             $(this).css('border-color', 'green', 'important');
                                             inputTypeValue =
