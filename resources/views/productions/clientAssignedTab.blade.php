@@ -1654,6 +1654,7 @@ nav{
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
                                 inclass = $('.' + classes[1]);
+                                inclass = $($.unique(inclass.get()));
                                   console.log(classes[1],'inclass',inclass);
                                 // inclass = $('.' + classes[1]);
                                 
