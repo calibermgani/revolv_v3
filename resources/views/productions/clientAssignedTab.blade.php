@@ -250,13 +250,13 @@ use Carbon\Carbon;
                                                         <div class="col-md-10">
                                                             @if ($options == null)
                                                                 @if ($inputType != 'date_range')
-                                                                    {!! Form::$inputType($columnName,isset($searchData) && !empty($searchData) && isset($searchData[$columnName]) && $searchData[$columnName] ? $searchData[$columnName] : null, [
+                                                                    {{-- {!! Form::$inputType($columnName,isset($searchData) && !empty($searchData) && isset($searchData[$columnName]) && $searchData[$columnName] ? $searchData[$columnName] : null, [
                                                                         'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val',
                                                                         'autocomplete' => 'none',
                                                                         'style' => 'cursor:pointer',
                                                                         'rows' => 3,
                                                                         'id' => $columnName,
-                                                                    ]) !!}
+                                                                    ]) !!} --}}
                                                                 @else
                                                                     {!! Form::text($columnName, null, [
                                                                         'class' => 'form-control date_range daterange_' . $columnName . ' white-smoke pop-non-edt-val',
