@@ -1657,7 +1657,9 @@ nav{
                                 let uniqueKeys = new Set();
 
                                 inclass = inclass.filter(function(index, element) {
-    let uniqueKey = $(element).attr('name'); // Use the `name` attribute as a unique identifier
+    let uniqueKey = $(element).attr('id'); // Use the `name` attribute as a unique identifier
+    console.log(uniqueKey);
+    
     if (uniqueKeys.has(uniqueKey)) {
         return false; // Duplicate found, exclude it
     }
