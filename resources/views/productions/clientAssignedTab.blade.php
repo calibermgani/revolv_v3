@@ -1661,8 +1661,8 @@ nav{
                                     if ($(this).val() == '') {console.log($(this).val(),' value');
                                     
                                         if ($(this).val() == '') {
-                                            e.preventDefault();console.log($(this).val(),' value1');
-                                            $(this).css('border-color', 'red', 'important');
+                                            e.preventDefault();
+                                            $(this).css('border-color', 'red', 'important');console.log($(this).val(),' value1',label_id);
                                             inputTypeValue =1;                                               
                                         } else {
                                             $(this).css('border-color', 'green', 'important');
