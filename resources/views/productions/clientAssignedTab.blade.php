@@ -1653,6 +1653,7 @@ nav{
                             if (classValue !== undefined) {
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
+                                inclass = $('.' + classes[1]);
                               console.log(inclass,'inclass');
                                 // inclass = $('.' + classes[1]);
                                 
