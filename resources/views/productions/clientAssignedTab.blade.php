@@ -1654,32 +1654,21 @@ nav{
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
                                 inclass = $('.' + classes[1]);
-                                  // inclass = $('.' + classes[1]);
                                 
-                                inclass.each(function(index,element) {
-                                  
-                                    
-                                    var label_id = $(this).attr('id');  console.log(label_id,index,element);
+                                inclass.each(function(element) {
+
+                                    var label_id = $(this).attr('id');
                                     if ($(this).val() == '') {
-                                        console.log(label_id,'if',index);
                                         if ($(this).val() == '') {
                                             e.preventDefault();
                                             $(this).css('border-color', 'red', 'important');
                                             inputTypeValue =1;                                               
                                         } else {
-                                            console.log(label_id,'else');
-                                            
-                                            $(this).css('border-color', '');
+                                            $(this).css('border-color', 'green');
                                             inputTypeValue =
                                                 0;
                                         }
                                         return false;
-                                    } else {
-                                        console.log(label_id,'else if');
-                                            
-                                            $(this).css('border-color', 'green');
-                                            inputTypeValue =
-                                                0;
                                     }
                                     // if(label_id.substring(0, 3) == "cpt") {
                                     //     var textValue = $(this).val();
