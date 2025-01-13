@@ -1658,11 +1658,11 @@ nav{
                                  var seen = {};
                                     inclass.each(function() {
                                         var id = $(this).attr('id');
-                                        if (seen[id])
+                                        if (seen[id]){
                                         console.log(seen,'if',seen[id]);
                                         
                                         $(this).remove();
-                                        else {
+                                        } else {
                                         
                                         seen[id] = true;
                                         console.log(seen,'else',seen[id]);
