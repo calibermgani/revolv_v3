@@ -1663,7 +1663,7 @@ nav{
                                     result.push(e);
                                 }
                             });
-                            console.log(JSON.stringify(result),'result');
+                            console.log(JSON.stringify(result),'result',result);
                                 inclass.each(function(element) {
 
                                     var label_id = $(this).attr('id');
