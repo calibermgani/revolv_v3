@@ -1722,6 +1722,8 @@ nav{
                 });
                 $.each(fieldValuesByFieldName, function(fieldName, fieldValues) {
                     $.each(fieldValues, function(index, value) {
+                        console.log(fieldValues,'fieldValues',index, value);
+                        
                         $('<input>').attr({
                             type: 'hidden',
                             name: fieldName + '[]',
