@@ -1664,6 +1664,8 @@ nav{
         return false; // Duplicate found, exclude it
     }
     uniqueKeys.add(uniqueKey); // Add to the Set
+    console.log(uniqueKeys,'uniqueKeys');
+    
     return true; // Keep unique element
 });
                                   console.log(classes[1],'inclass',inclass);
