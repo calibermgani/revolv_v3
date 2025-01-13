@@ -1653,35 +1653,22 @@ nav{
                             if (classValue !== undefined) {
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
-                          
-                                 inclass = $('.' + classes[1]);    console.log(inclass,'inclass');
-                                 var seen = {};
-                                    inclass.each(function() {
-                                        var id = $(this).attr('id');
-                                        if (seen[id]){
-                                        console.log(seen,'if',seen[id]);
-                                        
-                                        $(this).remove();
-                                        } else {
-                                        
-                                        seen[id] = true;
-                                        console.log(seen,'else',seen[id]);
-                                        }
-                                    });console.log(seen,'seen');
-                                    
-                                inclass.each(function(index,element) {
-// console.log(index,'index',element);
-
+                              console.log(inclass,'inclass');
+                                // inclass = $('.' + classes[1]);
+                                
+                                inclass.each(function(element) {
                                     var label_id = $(this).attr('id');
                                     if ($(this).val() == '') {
                                         if ($(this).val() == '') {
                                             e.preventDefault();
                                             $(this).css('border-color', 'red', 'important');
-                                            inputTypeValue =1;                                               
+                                            inputTypeValue =1; 
+                                            return false;                                              
                                         } else {
                                             $(this).css('border-color', '');
                                             inputTypeValue =
                                                 0;
+                                                return false;
                                         }
                                         return false;
                                     }
