@@ -1664,7 +1664,7 @@ nav{
                                         console.log(label_id,'if',index);
                                         if ($(this).val() == '') {
                                             e.preventDefault();
-                                           // $(this).css('border-color', 'red', 'important');
+                                            $(this).css('border-color', 'red', 'important');
                                             inputTypeValue =1;                                               
                                         } else {
                                             console.log(label_id,'else');
