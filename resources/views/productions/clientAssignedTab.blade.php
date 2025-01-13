@@ -1508,7 +1508,7 @@ nav{
             });
             var manualProjectDuplicateColumns = @json($attributes);var duplicateColumnData = []; 
             $(document).on('click', '#project_assign_save', function(e) {
-                 console.log(inputTypeValue + inputTypeRadioValue + duplicateValue );
+                //  console.log(inputTypeValue + inputTypeRadioValue + duplicateValue );
                 e.preventDefault();
                 $('#formConfiguration').serializeArray().map(function(input) {
                     labelName = input.name.replace('[]', '');
@@ -1653,7 +1653,10 @@ nav{
                             if (classValue !== undefined) {
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
-                                inclass = $('.' + classes[1]);console.log(inclass,'inclass');
+                                inclass = inclass.filter(function(index, element) {
+                                    return inclass.toArray().findIndex((el) => el.isEqualNode(element)) === index;
+                                });console.log(inclass,'inclass');
+                                // inclass = $('.' + classes[1]);
                                 
                                 inclass.each(function(element) {
 
