@@ -1653,20 +1653,18 @@ nav{
                             if (classValue !== undefined) {
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
-                                inclass = $('.' + classes[1]);
+                               inclass = $('.' + classes[1]);console.log(inclass,'inclass');
                                 
                                 inclass.each(function(element) {
 
                                     var label_id = $(this).attr('id');
-                                    if ($(this).val() == '') {console.log($(this).val(),' value');
-                                    
+                                    if ($(this).val() == '') {
                                         if ($(this).val() == '') {
                                             e.preventDefault();
-                                            $(this).css('border-color', 'red', '!important');
-                                            console.log($(this).val(),' value1',label_id);
+                                            $(this).css('border-color', 'red', 'important');
                                             inputTypeValue =1;                                               
                                         } else {
-                                            $(this).css('border-color', 'green', 'important');
+                                            $(this).css('border-color', '');
                                             inputTypeValue =
                                                 0;
                                         }
