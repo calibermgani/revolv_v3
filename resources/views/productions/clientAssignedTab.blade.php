@@ -1656,14 +1656,12 @@ nav{
                                 inclass = $('.' + classes[1]);
                                 let uniqueElements = new Set();
 
-inclass = inclass.filter(function(index, element) {
-    let uniqueKey = element.outerHTML; // Use a unique property to identify the element
-    console.log(uniqueKey,'uniqueKey');
-    
-    if (uniqueElements.has(uniqueKey)) {
+                                inclass = inclass.filter(function(index, element) {
+    let uniqueKey = $(element).attr('name'); // Use the `name` attribute as a unique identifier
+    if (uniqueKeys.has(uniqueKey)) {
         return false; // Duplicate found, exclude it
     }
-    uniqueElements.add(uniqueKey); // Add to the Set
+    uniqueKeys.add(uniqueKey); // Add to the Set
     return true; // Keep unique element
 });
                                   console.log(classes[1],'inclass',inclass);
