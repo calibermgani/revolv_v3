@@ -1654,8 +1654,8 @@ nav{
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
                            
-                                 inclass = $('.' + classes[1]);   console.log(inclass,'inclass');
-                                
+                                 inclass = $('.' + classes[1]);  
+                                 inclass = jQuery.unique( inclass ); console.log(inclass,'inclass');
                                 inclass.each(function(index,element) {
 
                                     if (index > 0) { 
