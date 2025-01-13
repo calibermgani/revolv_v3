@@ -1653,7 +1653,7 @@ nav{
                             if (classValue !== undefined) {
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
-                               inclass = $('.' + classes[1]);console.log(inclass,'inclass');
+                               inclass = $('.' + classes[1]);//console.log(inclass,'inclass');
                                var result = [];
                             $.each(inclass, function (i, e) {
                                 var matchingItems = $.grep(result, function (item) {
@@ -1663,7 +1663,12 @@ nav{
                                     result.push(e);
                                 }
                             });
-                            console.log(JSON.stringify(result),'result',result);
+                            var myNewArray = result.filter(function(elem, index, self) {
+
+                                return index === self.indexOf(elem);
+
+                                });                               
+                            console.log(JSON.stringify(result),'result',result,'myNewArray',myNewArray);
                                 inclass.each(function(element) {
 
                                     var label_id = $(this).attr('id');
