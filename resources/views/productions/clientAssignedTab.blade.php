@@ -1660,8 +1660,10 @@ nav{
                                         var id = $(this).attr('id');
                                         if (seen[id])
                                         $(this).remove();
-                                        else
+                                        else {
+                                            console.log(seen,'else');
                                         seen[id] = true;
+                                        }
                                     });console.log(seen,'seen');
                                     
                                 inclass.each(function(index,element) {
