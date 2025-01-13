@@ -1653,10 +1653,11 @@ nav{
                             if (classValue !== undefined) {
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
+                                inclass = $('.' + classes[1]);
                                 inclass = inclass.filter(function(index, element) {
                                     return inclass.toArray().findIndex((el) => el.isEqualNode(element)) === index;
                                 });console.log(inclass,'inclass');
-                                // inclass = $('.' + classes[1]);
+                                
                                 
                                 inclass.each(function(element) {
 
