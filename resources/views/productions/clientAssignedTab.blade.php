@@ -1654,7 +1654,16 @@ nav{
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
                                inclass = $('.' + classes[1]);console.log(inclass,'inclass');
-                                
+                               var result = [];
+                            $.each(inclass, function (i, e) {
+                                var matchingItems = $.grep(result, function (item) {
+                                return item.name === e.name && item.label === e.label;
+                                });
+                                if (matchingItems.length === 0){
+                                    result.push(e);
+                                }
+                            });
+                            console.log(JSON.stringify(result),'result');
                                 inclass.each(function(element) {
 
                                     var label_id = $(this).attr('id');
