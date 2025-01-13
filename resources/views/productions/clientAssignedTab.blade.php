@@ -1654,25 +1654,25 @@ nav{
                                 var classes = classValue.split(' ');
                                 inputclass.push($('.' + classes[1]));
                            
-                                 inclass = $('.' + classes[1]); 
+                                 inclass = $('.' + classes[1]);   console.log(inclass,'inclass');
                                 
                                 inclass.each(function(index,element) {
 
-                                    if(index == 0){    
-                                        var label_id = $(this).attr('id');console.log($(this).val());
-                                        
+                                    if (index > 0) { 
+                                        $(this).remove(); 
+                                    }    
+                                    var label_id = $(this).attr('id');
+                                    if ($(this).val() == '') {
                                         if ($(this).val() == '') {
-                                            if ($(this).val() == '') {
-                                                e.preventDefault();
-                                                $(this).css('border-color', 'red', 'important');
-                                                inputTypeValue =1;                                               
-                                            } else {
-                                                $(this).css('border-color', '');
-                                                inputTypeValue =
-                                                    0;
-                                            }
-                                            return false;
+                                            e.preventDefault();
+                                            $(this).css('border-color', 'red', 'important');
+                                            inputTypeValue =1;                                               
+                                        } else {
+                                            $(this).css('border-color', '');
+                                            inputTypeValue =
+                                                0;
                                         }
+                                        return false;
                                     }
                                     // if(label_id.substring(0, 3) == "cpt") {
                                     //     var textValue = $(this).val();
