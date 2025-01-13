@@ -1658,7 +1658,7 @@ nav{
                                 inclass.each(function(element) {
 
                                     var label_id = $(this).attr('id');
-                                    if ($(this).val() == '') {console.log($(this).val(),'value');
+                                    if ($(this).val() == '') {console.log($(this).val(),' value');
                                     
                                         if ($(this).val() == '') {
                                             e.preventDefault();
