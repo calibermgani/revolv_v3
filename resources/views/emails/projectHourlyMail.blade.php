@@ -73,7 +73,10 @@
                                     $qaReasons[] = $qaReason != '--' ? $qaReason.'('.date('m/d/Y h:i A',strtotime($reasonData->updated_at)).')' : '';
                                 }
                             }
+
+                            if(!empty($arReasons)){
                             $arReasonString = implode(', ', $arReasons);
+                            }
                             $qaReasonString = implode(', ', $qaReasons);
                         } else {
                             $arReasons[] = '--'; 
