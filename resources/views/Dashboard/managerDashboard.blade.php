@@ -482,9 +482,9 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mb-1">
-                                @php $projectReasonTypeList = App\Http\Helper\Admin\Helpers::projectReasonTypeList(); @endphp
+                                @php $projectReasonTypeList = App\Http\Helper\Admin\Helpers::arProjectReasonTypeList(); @endphp
                                 {!! Form::select(
-                                    'project_reason',
+                                    'ar_reason',
                                     $projectReasonTypeList,
                                     null,
                                     [
@@ -497,7 +497,7 @@
                     </div>
                         <div class="col-md-12 mt-2">
                             <div class="form-group mb-1">
-                                <textarea id="other_comments" rows="4" class="form-control" maxlength="250" style="display:none !important" required></textarea>
+                                <textarea name="ar_others_comments" id="other_comments" rows="4" class="form-control" maxlength="250" style="display:none !important" required></textarea>
                            </div>
                         </div>
                     
@@ -1134,7 +1134,7 @@
 
             })
             var project_id;
-            $(document).on('click','.clickable-row td:nth-child(2)',function(e){                
+            $(document).on('click','.project-clickable-row td:nth-child(2)',function(e){                
                 $("#projectReasonModal").modal('show');
                  project_id = $(this).closest('tr').find('td:eq(1) input').val();
                 $.ajaxSetup({
@@ -1206,8 +1206,8 @@
                     data: {
                         project_id: project_id,
                         sub_project_id:sub_project_id,
-                        project_reason:project_reason,
-                        others_comments: other_comments,
+                        ar_reason:project_reason,
+                        ar_others_comments: other_comments,
                     },
                     success: function(res) {
                         if (res.success == true) {

@@ -19,8 +19,10 @@ class CreateProjectReasonsTable extends Migration
             $table->string('sub_project_id')->nullable();
             $table->string('scope_id')->nullable();
             $table->string('manager_id')->nullable();
-            $table->string('project_reason')->nullable();
-            $table->text('others_comments')->nullable();
+            $table->string('ar_reason')->nullable();
+            $table->text('ar_others_comments')->nullable();
+            $table->string('qa_reason')->nullable();
+            $table->text('qa_others_comments')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

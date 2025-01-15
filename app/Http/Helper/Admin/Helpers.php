@@ -736,9 +736,15 @@ class Helpers
 		return $data;
 	}
 
-	public static function projectReasonTypeList()
+	public static function arProjectReasonTypeList()
 	{
-		$data = ProjectReasonType::pluck('reason_type', 'id')->prepend(trans('Select Project Reason'), '')->toArray();
+		$data = ProjectReasonType::whereIn('reason_access',[1,3])->pluck('reason_type', 'id')->prepend(trans('Select Project Reason'), '')->toArray();
+		return $data;
+	}
+	
+	public static function qaProjectReasonTypeList()
+	{
+		$data = ProjectReasonType::whereIn('reason_access',[2,3])->pluck('reason_type', 'id')->prepend(trans('Select Project Reason'), '')->toArray();
 		return $data;
 	}
 }

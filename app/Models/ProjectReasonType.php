@@ -9,5 +9,5 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ProjectReasonType extends Model
 {
     use HasFactory,SoftDeletes;
-    protected $fillable = ['reason_type','added_by'];
+    protected $fillable = ['reason_type','reason_access','added_by'];
 }

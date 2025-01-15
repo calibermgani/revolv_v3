@@ -16,6 +16,7 @@ class CreateProjectReasonTypesTable extends Migration
         Schema::create('project_reason_types', function (Blueprint $table) {
             $table->id();
             $table->string('reason_type')->nullable();
+            $table->enum('reason_access',[1,2,3])->default(3) ->comment('1 - AR, 2 - QA, 3 - Both');;
             $table->string('added_by')->nullable();        
             $table->timestamps();
             $table->softDeletes();

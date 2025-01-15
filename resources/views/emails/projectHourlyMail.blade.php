@@ -47,7 +47,8 @@
                     @foreach ($timeSlots as $timeSlot)
                         <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">{{ $timeSlot }}</th>
                     @endforeach
-                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Reason</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">AR Reason</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">QA Reason</th>
                 </tr>
             </thead>
             <tbody>
@@ -55,21 +56,30 @@
                 @if (isset($mailBody) && count($mailBody) > 0)
                     @foreach ($mailBody as $data)
                     @php                              
-                        $reasonList = App\Models\ProjectReason::with('project_reason_type')->where('project_id',$data['project_id'])->where('sub_project_id',$data['subproject_id'])->whereBetween('updated_at', [$startTime, $endTime])->get();
-                        $reasons = []; 
+                        $reasonList = App\Models\ProjectReason::with(['project_ar_reason_type','project_qa_reason_type'])->where('project_id',$data['project_id'])->where('sub_project_id',$data['subproject_id'])->whereBetween('updated_at', [$startTime, $endTime])->get();
+                        $arReasons = $qaReasons = []; 
                         if(count($reasonList) > 0) {
                             foreach($reasonList as $reasonData) {
-                                $reason=isset($reasonData) && isset($reasonData->project_reason_type) ? $reasonData->project_reason_type->reason_type : '--';
-                                if($reasonData->others_comments != NULL){
-                                    $reasons[] = $reason.' - '.$reasonData->others_comments.'('.date('m/d/Y h:i A',strtotime($reasonData->updated_at)).')'; 
+                                $arReason = isset($reasonData) && isset($reasonData->project_ar_reason_type) ? $reasonData->project_ar_reason_type->reason_type : '--';
+                                if($reasonData->ar_others_comments != NULL){
+                                    $arReasons[] = $arReason.' - '.$reasonData->ar_others_comments.'('.date('m/d/Y h:i A',strtotime($reasonData->updated_at)).')'; 
                                 } else {
-                                    $reasons[] = $reason.'('.date('m/d/Y h:i A',strtotime($reasonData->updated_at)).')';
+                                    $arReasons[] = $arReason.'('.date('m/d/Y h:i A',strtotime($reasonData->updated_at)).')';
+                                }
+                                $qaReason=isset($reasonData) && isset($reasonData->project_qa_reason_type) ? $reasonData->project_qa_reason_type->reason_type : '--';
+                                if($reasonData->qa_others_comments != NULL){
+                                    $qaReasons[] = $qaReason.' - '.$reasonData->qa_others_comments.'('.date('m/d/Y h:i A',strtotime($reasonData->updated_at)).')'; 
+                                } else {
+                                    $qaReasons[] = $qaReason.'('.date('m/d/Y h:i A',strtotime($reasonData->updated_at)).')';
                                 }
                             }
-                            $reasonString = implode(', ', $reasons);
+                            $arReasonString = implode(', ', $arReasons);
+                            $qaReasonString = implode(', ', $qaReasons);
                         } else {
-                            $reasons[] = '--'; 
-                            $reasonString = '--';
+                            $arReasons[] = '--'; 
+                            $arReasonString = '--';
+                            $qaReasons[] = '--'; 
+                            $qaReasonString = '--';
                         }
                     @endphp
                         <tr>
@@ -90,12 +100,13 @@
                             @foreach ($data['hourlyCount'] as $count)
                                <td style="text-align: center;padding: 5px;">{{ $count }}</td>
                            @endforeach
-                           <td style="text-align: center;padding: 5px;">{{$reasonString}}</td>
+                           <td style="text-align: center;padding: 5px;">{{$arReasonString}}</td>
+                           <td style="text-align: center;padding: 5px;">{{$qaReasonString}}</td>
                         </tr>
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="14" style="text-align: center; padding: 5px;">--No Records--</td>
+                        <td colspan="15" style="text-align: center; padding: 5px;">--No Records--</td>
                     </tr>
                 @endif
             </tbody>

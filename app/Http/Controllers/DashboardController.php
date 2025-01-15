@@ -917,7 +917,7 @@ class DashboardController extends Controller
                             $modelTFlag += $modelFlag;
                         }
                         if ($modelTFlag > 0) {
-                            $body_info .= '<tr class="clickable-client cursor_hand clickable-row"><td class="details-control"></td>';
+                            $body_info .= '<tr class="clickable-client cursor_hand project-clickable-row"><td class="details-control"></td>';
                             $body_info .= '<td>' . $data['client_name'] . '<input type="hidden" value=' . $data['id'] . '></td>';
                             $body_info .= '<td>' . $assignedTotalCount . '</td>';
                             $body_info .= '<td>' . $completedTotalCount . '</td>';

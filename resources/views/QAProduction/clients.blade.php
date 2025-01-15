@@ -143,6 +143,55 @@
 
         </div>
     </div>
+    <div class="modal fade" id="projectReasonModal" tabindex="-1" role="dialog" aria-labelledby="projectReasonModalTitle" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content p-5">        
+                <h5 class="modal-title text-center mt-2" id="exampleModalLongTitle">QA Reason Type</h5>              
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-1">
+                                @php $subProjectList = []; @endphp
+                            {!! Form::select(
+                                'sub_project_list',
+                                $subProjectList,
+                                null,
+                                [
+                                    'class' => 'form-control  kt_select2_sub_project',
+                                    'id' => 'sub_project_list',
+                                ],
+                            ) !!}
+                        </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-1">
+                                @php $projectReasonTypeList = App\Http\Helper\Admin\Helpers::qaProjectReasonTypeList(); @endphp
+                                {!! Form::select(
+                                    'qa_reason',
+                                    $projectReasonTypeList,
+                                    null,
+                                    [
+                                        'class' => 'form-control kt_select2_project_reason_type',
+                                        'id' => 'project_reason',
+                                    ],
+                                ) !!}
+                            </div>
+                        </div>
+                    </div>
+                        <div class="col-md-12 mt-2">
+                            <div class="form-group mb-1">
+                                <textarea name="qa_others_comments" id="other_comments" rows="4" class="form-control" maxlength="250" style="display:none !important" required></textarea>
+                           </div>
+                        </div>
+                    
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="remindMeLater">Close</button>
+                    <button type="button" class="btn btn-primary font-weight-bold" id="project_reason_save">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 <style>
     .table thead th {
@@ -250,7 +299,7 @@
                 }
             }
 
-            $(document).on('click', '.clickable-row', function(e) {
+            $(document).on('click', '.project-clickable-row', function(e) {
                 var clientName = $(this).closest('tr').find('td:eq(0) input').val();
                 var subProjectName = $(this).closest('tr').find('td:eq(1) input').val();
                 if (!clientName) {
@@ -269,6 +318,107 @@
                 KTApp.unblock('#clients_list');
 
             })
+            $(document).on('click','.clickable-client td:nth-child(2)',function(e){                
+                $("#projectReasonModal").modal('show');
+                 project_id = $(this).closest('tr').find('td:eq(1) input').val();
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    type: "GET",
+                    url: "{{ url('sub_project_list') }}",
+                    data: {
+                        project_id: project_id
+                    },
+                    success: function(res) {
+                         subprojectCount = Object.keys(res.subProject).length;
+                        var myArray = res.existingSubProject;
+                        var sla_options = '<option value="">-- Select --</option>';
+                        $.each(res.subProject, function(key, value) {
+                            sla_options += '<option value="' + key + '">' + value +
+                                '</option>';
+                        });
+                        $("#sub_project_list").html(sla_options);
+                        $('select[name="sub_project_list"]').html(sla_options);
+                    },
+                    error: function(jqXHR, exception) {}
+                });
+            });
+            $('#project_reason').on('change', function() {
+                var projectReason = $(this).val();
+                if(projectReason == 9) {
+                    $('#other_comments').css('display', 'block');
+                } else {
+                    $('#other_comments').css('display', 'none');
+                }
+
+            })
+            var project_id;
+            $('#project_reason_save').on('click', function() {
+               
+                var sub_project_id = $('#sub_project_list').val();
+                var project_reason = $('#project_reason').val();
+                var other_comments = $('#other_comments').val();console.log(sub_project_id,'sub_project_id',project_reason);
+                
+                 if (sub_project_id == '' || project_reason == '' || (project_reason == 9 && other_comments == '')) {
+                    if (sub_project_id == '') {
+                        $('#sub_project_list').next('.select2').find(".select2-selection").css('border-color', 'red');
+                    } else {
+                        $('#sub_project_list').next('.select2').find(".select2-selection").css('border-color', '');
+                    }
+                    if (project_reason == '') {
+                        console.log(project_reason,'project_reason');
+                        
+                        $('#project_reason').next('.select2').find(".select2-selection").css('border-color', 'red');
+                    } else {
+                        $('#project_reason').next('.select2').find(".select2-selection").css('border-color', '');
+                    }
+                    if (project_reason == 9 && other_comments == '') {
+                        $('#other_comments').css('border-color', 'red');
+                    } else {
+                        $('#other_comments').css('border-color', '');
+                    }
+                    return false;
+                 }
+                 KTApp.block('#projectReasonModal', {
+                    overlayColor: '#000000',
+                    state: 'danger',
+                    opacity: 0.1,
+                    message: 'Fetching...',
+                });
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+                $.ajax({
+                    url: baseUrl + "project_reason_save",
+                    type: 'POST',
+                    data: {
+                        project_id: project_id,
+                        sub_project_id:sub_project_id,
+                        qa_reason:project_reason,
+                        qa_others_comments: other_comments,
+                    },
+                    success: function(res) {
+                        if (res.success == true) {
+                            js_notification('success', 'Reason has been submitted');
+                            KTApp.unblock('#projectReasonModal');
+                            setTimeout(function() {
+                                location.reload();
+                           }, 500);
+                        } else {
+                            js_notification('error', 'Reason has been failed to submit');
+                            setTimeout(function() {
+                                location.reload();
+                           }, 500);
+                        }
+                    }
+                });
+            });
         })
     </script>
 @endpush
