@@ -64,13 +64,13 @@
                                 if($reasonData->ar_others_comments != NULL){
                                     $arReasons[] = $arReason.' - '.$reasonData->ar_others_comments.'('.date('m/d/Y h:i A',strtotime($reasonData->updated_at)).')'; 
                                 } else {
-                                    $arReasons[] = $arReason.'('.date('m/d/Y h:i A',strtotime($reasonData->updated_at)).')';
+                                    $arReasons[] = $arReason != '--' ? $arReason.'('.date('m/d/Y h:i A',strtotime($reasonData->updated_at)).')' : '';
                                 }
                                 $qaReason=isset($reasonData) && isset($reasonData->project_qa_reason_type) ? $reasonData->project_qa_reason_type->reason_type : '--';
                                 if($reasonData->qa_others_comments != NULL){
                                     $qaReasons[] = $qaReason.' - '.$reasonData->qa_others_comments.'('.date('m/d/Y h:i A',strtotime($reasonData->updated_at)).')'; 
                                 } else {
-                                    $qaReasons[] = $qaReason.'('.date('m/d/Y h:i A',strtotime($reasonData->updated_at)).')';
+                                    $qaReasons[] = $qaReason != '--' ? $qaReason.'('.date('m/d/Y h:i A',strtotime($reasonData->updated_at)).')' : '';
                                 }
                             }
                             $arReasonString = implode(', ', $arReasons);
