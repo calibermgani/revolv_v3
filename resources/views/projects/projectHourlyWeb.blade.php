@@ -102,8 +102,8 @@
                                                 $qaReasons[] = $qaReason != '--' ? $qaReason.'('.date('m/d/Y h:i A',strtotime($reasonData->updated_at)).')' : '';
                                             }
                                         }
-                                        $arReasonString = implode('<br> ', array_filter($arReasons));
-                                        $qaReasonString = implode('<br> ', array_filter($qaReasons));
+                                        $arReasonString = implode(', ', array_filter($arReasons));
+                                        $qaReasonString = implode(', ', array_filter($qaReasons));
                                     } else {
                                         $arReasons[] = '--'; 
                                         $arReasonString = '--';
@@ -121,7 +121,7 @@
                                         @foreach ($data['hourlyCount'] as $count)
                                             <td>{{ $count }}</td>
                                         @endforeach
-                                        <td>{{nl2br($arReasonString)}}</td>
+                                        <td>{{trim($arReasonString,",")}}</td>
                                         <td>{{trim($qaReasonString,",")}}</td>
                                     </tr>
                                 @endforeach
