@@ -102,8 +102,8 @@
                                                 $qaReasons[] = $qaReason != '--' ? $qaReason.'('.date('m/d/Y h:i A',strtotime($reasonData->updated_at)).')' : '';
                                             }
                                         }
-                                        $arReasonString = implode('\n ', array_filter($arReasons));
-                                        $qaReasonString = implode('\n ', array_filter($qaReasons));
+                                        $arReasonString = implode('\r\n ', array_filter($arReasons));
+                                        $qaReasonString = implode('\r\n ', array_filter($qaReasons));
                                     } else {
                                         $arReasons[] = '--'; 
                                         $arReasonString = '--';
