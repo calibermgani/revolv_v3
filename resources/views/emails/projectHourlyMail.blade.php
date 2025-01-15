@@ -100,8 +100,8 @@
                             @foreach ($data['hourlyCount'] as $count)
                                <td style="text-align: center;padding: 5px;">{{ $count }}</td>
                            @endforeach
-                           <td style="text-align: center;padding: 5px;">{{$arReasonString}}</td>
-                           <td style="text-align: center;padding: 5px;">{{$qaReasonString}}</td>
+                           <td style="text-align: center;padding: 5px;">{{trim($arReasonString,",")}}</td>
+                           <td style="text-align: center;padding: 5px;">{{trim($qaReasonString,",")}}</td>
                         </tr>
                     @endforeach
                 @else
