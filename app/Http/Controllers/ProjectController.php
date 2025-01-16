@@ -243,7 +243,7 @@ class ProjectController extends Controller
         try {
             Log::info('Executing ProjectWorkMail logic.');
              $toMailId = ["britto@annexmed.com","anukishan@annexmed.com","devi@annexmed.com","elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com","devanathan@annexmed.net"];
-            $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net"];
+            $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net","vijayalaxmi@caliberfocus.com"];
             // $toMailId = ["mgani@caliberfocus.com"];
             // $ccMailId = ["vijayalaxmi@caliberfocus.com"];
             $yesterday = Carbon::yesterday();
@@ -660,7 +660,7 @@ class ProjectController extends Controller
             Log::info('Executing Project Hourly Mail logic.');
 
             $toMailId = ["anukishan@annexmed.com","devi@annexmed.com","elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com","devanathan@annexmed.net"];
-            $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net"];
+            $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net","vijayalaxmi@caliberfocus.com"];
             // $toMailId = ["vijayalaxmi@caliberfocus.com"];
             // $ccMailId = ["vijayalaxmi@caliberfocus.com"];
           
