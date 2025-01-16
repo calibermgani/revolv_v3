@@ -28,7 +28,7 @@ use Carbon\Carbon;
                                         <div class="col-lg-3 mb-lg-0 mb-6">
                                             <fieldset class="form-group mb-0 white-smoke-disabled">
                                                 @php
-                                                $statusDropDown = ["CE_Assigned" => "Assigned"]
+                                                $statusDropDown = ["CE_Assigned" => "Workable"]
                                                 @endphp
                                                 {!! Form::select('status_val', ['' => '--Select--'] + $statusDropDown, null, [
                                                     'class' => 'form-control white-smoke kt_select2_status',
@@ -1073,8 +1073,8 @@ use Carbon\Carbon;
                 var selectId = $('#select_p1').css('display');
                 var clearId = $('#clear_p1').css('display');
                 var popupRecord = clearId == "none" ? <?= json_encode($arNonWorkableProjectDetails->lastItem()); ?> : <?= json_encode($arNonWorkableProjectDetails->total()); ?>;
-                var recordText = checkedRowValues.length > 1 ? "Do you want to update all "+ checkedRowValues.length + " records to Assigned?" : "Do you want to update this record to Assigned?";
-                var allRecordText = popupRecord > 1 ? "Do you want to update all "+ popupRecord + " records to Assigned?" : "Do you want to update this record to Assigned?";
+                var recordText = checkedRowValues.length > 1 ? "Do you want to update all "+ checkedRowValues.length + " records to Workable?" : "Do you want to update this record to Workable?";
+                var allRecordText = popupRecord > 1 ? "Do you want to update all "+ popupRecord + " records to Workable?" : "Do you want to update this record to Workable?";
                 
                 swal.fire({
                     text: selectId == "none" && clearId == "none" ?  recordText: allRecordText ,
