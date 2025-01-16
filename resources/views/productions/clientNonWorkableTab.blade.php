@@ -25,6 +25,19 @@ use Carbon\Carbon;
                                 </div>
                                 <div class="col-md-6">
                                     <div class="row" style="justify-content: flex-end;margin-right:1.4rem">
+                                        <div class="col-lg-3 mb-lg-0 mb-6">
+                                            <fieldset class="form-group mb-0 white-smoke-disabled">
+                                                @php
+                                                $statusDropDown = ["CE_Assigned" => "Assigned"]
+                                                @endphp
+                                                {!! Form::select('status_val', ['' => '--Select--'] + $statusDropDown, null, [
+                                                    'class' => 'form-control white-smoke kt_select2_status',
+                                                    'id' => 'workable_dropdown',
+                                                    'style' => 'width: 100%;',
+                                                    'disabled',
+                                                ]) !!}
+                                            </fieldset>
+                                        </div>
                                         <div>
                                             @if ($popUpHeader != null)
                                                     @php
@@ -285,6 +298,12 @@ use Carbon\Carbon;
                                 </div>
                           
                                 {!! Form::close() !!}
+                                @php
+                                $pageSelectedRecord = ($arNonWorkableProjectDetails->lastItem() - $arNonWorkableProjectDetails->firstItem()) + 1;
+                                @endphp
+                                <p id="select_p1" style="text-align:center;display:none">All {{$pageSelectedRecord}} {{$pageSelectedRecord == 1 ? 'record on this page is selected' : 'records on this page are selected'}} . <a href="#select_all_status" id="select_all_status">Select all {{$arNonWorkableProjectDetails->total()}} records</a></p>
+                                <p id="clear_p1" style="text-align:center;display:none">All {{$arNonWorkableProjectDetails->total()}} records are selected.<a href="#clear_all_status" id="clear_all_status">Clear Selection.</a></p>
+                    
                             <div class="card-body py-0 px-7">
                                 {{-- <input type="hidden" value={{ $databaseConnection }} id="dbConnection">
                                 <input type="hidden" value={{ $encodedId }} id="encodeddbConnection"> --}}
@@ -292,7 +311,7 @@ use Carbon\Carbon;
                                 <input type="hidden" value={{ $subProjectName }} id="subProjectName">
                                 <div class="table-responsive pt-5 pb-5 clietnts_table">
                                     <table class="table table-separate table-head-custom no-footer dtr-column "
-                                        id="client_completed_list" data-order='[[ 0, "desc" ]]'>
+                                        id="client_non_workable_list" data-order='[[ 0, "desc" ]]'>
                                         {{-- <thead>
 
                                             <tr>
@@ -325,6 +344,8 @@ use Carbon\Carbon;
                                             @if (!empty($columnsHeader))
                                                 <tr>
                                                     {{-- <th class='notexport' style="color:white !important">Action</th> --}}
+                                                    <th class='notexport'><input type="checkbox" id="ckbCheckAll" class="cursor_hand">
+                                                    </th>
                                                     @foreach ($columnsHeader as $columnName => $columnValue)
                                                         @if ($columnValue != 'id')
                                                             <th><input type="hidden"
@@ -374,6 +395,9 @@ use Carbon\Carbon;
                                                         {{-- <td>    <button class="task-start clickable-view"
                                                             title="View"><i
                                                             class="fa far fa-eye text-eye icon-circle1 mt-0"></i></button></td> --}}
+                                                            <td><input type="checkbox" class="checkBoxClass cursor_hand" name='check[]'
+                                                                value="{{ $data->id }}">
+                                                        </td>
                                                         @foreach ($arrayAttrributes as $columnName => $columnValue)
                                                             @php
                                                                 $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date', 
@@ -421,8 +445,8 @@ use Carbon\Carbon;
                                                                     @if (str_contains($columnValue, '-') && strtotime($columnValue))
                                                                         {{ date('m/d/Y', strtotime($columnValue)) }}
                                                                     @else
-                                                                        @if ($columnName == 'chart_status' && str_contains($columnValue, 'CE_'))
-                                                                            {{ str_replace('CE_', '', $columnValue) }}
+                                                                        @if ($columnName == 'chart_status' && str_contains($columnValue, 'AR_'))
+                                                                          Non Workable
                                                                         @elseif ($columnName == 'aging')                                                                                  
                                                                             {{ $agingCount }}
                                                                         @elseif ($columnName == 'aging_range')
@@ -737,7 +761,7 @@ use Carbon\Carbon;
                 var day = d.getDate();
                 var date = (month < 10 ? '0' : '') + month + '-' +
                     (day < 10 ? '0' : '') + day + '-' + d.getFullYear();
-            var table = $("#client_completed_list").DataTable({
+            var table = $("#client_non_workable_list").DataTable({
                 processing: true,
                 ordering: true,
                 clientSide: true,
@@ -972,6 +996,127 @@ use Carbon\Carbon;
                             }
                       });
                 });
+
+                $("#ckbCheckAll").click(function() {
+                    var isChecked = $(this).prop('checked');
+                    
+                    $(".checkBoxClass").prop('checked', isChecked);
+                    var table = $('#client_non_workable_list').DataTable();
+                    for (var i = 0; i < table.page.info().pages; i++) {
+                        table.page(i).draw(false); 
+                        $(".checkBoxClass").prop('checked', isChecked); 
+                    }
+                    if ($(this).prop('checked') == true && $('.checkBoxClass:checked').length > 0) {
+                        $('#workable_dropdown').prop('disabled', false);
+                        $('#select_p1').css('display', 'block');
+                    
+                    } else {
+                        $('#select_p1').css('display','none')
+                        $('#workable_dropdown').prop('disabled', true);
+
+                    }
+            });
+            $('#select_all_status').click(function() {
+                $('#select_p1').css('display','none');
+                $('#clear_p1').css('display','block');
+               
+            });
+            $('#clear_all_status').click(function() {
+                var isChecked = false;
+                $("#ckbCheckAll").prop('checked', isChecked);
+                $(".checkBoxClass").prop('checked', isChecked);
+                $('#clear_p1').css('display','none');              
+                 $('#workable_dropdown').prop('disabled', true);            
+               
+            });
+            function handleCheckboxChange() {
+                var anyCheckboxChecked = $('.checkBoxClass:checked').length > 0;
+                var allCheckboxesChecked = $('.checkBoxClass:checked').length === $('.checkBoxClass')
+                    .length;
+                if (allCheckboxesChecked) {
+                    $("#ckbCheckAll").prop('checked', $(this).prop('checked'));
+                    $('#select_p1').css('display','block');
+                } else {
+                    $("#ckbCheckAll").prop('checked', false);
+                    $('#select_p1').css('display','none');
+                    $('#clear_p1').css('display','none');
+                }
+             
+                $('#workable_dropdown').prop('disabled', !(anyCheckboxChecked || allCheckboxesChecked));
+              
+            }            
+
+            function attachCheckboxHandlers() {
+                $('.checkBoxClass').off('change').on('change', handleCheckboxChange);
+            }
+            attachCheckboxHandlers();
+
+                table.on('draw', function() {
+                    attachCheckboxHandlers();
+                });
+            $('#workable_dropdown').change(function() {
+            
+                var checkedRowValues = [];
+                $('#client_non_workable_list').DataTable().$('input[name="check[]"]:checked').each(function() {
+                    var rowData = {
+                        name: 'check[]',
+                        value: $(this).val()
+                    };
+                    checkedRowValues.push(rowData);
+                });
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                            'content')
+                    }
+                });
+                var selectId = $('#select_p1').css('display');
+                var clearId = $('#clear_p1').css('display');
+                var popupRecord = clearId == "none" ? <?= json_encode($arNonWorkableProjectDetails->lastItem()); ?> : <?= json_encode($arNonWorkableProjectDetails->total()); ?>;
+                var recordText = checkedRowValues.length > 1 ? "Do you want to update all "+ checkedRowValues.length + " records to non-workable?" : "Do you want to update this record to non-workable?";
+                var allRecordText = popupRecord > 1 ? "Do you want to update all "+ popupRecord + " records to non-workable?" : "Do you want to update this record to non-workable?";
+                
+                swal.fire({
+                    text: selectId == "none" && clearId == "none" ?  recordText: allRecordText ,
+                    icon: "success",
+                    buttonsStyling: false,
+                    showCancelButton: true,
+                    confirmButtonText: "Yes",
+                    cancelButtonText: "No",
+                    customClass: {
+                        confirmButton: "btn font-weight-bold btn-white-black",
+                        cancelButton: "btn font-weight-bold  btn-light-danger",
+                    }
+
+                }).then(function(result) {
+                    if (result.value == true) {
+                        $.ajax({
+                            url: "{{ url('workable_status_update') }}",
+                            method: 'POST',
+                            data: {
+                                checkedRowValues: checkedRowValues,
+                                clientName: clientName,
+                                subProjectName: subProjectName,
+                                selectedRecords : clearId
+                            },
+                            success: function(response) {
+                                if (response.success == true) {
+                                    js_notification('success',
+                                        'Non Workable Updated Successfully');
+                                } else {
+                                    js_notification('error', 'Something went wrong');
+                                }
+                                setTimeout(function() {
+                                    location.reload();
+                                }, 2000);
+                            },
+                        });
+
+                    } else {
+                        location.reload();
+                    }
+                });
+            })
         })
     </script>
 @endpush
