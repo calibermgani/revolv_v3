@@ -1073,8 +1073,8 @@ use Carbon\Carbon;
                 var selectId = $('#select_p1').css('display');
                 var clearId = $('#clear_p1').css('display');
                 var popupRecord = clearId == "none" ? <?= json_encode($arNonWorkableProjectDetails->lastItem()); ?> : <?= json_encode($arNonWorkableProjectDetails->total()); ?>;
-                var recordText = checkedRowValues.length > 1 ? "Do you want to update all "+ checkedRowValues.length + " records to non-workable?" : "Do you want to update this record to non-workable?";
-                var allRecordText = popupRecord > 1 ? "Do you want to update all "+ popupRecord + " records to non-workable?" : "Do you want to update this record to non-workable?";
+                var recordText = checkedRowValues.length > 1 ? "Do you want to update all "+ checkedRowValues.length + " records to Assigned?" : "Do you want to update this record to Assigned?";
+                var allRecordText = popupRecord > 1 ? "Do you want to update all "+ popupRecord + " records to Assigned?" : "Do you want to update this record to Assigned?";
                 
                 swal.fire({
                     text: selectId == "none" && clearId == "none" ?  recordText: allRecordText ,
