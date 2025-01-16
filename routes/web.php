@@ -80,6 +80,7 @@ Route::any('client_duplicate_xport', 'App\Http\Controllers\ProductionController@
 Route::any('project_reason_save', 'App\Http\Controllers\DashboardController@projectReasonSave');
 Route::any('manual_caller_chart_work_logs', 'App\Http\Controllers\ProductionController@manualCallerChartWorkLogs');
 Route::any('manual_duplicate_column_check', 'App\Http\Controllers\ProductionController@manualDuplicateColumnCheck');
+Route::any('nonworkable_status_update', 'App\Http\Controllers\ProductionController@nonworkableStatusUpdate');
 
 Route::group(['prefix' => 'qa_production'], function () {
     Route::any('qa_clients', 'App\Http\Controllers\QA\QAProductionController@clients')->name('qaClients');

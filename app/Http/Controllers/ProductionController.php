@@ -2385,5 +2385,48 @@ class ProductionController extends Controller
             return redirect('/');
         }
     }
+
+    public function nonworkableStatusUpdate(Request $request) {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+
+            try {
+                $decodedProjectName = Helpers::encodeAndDecodeID($request['clientName'], 'decode');
+                $decodedPracticeName = $request['subProjectName'] == '--' ? '--' : Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
+                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
+                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
+                $modelName = Str::studly($table_name);
+                $modelClass = "App\\Models\\" . $modelName;
+                $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
+                $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
+                if($request['selectedRecords'] == "none") {
+                    if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
+                        foreach($request['checkedRowValues'] as $data) {
+                            $existingRecord = $modelClass::where('id',$data['value'])->where('chart_status','CE_Assigned')->first();
+                            $existingRecord->update(['chart_status' => 'AR_non_workable']);
+                        }
+                    } else {
+                        foreach($request['checkedRowValues'] as $data) {
+                            $existingRecord = $modelClass::where('id',$data['value'])->where('CE_emp_id',$loginEmpId)->where('chart_status','CE_Assigned')->first();
+                            $existingRecord->update(['chart_status' => 'AR_non_workable']);
+                        }
+                    }   
+                } else {
+                    if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
+                        $modelClass::where('chart_status', 'CE_Assigned')->update(['chart_status' => 'AR_non_workable']);
+
+                    } else {
+                       $modelClass::where('CE_emp_id',$loginEmpId)->where('chart_status','CE_Assigned')->update(['chart_status' => 'AR_non_workable']);
+                    }
+                }
+                return response()->json(['success' => true]);
+            } catch (\Exception $e) {
+                log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
+
     
 }
