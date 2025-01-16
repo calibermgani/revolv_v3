@@ -299,7 +299,7 @@
                 }
             }
 
-            $(document).on('click', '.project-clickable-row', function(e) {
+            $(document).on('click', '.clickable-row', function(e) {
                 var clientName = $(this).closest('tr').find('td:eq(0) input').val();
                 var subProjectName = $(this).closest('tr').find('td:eq(1) input').val();
                 if (!clientName) {
