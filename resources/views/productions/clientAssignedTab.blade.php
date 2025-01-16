@@ -1999,9 +1999,10 @@ nav{
                 var selectId = $('#select_p1').css('display');
                 var clearId = $('#clear_p1').css('display');
                 var popupRecord = clearId == "none" ? <?= json_encode($assignedProjectDetails->lastItem()); ?> : <?= json_encode($assignedProjectDetails->total()); ?>;
+                var recordText = checkedRowValues.length > 1 ? "Do you want to update all "+ checkedRowValues.length + " records to non-workable?" : "Do you want to update this record to non-workable?";
                 
                 swal.fire({
-                    text: selectId == "none" && clearId == "none" ?  "Do you want to update this record to non-workable?": "Do you want to update all "+popupRecord+" records to non-workable?" ,
+                    text: selectId == "none" && clearId == "none" ?  recordText: "Do you want to update all "+popupRecord+" records to non-workable?" ,
                     icon: "success",
                     buttonsStyling: false,
                     showCancelButton: true,
