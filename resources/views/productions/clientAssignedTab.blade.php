@@ -1550,43 +1550,41 @@ nav{
                         return duplicateColumnData;
                 });
               
-                 //var duplicateValue = 0; 
-                // if(Object.keys(duplicateColumnData).length > 0) {
-                //     e.preventDefault();
-                //     const duplicateObj = { ...duplicateColumnData };
-                //            $.ajaxSetup({
-                //                 headers: {
-                //                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
-                //                         'content')
-                //                 }
-                //             });
+                 var duplicateValue = 0; 
+                if(Object.keys(duplicateColumnData).length > 0) {
+                    e.preventDefault();
+                    const duplicateObj = { ...duplicateColumnData };
+                           $.ajaxSetup({
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                                        'content')
+                                }
+                            });
 
-                //             $.ajax({
-                //                 url: "{{ url('manual_duplicate_column_check') }}",
-                //                 method: 'POST',
-                //                 data: duplicateObj,          
+                            $.ajax({
+                                url: "{{ url('manual_duplicate_column_check') }}",
+                                method: 'POST',
+                                data: duplicateObj,          
                                         
-                //                 success: function(response) {
-                //                     if (response.success == true) {
-                //                       //  duplicateValue = 0;console.log(duplicateValue,'duplicateValue success');
+                                success: function(response) {
+                                    if (response.success == true) {
+                                      //  duplicateValue = 0;console.log(duplicateValue,'duplicateValue success');
                                         
-                //                     } else {
-                //                         duplicateValue = 1;
-                //                         js_notification('error', 'Duplicate Entryy');
-                //                         console.log(duplicateValue,'duplicateValue error in ');
-                //                     }
+                                    } else {
+                                        duplicateValue = 1;
+                                        js_notification('error', 'Duplicate Entryy');
+                                        console.log(duplicateValue,'duplicateValue error in ');
+                                    }
                                       
                                    
-                //                 },
-                //                 complete: function () {
-                //                     duplicateValue1 = duplicateValue;
-                //                     // This executes after the AJAX call finishes
-                //                     console.log(duplicateValue1, 'duplicateValue1 error out1'); // Log after AJAX completion
-                //                     console.log(duplicateValue1, 'duplicateValue1 error out'); // Log again if needed
-                //                 },
-                //             });
-                //             console.log(duplicateValue1,'duplicateValue error out1');
-                // } console.log(duplicateValue1,'duplicateValue error out');               
+                                },
+                                complete: function () {
+                                    duplicateValue1 = duplicateValue;
+                                   
+                                },
+                            });
+                           
+                }          
                 
                 var fieldNames = $('#formConfiguration').serializeArray().map(function(input) {
                     return input.name;
@@ -1808,7 +1806,7 @@ nav{
         
             });
             $("#ckbCheckAll").click(function() {
-                var isChecked = $(this).prop('checked');console.log(isChecked,'isChecked');
+                var isChecked = $(this).prop('checked');
                 
                 $(".checkBoxClass").prop('checked', isChecked);
 
@@ -1868,7 +1866,6 @@ nav{
                     $('#select_p1').css('display','none');
                     $('#clear_p1').css('display','none');
                 }
-                //console.log(allCheckboxesChecked, 'allCheckboxesChecked', anyCheckboxChecked);
                 $('#assigneeDropdown').prop('disabled', !(anyCheckboxChecked || allCheckboxesChecked));
                 $('#workable_dropdown').prop('disabled', !(anyCheckboxChecked || allCheckboxesChecked));
                 if ($(this).prop('checked') == true) {
@@ -2516,7 +2513,7 @@ nav{
             $(document).on('click', '.manual-clickable-row', function(e) {
                 $existingCallerChartsWorkLogsInprocessCount = @json($existingCallerChartsWorkLogs);
                 
-                if($existingCallerChartsWorkLogsInprocessCount.length > 0 && $existingCallerChartsWorkLogsInprocessCount[0] !== null) {console.log($existingCallerChartsWorkLogsInprocessCount[0],'existingCallerChartsWorkLogsInprocessCount');
+                if($existingCallerChartsWorkLogsInprocessCount.length > 0 && $existingCallerChartsWorkLogsInprocessCount[0] !== null) {
                     return  js_notification('error', 'Alreday one record is inprocess please change that record status');
                 }
                 $.ajaxSetup({
