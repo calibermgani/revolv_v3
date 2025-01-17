@@ -1551,40 +1551,40 @@ nav{
                 });
               
                  var duplicateValue = 0; 
-                if(Object.keys(duplicateColumnData).length > 0) {
-                    e.preventDefault();
-                    const duplicateObj = { ...duplicateColumnData };
-                           $.ajaxSetup({
-                                headers: {
-                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
-                                        'content')
-                                }
-                            });
+                // if(Object.keys(duplicateColumnData).length > 0) {
+                //     e.preventDefault();
+                //     const duplicateObj = { ...duplicateColumnData };
+                //            $.ajaxSetup({
+                //                 headers: {
+                //                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                //                         'content')
+                //                 }
+                //             });
 
-                            $.ajax({
-                                url: "{{ url('manual_duplicate_column_check') }}",
-                                method: 'POST',
-                                data: duplicateObj,          
+                //             $.ajax({
+                //                 url: "{{ url('manual_duplicate_column_check') }}",
+                //                 method: 'POST',
+                //                 data: duplicateObj,          
                                         
-                                success: function(response) {
-                                    if (response.success == true) {
-                                      //  duplicateValue = 0;console.log(duplicateValue,'duplicateValue success');
+                //                 success: function(response) {
+                //                     if (response.success == true) {
+                //                       //  duplicateValue = 0;console.log(duplicateValue,'duplicateValue success');
                                         
-                                    } else {
-                                        duplicateValue = 1;
-                                        js_notification('error', 'Duplicate Entryy');
-                                        console.log(duplicateValue,'duplicateValue error in ');
-                                    }
+                //                     } else {
+                //                         duplicateValue = 1;
+                //                         js_notification('error', 'Duplicate Entryy');
+                //                         console.log(duplicateValue,'duplicateValue error in ');
+                //                     }
                                       
                                    
-                                },
-                                complete: function () {
-                                    duplicateValue1 = duplicateValue;
+                //                 },
+                //                 complete: function () {
+                //                     duplicateValue1 = duplicateValue;
                                    
-                                },
-                            });
+                //                 },
+                //             });
                            
-                }          
+                // }          
                 
                 var fieldNames = $('#formConfiguration').serializeArray().map(function(input) {
                     return input.name;
