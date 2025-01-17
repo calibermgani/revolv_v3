@@ -4672,6 +4672,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
                     'chart_status' => "CE_Assigned",
+                    'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL, 
                     ]);
                         return response()->json(['message' => 'Record Inserted Successfully']);
             } else {
@@ -4692,7 +4693,8 @@ public function NexTrustBillingArDuplicates(Request $request)
                         'invoke_date' => date('Y-m-d'),
                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
-                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s'),
+                        'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL, 
                     ]);
                 }
                 return response()->json(['message' => 'Existing Record Updated Successfully']);
@@ -4720,6 +4722,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
                 'chart_status' => "CE_Assigned",
+                'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL, 
             ]);
             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
         } catch (\Exception $e) {
