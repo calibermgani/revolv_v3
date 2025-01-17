@@ -466,7 +466,7 @@ class ProjectController extends Controller
             $ccMailId = explode(",", $ccMail->cc_emails);
             // $toMailId = ["mgani@caliberfocus.com"];
             if (isset($toMailId) && !empty($toMailId)) {
-                Mail::to($toMailId)->cc($ccMailId)->send(new ProcodeProjectFile($mailHeader, $fileStatus));
+                // Mail::to($toMailId)->cc($ccMailId)->send(new ProcodeProjectFile($mailHeader, $fileStatus));//stopped file not there mail for exceeding mails check
             }
             Log::info('ProjectFileNotThere executed successfully.');
             return response()->json([
@@ -559,7 +559,7 @@ class ProjectController extends Controller
                 $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'project error mail cc mail id')->first();
                 $ccMailId = explode(",", $ccMail->cc_emails);
                 if (isset($toMailId) && !empty($toMailId)) {
-                    Mail::to($toMailId)->cc($ccMailId)->send(new ProcodeProjectError($mailHeader, $fileStatus, $error_description));
+                    //Mail::to($toMailId)->cc($ccMailId)->send(new ProcodeProjectError($mailHeader, $fileStatus, $error_description));//stopped error description mail for exceeding mails check
                 }
             
             Log::info('Project Error Mail Send Successfully.');
