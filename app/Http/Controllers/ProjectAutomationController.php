@@ -109,6 +109,8 @@ use App\Models\SmhcAr;
 use App\Models\SmhcArDuplicates;
 use App\Models\TqhsAr;
 use App\Models\TqhsArDuplicates;
+use App\Models\BecAr;
+use App\Models\BecArDuplicates;
 
 
 class ProjectAutomationController extends Controller
@@ -5072,6 +5074,112 @@ public function NexTrustBillingArDuplicates(Request $request)
             $e->getMessage();
         }
     }
+
+    public function boozmanHoffEyeCenterAr(Request $request)
+    {
+        try {
+            $attributes = [
+                'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,  
+                'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,  
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL, 
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'total' => isset($request->total) && $request->total != "NULL" ? $request->total : NULL
+             ];          
+
+            $duplicateRecordExisting  =  BecAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                BecAr::insert([
+                    'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,  
+                    'transfertype' => isset($request->transfertype) && $request->transfertype != "NULL" ? $request->transfertype : NULL,  
+                    'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,  
+                    'ins_reporting_category' => isset($request->ins_reporting_category) && $request->ins_reporting_category != "NULL" ? $request->ins_reporting_category : NULL, 
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL, 
+                    'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL, 
+                    'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL, 
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                    'post_date' => isset($request->post_date) && $request->post_date != "NULL" ? $request->post_date : NULL, 
+                    'ins_id' => isset($request->ins_id) && $request->ins_id != "NULL" ? $request->ins_id : NULL, 
+                    'appointment_id' => isset($request->appointment_id) && $request->appointment_id != "NULL" ? $request->appointment_id : NULL, 
+                    'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL, 
+                    'less_than_31' => isset($request->less_than_31) && $request->less_than_31 != "NULL" ? $request->less_than_31 : NULL, 
+                    'from_31_to_60' => isset($request->from_31_to_60) && $request->from_31_to_60 != "NULL" ? $request->from_31_to_60 : NULL, 
+                    'from_61_to_90' => isset($request->from_61_to_90) && $request->from_61_to_90 != "NULL" ? $request->from_61_to_90 : NULL, 
+                    'from_91_to_120' => isset($request->from_91_to_120) && $request->from_91_to_120 != "NULL" ? $request->from_91_to_120 : NULL, 
+                    'greater_than_120' => isset($request->greater_than_120) && $request->greater_than_120 != "NULL" ? $request->greater_than_120 : NULL, 
+                    'total' => isset($request->total) && $request->total != "NULL" ? $request->total : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  BecAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                if ($duplicateRecord) {
+                    $duplicateRecord->update([
+                   'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,  
+                    'transfertype' => isset($request->transfertype) && $request->transfertype != "NULL" ? $request->transfertype : NULL,  
+                    'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,  
+                    'ins_reporting_category' => isset($request->ins_reporting_category) && $request->ins_reporting_category != "NULL" ? $request->ins_reporting_category : NULL, 
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL, 
+                    'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL, 
+                    'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL, 
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                    'post_date' => isset($request->post_date) && $request->post_date != "NULL" ? $request->post_date : NULL, 
+                    'ins_id' => isset($request->ins_id) && $request->ins_id != "NULL" ? $request->ins_id : NULL, 
+                    'appointment_id' => isset($request->appointment_id) && $request->appointment_id != "NULL" ? $request->appointment_id : NULL, 
+                    'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL, 
+                    'less_than_31' => isset($request->less_than_31) && $request->less_than_31 != "NULL" ? $request->less_than_31 : NULL, 
+                    'from_31_to_60' => isset($request->from_31_to_60) && $request->from_31_to_60 != "NULL" ? $request->from_31_to_60 : NULL, 
+                    'from_61_to_90' => isset($request->from_61_to_90) && $request->from_61_to_90 != "NULL" ? $request->from_61_to_90 : NULL, 
+                    'from_91_to_120' => isset($request->from_91_to_120) && $request->from_91_to_120 != "NULL" ? $request->from_91_to_120 : NULL, 
+                    'greater_than_120' => isset($request->greater_than_120) && $request->greater_than_120 != "NULL" ? $request->greater_than_120 : NULL, 
+                    'total' => isset($request->total) && $request->total != "NULL" ? $request->total : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function boozmanHoffEyeCenterArDuplicates(Request $request)
+    {
+        try {
+            BecArDuplicates::insert([
+                    'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,  
+                    'transfertype' => isset($request->transfertype) && $request->transfertype != "NULL" ? $request->transfertype : NULL,  
+                    'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,  
+                    'ins_reporting_category' => isset($request->ins_reporting_category) && $request->ins_reporting_category != "NULL" ? $request->ins_reporting_category : NULL, 
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL, 
+                    'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL, 
+                    'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL, 
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                    'post_date' => isset($request->post_date) && $request->post_date != "NULL" ? $request->post_date : NULL, 
+                    'ins_id' => isset($request->ins_id) && $request->ins_id != "NULL" ? $request->ins_id : NULL, 
+                    'appointment_id' => isset($request->appointment_id) && $request->appointment_id != "NULL" ? $request->appointment_id : NULL, 
+                    'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL, 
+                    'less_than_31' => isset($request->less_than_31) && $request->less_than_31 != "NULL" ? $request->less_than_31 : NULL, 
+                    'from_31_to_60' => isset($request->from_31_to_60) && $request->from_31_to_60 != "NULL" ? $request->from_31_to_60 : NULL, 
+                    'from_61_to_90' => isset($request->from_61_to_90) && $request->from_61_to_90 != "NULL" ? $request->from_61_to_90 : NULL, 
+                    'from_91_to_120' => isset($request->from_91_to_120) && $request->from_91_to_120 != "NULL" ? $request->from_91_to_120 : NULL, 
+                    'greater_than_120' => isset($request->greater_than_120) && $request->greater_than_120 != "NULL" ? $request->greater_than_120 : NULL, 
+                    'total' => isset($request->total) && $request->total != "NULL" ? $request->total : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
 
 
 
