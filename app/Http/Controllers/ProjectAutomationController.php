@@ -5079,7 +5079,7 @@ public function NexTrustBillingArDuplicates(Request $request)
     {
         try {
             $attributes = [
-                'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,  
+                'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,  
                 'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,  
                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL, 
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
@@ -5091,7 +5091,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                 BecAr::insert([
                     'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,  
                     'transfertype' => isset($request->transfertype) && $request->transfertype != "NULL" ? $request->transfertype : NULL,  
-                    'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,  
+                    'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,  
                     'ins_reporting_category' => isset($request->ins_reporting_category) && $request->ins_reporting_category != "NULL" ? $request->ins_reporting_category : NULL, 
                     'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL, 
                     'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL, 
@@ -5119,7 +5119,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                     $duplicateRecord->update([
                    'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,  
                     'transfertype' => isset($request->transfertype) && $request->transfertype != "NULL" ? $request->transfertype : NULL,  
-                    'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,  
+                    'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,  
                     'ins_reporting_category' => isset($request->ins_reporting_category) && $request->ins_reporting_category != "NULL" ? $request->ins_reporting_category : NULL, 
                     'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL, 
                     'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL, 
@@ -5153,7 +5153,7 @@ public function NexTrustBillingArDuplicates(Request $request)
             BecArDuplicates::insert([
                     'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,  
                     'transfertype' => isset($request->transfertype) && $request->transfertype != "NULL" ? $request->transfertype : NULL,  
-                    'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,  
+                    'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,  
                     'ins_reporting_category' => isset($request->ins_reporting_category) && $request->ins_reporting_category != "NULL" ? $request->ins_reporting_category : NULL, 
                     'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL, 
                     'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL, 
