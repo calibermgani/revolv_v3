@@ -754,14 +754,12 @@ class Helpers
 		$subProjectId = (int) $subProjectId; 
 		DB::enableQueryLog();
 
-$data = DB::table('a_r_status_codes')
-    ->select('status_code', 'id')
-   
-    ->whereRaw('FIND_IN_SET(?, sub_project_id)', [21])
-    ->whereNull('deleted_at')
-    ->get();
+ $data = DB::table('a_r_status_codes')
+->where('status', 'Active')
+->whereRaw('FIND_IN_SET(?, sub_project_id)', 21)
+->whereNull('deleted_at')
+->get();
 
-\Log::info(DB::getQueryLog());
 
 dd($data);
 		
