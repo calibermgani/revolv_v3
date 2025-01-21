@@ -758,7 +758,7 @@ class Helpers
 ->where('status', 'Active')
 ->whereRaw('FIND_IN_SET(?, sub_project_id)', 11)
 ->whereNull('deleted_at')
-->get()->toArray();
+->pluck('status_code', 'id')->prepend(trans('Select Status'), '')->toArray();
 
 
 dd($data);
