@@ -753,7 +753,7 @@ class Helpers
 	{
 		$subProjectId = (int) $subProjectId; 
 		$data = DB::select("SELECT status_code, id FROM a_r_status_codes
-		WHERE status = Active
+		WHERE status = 'Active'
 		  AND FIND_IN_SET(21, sub_project_id)
 		  AND deleted_at IS NULL");dd($data);
 		
