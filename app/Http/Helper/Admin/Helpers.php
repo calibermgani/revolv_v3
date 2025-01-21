@@ -756,7 +756,7 @@ class Helpers
 
 $data = DB::table('a_r_status_codes')
     ->select('status_code', 'id')
-    ->where('status', 'Active')
+   
     ->whereRaw('FIND_IN_SET(?, sub_project_id)', [21])
     ->whereNull('deleted_at')
     ->get();
