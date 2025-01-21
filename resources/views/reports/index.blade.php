@@ -268,6 +268,10 @@
                                         var displayName = "AR Rework Reason";
                                     } else if(columnName === "coder_error_count") {
                                         var displayName = "AR Error Count";
+                                    } else if(columnName === "ar_status_code") {
+                                        var displayName = "Status Code";
+                                    } else if(columnName === "ar_action_code") {
+                                        var displayName = "Action Code";
                                     }
                                      else {console.log(columnName,'if else');
                                         var displayName = columnName.split('_').map(function(word) {

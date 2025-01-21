@@ -747,4 +747,11 @@ class Helpers
 		$data = ProjectReasonType::whereIn('reason_access',[2,3])->pluck('reason_type', 'id')->prepend(trans('Select Project Reason'), '')->toArray();
 		return $data;
 	}
+
+	public static function arStatusListBySubPrjId($subProjectId)
+	{
+		$subProjectId = (int) $subProjectId; 
+		$data = ARStatusCodes::where('status', 'Active')->whereJsonContains('sub_project_id', $subProjectId)->pluck('status_code', 'id')->prepend(trans('Select Status'), '')->toArray();
+		return $data;
+	}
 }

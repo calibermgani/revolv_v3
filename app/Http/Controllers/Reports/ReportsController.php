@@ -16,6 +16,7 @@ use App\Models\InventoryErrorLogs;
 use Carbon\Carbon;
 use App\Jobs\GetUserNameByEmpId;
 use Illuminate\Support\Facades\Cache;
+use App\Models\projectInputSetting;
 class ReportsController extends Controller
 {
     public function reporstIndex(){
@@ -57,6 +58,37 @@ class ReportsController extends Controller
                         });
                     }
                 }
+                if($request->sub_project_id != null && $request->sub_project_id != "") {
+                    $statusActionShow = projectInputSetting::where('sub_project_id',$request->sub_project_id)->first();                                                                                                                              
+                } else {
+                    $statusActionShow = null;
+                } 
+                if($statusActionShow != null) {
+                    if($statusActionShow->sub_project_id == $request->sub_project_id && $statusActionShow->status_input != 1) {
+                        $key = array_search('ar_status_code', $columnsHeader);
+                                if ($key !== false) {
+                                    unset($columnsHeader[$key]); 
+                                }           
+                    }
+                    if($statusActionShow->sub_project_id == $request->sub_project_id && $statusActionShow->action_input != 1) {
+                        $key = array_search('ar_action_code', $columnsHeader);
+                                if ($key !== false) {
+                                    unset($columnsHeader[$key]); 
+                                }           
+                    }
+
+                }
+                // $hideVal=projectInputSetting::select('sub_project_id')->get();
+                //     foreach($hideVal as $innerVal) {
+                //         $hideValArray[] = $innerVal->sub_project_id;
+                //     }
+                //     if(in_array($request->sub_project_id,$hideValArray)) {                      
+                //         $key = array_search('ar_action_code', $columnsHeader);
+                //         if ($key !== false) {
+                //             unset($columnsHeader[$key]); 
+                //         }                       
+                //     } 
+                  
                 return response()->json([
                     'success' => true,
                     'columnsHeader' => $columnsHeader,
@@ -166,6 +198,10 @@ class ReportsController extends Controller
                         $body_info .= '<th>AR Rework Reason</th>';
                     } else if($header == "coder_error_count") {
                         $body_info .= '<th>AR Error Count</th>';
+                    } else if($header == "ar_status_code") {
+                        $body_info .= '<th>Status Code</th>';
+                    } else if($header == "ar_action_code") {
+                        $body_info .= '<th>Action Code</th>';
                     }
                      else {
                         $body_info .= '<th>' . ucwords(str_replace(['_else_', '_'], ['/', ' '], $header)) . '</th>';
