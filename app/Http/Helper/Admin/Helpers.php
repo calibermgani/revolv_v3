@@ -752,16 +752,11 @@ class Helpers
 	public static function arStatusListBySubPrjId($subProjectId)
 	{
 		$subProjectId = (int) $subProjectId; 
-		DB::enableQueryLog();
-
- $data = DB::table('a_r_status_codes')
-->where('status', 'Active')
-->whereRaw('FIND_IN_SET(?, sub_project_id)', 11)
-->whereNull('deleted_at')
-->pluck('status_code', 'id')->prepend(trans('Select Status'), '')->toArray();
-
-
-dd($data);
+		$data = DB::table('a_r_status_codes')
+		->where('status', 'Active')
+		->whereRaw('FIND_IN_SET(?, sub_project_id)', $subProjectId)
+		->whereNull('deleted_at')
+		->pluck('status_code', 'id')->prepend(trans('Select Status'), '')->toArray();
 		
 		//$data = ARStatusCodes::where('status', 'Active')->whereJsonContains('sub_project_id', $subProjectId)->pluck('status_code', 'id')->prepend(trans('Select Status'), '')->toArray();
 		return $data;
