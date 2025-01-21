@@ -111,6 +111,8 @@ use App\Models\TqhsAr;
 use App\Models\TqhsArDuplicates;
 use App\Models\BecAr;
 use App\Models\BecArDuplicates;
+use App\Models\RocAr;
+use App\Models\RocArDuplicates;
 
 
 class ProjectAutomationController extends Controller
@@ -5182,7 +5184,166 @@ public function NexTrustBillingArDuplicates(Request $request)
 
 
 
+    public function renoOrthopedicCenterAr(Request $request)
+    {
+        try {
+            $attributes = [
+                'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,  
+                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                 'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt : NULL
+             ];          
 
+            $duplicateRecordExisting  =  RocAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                RocAr::insert([
+                    'record_scoring' => isset($request->record_scoring) && $request->record_scoring != "NULL" ? $request->record_scoring : NULL,  
+                    'last_activity_type' => isset($request->last_activity_type) && $request->last_activity_type != "NULL" ? $request->last_activity_type : NULL,  
+                    'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,  
+                    'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL, 
+                    'claim_form_name' => isset($request->claim_form_name) && $request->claim_form_name != "NULL" ? $request->claim_form_name : NULL, 
+                    'created' => isset($request->created) && $request->created != "NULL" ? $request->created : NULL, 
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                    'sts' => isset($request->sts) && $request->sts != "NULL" ? $request->sts : NULL, 
+                    'account_id' => isset($request->account_id) && $request->account_id != "NULL" ? $request->account_id : NULL, 
+                    'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL, 
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL, 
+                    'payor' => isset($request->payor) && $request->payor != "NULL" ? $request->payor : NULL, 
+                    'payor_name' => isset($request->payor_name) && $request->payor_name != "NULL" ? $request->payor_name : NULL, 
+                    'denial_code' => isset($request->denial_code) && $request->denial_code != "NULL" ? $request->denial_code : NULL, 
+                    'reason_code_list' => isset($request->reason_code_list) && $request->reason_code_list != "NULL" ? $request->reason_code_list : NULL, 
+                    'subscriber_id' => isset($request->subscriber_id) && $request->subscriber_id != "NULL" ? $request->subscriber_id : NULL, 
+                    'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
+                    'tx_list' => isset($request->tx_list) && $request->tx_list != "NULL" ? $request->tx_list : NULL,
+                    'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt : NULL,
+                    'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL,
+                    'billing_prov_npi' => isset($request->billing_prov_npi) && $request->billing_prov_npi != "NULL" ? $request->billing_prov_npi : NULL,
+                    'svc_prov_npi' => isset($request->svc_prov_npi) && $request->svc_prov_npi != "NULL" ? $request->svc_prov_npi : NULL,
+                    'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                    'timely_filing_deadline_date' => isset($request->timely_filing_deadline_date) && $request->timely_filing_deadline_date != "NULL" ? $request->timely_filing_deadline_date : NULL,
+                    'wq_entry_date' => isset($request->wq_entry_date) && $request->wq_entry_date != "NULL" ? $request->wq_entry_date : NULL,
+                    'department_name' => isset($request->department_name) && $request->department_name != "NULL" ? $request->department_name : NULL,
+                    'rev_location_name' => isset($request->rev_location_name) && $request->rev_location_name != "NULL" ? $request->rev_location_name : NULL,
+                    'pos_name' => isset($request->pos_name) && $request->pos_name != "NULL" ? $request->pos_name : NULL,
+                    'is_nrp_suspended' => isset($request->is_nrp_suspended) && $request->is_nrp_suspended != "NULL" ? $request->is_nrp_suspended : NULL,
+                    'nrp_suspended_date' => isset($request->nrp_suspended_date) && $request->nrp_suspended_date != "NULL" ? $request->nrp_suspended_date : NULL,
+                    'days_in_wq' => isset($request->days_in_wq) && $request->days_in_wq != "NULL" ? $request->days_in_wq : NULL,
+                    'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
+                    'current_payer_icn' => isset($request->current_payer_icn) && $request->current_payer_icn != "NULL" ? $request->current_payer_icn : NULL,
+                    'suggested_initial_follow_up_date' => isset($request->suggested_initial_follow_up_date) && $request->suggested_initial_follow_up_date != "NULL" ? $request->suggested_initial_follow_up_date : NULL,
+                    'title' => isset($request->title) && $request->title != "NULL" ? $request->title : NULL,
+                    'has_corr_mail' => isset($request->has_corr_mail) && $request->has_corr_mail != "NULL" ? $request->has_corr_mail : NULL,
+                    'adj_denied' => isset($request->adj_denied) && $request->adj_denied != "NULL" ? $request->adj_denied : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  RocAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                if ($duplicateRecord) {
+                    $duplicateRecord->update([
+                        'record_scoring' => isset($request->record_scoring) && $request->record_scoring != "NULL" ? $request->record_scoring : NULL,  
+                        'last_activity_type' => isset($request->last_activity_type) && $request->last_activity_type != "NULL" ? $request->last_activity_type : NULL,  
+                        'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,  
+                        'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL, 
+                        'claim_form_name' => isset($request->claim_form_name) && $request->claim_form_name != "NULL" ? $request->claim_form_name : NULL, 
+                        'created' => isset($request->created) && $request->created != "NULL" ? $request->created : NULL, 
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                        'sts' => isset($request->sts) && $request->sts != "NULL" ? $request->sts : NULL, 
+                        'account_id' => isset($request->account_id) && $request->account_id != "NULL" ? $request->account_id : NULL, 
+                        'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL, 
+                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL, 
+                        'payor' => isset($request->payor) && $request->payor != "NULL" ? $request->payor : NULL, 
+                        'payor_name' => isset($request->payor_name) && $request->payor_name != "NULL" ? $request->payor_name : NULL, 
+                        'denial_code' => isset($request->denial_code) && $request->denial_code != "NULL" ? $request->denial_code : NULL, 
+                        'reason_code_list' => isset($request->reason_code_list) && $request->reason_code_list != "NULL" ? $request->reason_code_list : NULL, 
+                        'subscriber_id' => isset($request->subscriber_id) && $request->subscriber_id != "NULL" ? $request->subscriber_id : NULL, 
+                        'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
+                        'tx_list' => isset($request->tx_list) && $request->tx_list != "NULL" ? $request->tx_list : NULL,
+                        'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt : NULL,
+                        'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL,
+                        'billing_prov_npi' => isset($request->billing_prov_npi) && $request->billing_prov_npi != "NULL" ? $request->billing_prov_npi : NULL,
+                        'svc_prov_npi' => isset($request->svc_prov_npi) && $request->svc_prov_npi != "NULL" ? $request->svc_prov_npi : NULL,
+                        'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                        'timely_filing_deadline_date' => isset($request->timely_filing_deadline_date) && $request->timely_filing_deadline_date != "NULL" ? $request->timely_filing_deadline_date : NULL,
+                        'wq_entry_date' => isset($request->wq_entry_date) && $request->wq_entry_date != "NULL" ? $request->wq_entry_date : NULL,
+                        'department_name' => isset($request->department_name) && $request->department_name != "NULL" ? $request->department_name : NULL,
+                        'rev_location_name' => isset($request->rev_location_name) && $request->rev_location_name != "NULL" ? $request->rev_location_name : NULL,
+                        'pos_name' => isset($request->pos_name) && $request->pos_name != "NULL" ? $request->pos_name : NULL,
+                        'is_nrp_suspended' => isset($request->is_nrp_suspended) && $request->is_nrp_suspended != "NULL" ? $request->is_nrp_suspended : NULL,
+                        'nrp_suspended_date' => isset($request->nrp_suspended_date) && $request->nrp_suspended_date != "NULL" ? $request->nrp_suspended_date : NULL,
+                        'days_in_wq' => isset($request->days_in_wq) && $request->days_in_wq != "NULL" ? $request->days_in_wq : NULL,
+                        'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
+                        'current_payer_icn' => isset($request->current_payer_icn) && $request->current_payer_icn != "NULL" ? $request->current_payer_icn : NULL,
+                        'suggested_initial_follow_up_date' => isset($request->suggested_initial_follow_up_date) && $request->suggested_initial_follow_up_date != "NULL" ? $request->suggested_initial_follow_up_date : NULL,
+                        'title' => isset($request->title) && $request->title != "NULL" ? $request->title : NULL,
+                        'has_corr_mail' => isset($request->has_corr_mail) && $request->has_corr_mail != "NULL" ? $request->has_corr_mail : NULL,
+                        'adj_denied' => isset($request->adj_denied) && $request->adj_denied != "NULL" ? $request->adj_denied : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function renoOrthopedicCenterArDuplicates(Request $request)
+    {
+        try {
+            RocArDuplicates::insert([
+                    'record_scoring' => isset($request->record_scoring) && $request->record_scoring != "NULL" ? $request->record_scoring : NULL,  
+                    'last_activity_type' => isset($request->last_activity_type) && $request->last_activity_type != "NULL" ? $request->last_activity_type : NULL,  
+                    'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,  
+                    'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL, 
+                    'claim_form_name' => isset($request->claim_form_name) && $request->claim_form_name != "NULL" ? $request->claim_form_name : NULL, 
+                    'created' => isset($request->created) && $request->created != "NULL" ? $request->created : NULL, 
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                    'sts' => isset($request->sts) && $request->sts != "NULL" ? $request->sts : NULL, 
+                    'account_id' => isset($request->account_id) && $request->account_id != "NULL" ? $request->account_id : NULL, 
+                    'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL, 
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL, 
+                    'payor' => isset($request->payor) && $request->payor != "NULL" ? $request->payor : NULL, 
+                    'payor_name' => isset($request->payor_name) && $request->payor_name != "NULL" ? $request->payor_name : NULL, 
+                    'denial_code' => isset($request->denial_code) && $request->denial_code != "NULL" ? $request->denial_code : NULL, 
+                    'reason_code_list' => isset($request->reason_code_list) && $request->reason_code_list != "NULL" ? $request->reason_code_list : NULL, 
+                    'subscriber_id' => isset($request->subscriber_id) && $request->subscriber_id != "NULL" ? $request->subscriber_id : NULL, 
+                    'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
+                    'tx_list' => isset($request->tx_list) && $request->tx_list != "NULL" ? $request->tx_list : NULL,
+                    'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt : NULL,
+                    'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL,
+                    'billing_prov_npi' => isset($request->billing_prov_npi) && $request->billing_prov_npi != "NULL" ? $request->billing_prov_npi : NULL,
+                    'svc_prov_npi' => isset($request->svc_prov_npi) && $request->svc_prov_npi != "NULL" ? $request->svc_prov_npi : NULL,
+                    'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                    'timely_filing_deadline_date' => isset($request->timely_filing_deadline_date) && $request->timely_filing_deadline_date != "NULL" ? $request->timely_filing_deadline_date : NULL,
+                    'wq_entry_date' => isset($request->wq_entry_date) && $request->wq_entry_date != "NULL" ? $request->wq_entry_date : NULL,
+                    'department_name' => isset($request->department_name) && $request->department_name != "NULL" ? $request->department_name : NULL,
+                    'rev_location_name' => isset($request->rev_location_name) && $request->rev_location_name != "NULL" ? $request->rev_location_name : NULL,
+                    'pos_name' => isset($request->pos_name) && $request->pos_name != "NULL" ? $request->pos_name : NULL,
+                    'is_nrp_suspended' => isset($request->is_nrp_suspended) && $request->is_nrp_suspended != "NULL" ? $request->is_nrp_suspended : NULL,
+                    'nrp_suspended_date' => isset($request->nrp_suspended_date) && $request->nrp_suspended_date != "NULL" ? $request->nrp_suspended_date : NULL,
+                    'days_in_wq' => isset($request->days_in_wq) && $request->days_in_wq != "NULL" ? $request->days_in_wq : NULL,
+                    'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
+                    'current_payer_icn' => isset($request->current_payer_icn) && $request->current_payer_icn != "NULL" ? $request->current_payer_icn : NULL,
+                    'suggested_initial_follow_up_date' => isset($request->suggested_initial_follow_up_date) && $request->suggested_initial_follow_up_date != "NULL" ? $request->suggested_initial_follow_up_date : NULL,
+                    'title' => isset($request->title) && $request->title != "NULL" ? $request->title : NULL,
+                    'has_corr_mail' => isset($request->has_corr_mail) && $request->has_corr_mail != "NULL" ? $request->has_corr_mail : NULL,
+                    'adj_denied' => isset($request->adj_denied) && $request->adj_denied != "NULL" ? $request->adj_denied : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
 
 
 } // Main Close

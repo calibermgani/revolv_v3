@@ -134,6 +134,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('the_queens_health_system_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@TheQueensHealthSystemArDuplicates');
     Route::any('boozman_hoff_eye_center_ar', 'App\Http\Controllers\ProjectAutomationController@boozmanHoffEyeCenterAr');
     Route::any('boozman_hoff_eye_center_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@boozmanHoffEyeCenterArDuplicates');
+    Route::any('reno_orthopedic_center_ar', 'App\Http\Controllers\ProjectAutomationController@renoOrthopedicCenterAr');
+    Route::any('reno_orthopedic_center_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@renoOrthopedicCenterArDuplicates');
     
 
 
