@@ -691,53 +691,66 @@ use Carbon\Carbon;
                                                             </div>
                                                         </div>
                                                     </div> --}}
+                                                    @php
+                                                    if($popUpHeader->sub_project_id != null && $popUpHeader->sub_project_id != "") {
+                                                        $statusActionShow = App\Models\projectInputSetting::where('sub_project_id',$popUpHeader->sub_project_id)->first();                                                                                                                              
+                                                    } else {
+                                                        $statusActionShow = null;
+                                                    }
+                                               @endphp
+                                                @if($statusActionShow != null)
                                                     <div class="row mt-4">
-                                                        <div class="col-md-6">
-                                                            <div class="form-group row">
-                                                                <label class="col-md-12">
-                                                                    Status Code
-                                                                </label>
-                                                                @php $arStatusList = App\Http\Helper\Admin\Helpers::arStatusList(); @endphp
-            
-                                                                <div class="col-md-10">
-                                                                    <input type="hidden" id="ar_status_val">
-                                                                       {!! Form::Select(
-                                                                        'ar_status_code',
-                                                                        $arStatusList,
-                                                                        null,
-                                                                        [
-                                                                            'class' => 'form-control white-smoke  kt_select2_qa_status pop-non-edt-val ',
-                                                                            'autocomplete' => 'none',
-                                                                            'id' => 'ar_status_code',
-                                                                            'style' => 'cursor:pointer'
-                                                                        ],
-                                                                    ) !!}
+                                                        @if($statusActionShow->status_input == 1)
+                                                            <div class="col-md-6">
+                                                                <div class="form-group row">
+                                                                    <label class="col-md-12">
+                                                                        Status Code
+                                                                    </label>
+                                                                    @php $arStatusList = $popUpHeader->sub_project_id != null && $popUpHeader->sub_project_id != "" ? App\Http\Helper\Admin\Helpers::arStatusListBySubPrjId( $popUpHeader->sub_project_id) : []; @endphp
+                
+                                                                    <div class="col-md-10">
+                                                                        <input type="hidden" id="ar_status_val">
+                                                                        {!! Form::Select(
+                                                                            'ar_status_code',
+                                                                            $arStatusList,
+                                                                            null,
+                                                                            [
+                                                                                'class' => 'form-control white-smoke  kt_select2_qa_status pop-non-edt-val ',
+                                                                                'autocomplete' => 'none',
+                                                                                'id' => 'ar_status_code',
+                                                                                'style' => 'cursor:pointer'
+                                                                            ],
+                                                                        ) !!}
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group row">
-                                                                <label class="col-md-12">
-                                                                    Action Code
-                                                                </label>
-                                                                @php $arActionList = []; @endphp
-                                                                <div class="col-md-10">
-                                                                    {!! Form::Select(
-                                                                        'ar_action_code',
-                                                                        $arActionList,
-                                                                        null,
-                                                                        [
-                                                                            'class' => 'form-control white-smoke  kt_select2_ar_action_code pop-non-edt-val ',
-                                                                            'autocomplete' => 'none',
-                                                                            'id' => 'ar_action_code',
-                                                                            'style' => 'cursor:pointer'
-                                                                        ],
-                                                                    ) !!}
-            
+                                                        @endif
+                                                        @if($statusActionShow->action_input == 1)
+                                                            <div class="col-md-6">
+                                                                <div class="form-group row">
+                                                                    <label class="col-md-12">
+                                                                        Action Code
+                                                                    </label>
+                                                                    @php $arActionList = []; @endphp
+                                                                    <div class="col-md-10">
+                                                                        {!! Form::Select(
+                                                                            'ar_action_code',
+                                                                            $arActionList,
+                                                                            null,
+                                                                            [
+                                                                                'class' => 'form-control white-smoke  kt_select2_ar_action_code pop-non-edt-val ',
+                                                                                'autocomplete' => 'none',
+                                                                                'id' => 'ar_action_code',
+                                                                                'style' => 'cursor:pointer'
+                                                                            ],
+                                                                        ) !!}
+                
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        @endif
                                                     </div>
+                                                @endif
                                                     <div class="row mt-4">
                                                         <div class="col-md-6">
                                                             <input type="hidden" name="invoke_date">
