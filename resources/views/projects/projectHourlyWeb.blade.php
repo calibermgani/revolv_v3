@@ -76,11 +76,11 @@
                                     <th>
                                         {{ $timeSlot }}</th>
                                 @endforeach
-                                <th>Manager Name</th>
+                                {{-- <th>Manager Name</th>
                                 <th>Billable FTE</th>
                                 <th>Target</th>
                                 <th>Total Target</th>
-                                <th>Per Hour Target</th>
+                                <th>Per Hour Target</th> --}}
                                 <th>AR Reason</th>
                                 <th>QA Reason</th>
                               
@@ -116,12 +116,12 @@
                                         $qaReasons[] = '--'; 
                                         $qaReasonString = '--';
                                     }
-                                    App\Jobs\getProjectSubProjectManager::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
+                                  //  App\Jobs\getProjectSubProjectManager::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
                                     // App\Jobs\getProjectSubProjectBillableFTE::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
-                                    $prjMgrCacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'Manager' ;
-                                    $prjBillableFTECacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'BillableFTE' ;
-                                    $prjMgrName = Cache::get($prjMgrCacheKey, 0);
-                                    $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 1);
+                                    // $prjMgrCacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'Manager' ;
+                                    // $prjBillableFTECacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'BillableFTE' ;
+                                    // $prjMgrName = Cache::get($prjMgrCacheKey, 0);
+                                    // $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 1);
                                 @endphp
                                     <tr>
                                         <td>
@@ -133,11 +133,11 @@
                                         @foreach ($data['hourlyCount'] as $count)
                                             <td>{{ $count }}</td>
                                         @endforeach
-                                        <td>{{$prjMgrName}}</td>
+                                        {{-- <td>{{$prjMgrName}}</td>
                                         <td>{{$prjBillableFTE}}</td>
                                         <td>{{$data['prjSLATarget']}}</td>
                                         <td>{{(int)$prjBillableFTE * $data['prjSLATarget']}}</td>
-                                        <td>{{(int)$prjBillableFTE* $data['prjSLATarget']/8}}</td>
+                                        <td>{{(int)$prjBillableFTE* $data['prjSLATarget']/8}}</td> --}}
                                         <td>{{trim($arReasonString,",")}}</td>
                                         <td>{{trim($qaReasonString,",")}}</td>
                                        
