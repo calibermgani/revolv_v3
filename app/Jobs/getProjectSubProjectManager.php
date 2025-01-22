@@ -33,7 +33,7 @@ class getProjectSubProjectManager implements ShouldQueue
             'project_id' => $this->projectId,
             'sub_project_id' => $this->subProjectId,
         ]); 
-        $billbleFTEData = app()->call('App\Http\Controllers\ProjectController@getProjectSubPrjManager', [
+        $billbleFTEData = app()->call('App\Http\Controllers\ProjectController@getProjectSubPrjBillableFTE', [
             'project_id' => $this->projectId,
             'sub_project_id' => $this->subProjectId,
         ]); 
