@@ -116,6 +116,12 @@
                                         $qaReasons[] = '--'; 
                                         $qaReasonString = '--';
                                     }
+                                    getProjectSubProjectManager::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
+                                    getProjectSubProjectBillableFTE::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
+                                    $prjMgrCacheKey = 'project_'.$project['id'].$subKey.'Manager' ;
+                                    $prjBillableFTECacheKey = 'project_'.$project['id'].$subKey.'BillableFTE' ;
+                                    $prjMgrName = Cache::get($prjMgrCacheKey, 0);
+                                    $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
                                 @endphp
                                     <tr>
                                         <td>
@@ -127,11 +133,11 @@
                                         @foreach ($data['hourlyCount'] as $count)
                                             <td>{{ $count }}</td>
                                         @endforeach
-                                        <td>{{$data['prjMgrName']}}</td>
-                                        <td>{{$data['prjBillableFTE']}}</td>
+                                        <td>{{$prjMgrName}}</td>
+                                        <td>{{$prjBillableFTE}}</td>
                                         <td>{{$data['prjSLATarget']}}</td>
-                                        <td>{{$data['prjBillableFTE'] * $data['prjSLATarget']}}</td>
-                                        <td>{{$data['prjBillableFTE'] * $data['prjSLATarget']/8}}</td>
+                                        <td>{{$prjBillableFTE * $data['prjSLATarget']}}</td>
+                                        <td>{{$prjBillableFTE* $data['prjSLATarget']/8}}</td>
                                         <td>{{trim($arReasonString,",")}}</td>
                                         <td>{{trim($qaReasonString,",")}}</td>
                                        

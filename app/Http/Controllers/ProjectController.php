@@ -1059,21 +1059,21 @@ class ProjectController extends Controller
 
                         $hourlyCounts[] = $hourlyCount; 
                     }
-                    getProjectSubProjectManager::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
-                    getProjectSubProjectBillableFTE::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
+                    // getProjectSubProjectManager::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
+                    // getProjectSubProjectBillableFTE::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
                     // $prjSLATarget = (int)$this->getProjectTotalSlaTarget($project['id'],$subKey)['projectSLATarget'];
                     $prjSLATarget = 1;
-                    $prjMgrCacheKey = 'project_'.$project['id'].$subKey.'Manager' ;
-                    $prjBillableFTECacheKey = 'project_'.$project['id'].$subKey.'BillableFTE' ;
-                    $prjMgrName = Cache::get($prjMgrCacheKey, 0);
-                    $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
+                    // $prjMgrCacheKey = 'project_'.$project['id'].$subKey.'Manager' ;
+                    // $prjBillableFTECacheKey = 'project_'.$project['id'].$subKey.'BillableFTE' ;
+                    // $prjMgrName = Cache::get($prjMgrCacheKey, 0);
+                    // $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
                     $mailBody[] = [
                         'project' => $project['client_name'] . '-' . $subProject,
                         'hourlyCount' => $hourlyCounts, // Full array of counts for all slots                        
                         'project_id' => $project['id'],
                         'subproject_id' => $subKey,
-                        'prjMgrName'=>$prjMgrName,
-                        'prjBillableFTE'=>$prjBillableFTE,
+                        // 'prjMgrName'=>$prjMgrName,
+                        // 'prjBillableFTE'=>$prjBillableFTE,
                         'prjSLATarget'=>$prjSLATarget
                     ];
                 }
