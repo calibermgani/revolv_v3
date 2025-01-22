@@ -39,8 +39,9 @@ class getProjectSubProjectManager implements ShouldQueue
         ]); 
         Log::info("Processed Project Id and sub Project Id", ['projectId' => $this->projectId,'subProjectId' => $this->subProjectId]);
         $mgrCacheKey = 'project_'.$this->projectId.$this->subProjectId.'Manager' ;
-        $billbleFTEData = 'project_'.$this->projectId.$this->subProjectId.'BillableFTE' ;
+    
         Cache::put($mgrCacheKey, $mgrData, now()->addMinutes(30));
-        Cache::put($billbleFTEData, $billbleFTEData, now()->addMinutes(30));
+        $billbleCacheKey = 'project_'.$this->projectId.$this->subProjectId.'BillableFTE' ;
+        Cache::put($billbleCacheKey, $billbleFTEData, now()->addMinutes(30));
     }
 }
