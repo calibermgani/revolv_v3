@@ -121,7 +121,7 @@
                                     $prjMgrCacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'Manager' ;
                                     $prjBillableFTECacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'BillableFTE' ;
                                     $prjMgrName = Cache::get($prjMgrCacheKey, 0);
-                                    $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
+                                    $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 1);
                                 @endphp
                                     <tr>
                                         <td>
