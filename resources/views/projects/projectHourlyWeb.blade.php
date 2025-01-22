@@ -116,8 +116,8 @@
                                         $qaReasons[] = '--'; 
                                         $qaReasonString = '--';
                                     }
-                                    getProjectSubProjectManager::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
-                                    getProjectSubProjectBillableFTE::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
+                                    App\Jobs\getProjectSubProjectManager::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
+                                    App\Jobs\getProjectSubProjectBillableFTE::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
                                     $prjMgrCacheKey = 'project_'.$project['id'].$subKey.'Manager' ;
                                     $prjBillableFTECacheKey = 'project_'.$project['id'].$subKey.'BillableFTE' ;
                                     $prjMgrName = Cache::get($prjMgrCacheKey, 0);
