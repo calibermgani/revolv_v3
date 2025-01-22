@@ -118,8 +118,8 @@
                                     }
                                     App\Jobs\getProjectSubProjectManager::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
                                     App\Jobs\getProjectSubProjectBillableFTE::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
-                                    $prjMgrCacheKey = 'project_'.$project['id'].$subKey.'Manager' ;
-                                    $prjBillableFTECacheKey = 'project_'.$project['id'].$subKey.'BillableFTE' ;
+                                    $prjMgrCacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'Manager' ;
+                                    $prjBillableFTECacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'BillableFTE' ;
                                     $prjMgrName = Cache::get($prjMgrCacheKey, 0);
                                     $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
                                 @endphp
