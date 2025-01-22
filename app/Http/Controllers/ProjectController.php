@@ -25,6 +25,8 @@ use App\Mail\ProjectHourlyMail;
 use Illuminate\Support\Facades\Cache;
 use App\Jobs\GetTotalARCountJob;
 use App\Jobs\GetTotalQACountJob;
+use App\Jobs\getProjectSubProjectManager;
+use App\Jobs\getProjectSubProjectBillableFTE;
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
@@ -1057,12 +1059,21 @@ class ProjectController extends Controller
 
                         $hourlyCounts[] = $hourlyCount; 
                     }
-
+                    getProjectSubProjectManager::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
+                    getProjectSubProjectBillableFTE::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
+                    $prjSLATarget = (int)$this->getProjectTotalSlaTarget($project['id'],$subKey)['projectSLATarget'];
+                    $prjMgrCacheKey = 'project_'.$project['id'].$subKey.'Manager' ;
+                    $prjBillableFTECacheKey = 'project_'.$project['id'].$subKey.'BillableFTE' ;
+                    $prjMgrName = Cache::get($prjMgrCacheKey, 0);
+                    $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
                     $mailBody[] = [
                         'project' => $project['client_name'] . '-' . $subProject,
                         'hourlyCount' => $hourlyCounts, // Full array of counts for all slots                        
                         'project_id' => $project['id'],
                         'subproject_id' => $subKey,
+                        'prjMgrName'=>$prjMgrName,
+                        'prjBillableFTE'=>$prjBillableFTE,
+                        'prjSLATarget'=>$prjSLATarget
                     ];
                 }
             }
@@ -1413,5 +1424,79 @@ class ProjectController extends Controller
                 Log::error('Error in getProjectTotalQACount: ' . $e->getMessage());
                 return null;
             }
+    }
+    public function getProjectSubPrjManager($project_id,$sub_project_id)
+    {
+        try {
+            $payload = [
+                'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                'client_id' => $project_id,
+                'sub_project_id' => $sub_project_id,
+            ];         
+            // Retry 3 times, with a 2-second delay between each attempt
+            $data = retry(3, function () use ($payload) {
+                $client = new Client(['verify' => false]);
+                $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_manager', [
+                    'json' => $payload,
+                ]);
+                
+                if ($response->getStatusCode() == 200) {
+                    $responseData = json_decode($response->getBody(), true);
+    
+                    if (isset($responseData)) {
+                        return $responseData['prjMgrName'];
+                    } else {
+                        throw new \Exception('prjMgrName not found in the API response');
+                    }
+                } elseif ($response->getStatusCode() == 429) {
+                    $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
+                    sleep($retryAfter);
+                    throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
+                } else {
+                    throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+                }
+            }, 4000);            
+            return $data;
+        } catch (\Exception $e) {
+            Log::error('Error in getPrjMgrName: ' . $e->getMessage());
+            return null;
+        }
+    }
+    public function getProjectSubPrjBillableFTE($project_id,$sub_project_id)
+    {
+        try {
+            $payload = [
+                'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                'client_id' => $project_id,
+                'sub_project_id' => $sub_project_id,
+            ];         
+            // Retry 3 times, with a 2-second delay between each attempt
+            $data = retry(3, function () use ($payload) {
+                $client = new Client(['verify' => false]);
+                $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_billable_fte', [
+                    'json' => $payload,
+                ]);
+                
+                if ($response->getStatusCode() == 200) {
+                    $responseData = json_decode($response->getBody(), true);
+    
+                    if (isset($responseData)) {
+                        return $responseData['prjBillableCount'];
+                    } else {
+                        throw new \Exception('prjBillableCount not found in the API response');
+                    }
+                } elseif ($response->getStatusCode() == 429) {
+                    $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
+                    sleep($retryAfter);
+                    throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
+                } else {
+                    throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+                }
+            }, 4000);            
+            return $data;
+        } catch (\Exception $e) {
+            Log::error('Error in getprjBillableCount: ' . $e->getMessage());
+            return null;
+        }
     }
 }
