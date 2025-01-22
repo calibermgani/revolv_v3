@@ -29,12 +29,18 @@ class getProjectSubProjectManager implements ShouldQueue
      */
     public function handle()
     {
-        $data = app()->call('App\Http\Controllers\ProjectController@getProjectSubPrjManager', [
+        $mgrData = app()->call('App\Http\Controllers\ProjectController@getProjectSubPrjManager', [
+            'project_id' => $this->projectId,
+            'sub_project_id' => $this->subProjectId,
+        ]); 
+        $billbleFTEData = app()->call('App\Http\Controllers\ProjectController@getProjectSubPrjManager', [
             'project_id' => $this->projectId,
             'sub_project_id' => $this->subProjectId,
         ]); 
         Log::info("Processed Project Id and sub Project Id", ['projectId' => $this->projectId,'subProjectId' => $this->subProjectId]);
-        $cacheKey = 'project_'.$this->projectId.$this->subProjectId.'Manager' ;
-        Cache::put($cacheKey, $data, now()->addMinutes(30));
+        $mgrCacheKey = 'project_'.$this->projectId.$this->subProjectId.'Manager' ;
+        $billbleFTEData = 'project_'.$this->projectId.$this->subProjectId.'BillableFTE' ;
+        Cache::put($mgrCacheKey, $mgrData, now()->addMinutes(30));
+        Cache::put($billbleFTEData, $billbleFTEData, now()->addMinutes(30));
     }
 }
