@@ -113,8 +113,8 @@ use App\Models\BecAr;
 use App\Models\BecArDuplicates;
 use App\Models\RocAr;
 use App\Models\RocArDuplicates;
-use App\Models\SbgmgEligiblityVerification;
-use App\Models\SbgmgEligiblityVerificationDuplicates;
+use App\Models\SbgmgEligibilityVerification;
+use App\Models\SbgmgEligibilityVerificationDuplicates;
 use App\Models\PbhgEligibilityVerification;
 use App\Models\PbhgEligibilityVerificationDuplicates;
 
@@ -5366,9 +5366,9 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL
              ];          
 
-            $duplicateRecordExisting  =  SbgmgEligiblityVerification::where($attributes)->exists();
+            $duplicateRecordExisting  =  SbgmgEligibilityVerification::where($attributes)->exists();
             if (!$duplicateRecordExisting) {
-                SbgmgEligiblityVerification::insert([
+                SbgmgEligibilityVerification::insert([
                     'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,  
                     'schedule_time' => isset($request->schedule_time) && $request->schedule_time != "NULL" ? $request->schedule_time : NULL,
                     'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
@@ -5388,7 +5388,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                     ]);
                         return response()->json(['message' => 'Record Inserted Successfully']);
             } else {
-                $duplicateRecord  =  SbgmgEligiblityVerification::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                $duplicateRecord  =  SbgmgEligibilityVerification::where($attributes)->where('chart_status',"CE_Assigned")->first();
                 if ($duplicateRecord) {
                     $duplicateRecord->update([
                         'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,  
@@ -5418,7 +5418,7 @@ public function NexTrustBillingArDuplicates(Request $request)
     public function sbgmgEligiblityVerificationDuplicates(Request $request)
     {
         try {
-            SbgmgEligiblityVerificationDuplicates::insert([
+            SbgmgEligibilityVerificationDuplicates::insert([
                     'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,  
                     'schedule_time' => isset($request->schedule_time) && $request->schedule_time != "NULL" ? $request->schedule_time : NULL,
                     'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
