@@ -138,7 +138,8 @@
                                         <td>{{(int)$prjBillableFTE * $prjSLATarget}}</td>
                                         <td>{{(int)$prjBillableFTE* $prjSLATarget/8}}</td> --}}
                                         @foreach ($data['hourlyCount'] as $count)
-                                        <td style="color: {{ $count < (int)$prjBillableFTE * $prjSLATarget / 8 ? 'red' : 'black' }}; font-weight: {{ $count < (int)$prjBillableFTE * $prjSLATarget / 8 ? 'bold' : 'normal' }};">
+                                        {{-- <td style="color: {{ $count < (int)$prjBillableFTE * $prjSLATarget / 8 ? 'red' : 'black' }}; font-weight: {{ $count < (int)$prjBillableFTE * $prjSLATarget / 8 ? 'bold' : 'normal' }};"> --}}
+                                          <td>
                                             {{ $count }}
                                         </td>
                                         
