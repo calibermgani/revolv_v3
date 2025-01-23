@@ -138,8 +138,8 @@
                                         <td>{{$prjMgrName}}</td>
                                         <td>{{$prjBillableFTE}}</td>
                                         <td>{{$prjSLATarget}}</td>
-                                        <td>{{(int)$prjBillableFTE * $data['prjSLATarget']}}</td>
-                                        <td>{{(int)$prjBillableFTE* $data['prjSLATarget']/8}}</td>
+                                        <td>{{(int)$prjBillableFTE * $prjSLATarget}}</td>
+                                        <td>{{(int)$prjBillableFTE* $prjSLATarget/8}}</td>
                                         <td>{{trim($arReasonString,",")}}</td>
                                         <td>{{trim($qaReasonString,",")}}</td>
                                        
