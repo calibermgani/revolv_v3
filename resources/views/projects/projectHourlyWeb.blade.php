@@ -72,15 +72,15 @@
                         <thead>
                             <tr>
                                 <th>Project</th>
-                                @foreach ($headers as $timeSlot)
-                                    <th>
-                                        {{ $timeSlot }}</th>
-                                @endforeach
                                 <th>Manager Name</th>
                                 <th>Billable FTE</th>
                                 <th>SLA Target</th>
                                 <th>Target/day</th>
                                 <th>Target/Hour</th>
+                                @foreach ($headers as $timeSlot)
+                                    <th>
+                                        {{ $timeSlot }}</th>
+                                @endforeach                             
                                 <th>AR Reason</th>
                                 <th>QA Reason</th>
                               
@@ -132,17 +132,18 @@
                                                 {{ $data['project'] }}
                                             </a>
                                         </td>
+                                        <td>{{$prjMgrName}}</td>
+                                        <td>{{$prjBillableFTE}}</td>
+                                        <td>{{$prjSLATarget}}</td>
+                                        <td>{{(int)$prjBillableFTE * $prjSLATarget}}</td>
+                                        <td>{{(int)$prjBillableFTE* $prjSLATarget/8}}</td>
                                         @foreach ($data['hourlyCount'] as $count)
                                         <td style="color: {{ $count < (int)$prjBillableFTE * $prjSLATarget / 8 ? 'red' : 'black' }}; font-weight: {{ $count < (int)$prjBillableFTE * $prjSLATarget / 8 ? 'bold' : 'normal' }};">
                                             {{ $count }}
                                         </td>
                                         
                                         @endforeach
-                                        <td>{{$prjMgrName}}</td>
-                                        <td>{{$prjBillableFTE}}</td>
-                                        <td>{{$prjSLATarget}}</td>
-                                        <td>{{(int)$prjBillableFTE * $prjSLATarget}}</td>
-                                        <td>{{(int)$prjBillableFTE* $prjSLATarget/8}}</td>
+                                        
                                         <td>{{trim($arReasonString,",")}}</td>
                                         <td>{{trim($qaReasonString,",")}}</td>
                                        
