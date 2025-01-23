@@ -117,7 +117,8 @@ use App\Models\SbgmgEligibilityVerification;
 use App\Models\SbgmgEligibilityVerificationDuplicates;
 use App\Models\PbhgEligibilityVerification;
 use App\Models\PbhgEligibilityVerificationDuplicates;
-
+use App\Models\MsEligibilityVerification;
+use App\Models\MsEligibilityVerificationDuplicates;
 class ProjectAutomationController extends Controller
 {
 
@@ -5544,6 +5545,203 @@ public function NexTrustBillingArDuplicates(Request $request)
                     'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,
                     'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
                     'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+    public function msEligiblityVerification(Request $request)
+    {
+        try {
+            $attributes = [
+                 'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL,  
+                 'ssn' => isset($request->ssn) && $request->ssn != "NULL" ? $request->ssn : NULL,
+                 'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                 'insured_id' => isset($request->insured_id) && $request->insured_id != "NULL" ? $request->insured_id : NULL
+             ];          
+
+            $duplicateRecordExisting  =  MsEligibilityVerification::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                MsEligibilityVerification::insert([
+                    'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL,  
+                    'ssn' => isset($request->ssn) && $request->ssn != "NULL" ? $request->ssn : NULL,
+                    'last_name' => isset($request->last_name) && $request->last_name != "NULL" ? $request->last_name : NULL,
+                    'first_name' => isset($request->first_name) && $request->first_name != "NULL" ? $request->first_name : NULL,
+                    'middle_name' => isset($request->middle_name) && $request->middle_name != "NULL" ? $request->middle_name : NULL,
+                    'suffix' => isset($request->suffix) && $request->suffix != "NULL" ? $request->suffix : NULL,
+                    'preferred_name' => isset($request->preferred_name) && $request->preferred_name != "NULL" ? $request->preferred_name : NULL,
+                    'pronouns' => isset($request->pronouns) && $request->pronouns != "NULL" ? $request->pronouns : NULL,
+                    'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                    'address_line_1' => isset($request->address_line_1) && $request->address_line_1 != "NULL" ? $request->address_line_1 : NULL,
+                    'address_line_2' => isset($request->address_line_2) && $request->address_line_2 != "NULL" ? $request->address_line_2 : NULL,
+                    'city' => isset($request->city) && $request->city != "NULL" ? $request->city : NULL,
+                    'state' => isset($request->state) && $request->state != "NULL" ? $request->state : NULL,
+                    'postal_code' => isset($request->postal_code) && $request->postal_code != "NULL" ? $request->postal_code : NULL,
+                    'country' => isset($request->country) && $request->country != "NULL" ? $request->country : NULL,
+                    'email' => isset($request->email) && $request->email != "NULL" ? $request->email : NULL,
+                    'preferred_phone' => isset($request->preferred_phone) && $request->preferred_phone != "NULL" ? $request->preferred_phone : NULL,
+                    'home_number' => isset($request->home_number) && $request->home_number != "NULL" ? $request->home_number : NULL,
+                    'home_messages' => isset($request->home_messages) && $request->home_messages != "NULL" ? $request->home_messages : NULL,
+                    'mobile_number' => isset($request->mobile_number) && $request->mobile_number != "NULL" ? $request->mobile_number : NULL,
+                    'mobile_messages' => isset($request->mobile_messages) && $request->mobile_messages != "NULL" ? $request->mobile_messages : NULL,
+                    'work_number' => isset($request->work_number) && $request->work_number != "NULL" ? $request->work_number : NULL,
+                    'work_messages' => isset($request->work_messages) && $request->work_messages != "NULL" ? $request->work_messages : NULL,
+                    'other_number' => isset($request->other_number) && $request->other_number != "NULL" ? $request->other_number : NULL,
+                    'other_messages' => isset($request->other_messages) && $request->other_messages != "NULL" ? $request->other_messages : NULL,
+                    'administrative_sex' => isset($request->administrative_sex) && $request->administrative_sex != "NULL" ? $request->administrative_sex : NULL,
+                    'marital_status' => isset($request->marital_status) && $request->marital_status != "NULL" ? $request->marital_status : NULL,
+                    'employment_status' => isset($request->employment_status) && $request->employment_status != "NULL" ? $request->employment_status : NULL,
+                    'last_appt' => isset($request->last_appt) && $request->last_appt != "NULL" ? $request->last_appt : NULL,
+                    'next_appt' => isset($request->next_appt) && $request->next_appt != "NULL" ? $request->next_appt : NULL,
+                    'next_appt_with' => isset($request->next_appt_with) && $request->next_appt_with != "NULL" ? $request->next_appt_with : NULL,
+                    'relationship_to_insured' => isset($request->relationship_to_insured) && $request->relationship_to_insured != "NULL" ? $request->relationship_to_insured : NULL,
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                    'insured_id' => isset($request->insured_id) && $request->insured_id != "NULL" ? $request->insured_id : NULL,
+                    'secondary_payer' => isset($request->secondary_payer) && $request->secondary_payer != "NULL" ? $request->secondary_payer : NULL,
+                    'secondary_insured_id' => isset($request->secondary_insured_id) && $request->secondary_insured_id != "NULL" ? $request->secondary_insured_id : NULL,
+                    'tertiary_payer' => isset($request->tertiary_payer) && $request->tertiary_payer != "NULL" ? $request->tertiary_payer : NULL,
+                    'tertiary_insured_id' => isset($request->tertiary_insured_id) && $request->tertiary_insured_id != "NULL" ? $request->tertiary_insured_id : NULL,
+                    'quaternary_payer' => isset($request->quaternary_payer) && $request->quaternary_payer != "NULL" ? $request->quaternary_payer : NULL,
+                    'quaternary_insured_id' => isset($request->quaternary_insured_id) && $request->quaternary_insured_id != "NULL" ? $request->quaternary_insured_id : NULL,
+                    'clinicians' => isset($request->clinicians) && $request->clinicians != "NULL" ? $request->clinicians : NULL,
+                    'gender_identity' => isset($request->gender_identity) && $request->gender_identity != "NULL" ? $request->gender_identity : NULL,
+                    'sexual_orientation' => isset($request->sexual_orientation) && $request->sexual_orientation != "NULL" ? $request->sexual_orientation : NULL,
+                    'race' => isset($request->race) && $request->race != "NULL" ? $request->race : NULL,
+                    'ethnicity' => isset($request->ethnicity) && $request->ethnicity != "NULL" ? $request->ethnicity : NULL,
+                    'languages' => isset($request->languages) && $request->languages != "NULL" ? $request->languages : NULL,
+                    'religious_affiliation' => isset($request->religious_affiliation) && $request->religious_affiliation != "NULL" ? $request->religious_affiliation : NULL,
+                    'text_messages' => isset($request->text_messages) && $request->text_messages != "NULL" ? $request->text_messages : NULL,
+                    'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  MsEligibilityVerification::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                if ($duplicateRecord) {
+                    $duplicateRecord->update([
+                        'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL,  
+                        'ssn' => isset($request->ssn) && $request->ssn != "NULL" ? $request->ssn : NULL,
+                        'last_name' => isset($request->last_name) && $request->last_name != "NULL" ? $request->last_name : NULL,
+                        'first_name' => isset($request->first_name) && $request->first_name != "NULL" ? $request->first_name : NULL,
+                        'middle_name' => isset($request->middle_name) && $request->middle_name != "NULL" ? $request->middle_name : NULL,
+                        'suffix' => isset($request->suffix) && $request->suffix != "NULL" ? $request->suffix : NULL,
+                        'preferred_name' => isset($request->preferred_name) && $request->preferred_name != "NULL" ? $request->preferred_name : NULL,
+                        'pronouns' => isset($request->pronouns) && $request->pronouns != "NULL" ? $request->pronouns : NULL,
+                        'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                        'address_line_1' => isset($request->address_line_1) && $request->address_line_1 != "NULL" ? $request->address_line_1 : NULL,
+                        'address_line_2' => isset($request->address_line_2) && $request->address_line_2 != "NULL" ? $request->address_line_2 : NULL,
+                        'city' => isset($request->city) && $request->city != "NULL" ? $request->city : NULL,
+                        'state' => isset($request->state) && $request->state != "NULL" ? $request->state : NULL,
+                        'postal_code' => isset($request->postal_code) && $request->postal_code != "NULL" ? $request->postal_code : NULL,
+                        'country' => isset($request->country) && $request->country != "NULL" ? $request->country : NULL,
+                        'email' => isset($request->email) && $request->email != "NULL" ? $request->email : NULL,
+                        'preferred_phone' => isset($request->preferred_phone) && $request->preferred_phone != "NULL" ? $request->preferred_phone : NULL,
+                        'home_number' => isset($request->home_number) && $request->home_number != "NULL" ? $request->home_number : NULL,
+                        'home_messages' => isset($request->home_messages) && $request->home_messages != "NULL" ? $request->home_messages : NULL,
+                        'mobile_number' => isset($request->mobile_number) && $request->mobile_number != "NULL" ? $request->mobile_number : NULL,
+                        'mobile_messages' => isset($request->mobile_messages) && $request->mobile_messages != "NULL" ? $request->mobile_messages : NULL,
+                        'work_number' => isset($request->work_number) && $request->work_number != "NULL" ? $request->work_number : NULL,
+                        'work_messages' => isset($request->work_messages) && $request->work_messages != "NULL" ? $request->work_messages : NULL,
+                        'other_number' => isset($request->other_number) && $request->other_number != "NULL" ? $request->other_number : NULL,
+                        'other_messages' => isset($request->other_messages) && $request->other_messages != "NULL" ? $request->other_messages : NULL,
+                        'administrative_sex' => isset($request->administrative_sex) && $request->administrative_sex != "NULL" ? $request->administrative_sex : NULL,
+                        'marital_status' => isset($request->marital_status) && $request->marital_status != "NULL" ? $request->marital_status : NULL,
+                        'employment_status' => isset($request->employment_status) && $request->employment_status != "NULL" ? $request->employment_status : NULL,
+                        'last_appt' => isset($request->last_appt) && $request->last_appt != "NULL" ? $request->last_appt : NULL,
+                        'next_appt' => isset($request->next_appt) && $request->next_appt != "NULL" ? $request->next_appt : NULL,
+                        'next_appt_with' => isset($request->next_appt_with) && $request->next_appt_with != "NULL" ? $request->next_appt_with : NULL,
+                        'relationship_to_insured' => isset($request->relationship_to_insured) && $request->relationship_to_insured != "NULL" ? $request->relationship_to_insured : NULL,
+                        'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                        'insured_id' => isset($request->insured_id) && $request->insured_id != "NULL" ? $request->insured_id : NULL,
+                        'secondary_payer' => isset($request->secondary_payer) && $request->secondary_payer != "NULL" ? $request->secondary_payer : NULL,
+                        'secondary_insured_id' => isset($request->secondary_insured_id) && $request->secondary_insured_id != "NULL" ? $request->secondary_insured_id : NULL,
+                        'tertiary_payer' => isset($request->tertiary_payer) && $request->tertiary_payer != "NULL" ? $request->tertiary_payer : NULL,
+                        'tertiary_insured_id' => isset($request->tertiary_insured_id) && $request->tertiary_insured_id != "NULL" ? $request->tertiary_insured_id : NULL,
+                        'quaternary_payer' => isset($request->quaternary_payer) && $request->quaternary_payer != "NULL" ? $request->quaternary_payer : NULL,
+                        'quaternary_insured_id' => isset($request->quaternary_insured_id) && $request->quaternary_insured_id != "NULL" ? $request->quaternary_insured_id : NULL,
+                        'clinicians' => isset($request->clinicians) && $request->clinicians != "NULL" ? $request->clinicians : NULL,
+                        'gender_identity' => isset($request->gender_identity) && $request->gender_identity != "NULL" ? $request->gender_identity : NULL,
+                        'sexual_orientation' => isset($request->sexual_orientation) && $request->sexual_orientation != "NULL" ? $request->sexual_orientation : NULL,
+                        'race' => isset($request->race) && $request->race != "NULL" ? $request->race : NULL,
+                        'ethnicity' => isset($request->ethnicity) && $request->ethnicity != "NULL" ? $request->ethnicity : NULL,
+                        'languages' => isset($request->languages) && $request->languages != "NULL" ? $request->languages : NULL,
+                        'religious_affiliation' => isset($request->religious_affiliation) && $request->religious_affiliation != "NULL" ? $request->religious_affiliation : NULL,
+                        'text_messages' => isset($request->text_messages) && $request->text_messages != "NULL" ? $request->text_messages : NULL,
+                        'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function msEligiblityVerificationDuplicates(Request $request)
+    {
+        try {
+            MsEligibilityVerificationDuplicates::insert([
+                'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL,  
+                'ssn' => isset($request->ssn) && $request->ssn != "NULL" ? $request->ssn : NULL,
+                'last_name' => isset($request->last_name) && $request->last_name != "NULL" ? $request->last_name : NULL,
+                'first_name' => isset($request->first_name) && $request->first_name != "NULL" ? $request->first_name : NULL,
+                'middle_name' => isset($request->middle_name) && $request->middle_name != "NULL" ? $request->middle_name : NULL,
+                'suffix' => isset($request->suffix) && $request->suffix != "NULL" ? $request->suffix : NULL,
+                'preferred_name' => isset($request->preferred_name) && $request->preferred_name != "NULL" ? $request->preferred_name : NULL,
+                'pronouns' => isset($request->pronouns) && $request->pronouns != "NULL" ? $request->pronouns : NULL,
+                'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                'address_line_1' => isset($request->address_line_1) && $request->address_line_1 != "NULL" ? $request->address_line_1 : NULL,
+                'address_line_2' => isset($request->address_line_2) && $request->address_line_2 != "NULL" ? $request->address_line_2 : NULL,
+                'city' => isset($request->city) && $request->city != "NULL" ? $request->city : NULL,
+                'state' => isset($request->state) && $request->state != "NULL" ? $request->state : NULL,
+                'postal_code' => isset($request->postal_code) && $request->postal_code != "NULL" ? $request->postal_code : NULL,
+                'country' => isset($request->country) && $request->country != "NULL" ? $request->country : NULL,
+                'email' => isset($request->email) && $request->email != "NULL" ? $request->email : NULL,
+                'preferred_phone' => isset($request->preferred_phone) && $request->preferred_phone != "NULL" ? $request->preferred_phone : NULL,
+                'home_number' => isset($request->home_number) && $request->home_number != "NULL" ? $request->home_number : NULL,
+                'home_messages' => isset($request->home_messages) && $request->home_messages != "NULL" ? $request->home_messages : NULL,
+                'mobile_number' => isset($request->mobile_number) && $request->mobile_number != "NULL" ? $request->mobile_number : NULL,
+                'mobile_messages' => isset($request->mobile_messages) && $request->mobile_messages != "NULL" ? $request->mobile_messages : NULL,
+                'work_number' => isset($request->work_number) && $request->work_number != "NULL" ? $request->work_number : NULL,
+                'work_messages' => isset($request->work_messages) && $request->work_messages != "NULL" ? $request->work_messages : NULL,
+                'other_number' => isset($request->other_number) && $request->other_number != "NULL" ? $request->other_number : NULL,
+                'other_messages' => isset($request->other_messages) && $request->other_messages != "NULL" ? $request->other_messages : NULL,
+                'administrative_sex' => isset($request->administrative_sex) && $request->administrative_sex != "NULL" ? $request->administrative_sex : NULL,
+                'marital_status' => isset($request->marital_status) && $request->marital_status != "NULL" ? $request->marital_status : NULL,
+                'employment_status' => isset($request->employment_status) && $request->employment_status != "NULL" ? $request->employment_status : NULL,
+                'last_appt' => isset($request->last_appt) && $request->last_appt != "NULL" ? $request->last_appt : NULL,
+                'next_appt' => isset($request->next_appt) && $request->next_appt != "NULL" ? $request->next_appt : NULL,
+                'next_appt_with' => isset($request->next_appt_with) && $request->next_appt_with != "NULL" ? $request->next_appt_with : NULL,
+                'relationship_to_insured' => isset($request->relationship_to_insured) && $request->relationship_to_insured != "NULL" ? $request->relationship_to_insured : NULL,
+                'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                'insured_id' => isset($request->insured_id) && $request->insured_id != "NULL" ? $request->insured_id : NULL,
+                'secondary_payer' => isset($request->secondary_payer) && $request->secondary_payer != "NULL" ? $request->secondary_payer : NULL,
+                'secondary_insured_id' => isset($request->secondary_insured_id) && $request->secondary_insured_id != "NULL" ? $request->secondary_insured_id : NULL,
+                'tertiary_payer' => isset($request->tertiary_payer) && $request->tertiary_payer != "NULL" ? $request->tertiary_payer : NULL,
+                'tertiary_insured_id' => isset($request->tertiary_insured_id) && $request->tertiary_insured_id != "NULL" ? $request->tertiary_insured_id : NULL,
+                'quaternary_payer' => isset($request->quaternary_payer) && $request->quaternary_payer != "NULL" ? $request->quaternary_payer : NULL,
+                'quaternary_insured_id' => isset($request->quaternary_insured_id) && $request->quaternary_insured_id != "NULL" ? $request->quaternary_insured_id : NULL,
+                'clinicians' => isset($request->clinicians) && $request->clinicians != "NULL" ? $request->clinicians : NULL,
+                'gender_identity' => isset($request->gender_identity) && $request->gender_identity != "NULL" ? $request->gender_identity : NULL,
+                'sexual_orientation' => isset($request->sexual_orientation) && $request->sexual_orientation != "NULL" ? $request->sexual_orientation : NULL,
+                'race' => isset($request->race) && $request->race != "NULL" ? $request->race : NULL,
+                'ethnicity' => isset($request->ethnicity) && $request->ethnicity != "NULL" ? $request->ethnicity : NULL,
+                'languages' => isset($request->languages) && $request->languages != "NULL" ? $request->languages : NULL,
+                'religious_affiliation' => isset($request->religious_affiliation) && $request->religious_affiliation != "NULL" ? $request->religious_affiliation : NULL,
+                'text_messages' => isset($request->text_messages) && $request->text_messages != "NULL" ? $request->text_messages : NULL,
+                'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
