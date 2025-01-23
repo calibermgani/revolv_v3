@@ -113,7 +113,10 @@ use App\Models\BecAr;
 use App\Models\BecArDuplicates;
 use App\Models\RocAr;
 use App\Models\RocArDuplicates;
-
+use App\Models\SbgmgEligiblityVerification;
+use App\Models\SbgmgEligiblityVerificationDuplicates;
+use App\Models\PbhgEligibilityVerification;
+use App\Models\PbhgEligibilityVerificationDuplicates;
 
 class ProjectAutomationController extends Controller
 {
@@ -5334,6 +5337,194 @@ public function NexTrustBillingArDuplicates(Request $request)
                     'title' => isset($request->title) && $request->title != "NULL" ? $request->title : NULL,
                     'has_corr_mail' => isset($request->has_corr_mail) && $request->has_corr_mail != "NULL" ? $request->has_corr_mail : NULL,
                     'adj_denied' => isset($request->adj_denied) && $request->adj_denied != "NULL" ? $request->adj_denied : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+    public function sbgmgEligiblityVerification(Request $request)
+    {
+        try {
+            $attributes = [
+                'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,  
+                 'schedule_time' => isset($request->schedule_time) && $request->schedule_time != "NULL" ? $request->schedule_time : NULL,
+                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,
+                'staff_name' => isset($request->staff_name) && $request->staff_name != "NULL" ? $request->staff_name : NULL,
+                'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,
+                'code' => isset($request->code) && $request->code != "NULL" ? $request->code : NULL,
+                'claim_duration' => isset($request->claim_duration) && $request->claim_duration != "NULL" ? $request->claim_duration : NULL,
+                'claim_procedure' => isset($request->claim_procedure) && $request->claim_procedure != "NULL" ? $request->claim_procedure : NULL,
+                'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL
+             ];          
+
+            $duplicateRecordExisting  =  SbgmgEligiblityVerification::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                SbgmgEligiblityVerification::insert([
+                    'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,  
+                    'schedule_time' => isset($request->schedule_time) && $request->schedule_time != "NULL" ? $request->schedule_time : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,
+                    'staff_name' => isset($request->staff_name) && $request->staff_name != "NULL" ? $request->staff_name : NULL,
+                    'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,
+                    'code' => isset($request->code) && $request->code != "NULL" ? $request->code : NULL,
+                    'claim_duration' => isset($request->claim_duration) && $request->claim_duration != "NULL" ? $request->claim_duration : NULL,
+                    'claim_procedure' => isset($request->claim_procedure) && $request->claim_procedure != "NULL" ? $request->claim_procedure : NULL,
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                    'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                    'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  SbgmgEligiblityVerification::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                if ($duplicateRecord) {
+                    $duplicateRecord->update([
+                        'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,  
+                        'schedule_time' => isset($request->schedule_time) && $request->schedule_time != "NULL" ? $request->schedule_time : NULL,
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,
+                        'staff_name' => isset($request->staff_name) && $request->staff_name != "NULL" ? $request->staff_name : NULL,
+                        'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,
+                        'code' => isset($request->code) && $request->code != "NULL" ? $request->code : NULL,
+                        'claim_duration' => isset($request->claim_duration) && $request->claim_duration != "NULL" ? $request->claim_duration : NULL,
+                        'claim_procedure' => isset($request->claim_procedure) && $request->claim_procedure != "NULL" ? $request->claim_procedure : NULL,
+                        'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                        'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                        'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function sbgmgEligiblityVerificationDuplicates(Request $request)
+    {
+        try {
+            SbgmgEligiblityVerificationDuplicates::insert([
+                    'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,  
+                    'schedule_time' => isset($request->schedule_time) && $request->schedule_time != "NULL" ? $request->schedule_time : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,
+                    'staff_name' => isset($request->staff_name) && $request->staff_name != "NULL" ? $request->staff_name : NULL,
+                    'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,
+                    'code' => isset($request->code) && $request->code != "NULL" ? $request->code : NULL,
+                    'claim_duration' => isset($request->claim_duration) && $request->claim_duration != "NULL" ? $request->claim_duration : NULL,
+                    'claim_procedure' => isset($request->claim_procedure) && $request->claim_procedure != "NULL" ? $request->claim_procedure : NULL,
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                    'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                    'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+    public function pbhgEligibilityVerification(Request $request)
+    {
+        try {
+            $attributes = [
+                 'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,  
+                 'claim_time' => isset($request->claim_time) && $request->claim_time != "NULL" ? $request->claim_time : NULL,
+                 'client' => isset($request->client) && $request->client != "NULL" ? $request->client : NULL,
+                 'claim_activity' => isset($request->claim_activity) && $request->claim_activity != "NULL" ? $request->claim_activity : NULL,
+                 'program' => isset($request->program) && $request->program != "NULL" ? $request->program : NULL,
+                 'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                 'staff' => isset($request->staff) && $request->staff != "NULL" ? $request->staff : NULL,
+                 'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                 'client_amt_due' => isset($request->client_amt_due) && $request->client_amt_due != "NULL" ? $request->client_amt_due : NULL,
+                 'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,
+                 'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                 'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL
+             ];          
+
+            $duplicateRecordExisting  =  PbhgEligibilityVerification::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                PbhgEligibilityVerification::insert([
+                    'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,  
+                    'claim_time' => isset($request->claim_time) && $request->claim_time != "NULL" ? $request->claim_time : NULL,
+                    'client' => isset($request->client) && $request->client != "NULL" ? $request->client : NULL,
+                    'claim_activity' => isset($request->claim_activity) && $request->claim_activity != "NULL" ? $request->claim_activity : NULL,
+                    'program' => isset($request->program) && $request->program != "NULL" ? $request->program : NULL,
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                    'staff' => isset($request->staff) && $request->staff != "NULL" ? $request->staff : NULL,
+                    'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                    'client_amt_due' => isset($request->client_amt_due) && $request->client_amt_due != "NULL" ? $request->client_amt_due : NULL,
+                    'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,
+                    'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                    'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  PbhgEligibilityVerification::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                if ($duplicateRecord) {
+                    $duplicateRecord->update([
+                        'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,  
+                        'claim_time' => isset($request->claim_time) && $request->claim_time != "NULL" ? $request->claim_time : NULL,
+                        'client' => isset($request->client) && $request->client != "NULL" ? $request->client : NULL,
+                        'claim_activity' => isset($request->claim_activity) && $request->claim_activity != "NULL" ? $request->claim_activity : NULL,
+                        'program' => isset($request->program) && $request->program != "NULL" ? $request->program : NULL,
+                        'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                        'staff' => isset($request->staff) && $request->staff != "NULL" ? $request->staff : NULL,
+                        'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                        'client_amt_due' => isset($request->client_amt_due) && $request->client_amt_due != "NULL" ? $request->client_amt_due : NULL,
+                        'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,
+                        'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                        'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function pbhgEligibilityVerificationDuplicates(Request $request)
+    {
+        try {
+            PbhgEligibilityVerificationDuplicates::insert([
+                    'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,  
+                    'claim_time' => isset($request->claim_time) && $request->claim_time != "NULL" ? $request->claim_time : NULL,
+                    'client' => isset($request->client) && $request->client != "NULL" ? $request->client : NULL,
+                    'claim_activity' => isset($request->claim_activity) && $request->claim_activity != "NULL" ? $request->claim_activity : NULL,
+                    'program' => isset($request->program) && $request->program != "NULL" ? $request->program : NULL,
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                    'staff' => isset($request->staff) && $request->staff != "NULL" ? $request->staff : NULL,
+                    'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                    'client_amt_due' => isset($request->client_amt_due) && $request->client_amt_due != "NULL" ? $request->client_amt_due : NULL,
+                    'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,
+                    'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                    'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,

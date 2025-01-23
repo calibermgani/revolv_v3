@@ -136,7 +136,10 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('boozman_hoff_eye_center_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@boozmanHoffEyeCenterArDuplicates');
     Route::any('reno_orthopedic_center_ar', 'App\Http\Controllers\ProjectAutomationController@renoOrthopedicCenterAr');
     Route::any('reno_orthopedic_center_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@renoOrthopedicCenterArDuplicates');
-    
+    Route::any('sbgmg_eligiblity_verification', 'App\Http\Controllers\ProjectAutomationController@sbgmgEligiblityVerification');
+    Route::any('sbgmg_eligiblity_verification_duplicate', 'App\Http\Controllers\ProjectAutomationController@sbgmgEligiblityVerificationDuplicates');
+    Route::any('pbhg_eligibility_verification', 'App\Http\Controllers\ProjectAutomationController@pbhgEligibilityVerification');
+    Route::any('pbhg_eligibility_verification_duplicate', 'App\Http\Controllers\ProjectAutomationController@pbhgEligibilityVerificationDuplicates');
 
 
 });
