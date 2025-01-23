@@ -1496,5 +1496,39 @@ class ProjectController extends Controller
             }
         });
     }
+    public function getProjectTotalSlaTargetWeb($project_id, $sub_project_id)
+    {
+        $cacheKey = 'project_' . $project_id . '_' . $sub_project_id . '_sla_target';
+        return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($project_id, $sub_project_id) {
+            try {
+                $payload = [
+                    'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                    'client_id' => $project_id,
+                    'practice_id' => $sub_project_id
+                ];
+    
+                return retry(3, function () use ($payload) {
+                    $client = new Client(['verify' => false]);
+                    $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_actuval_target', [
+                        'json' => $payload,
+                    ]);
+    
+                    if ($response->getStatusCode() == 200) {
+                        $responseData = json_decode($response->getBody(), true);
+                        return $responseData['prjSLATarget'] ?? null;
+                    } elseif ($response->getStatusCode() == 429) {
+                        $retryAfter = $response->getHeader('Retry-After')[0] ?? 60;
+                        sleep($retryAfter);
+                        throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
+                    } else {
+                        throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+                    }
+                }, 4000);
+            } catch (\Exception $e) {
+                Log::error('Error in getprjSLATarget: ' . $e->getMessage());
+                return null;
+            }
+        });
+    }
     
 }
