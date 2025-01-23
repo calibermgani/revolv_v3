@@ -133,7 +133,7 @@
                                             </a>
                                         </td>
                                         @foreach ($data['hourlyCount'] as $count)
-                                            <td  style={{$data['achievedPercentage'] < (int)$prjBillableFTE* $prjSLATarget/8 ? "color:red" : "color:black"}}>{{ $count }}</td>
+                                            <td  style={{$count < (int)$prjBillableFTE* $prjSLATarget/8 ? "color:red" : "color:black"}}>{{ $count }}</td>
                                         @endforeach
                                         <td>{{$prjMgrName}}</td>
                                         <td>{{$prjBillableFTE}}</td>
