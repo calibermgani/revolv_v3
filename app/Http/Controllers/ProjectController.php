@@ -340,26 +340,26 @@ class ProjectController extends Controller
             Log::debug($e->getMessage());
         }
     }
-    public function getProjects()
-    {
-        try {
-            $payload = [
-                'token' => '1a32e71a46317b9cc6feb7388238c95d',
-            ];
-            $client = new Client(['verify' => false]);
-            $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_all_clients', [
-                'json' => $payload,
-            ]);
-            if ($response->getStatusCode() == 200) {
-                $data = json_decode($response->getBody(), true);
-            } else {
-                return response()->json(['error' => 'API request failed'], $response->getStatusCode());
-            }
-            return $data['clientList'];
-        } catch (\Exception $e) {
-            Log::debug($e->getMessage());
-        }
-    }
+    // public function getProjects()
+    // {
+    //     try {
+    //         $payload = [
+    //             'token' => '1a32e71a46317b9cc6feb7388238c95d',
+    //         ];
+    //         $client = new Client(['verify' => false]);
+    //         $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_all_clients', [
+    //             'json' => $payload,
+    //         ]);
+    //         if ($response->getStatusCode() == 200) {
+    //             $data = json_decode($response->getBody(), true);
+    //         } else {
+    //             return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+    //         }
+    //         return $data['clientList'];
+    //     } catch (\Exception $e) {
+    //         Log::debug($e->getMessage());
+    //     }
+    // }
 
     public function procodeProjectOnHoldMail()
     {
@@ -1527,6 +1527,37 @@ class ProjectController extends Controller
             } catch (\Exception $e) {
                 Log::error('Error in getprjSLATarget: ' . $e->getMessage());
                 return null;
+            }
+        });
+    }
+
+    public function getProjects()
+    {
+           $cacheKey = 'project_list';
+        return Cache::remember($cacheKey, now()->addMinutes(30), function ()  {
+            try {
+                $payload = [
+                    'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                ];
+                return retry(3, function () use ($payload) {
+                    $client = new Client(['verify' => false]);
+                    $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_all_clients', [
+                        'json' => $payload,
+                    ]);
+                    if ($response->getStatusCode() == 200) {
+                        $data = json_decode($response->getBody(), true);
+                        return $data['clientList'] ?? null;
+                    } elseif ($response->getStatusCode() == 429) {
+                        $retryAfter = $response->getHeader('Retry-After')[0] ?? 60;
+                        sleep($retryAfter);
+                        throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
+                    } else {
+                        throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+                    }
+                }, 4000);
+            } catch (\Exception $e) {
+                Log::error('Error in getAllPrjList: ' . $e->getMessage());
+                Log::debug($e->getMessage());
             }
         });
     }
