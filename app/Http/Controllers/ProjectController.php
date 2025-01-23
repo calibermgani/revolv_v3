@@ -1463,41 +1463,39 @@ class ProjectController extends Controller
             return null;
         }
     }
-    public function getProjectSubPrjBillableFTE($project_id,$sub_project_id)
+    public function getProjectSubPrjBillableFTE($project_id, $sub_project_id)
     {
-        try {
-            $payload = [
-                'token' => '1a32e71a46317b9cc6feb7388238c95d',
-                'client_id' => $project_id,
-                'sub_project_id' => $sub_project_id,
-            ];         
-            // Retry 3 times, with a 2-second delay between each attempt
-            $data = retry(3, function () use ($payload) {
-                $client = new Client(['verify' => false]);
-                $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_billable_fte', [
-                    'json' => $payload,
-                ]);
-                
-                if ($response->getStatusCode() == 200) {
-                    $responseData = json_decode($response->getBody(), true);
+        $cacheKey = 'project_' . $project_id . '_' . $sub_project_id . '_billable_fte';
+        return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($project_id, $sub_project_id) {
+            try {
+                $payload = [
+                    'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                    'client_id' => $project_id,
+                    'sub_project_id' => $sub_project_id,
+                ];
     
-                    if (isset($responseData)) {
-                        return $responseData['prjBillableCount'];
+                return retry(3, function () use ($payload) {
+                    $client = new Client(['verify' => false]);
+                    $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_billable_fte', [
+                        'json' => $payload,
+                    ]);
+    
+                    if ($response->getStatusCode() == 200) {
+                        $responseData = json_decode($response->getBody(), true);
+                        return $responseData['prjBillableCount'] ?? null;
+                    } elseif ($response->getStatusCode() == 429) {
+                        $retryAfter = $response->getHeader('Retry-After')[0] ?? 60;
+                        sleep($retryAfter);
+                        throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
                     } else {
-                        throw new \Exception('prjBillableCount not found in the API response');
+                        throw new \Exception('API request failed with status: ' . $response->getStatusCode());
                     }
-                } elseif ($response->getStatusCode() == 429) {
-                    $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
-                    sleep($retryAfter);
-                    throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
-                } else {
-                    throw new \Exception('API request failed with status: ' . $response->getStatusCode());
-                }
-            }, 4000);            
-            return $data;
-        } catch (\Exception $e) {
-            Log::error('Error in getprjBillableCount: ' . $e->getMessage());
-            return null;
-        }
+                }, 4000);
+            } catch (\Exception $e) {
+                Log::error('Error in getprjBillableCount: ' . $e->getMessage());
+                return null;
+            }
+        });
     }
+    
 }
