@@ -121,7 +121,7 @@
                                     $prjMgrCacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'Manager' ;
                                     $prjBillableFTECacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'BillableFTE' ;
                                     $prjSLATargetCacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'SLATarget' ;
-                                    $prjMgrName = Cache::get($prjMgrCacheKey, 0);
+                                    $prjMgrName = Cache::get($prjMgrCacheKey, '--');
                                     $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
                                      $prjSLATarget = Cache::get($prjSLATargetCacheKey, 0);
                                 @endphp
