@@ -78,9 +78,9 @@
                                 @endforeach
                                 <th>Manager Name</th>
                                 <th>Billable FTE</th>
-                                <th>Target</th>
-                                <th>Total Target</th>
-                                <th>Per Hour Target</th>
+                                <th>SLA Target</th>
+                                <th>Target/day</th>
+                                <th>Target/Hour</th>
                                 <th>AR Reason</th>
                                 <th>QA Reason</th>
                               
@@ -120,8 +120,10 @@
                                     //  App\Jobs\getProjectSubProjectBillableFTE::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
                                     $prjMgrCacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'Manager' ;
                                     $prjBillableFTECacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'BillableFTE' ;
+                                    $prjSLATargetCacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'SLATarget' ;
                                     $prjMgrName = Cache::get($prjMgrCacheKey, 0);
                                     $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
+                                    $prjSLATarget = 'project_'.$data['project_id'].$data['subproject_id'].'SLATarget' ;
                                 @endphp
                                     <tr>
                                         <td>
@@ -135,7 +137,7 @@
                                         @endforeach
                                         <td>{{$prjMgrName}}</td>
                                         <td>{{$prjBillableFTE}}</td>
-                                        <td>{{$data['prjSLATarget']}}</td>
+                                        <td>{{$prjSLATarget}}</td>
                                         <td>{{(int)$prjBillableFTE * $data['prjSLATarget']}}</td>
                                         <td>{{(int)$prjBillableFTE* $data['prjSLATarget']/8}}</td>
                                         <td>{{trim($arReasonString,",")}}</td>

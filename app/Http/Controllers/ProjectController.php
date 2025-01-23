@@ -1062,8 +1062,7 @@ class ProjectController extends Controller
                     // getProjectSubProjectManager::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
                     // getProjectSubProjectBillableFTE::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
                     // $prjSLATarget = (int)$this->getProjectTotalSlaTarget($project['id'],$subKey)['projectSLATarget'];
-                    $prjSLATarget = 1;
-                    // $prjMgrCacheKey = 'project_'.$project['id'].$subKey.'Manager' ;
+                   // $prjMgrCacheKey = 'project_'.$project['id'].$subKey.'Manager' ;
                     // $prjBillableFTECacheKey = 'project_'.$project['id'].$subKey.'BillableFTE' ;
                     // $prjMgrName = Cache::get($prjMgrCacheKey, 0);
                     // $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
@@ -1074,7 +1073,7 @@ class ProjectController extends Controller
                         'subproject_id' => $subKey,
                         // 'prjMgrName'=>$prjMgrName,
                         // 'prjBillableFTE'=>$prjBillableFTE,
-                        'prjSLATarget'=>$prjSLATarget
+                        // 'prjSLATarget'=>$prjSLATarget
                     ];
                 }
             }
