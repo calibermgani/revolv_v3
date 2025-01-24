@@ -122,7 +122,7 @@
                                     $prjBillableFTECacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'BillableFTE' ;
                                     // $prjSLATargetCacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'SLATarget' ;
                                     // $prjMgrName = Cache::get($prjMgrCacheKey, '--');
-                                    $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);dd($prjBillableFTECacheKey,$data['project_id'],$data['subproject_id']);
+                                    $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);dd($prjBillableFTE,$data['project_id'],$data['subproject_id']);
                                     //  $prjSLATarget = Cache::get($prjSLATargetCacheKey, 0);
                                 @endphp
                                     <tr>
