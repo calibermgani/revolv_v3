@@ -140,10 +140,10 @@
                                         <td>{{$prjBillableFTE['prjMgrName']}}</td>
                                         <td>{{$prjBillableFTE['prjBillableCount']}}</td>
                                         <td>{{$prjBillableFTE['projectSLATarget']}}</td>
-                                        <td>{{(int)$prjBillableFTE['prjBillableCount'] * $prjBillableFTE['projectSLATarget']}}</td>
-                                        <td>{{(int)$prjBillableFTE['prjBillableCount'] * $prjBillableFTE['projectSLATarget']/8}}</td>
+                                        <td>{{(int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']}}</td>
+                                        <td>{{(int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']/8}}</td>
                                         @foreach ($data['hourlyCount'] as $count)
-                                        <td style="color: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * $prjBillableFTE['projectSLATarget'] / 8 ? 'red' : 'black' }}; font-weight: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * $prjBillableFTE['projectSLATarget'] / 8 ? 'bold' : 'normal' }};">
+                                        <td style="color: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8 ? 'red' : 'black' }}; font-weight: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8 ? 'bold' : 'normal' }};">
                                             {{ $count }}
                                         </td>
                                         
