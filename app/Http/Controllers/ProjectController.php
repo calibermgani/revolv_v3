@@ -1564,20 +1564,20 @@ class ProjectController extends Controller
     public function getProjectTotalDetailedInformation($project_id, $sub_project_id)
     {
         $cacheKey = 'project_' . $project_id . '_' . $sub_project_id . '_detailed_info';
-        // return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($project_id, $sub_project_id) {
+        return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($project_id, $sub_project_id) {
             try {
                 $payload = [
                     'token' => '1a32e71a46317b9cc6feb7388238c95d',
-                    'client_id' => (int)$project_id,
-                    'sub_project_id' => (int)$sub_project_id
+                    'client_id' => $project_id,
+                    'sub_project_id' => $sub_project_id
                 ];
     
                 return retry(3, function () use ($payload) {
-                    $client = new Client();
+                    $client = new Client(['verify' => false]);
                     $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_detailied_information', [
                         'json' => $payload,
                     ]);
-                    
+    
                     if ($response->getStatusCode() == 200) {
                         $responseData = json_decode($response->getBody(), true);
                         return $responseData ?? null;
@@ -1593,6 +1593,6 @@ class ProjectController extends Controller
                 Log::error('Error in getprjDetailedInf: ' . $e->getMessage());
                 return null;
             }
-        // });
+        });
     }
 }
