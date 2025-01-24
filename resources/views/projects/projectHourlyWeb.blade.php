@@ -143,11 +143,14 @@
                                         <td>{{((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']) ?? $prjBillableFTE}}</td>
                                         <td>{{((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']/8) ?? $prjBillableFTE}}</td>
                                         @foreach ($data['hourlyCount'] as $count)
-                                        @if($prjBillableFTE != '--')
+                                        @if($prjBillableFTE !== '--')
                                         <td style="color: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8 ? 'red' : 'black' }}; font-weight: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8 ? 'bold' : 'normal' }};">
                                             {{ $count }}
                                         </td>
                                         @else
+                                        @php
+                                        dd($prjBillableFTE);
+                                        @endphp
                                         <td style="color:red !important">--</td>
                                         @endif
                                         @endforeach
