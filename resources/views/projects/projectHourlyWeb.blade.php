@@ -151,7 +151,7 @@
                                         <td>
                                             {{ $count }}
                                         </td>
-                                        
+                                        @endif
                                         @endforeach
                                         
                                         <td>{{trim($arReasonString,",")}}</td>
