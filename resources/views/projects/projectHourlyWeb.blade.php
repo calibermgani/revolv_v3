@@ -148,9 +148,7 @@
                                             {{ $count }}
                                         </td>
                                         @else
-                                        <td style="color:red">
-                                            {{ $count }}
-                                        </td>
+                                        <td style="color:red">{{ $count }}</td>
                                         @endif
                                         @endforeach
                                         
