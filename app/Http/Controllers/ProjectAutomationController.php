@@ -5760,9 +5760,9 @@ public function NexTrustBillingArDuplicates(Request $request)
         try {
             $attributes = [
                  'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,  
-                 'Patient' => isset($request->Patient) && $request->Patient != "NULL" ? $request->Patient : NULL,
+                 'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                  'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                 'Provider' => isset($request->Provider) && $request->Provider != "NULL" ? $request->Provider : NULL
+                 'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL
              ];         
 
             $duplicateRecordExisting  =  SmbArEvolution::where($attributes)->exists();
