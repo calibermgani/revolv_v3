@@ -119,6 +119,8 @@ use App\Models\PbhgEligibilityVerification;
 use App\Models\PbhgEligibilityVerificationDuplicates;
 use App\Models\MsEligibilityVerification;
 use App\Models\MsEligibilityVerificationDuplicates;
+use App\Models\SmbArEvolution;
+use App\Models\SmbArEvolutionDuplicates;
 class ProjectAutomationController extends Controller
 {
 
@@ -5742,6 +5744,119 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'religious_affiliation' => isset($request->religious_affiliation) && $request->religious_affiliation != "NULL" ? $request->religious_affiliation : NULL,
                 'text_messages' => isset($request->text_messages) && $request->text_messages != "NULL" ? $request->text_messages : NULL,
                 'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+    public function smbArEvolution(Request $request)
+    {
+        try {
+            $attributes = [
+                 'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,  
+                 'Patient' => isset($request->Patient) && $request->Patient != "NULL" ? $request->Patient : NULL,
+                 'Visit_Date' => isset($request->Visit_Date) && $request->Visit_Date != "NULL" ? $request->Visit_Date : NULL,
+                 'Provider' => isset($request->Provider) && $request->Provider != "NULL" ? $request->Provider : NULL
+             ];          
+
+            $duplicateRecordExisting  =  SmbArEvolution::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                SmbArEvolution::insert([
+                    'carrier' => isset($request->carrier) && $request->carrier != "NULL" ? $request->carrier : NULL,  
+                    'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,
+                    'uid_pt_dos' => isset($request->uid_pt_dos) && $request->uid_pt_dos != "NULL" ? $request->uid_pt_dos : NULL,
+                    'dup_uid_pt_dos' => isset($request->dup_uid_pt_dos) && $request->dup_uid_pt_dos != "NULL" ? $request->dup_uid_pt_dos : NULL,
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'year' => isset($request->year) && $request->year != "NULL" ? $request->year : NULL,
+                    'month' => isset($request->month) && $request->month != "NULL" ? $request->month : NULL,
+                    'days' => isset($request->days) && $request->days != "NULL" ? $request->days : NULL,
+                    'tdate' => isset($request->tdate) && $request->tdate != "NULL" ? $request->tdate : NULL,
+                    'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
+                    'disputed' => isset($request->disputed) && $request->disputed != "NULL" ? $request->disputed : NULL,
+                    'first_billed' => isset($request->first_billed) && $request->first_billed != "NULL" ? $request->first_billed : NULL,
+                    'last_billed' => isset($request->last_billed) && $request->last_billed != "NULL" ? $request->last_billed : NULL,
+                    'aged_0_to_30' => isset($request->aged_0_to_30) && $request->aged_0_to_30 != "NULL" ? $request->aged_0_to_30 : NULL,
+                    'aged_31_to_60' => isset($request->aged_31_to_60) && $request->aged_31_to_60 != "NULL" ? $request->aged_31_to_60 : NULL,
+                    'aged_61_to_90' => isset($request->aged_61_to_90) && $request->aged_61_to_90 != "NULL" ? $request->aged_61_to_90 : NULL,
+                    'aged_91_to_120' => isset($request->aged_91_to_120) && $request->aged_91_to_120 != "NULL" ? $request->aged_91_to_120 : NULL,
+                    'aged_121' => isset($request->aged_121) && $request->aged_121 != "NULL" ? $request->aged_121 : NULL,
+                    'total_owed' => isset($request->total_owed) && $request->total_owed != "NULL" ? $request->total_owed : NULL,
+                    'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  SmbArEvolution::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                if ($duplicateRecord) {
+                    $duplicateRecord->update([
+                        'carrier' => isset($request->carrier) && $request->carrier != "NULL" ? $request->carrier : NULL,  
+                        'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,
+                        'uid_pt_dos' => isset($request->uid_pt_dos) && $request->uid_pt_dos != "NULL" ? $request->uid_pt_dos : NULL,
+                        'dup_uid_pt_dos' => isset($request->dup_uid_pt_dos) && $request->dup_uid_pt_dos != "NULL" ? $request->dup_uid_pt_dos : NULL,
+                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'year' => isset($request->year) && $request->year != "NULL" ? $request->year : NULL,
+                        'month' => isset($request->month) && $request->month != "NULL" ? $request->month : NULL,
+                        'days' => isset($request->days) && $request->days != "NULL" ? $request->days : NULL,
+                        'tdate' => isset($request->tdate) && $request->tdate != "NULL" ? $request->tdate : NULL,
+                        'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
+                        'disputed' => isset($request->disputed) && $request->disputed != "NULL" ? $request->disputed : NULL,
+                        'first_billed' => isset($request->first_billed) && $request->first_billed != "NULL" ? $request->first_billed : NULL,
+                        'last_billed' => isset($request->last_billed) && $request->last_billed != "NULL" ? $request->last_billed : NULL,
+                        'aged_0_to_30' => isset($request->aged_0_to_30) && $request->aged_0_to_30 != "NULL" ? $request->aged_0_to_30 : NULL,
+                        'aged_31_to_60' => isset($request->aged_31_to_60) && $request->aged_31_to_60 != "NULL" ? $request->aged_31_to_60 : NULL,
+                        'aged_61_to_90' => isset($request->aged_61_to_90) && $request->aged_61_to_90 != "NULL" ? $request->aged_61_to_90 : NULL,
+                        'aged_91_to_120' => isset($request->aged_91_to_120) && $request->aged_91_to_120 != "NULL" ? $request->aged_91_to_120 : NULL,
+                        'aged_121' => isset($request->aged_121) && $request->aged_121 != "NULL" ? $request->aged_121 : NULL,
+                        'total_owed' => isset($request->total_owed) && $request->total_owed != "NULL" ? $request->total_owed : NULL,
+                        'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function smbArEvolutionDuplicates(Request $request)
+    {
+        try {
+            SmbArEvolutionDuplicates::insert([
+                    'carrier' => isset($request->carrier) && $request->carrier != "NULL" ? $request->carrier : NULL,  
+                    'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,
+                    'uid_pt_dos' => isset($request->uid_pt_dos) && $request->uid_pt_dos != "NULL" ? $request->uid_pt_dos : NULL,
+                    'dup_uid_pt_dos' => isset($request->dup_uid_pt_dos) && $request->dup_uid_pt_dos != "NULL" ? $request->dup_uid_pt_dos : NULL,
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'year' => isset($request->year) && $request->year != "NULL" ? $request->year : NULL,
+                    'month' => isset($request->month) && $request->month != "NULL" ? $request->month : NULL,
+                    'days' => isset($request->days) && $request->days != "NULL" ? $request->days : NULL,
+                    'tdate' => isset($request->tdate) && $request->tdate != "NULL" ? $request->tdate : NULL,
+                    'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
+                    'disputed' => isset($request->disputed) && $request->disputed != "NULL" ? $request->disputed : NULL,
+                    'first_billed' => isset($request->first_billed) && $request->first_billed != "NULL" ? $request->first_billed : NULL,
+                    'last_billed' => isset($request->last_billed) && $request->last_billed != "NULL" ? $request->last_billed : NULL,
+                    'aged_0_to_30' => isset($request->aged_0_to_30) && $request->aged_0_to_30 != "NULL" ? $request->aged_0_to_30 : NULL,
+                    'aged_31_to_60' => isset($request->aged_31_to_60) && $request->aged_31_to_60 != "NULL" ? $request->aged_31_to_60 : NULL,
+                    'aged_61_to_90' => isset($request->aged_61_to_90) && $request->aged_61_to_90 != "NULL" ? $request->aged_61_to_90 : NULL,
+                    'aged_91_to_120' => isset($request->aged_91_to_120) && $request->aged_91_to_120 != "NULL" ? $request->aged_91_to_120 : NULL,
+                    'aged_121' => isset($request->aged_121) && $request->aged_121 != "NULL" ? $request->aged_121 : NULL,
+                    'total_owed' => isset($request->total_owed) && $request->total_owed != "NULL" ? $request->total_owed : NULL,
+                    'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,

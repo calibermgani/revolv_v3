@@ -142,6 +142,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('pbhg_eligibility_verification_duplicate', 'App\Http\Controllers\ProjectAutomationController@pbhgEligibilityVerificationDuplicates');
     Route::any('ms_eligiblity_verification', 'App\Http\Controllers\ProjectAutomationController@msEligiblityVerification');
     Route::any('ms_eligiblity_verification_duplicate', 'App\Http\Controllers\ProjectAutomationController@msEligiblityVerificationDuplicates');
+    Route::any('smb_ar_evolution', 'App\Http\Controllers\ProjectAutomationController@smbArEvolution');
+    Route::any('smb_ar_evolution_duplicate', 'App\Http\Controllers\ProjectAutomationController@smbArEvolutionDuplicates');
 
 
 
