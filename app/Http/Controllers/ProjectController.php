@@ -1577,9 +1577,9 @@ class ProjectController extends Controller
                     $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_detailied_information', [
                         'json' => $payload,
                     ]);
-                    dd($response->getBody(),$payload);
+                    dd($response->getBody()->getContents(),$payload);
                     if ($response->getStatusCode() == 200) {
-                        $responseData = json_decode($response->getBody(), true);dd($responseData,$payload);
+                        $responseData = json_decode($response->getBody(), true);
                         return $responseData ?? null;
                     } elseif ($response->getStatusCode() == 429) {
                         $retryAfter = $response->getHeader('Retry-After')[0] ?? 60;
