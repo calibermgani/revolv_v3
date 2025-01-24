@@ -1563,7 +1563,7 @@ class ProjectController extends Controller
     }
     public function getProjectTotalDetailedInformation($project_id, $sub_project_id)
     {
-        $cacheKey = 'project_' . $project_id . '_' . $sub_project_id . '_sla_target';
+        $cacheKey = 'project_' . $project_id . '_' . $sub_project_id . '_detailed_info';
         return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($project_id, $sub_project_id) {
             try {
                 $payload = [
