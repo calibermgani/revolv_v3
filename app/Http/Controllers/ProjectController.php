@@ -1579,7 +1579,7 @@ class ProjectController extends Controller
                     ]);
     
                     if ($response->getStatusCode() == 200) {
-                        $responseData = json_decode($response->getBody(), true);
+                        $responseData = json_decode($response->getBody(), true);dd($responseData);
                         return $responseData ?? null;
                     } elseif ($response->getStatusCode() == 429) {
                         $retryAfter = $response->getHeader('Retry-After')[0] ?? 60;
