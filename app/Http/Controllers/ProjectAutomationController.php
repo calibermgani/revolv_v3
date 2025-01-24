@@ -5763,7 +5763,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                  'Patient' => isset($request->Patient) && $request->Patient != "NULL" ? $request->Patient : NULL,
                  'Visit_Date' => isset($request->Visit_Date) && $request->Visit_Date != "NULL" ? $request->Visit_Date : NULL,
                  'Provider' => isset($request->Provider) && $request->Provider != "NULL" ? $request->Provider : NULL
-             ];          
+             ];          dd($request->all());
 
             $duplicateRecordExisting  =  SmbArEvolution::where($attributes)->exists();
             if (!$duplicateRecordExisting) {
