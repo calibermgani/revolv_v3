@@ -121,6 +121,8 @@ use App\Models\MsEligibilityVerification;
 use App\Models\MsEligibilityVerificationDuplicates;
 use App\Models\SmbArEvolution;
 use App\Models\SmbArEvolutionDuplicates;
+use App\Models\SmbArProactive;
+use App\Models\SmbArProactiveDuplicates;
 class ProjectAutomationController extends Controller
 {
 
@@ -5857,6 +5859,105 @@ public function NexTrustBillingArDuplicates(Request $request)
                     'aged_121' => isset($request->aged_121) && $request->aged_121 != "NULL" ? $request->aged_121 : NULL,
                     'total_owed' => isset($request->total_owed) && $request->total_owed != "NULL" ? $request->total_owed : NULL,
                     'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function smbArProactive(Request $request)
+    {
+        try {
+            $attributes = [
+                  'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL,
+                  'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL
+             ];         
+
+            $duplicateRecordExisting  =  SmbArProactive::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                SmbArProactive::insert([
+                    'uid_pt_dos' => isset($request->uid_pt_dos) && $request->uid_pt_dos != "NULL" ? $request->uid_pt_dos : NULL,
+                    'dup_uid_pt_dos' => isset($request->dup_uid_pt_dos) && $request->dup_uid_pt_dos != "NULL" ? $request->dup_uid_pt_dos : NULL,
+                    'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL,
+                    'days' => isset($request->days) && $request->days != "NULL" ? $request->days : NULL,
+                    'since' => isset($request->since) && $request->since != "NULL" ? $request->since : NULL,  
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'year' => isset($request->year) && $request->year != "NULL" ? $request->year : NULL,
+                    'month' => isset($request->month) && $request->month != "NULL" ? $request->month : NULL,
+                    'tdate' => isset($request->tdate) && $request->tdate != "NULL" ? $request->tdate : NULL,
+                    'service' => isset($request->service) && $request->service != "NULL" ? $request->service : NULL,
+                    'client' => isset($request->client) && $request->client != "NULL" ? $request->client : NULL,
+                    'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                    'cdate' => isset($request->cdate) && $request->cdate != "NULL" ? $request->cdate : NULL,
+                    'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
+                    'ins' => isset($request->ins) && $request->ins != "NULL" ? $request->ins : NULL,
+                    'adj' => isset($request->adj) && $request->adj != "NULL" ? $request->adj : NULL,
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  SmbArProactive::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                if ($duplicateRecord) {
+                    $duplicateRecord->update([
+                        'uid_pt_dos' => isset($request->uid_pt_dos) && $request->uid_pt_dos != "NULL" ? $request->uid_pt_dos : NULL,
+                        'dup_uid_pt_dos' => isset($request->dup_uid_pt_dos) && $request->dup_uid_pt_dos != "NULL" ? $request->dup_uid_pt_dos : NULL,
+                        'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL,
+                        'days' => isset($request->days) && $request->days != "NULL" ? $request->days : NULL,
+                        'since' => isset($request->since) && $request->since != "NULL" ? $request->since : NULL,  
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'year' => isset($request->year) && $request->year != "NULL" ? $request->year : NULL,
+                        'month' => isset($request->month) && $request->month != "NULL" ? $request->month : NULL,
+                        'tdate' => isset($request->tdate) && $request->tdate != "NULL" ? $request->tdate : NULL,
+                        'service' => isset($request->service) && $request->service != "NULL" ? $request->service : NULL,
+                        'client' => isset($request->client) && $request->client != "NULL" ? $request->client : NULL,
+                        'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                        'cdate' => isset($request->cdate) && $request->cdate != "NULL" ? $request->cdate : NULL,
+                        'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
+                        'ins' => isset($request->ins) && $request->ins != "NULL" ? $request->ins : NULL,
+                        'adj' => isset($request->adj) && $request->adj != "NULL" ? $request->adj : NULL,
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function smbArProactiveDuplicates(Request $request)
+    {
+        try {
+            SmbArProactiveDuplicates::insert([
+                    'uid_pt_dos' => isset($request->uid_pt_dos) && $request->uid_pt_dos != "NULL" ? $request->uid_pt_dos : NULL,
+                    'dup_uid_pt_dos' => isset($request->dup_uid_pt_dos) && $request->dup_uid_pt_dos != "NULL" ? $request->dup_uid_pt_dos : NULL,
+                    'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL,
+                    'days' => isset($request->days) && $request->days != "NULL" ? $request->days : NULL,
+                    'since' => isset($request->since) && $request->since != "NULL" ? $request->since : NULL,  
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'year' => isset($request->year) && $request->year != "NULL" ? $request->year : NULL,
+                    'month' => isset($request->month) && $request->month != "NULL" ? $request->month : NULL,
+                    'tdate' => isset($request->tdate) && $request->tdate != "NULL" ? $request->tdate : NULL,
+                    'service' => isset($request->service) && $request->service != "NULL" ? $request->service : NULL,
+                    'client' => isset($request->client) && $request->client != "NULL" ? $request->client : NULL,
+                    'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                    'cdate' => isset($request->cdate) && $request->cdate != "NULL" ? $request->cdate : NULL,
+                    'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
+                    'ins' => isset($request->ins) && $request->ins != "NULL" ? $request->ins : NULL,
+                    'adj' => isset($request->adj) && $request->adj != "NULL" ? $request->adj : NULL,
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
