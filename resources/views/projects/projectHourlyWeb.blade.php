@@ -72,11 +72,11 @@
                         <thead>
                             <tr>
                                 <th>Project</th>
-                                {{-- <th>Manager Name</th>
+                                <th>Manager Name</th>
                                 <th>Billable FTE</th>
                                 <th>SLA Target</th>
                                 <th>Target/day</th>
-                                <th>Target/Hour</th> --}}
+                                <th>Target/Hour</th>
                                 @foreach ($headers as $timeSlot)
                                     <th>
                                         {{ $timeSlot }}</th>
@@ -117,12 +117,12 @@
                                         $qaReasonString = '--';
                                     }
                                     // App\Jobs\getProjectSubProjectManager::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
-                                    //  App\Jobs\getProjectSubProjectBillableFTE::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
+                                      App\Jobs\getProjectSubProjectBillableFTE::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
                                     // $prjMgrCacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'Manager' ;
-                                    // $prjBillableFTECacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'BillableFTE' ;
+                                    $prjBillableFTECacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'BillableFTE' ;
                                     // $prjSLATargetCacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'SLATarget' ;
                                     // $prjMgrName = Cache::get($prjMgrCacheKey, '--');
-                                    // $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
+                                    $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
                                     //  $prjSLATarget = Cache::get($prjSLATargetCacheKey, 0);
                                 @endphp
                                     <tr>
@@ -137,9 +137,13 @@
                                         <td>{{$prjSLATarget}}</td>
                                         <td>{{(int)$prjBillableFTE * $prjSLATarget}}</td>
                                         <td>{{(int)$prjBillableFTE* $prjSLATarget/8}}</td> --}}
+                                        <td>{{$prjBillableFTE['prjMgrName']}}</td>
+                                        <td>{{$prjBillableFTE['prjBillableCount']}}</td>
+                                        <td>{{$prjBillableFTE['projectSLATarget']}}</td>
+                                        <td>{{(int)$prjBillableFTE['prjBillableCount'] * $prjBillableFTE['projectSLATarget']}}</td>
+                                        <td>{{(int)$prjBillableFTE['prjBillableCount'] * $prjBillableFTE['projectSLATarget']/8}}</td>
                                         @foreach ($data['hourlyCount'] as $count)
-                                        {{-- <td style="color: {{ $count < (int)$prjBillableFTE * $prjSLATarget / 8 ? 'red' : 'black' }}; font-weight: {{ $count < (int)$prjBillableFTE * $prjSLATarget / 8 ? 'bold' : 'normal' }};"> --}}
-                                          <td>
+                                        <td style="color: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * $prjBillableFTE['projectSLATarget'] / 8 ? 'red' : 'black' }}; font-weight: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * $prjBillableFTE['projectSLATarget'] / 8 ? 'bold' : 'normal' }};">
                                             {{ $count }}
                                         </td>
                                         
