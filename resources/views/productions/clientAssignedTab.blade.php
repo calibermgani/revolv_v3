@@ -622,7 +622,7 @@ use Carbon\Carbon;
                                                                                 <div class="col-md-10">
                                                                                     @if ($options == null)
                                                                                         @if ($inputType != 'date_range')
-                                                                                            {!! Form::$inputType($columnName . '[]', null, [
+                                                                                            {!! Form::$inputType($columnName . '[]', old($columnName, $data->$columnName ?? null), [
                                                                                                 'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val',
                                                                                                 'autocomplete' => 'none',
                                                                                                 'style' => 'cursor:pointer',
