@@ -941,7 +941,7 @@ class ProductionController extends Controller
                 $data = [];
                 foreach ($request->except('_token', 'parent', 'child','page','idValue','auth_comments') as $key => $value) {
                     if (is_array($value)) {
-                        $data[$key] = implode('_el_', $value);
+                        $data[$key] = implode('_el_', $value);dd($data,$value,$key,'el');
                     } else {
                         $data[$key] = $value;dd($data,$value,$key);
                     }
