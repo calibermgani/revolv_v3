@@ -44,6 +44,11 @@
             <thead>
                 <tr>
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Project</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Manager Name</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Billable FTE</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">SLA Target</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Target/day</th>
+                    <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Target/Hour</th>
                     @foreach ($timeSlots as $timeSlot)
                         <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">{{ $timeSlot }}</th>
                     @endforeach
@@ -81,6 +86,9 @@
                             $qaReasons[] = '--'; 
                             $qaReasonString = '--';
                         }
+                        App\Jobs\getProjectSubProjectBillableFTE::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
+                        $prjBillableFTECacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'BillableFTE' ;
+                        $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
                     @endphp
                         <tr>
                             <td style="text-align: center; padding: 5px;">
@@ -97,9 +105,24 @@
                           @endphp --}}
                                 {{-- <td style="text-align: center;padding: 5px;">{{ $data['hourlyCount'] }}</td> --}}
                             {{-- @endforeach --}}
+                            <td style="text-align: center; padding: 5px;">{{$prjBillableFTE['prjMgrName'] ?? $prjBillableFTE}}</td>
+                            <td style="text-align: center; padding: 5px;">{{$prjBillableFTE['prjBillableCount'] ?? $prjBillableFTE}}</td>
+                            <td style="text-align: center; padding: 5px;">{{$prjBillableFTE['projectSLATarget'] ?? $prjBillableFTE}}</td>
+                            <td style="text-align: center; padding: 5px;">{{((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']) ?? $prjBillableFTE}}</td>
+                            <td style="text-align: center; padding: 5px;">{{((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']/8) ?? $prjBillableFTE}}</td>
                             @foreach ($data['hourlyCount'] as $count)
+                            {{-- <td>{{ $count }}</td> --}}
+                            @if($prjBillableFTE != '--')
+                            <td style="text-align: center;padding: 5px;color: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8 ? 'red' : 'black' }}; font-weight: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8 ? 'bold' : 'normal' }};">
+                                {{ $count }}
+                            </td>
+                            @else
+                            <td style="color:red !important;text-align: center;padding: 5px;">{{ $count }}</td>
+                            @endif
+                            @endforeach
+                            {{-- @foreach ($data['hourlyCount'] as $count)
                                <td style="text-align: center;padding: 5px;">{{ $count }}</td>
-                           @endforeach
+                           @endforeach --}}
                            <td style="text-align: center;padding: 5px;">{{trim($arReasonString,",")}}</td>
                            <td style="text-align: center;padding: 5px;">{{trim($qaReasonString,",")}}</td>
                         </tr>
