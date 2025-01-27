@@ -129,8 +129,8 @@
                                         <td>{{$prjBillableFTE['prjMgrName'] ?? $prjBillableFTE}}</td>
                                         <td>{{$prjBillableFTE['prjBillableCount'] ?? $prjBillableFTE}}</td>
                                         <td>{{$prjBillableFTE['projectSLATarget'] ?? $prjBillableFTE}}</td>
-                                        <td>{{((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']) ?? $prjBillableFTE}}</td>
-                                        <td>{{((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']/8) ?? $prjBillableFTE}}</td>
+                                        <td>{{(round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'])) ?? $prjBillableFTE}}</td>
+                                        <td>{{(round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']/8)) ?? $prjBillableFTE}}</td>
                                         @foreach ($data['hourlyCount'] as $count)
                                         {{-- <td>{{ $count }}</td> --}}
                                         @if($prjBillableFTE != '--')
