@@ -939,11 +939,11 @@ class ProductionController extends Controller
                 $originalModelClass = "App\\Models\\" . $modelName;
                 // $modelClass = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',ucfirst($decodedClientName).ucfirst($decodedsubProjectName)).'Datas';
                 $data = [];
-                foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
+                foreach ($request->except('_token', 'parent', 'child','page','idValue','auth_comments') as $key => $value) {
                     if (is_array($value)) {
                         $data[$key] = implode('_el_', $value);
                     } else {
-                        $data[$key] = $value;dd($data,$value,$key);
+                        $data[$key] = $value;dd($data[],$value,$key);
                     }
                 }dd($data);
                 $data['invoke_date'] = date('Y-m-d',strtotime($data['invoke_date']));
