@@ -1048,7 +1048,7 @@ class ProductionController extends Controller
                 }
                 $data = array_map(function ($value) {
                     return $value === '' ? null : $value;
-                }, $data);
+                }, $data);dd($data);
                  if($datasRecord != null) {
                     $datasRecord->update($data);
                   ($data['chart_status'] == "CE_Completed") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'coder_work_date' => $data['coder_work_date']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason']] );
