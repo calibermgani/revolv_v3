@@ -943,7 +943,7 @@ class ProductionController extends Controller
                     if (is_array($value)) {
                         $data[$key] = implode('_el_', $value);
                     } else {
-                        $data[$key] = $value;
+                        $data[$key] = $value;dd($data,$value,$key);
                     }
                 }dd($data);
                 $data['invoke_date'] = date('Y-m-d',strtotime($data['invoke_date']));
