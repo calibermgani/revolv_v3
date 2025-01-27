@@ -945,7 +945,7 @@ class ProductionController extends Controller
                     } else {
                         $data[$key] = $value;
                     }
-                }
+                }dd($data);
                 $data['invoke_date'] = date('Y-m-d',strtotime($data['invoke_date']));
                 $data['parent_id'] = $data['idValue'];
                 $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','desc')->first();
