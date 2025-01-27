@@ -146,6 +146,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('smb_ar_evolution_duplicate', 'App\Http\Controllers\ProjectAutomationController@smbArEvolutionDuplicates');
     Route::any('smb_ar_proactive', 'App\Http\Controllers\ProjectAutomationController@smbArProactive');
     Route::any('smb_ar_proactive_duplicate', 'App\Http\Controllers\ProjectAutomationController@smbArProactiveDuplicates');
+    Route::any('aops_pre_auth_verification', 'App\Http\Controllers\ProjectAutomationController@aopsPreAuthVerification');
+    Route::any('aops_pre_auth_verification_duplicate', 'App\Http\Controllers\ProjectAutomationController@aopsPreAuthVerificationDuplicates');
 
 
 
