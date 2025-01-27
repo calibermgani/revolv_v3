@@ -942,11 +942,11 @@ class ProductionController extends Controller
                 foreach ($request->except('_token', 'parent', 'child','page','idValue','auth_comments') as $key => $value) {
                     if (is_array($value)) {
                         // $data[$key] = implode('_el_', $value);
-                        $data[$key] = in_array(null, $value, true) ? null : implode('_el_', $value);dd( $data[$key],$value,$key,'elee');
+                        $data[$key] = in_array(null, $value, true) ? null : implode('_el_', $value);
                     } else {
-                        $data[$key] = $value;dd($data,$value,$key);
+                        $data[$key] = $value;
                     }
-                }dd($data);
+                }
                 $data['invoke_date'] = date('Y-m-d',strtotime($data['invoke_date']));
                 $data['parent_id'] = $data['idValue'];
                 $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','desc')->first();
@@ -1046,10 +1046,7 @@ class ProductionController extends Controller
                 }
                 if(isset($data['annex_coder_trends']) && $data['annex_coder_trends'] != null) {
                    $data['annex_coder_trends'] = isset($data['annex_coder_trends']) && $data['annex_coder_trends'] != null ?  str_replace("\r\n", '_el_', $data['annex_coder_trends']) : null;
-                }dd($data);
-                $data = array_map(function ($value) {
-                    return $value === '' ? null : $value;
-                }, $data);
+                }
                  if($datasRecord != null) {
                     $datasRecord->update($data);
                   ($data['chart_status'] == "CE_Completed") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'coder_work_date' => $data['coder_work_date']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason']] );
