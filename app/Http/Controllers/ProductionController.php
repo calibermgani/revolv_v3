@@ -1313,7 +1313,7 @@ class ProductionController extends Controller
                 $data = [];
                 foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
                     if (is_array($value)) {
-                        $data[$key] = implode('_el_', $value);
+                        $data[$key] = in_array(null, $value, true) ? null : implode('_el_', $value);
                     } else {
                         $data[$key] = $value;
                     }
@@ -1630,7 +1630,7 @@ class ProductionController extends Controller
                 $data = [];
                 foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
                     if (is_array($value)) {
-                        $data[$key] = implode('_el_', $value);
+                          $data[$key] = in_array(null, $value, true) ? null : implode('_el_', $value);
                     } else {
                         $data[$key] = $value;
                     }
