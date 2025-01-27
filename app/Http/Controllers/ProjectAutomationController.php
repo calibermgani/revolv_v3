@@ -239,6 +239,7 @@ class ProjectAutomationController extends Controller
                 'last_action' => isset($request->last_action) && $request->last_action != "NULL" ? $request->last_action : NULL,
                 'follow_up_date' => isset($request->follow_up_date) && $request->follow_up_date != "NULL" ? $request->follow_up_date : NULL,
                 'follow_up_action' => isset($request->follow_up_action) && $request->follow_up_action != "NULL" ? $request->follow_up_action : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
             ];
 
             $duplicateRecordExisting  =  OmsiAr::where($attributes)->exists();
@@ -339,6 +340,7 @@ class ProjectAutomationController extends Controller
                 'all_chgs' => isset($request->all_chgs) && $request->all_chgs != "NULL" ? $request->all_chgs : NULL,
                 'primary_bal' => isset($request->primary_bal) && $request->primary_bal != "NULL" ? $request->primary_bal : NULL,
                 'secondary_bal' => isset($request->secondary_bal) && $request->secondary_bal != "NULL" ? $request->secondary_bal : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
             ];
 
             $duplicateRecordExisting  =  NuAr::where($attributes)->exists();
@@ -438,6 +440,7 @@ class ProjectAutomationController extends Controller
                 'adjustment'=>isset($request->adjustment) && $request->adjustment != "NULL" ? $request->adjustment : NULL,
                 'pmts_else_adjs'=>isset($request->pmts_else_adjs) && $request->pmts_else_adjs != "NULL" ? $request->pmts_else_adjs : NULL,
                 'claim_type'=>isset($request->claim_type) && $request->claim_type != "NULL" ? $request->claim_type : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
             ];
 
             $duplicateRecordExisting  =  ChsiAr::where($attributes)->exists();
@@ -543,7 +546,8 @@ class ProjectAutomationController extends Controller
                 'office_name' => isset($request->office_name) && $request->office_name != "NULL" ? $request->office_name : NULL,
                 'doctor_name' => isset($request->doctor_name) && $request->doctor_name != "NULL" ? $request->doctor_name : NULL,
                 'ins_name' => isset($request->ins_name) && $request->ins_name != "NULL" ? $request->ins_name : NULL,
-                'fc' => isset($request->fc) && $request->fc != "NULL" ? $request->fc : NULL
+                'fc' => isset($request->fc) && $request->fc != "NULL" ? $request->fc : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
             ];
 
             $duplicateRecordExisting  =  MhawAr::where($attributes)->exists();
@@ -639,7 +643,8 @@ class ProjectAutomationController extends Controller
                 'comments' => isset($request->comments) && $request->comments != "NULL" ? $request->comments : NULL,
                 'credible_notes' => isset($request->credible_notes) && $request->credible_notes != "NULL" ? $request->credible_notes : NULL,
                 'balance_range' => isset($request->balance_range) && $request->balance_range != "NULL" ? $request->balance_range : NULL,
-                'cpt_modifier' => isset($request->cpt_modifier) && $request->cpt_modifier != "NULL" ? $request->cpt_modifier : NULL
+                'cpt_modifier' => isset($request->cpt_modifier) && $request->cpt_modifier != "NULL" ? $request->cpt_modifier : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
             ];
 
             $duplicateRecordExisting  =  LscAr::where($attributes)->exists();
@@ -765,7 +770,8 @@ class ProjectAutomationController extends Controller
                 '60_to_90' => isset($request->sixtytoninty) && $request->sixtytoninty != "NULL" ? $request->sixtytoninty : NULL,
                 '90_above' => isset($request->nintyabove) && $request->sixtytonighty != "NULL" ? $request->sixtytonighty : NULL,
                 'total' => isset($request->total) && $request->total != "NULL" ? $request->total : NULL,
-                'previous_payment' => isset($request->previous_payment) && $request->previous_payment != "NULL" ? $request->previous_payment : NULL
+                'previous_payment' => isset($request->previous_payment) && $request->previous_payment != "NULL" ? $request->previous_payment : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
             ];
 
             $duplicateRecordExisting  =  MatcAr::where($attributes)->exists();
@@ -871,7 +877,8 @@ class ProjectAutomationController extends Controller
                 'value_bucket' => isset($request->value_bucket) && $request->value_bucket != "NULL" ? $request->value_bucket : NULL,
                 'plan' => isset($request->plan) && $request->plan != "NULL" ? $request->plan : NULL,
                 'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
-                'diagnosis' => isset($request->diagnosis) && $request->diagnosis != "NULL" ? $request->diagnosis : NULL
+                'diagnosis' => isset($request->diagnosis) && $request->diagnosis != "NULL" ? $request->diagnosis : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
             ];
 
             $duplicateRecordExisting  =  GchsAr::where($attributes)->exists();
@@ -958,6 +965,7 @@ class ProjectAutomationController extends Controller
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
                 'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
                 'ins1_amt' => isset($request->ins1_amt) && $request->ins1_amt != "NULL" ? $request->ins1_amt : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
                ];
 
             $duplicateRecordExisting  =  AsopAr::where($attributes)->exists();
@@ -1047,6 +1055,7 @@ class ProjectAutomationController extends Controller
                 'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
                 'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
                 'last_submission_date' => isset($request->last_submission_date) && $request->last_submission_date != "NULL" ? $request->last_submission_date : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
             ];
 
             $duplicateRecordExisting  =  RcmAr::where($attributes)->exists();
@@ -1141,6 +1150,7 @@ class ProjectAutomationController extends Controller
                  'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
                  'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
                  'guarantor_name' => isset($request->guarantor_name) && $request->guarantor_name != "NULL" ? $request->guarantor_name : NULL,
+                 'invoke_date' => carbon::now()->format('Y-m-d')
              ];
  
              $duplicateRecordExisting  =  RmcAr::where($attributes)->exists();
@@ -1242,8 +1252,7 @@ class ProjectAutomationController extends Controller
                  'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
                  'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
                  'total_ba' => isset($request->total_ba) && $request->total_ba != "NULL" ? $request->total_ba : NULL,
-                
-                 
+                 'invoke_date' => carbon::now()->format('Y-m-d')               
              ];
  
              $duplicateRecordExisting  =  AopsAr::where($attributes)->exists();
@@ -1323,8 +1332,7 @@ class ProjectAutomationController extends Controller
              'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
              'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
              'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
-            
-             
+             'invoke_date' => carbon::now()->format('Y-m-d')           
          ];
 
          $duplicateRecordExisting  =  NaAr::where($attributes)->exists();
@@ -1387,8 +1395,7 @@ class ProjectAutomationController extends Controller
  } 
 
 
- public function NeurologyAssociatesARDuplicates(Request $request)
-     {
+     public function NeurologyAssociatesARDuplicates(Request $request) {
          try {
             NaArDuplicates::insert([
                 'claims' => isset($request->claims) && $request->claims != "NULL" ? $request->claims : NULL,
@@ -1418,10 +1425,6 @@ class ProjectAutomationController extends Controller
          }
      }
 
-/*************  ✨ Codeium Command ⭐  *************/
-        /**
-         * Store a newly created resource in storage.
-/******  55baa038-4444-4675-86d5-c8357e15ea32  *******/
      public function leakUrologyAR(Request $request)
      {
          try {
@@ -1436,7 +1439,8 @@ class ProjectAutomationController extends Controller
                  'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
                  'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
                  'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
-                 'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL               
+                 'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,
+                 'invoke_date' => carbon::now()->format('Y-m-d')               
              ];
  
              $duplicateRecordExisting  =  LuAr::where($attributes)->exists();
@@ -1545,7 +1549,8 @@ class ProjectAutomationController extends Controller
                  'supervising_provider_name' => isset($request->supervising_provider_name) && $request->supervising_provider_name != "NULL" ? $request->supervising_provider_name : NULL,       
                  'claim_amount' => isset($request->claim_amount) && $request->claim_amount != "NULL" ? $request->claim_amount : NULL,
                  'collected' => isset($request->collected) && $request->collected != "NULL" ? $request->collected : NULL,
-                 'total_balance' => isset($request->total_balance) && $request->total_balance != "NULL" ? $request->total_balance : NULL
+                 'total_balance' => isset($request->total_balance) && $request->total_balance != "NULL" ? $request->total_balance : NULL,
+                 'invoke_date' => carbon::now()->format('Y-m-d')
              ];
  
              $duplicateRecordExisting  =  BmrhcAr::where($attributes)->exists();
@@ -1690,7 +1695,8 @@ class ProjectAutomationController extends Controller
                  'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL,
                  'ins_mem_id' => isset($request->ins_mem_id) && $request->ins_mem_id != "NULL" ? $request->ins_mem_id : NULL,
                  'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
-                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL   
+                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                 'invoke_date' => carbon::now()->format('Y-m-d')   
              ];
  
              $duplicateRecordExisting  =  CarsAr::where($attributes)->exists();
@@ -1782,6 +1788,7 @@ class ProjectAutomationController extends Controller
                  'payer_mix' => isset($request->payer_mix) && $request->payer_mix != "NULL" ? $request->payer_mix : NULL,  
                  'insurance_plan' => isset($request->insurance_plan) && $request->insurance_plan != "NULL" ? $request->insurance_plan : NULL,  
                  'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->date_touched : NULL,  
+                 'invoke_date' => carbon::now()->format('Y-m-d')
              ];
  
              $duplicateRecordExisting  =  NmNcgGottengerAr::where($attributes)->exists();
@@ -1900,6 +1907,7 @@ class ProjectAutomationController extends Controller
                  'payer_mix' => isset($request->payer_mix) && $request->payer_mix != "NULL" ? $request->payer_mix : NULL,  
                  'insurance_plan' => isset($request->insurance_plan) && $request->insurance_plan != "NULL" ? $request->insurance_plan : NULL,  
                  'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->date_touched : NULL,  
+                 'invoke_date' => carbon::now()->format('Y-m-d')
              ];
  
              $duplicateRecordExisting  =  NmNcgHudsonAr::where($attributes)->exists();
@@ -2018,6 +2026,7 @@ class ProjectAutomationController extends Controller
                  'payer_mix' => isset($request->payer_mix) && $request->payer_mix != "NULL" ? $request->payer_mix : NULL,  
                  'insurance_plan' => isset($request->insurance_plan) && $request->insurance_plan != "NULL" ? $request->insurance_plan : NULL,  
                  'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->date_touched : NULL,  
+                 'invoke_date' => carbon::now()->format('Y-m-d')
              ];
  
              $duplicateRecordExisting  =  NmNcgHscAr::where($attributes)->exists();
@@ -2136,6 +2145,7 @@ class ProjectAutomationController extends Controller
                  'payer_mix' => isset($request->payer_mix) && $request->payer_mix != "NULL" ? $request->payer_mix : NULL,  
                  'insurance_plan' => isset($request->insurance_plan) && $request->insurance_plan != "NULL" ? $request->insurance_plan : NULL,  
                  'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->date_touched : NULL,  
+                 'invoke_date' => carbon::now()->format('Y-m-d')
              ];
  
              $duplicateRecordExisting  =  NmNcgPsssf::where($attributes)->exists();
@@ -2239,6 +2249,7 @@ class ProjectAutomationController extends Controller
                 'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,
                 'ins_pkg_name' => isset($request->ins_pkg_name) && $request->ins_pkg_name != "NULL" ? $request->ins_pkg_name : NULL,
                 'srvbucket_total' => isset($request->srvbucket_total) && $request->srvbucket_total != "NULL" ? $request->srvbucket_total : NULL,  
+                'invoke_date' => carbon::now()->format('Y-m-d')
                 ];
  
              $duplicateRecordExisting  =  SrmgAr::where($attributes)->exists();
@@ -2356,10 +2367,11 @@ class ProjectAutomationController extends Controller
      public function ValleyUrogynecologyAssociatesAR(Request $request)
      {
          try {
-             $attributes = [
-                'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,
-                'ins_pkg_name' => isset($request->ins_pkg_name) && $request->ins_pkg_name != "NULL" ? $request->ins_pkg_name : NULL,
-                'srvbucket_total' => isset($request->srvbucket_total) && $request->srvbucket_total != "NULL" ? $request->srvbucket_total : NULL,  
+                $attributes = [
+                    'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,
+                    'ins_pkg_name' => isset($request->ins_pkg_name) && $request->ins_pkg_name != "NULL" ? $request->ins_pkg_name : NULL,
+                    'srvbucket_total' => isset($request->srvbucket_total) && $request->srvbucket_total != "NULL" ? $request->srvbucket_total : NULL,  
+                    'invoke_date' => carbon::now()->format('Y-m-d')
                 ];
  
              $duplicateRecordExisting  =  VuaAr::where($attributes)->exists();
@@ -2480,7 +2492,8 @@ class ProjectAutomationController extends Controller
              $attributes = [
                 'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,
                 'ins_pkg_name' => isset($request->ins_pkg_name) && $request->ins_pkg_name != "NULL" ? $request->ins_pkg_name : NULL,
-                'srvbucket_total' => isset($request->srvbucket_total) && $request->srvbucket_total != "NULL" ? $request->srvbucket_total : NULL,  
+                'srvbucket_total' => isset($request->srvbucket_total) && $request->srvbucket_total != "NULL" ? $request->srvbucket_total : NULL, 
+                'invoke_date' => carbon::now()->format('Y-m-d') 
                 ];
  
              $duplicateRecordExisting  =  AmbcPrnAr::where($attributes)->exists();
@@ -2608,6 +2621,7 @@ class ProjectAutomationController extends Controller
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
                 'phone_number' => isset($request->phone_number) && $request->phone_number != "NULL" ? $request->phone_number : NULL,  
                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,  
+                'invoke_date' => carbon::now()->format('Y-m-d')
                 ];
  
              $duplicateRecordExisting  =  CfpsAr::where($attributes)->exists();
@@ -2685,7 +2699,8 @@ class ProjectAutomationController extends Controller
                 'claimid' => isset($request->claimid) && $request->claimid != "NULL" ? $request->claimid : NULL,
                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
-                'ins_pkg_name' => isset($request->ins_pkg_name) && $request->ins_pkg_name != "NULL" ? $request->ins_pkg_name: NULL
+                'ins_pkg_name' => isset($request->ins_pkg_name) && $request->ins_pkg_name != "NULL" ? $request->ins_pkg_name: NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
                 ];
  
              $duplicateRecordExisting  =  DkmgAr::where($attributes)->exists();
@@ -2806,7 +2821,8 @@ class ProjectAutomationController extends Controller
              $attributes = [
                 'charge_id' => isset($request->charge_id) && $request->charge_id != "NULL" ? $request->charge_id : NULL,
                 'client_name' => isset($request->client_name) && $request->client_name != "NULL" ? $request->client_name : NULL,  
-                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
                 ];
  
              $duplicateRecordExisting  =  BncmhcAr::where($attributes)->exists();
@@ -2885,13 +2901,13 @@ class ProjectAutomationController extends Controller
 
   // Retina Northwest
 
-  public function RetinaNorthwestAR(Request $request)
-     {
+     public function RetinaNorthwestAR(Request $request) {
          try {
              $attributes = [
                 'acct_no' => isset($request->acct_no) && $request->acct_no != "NULL" ? $request->acct_no : NULL,                
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
-                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance: NULL
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance: NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
                 ];
  
              $duplicateRecordExisting  =  RnAr::where($attributes)->exists();
@@ -3040,7 +3056,8 @@ class ProjectAutomationController extends Controller
                 'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt: NULL,
                 'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt: NULL,
                 'insurance_plan' => isset($request->insurance_plan) && $request->insurance_plan != "NULL" ? $request->insurance_plan: NULL,
-                'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility: NULL
+                'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility: NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
                 ];
  
              $duplicateRecordExisting  =  MmhAr::where($attributes)->exists();
@@ -3126,6 +3143,7 @@ class ProjectAutomationController extends Controller
                 'last_edi_date' => isset($request->last_edi_date) && $request->last_edi_date != "NULL" ? $request->last_edi_date: NULL,
                 'billing_status' => isset($request->billing_status) && $request->billing_status != "NULL" ? $request->billing_status: NULL,
                 'total_insurance_balance' => isset($request->total_insurance_balance) && $request->total_insurance_balance != "NULL" ? $request->total_insurance_balance: NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
                 ];
  
              $duplicateRecordExisting  =  RhAr::where($attributes)->exists();
@@ -3212,6 +3230,7 @@ class ProjectAutomationController extends Controller
                 'billing_provider' => isset($request->billing_provider) && $request->billing_provider != "NULL" ? $request->billing_provider : NULL,  
                 'payer_id' => isset($request->payer_id) && $request->payer_id != "NULL" ? $request->payer_id : NULL,  
                 'policy_id' => isset($request->policy_id) && $request->policy_id != "NULL" ? $request->policy_id : NULL,  
+                'invoke_date' => carbon::now()->format('Y-m-d')
                 ];
  
              $duplicateRecordExisting  =  AmbcAmbcAr::where($attributes)->exists();
@@ -3283,7 +3302,8 @@ class ProjectAutomationController extends Controller
                     'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
                     'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
                     'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,  
-                    'ar_balance' => isset($request->ar_balance) && $request->ar_balance != "NULL" ? $request->ar_balance : NULL,  
+                    'ar_balance' => isset($request->ar_balance) && $request->ar_balance != "NULL" ? $request->ar_balance : NULL, 
+                    'invoke_date' => carbon::now()->format('Y-m-d') 
                 ];
  
              $duplicateRecordExisting  =  HvccAr::where($attributes)->exists();
@@ -3379,7 +3399,8 @@ class ProjectAutomationController extends Controller
                     'a_else_r_last_payment_amount' => isset($request->a_else_r_last_payment_amount) && $request->a_else_r_last_payment_amount != "NULL" ? $request->a_else_r_last_payment_amount : NULL,  
                     'original_balance' => isset($request->original_balance) && $request->original_balance != "NULL" ? $request->original_balance : NULL,  
                     'inhouse' => isset($request->inhouse) && $request->inhouse != "NULL" ? $request->inhouse : NULL,  
-                    'current_balance' => isset($request->current_balance) && $request->current_balance != "NULL" ? $request->current_balance : NULL
+                    'current_balance' => isset($request->current_balance) && $request->current_balance != "NULL" ? $request->current_balance : NULL,
+                    'invoke_date' => carbon::now()->format('Y-m-d')
                 ];
  
              $duplicateRecordExisting  =  AcrmcAr::where($attributes)->exists();
@@ -3467,7 +3488,8 @@ class ProjectAutomationController extends Controller
                     'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
                     'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,  
                     'inv_total' => isset($request->inv_total) && $request->inv_total != "NULL" ? $request->inv_total : NULL,  
-                    'ins_balance' => isset($request->ins_balance) && $request->ins_balance != "NULL" ? $request->ins_balance : NULL
+                    'ins_balance' => isset($request->ins_balance) && $request->ins_balance != "NULL" ? $request->ins_balance : NULL,
+                    'invoke_date' => carbon::now()->format('Y-m-d')
                 ];
  
              $duplicateRecordExisting  =  LastsAr::where($attributes)->exists();
@@ -3539,6 +3561,7 @@ class ProjectAutomationController extends Controller
                     'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
                     'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
                     'total_balance' => isset($request->total_balance) && $request->total_balance != "NULL" ? $request->total_balance : NULL,  
+                    'invoke_date' => carbon::now()->format('Y-m-d')
                     
                 ];
  
@@ -3610,8 +3633,7 @@ class ProjectAutomationController extends Controller
  // MedValue Offshore Solutions Inc.
 
 
- public function MedValueOffshoreSolutionsIncAR(Request $request)
-     {
+     public function MedValueOffshoreSolutionsIncAR(Request $request) {
          try {
              $attributes = [
                     'follow_up_visit' => isset($request->follow_up_visit) && $request->follow_up_visit != "NULL" ? $request->follow_up_visit : NULL,  
@@ -3619,6 +3641,7 @@ class ProjectAutomationController extends Controller
                     'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
                     'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL,  
                     'plan_balance' => isset($request->plan_balance) && $request->plan_balance != "NULL" ? $request->plan_balance : NULL,  
+                    'invoke_date' => carbon::now()->format('Y-m-d')
                     
                 ];
  
@@ -3716,6 +3739,7 @@ class ProjectAutomationController extends Controller
                     '150_days' => isset($request->to_150_days) && $request->to_150_days != "NULL" ? $request->to_150_days : NULL,
                     'total' => isset($request->total) && $request->total != "NULL" ? $request->total : NULL,
                     '60_greater' => isset($request->greater_60) && $request->greater_60 != "NULL" ? $request->greater_60 : NULL,
+                    'invoke_date' => carbon::now()->format('Y-m-d')
                     
                 ];
  
@@ -3813,10 +3837,8 @@ public function MissoulaBoneANDJointSurgeryCenterLLCAR(Request $request)
                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
                'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
                'balance_due' => isset($request->balance_due) && $request->balance_due != "NULL" ? $request->balance_due : NULL,
-              
-               
-           ];
-           
+              'invoke_date' => carbon::now()->format('Y-m-d')               
+           ];           
 
         $duplicateRecordExisting  =  MbjsclMbjHst::where($attributes)->exists();
         if (!$duplicateRecordExisting) {
@@ -3881,13 +3903,7 @@ public function MissoulaBoneANDJointSurgeryCenterLLCArDuplicates(Request $reques
         $e->getMessage();
     }
 }
-
-
-
-
 // Missoula Bone & Joint Surgery Center, LLC Modmed
-
-
 public function MissoulaBoneANDJointSurgeryCenterLLCModmedAR(Request $request)
 {
     try {
@@ -3895,9 +3911,8 @@ public function MissoulaBoneANDJointSurgeryCenterLLCModmedAR(Request $request)
                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,                      
                'primary_provider' => isset($request->primary_provider) && $request->primary_provider != "NULL" ? $request->primary_provider : NULL,  
-               'total_ar_aging' => isset($request->total_ar_aging) && $request->total_ar_aging != "NULL" ? $request->total_ar_aging : NULL,               
-              
-               
+               'total_ar_aging' => isset($request->total_ar_aging) && $request->total_ar_aging != "NULL" ? $request->total_ar_aging : NULL,  
+               'invoke_date' => carbon::now()->format('Y-m-d')           
            ];
            
 
@@ -3981,7 +3996,8 @@ public function omniHealthcareAr(Request $request)
                'carrier_name' => isset($request->carrier_name) && $request->carrier_name != "NULL" ? $request->carrier_name : NULL,     
                'patient_dob' => isset($request->patient_dob) && $request->patient_dob != "NULL" ? $request->patient_dob : NULL,     
                'actual_prov_abbr' => isset($request->actual_prov_abbr) && $request->actual_prov_abbr != "NULL" ? $request->actual_prov_abbr : NULL,     
-               'carrier_phone' => isset($request->carrier_phone) && $request->carrier_phone != "NULL" ? $request->carrier_phone : NULL
+               'carrier_phone' => isset($request->carrier_phone) && $request->carrier_phone != "NULL" ? $request->carrier_phone : NULL,
+               'invoke_date' => carbon::now()->format('Y-m-d')
            ];
            
 
@@ -4054,13 +4070,7 @@ public function omniHealthcareArDuplicates(Request $request)
         $e->getMessage();
     }
 }
-
-
-
 // Nationwide Medical Billing
-
-
-
 public function NationwideMedicalBillingAR(Request $request)
 {
     try {
@@ -4072,7 +4082,8 @@ public function NationwideMedicalBillingAR(Request $request)
                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
                'encounter' => isset($request->encounter) && $request->encounter != "NULL" ? $request->encounter : NULL, 
                'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
-               'balance_amount' => isset($request->balance_amount) && $request->balance_amount != "NULL" ? $request->balance_amount : NULL,             
+               'balance_amount' => isset($request->balance_amount) && $request->balance_amount != "NULL" ? $request->balance_amount : NULL,     
+               'invoke_date' => carbon::now()->format('Y-m-d')        
                
            ];
            
@@ -4160,12 +4171,7 @@ public function NationwideMedicalBillingArDuplicates(Request $request)
     }
 }
 
-
-
-
 // NexTrust Billing
-
-
 public function NexTrustBillingAR(Request $request)
 {
     try {
@@ -4173,7 +4179,7 @@ public function NexTrustBillingAR(Request $request)
                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
                'patient_no' => isset($request->patient_no) && $request->patient_no != "NULL" ? $request->patient_no : NULL,                                             
                'invoice_no' => isset($request->invoice_no) && $request->invoice_no != "NULL" ? $request->invoice_no : NULL,  
-               
+               'invoke_date' => carbon::now()->format('Y-m-d')               
            ];
            
 
@@ -4255,10 +4261,11 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'account_num' => isset($request->account_num) && $request->account_num != "NULL" ? $request->account_num : NULL,  
                 'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL, 
                 'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,  
-                    'amount' => isset($request->amount) && $request->amount != "NULL" ? $request->amount : NULL,  
+                'amount' => isset($request->amount) && $request->amount != "NULL" ? $request->amount : NULL,  
                 'responsible_provider' => isset($request->responsible_provider) && $request->responsible_provider != "NULL" ? $request->responsible_provider : NULL,  
                 'reg_date' => isset($request->reg_date) && $request->reg_date != "NULL" ? $request->reg_date : NULL,  
-                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL        
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')        
             ];           
 
             $duplicateRecordExisting  =  WbrAr::where($attributes)->exists();
@@ -4336,7 +4343,8 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed : NULL,  
                 'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL, 
                 'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,  
-                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
             ];           
 
             $duplicateRecordExisting  =  PhAr::where($attributes)->exists();
@@ -4428,7 +4436,8 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'prj_approved' => isset($request->prj_approved) && $request->prj_approved != "NULL" ? $request->prj_approved : NULL,  
                 'prj_errors' => isset($request->prj_errors) && $request->prj_errors != "NULL" ? $request->prj_errors : NULL,  
                 'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL,  
-                'client_activity' => isset($request->client_activity) && $request->client_activity != "NULL" ? $request->client_activity : NULL
+                'client_activity' => isset($request->client_activity) && $request->client_activity != "NULL" ? $request->client_activity : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
             ];           
 
             $duplicateRecordExisting  =  PbhgAr::where($attributes)->exists();
@@ -4520,6 +4529,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL, 
+                'invoke_date' => carbon::now()->format('Y-m-d')
              ];           
 
             $duplicateRecordExisting  =  ViAr::where($attributes)->exists();
@@ -4597,7 +4607,8 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
                 'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL, 
-                'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL
+                'bucket' => isset($request->bucket) && $request->bucket != "NULL" ? $request->bucket : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
              ];          
 
             $duplicateRecordExisting  =  SegAr::where($attributes)->exists();
@@ -4682,7 +4693,8 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL,  
                 'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
-                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
              ];          
 
             $duplicateRecordExisting  =  PbcslAr::where($attributes)->exists();
@@ -4760,15 +4772,7 @@ public function NexTrustBillingArDuplicates(Request $request)
             $e->getMessage();
         }
     }
-
-
-
-    //
-
-
    // Siouxland Mental Health Center
-
-
    public function SiouxlandMentalHealthCenterAR(Request $request)
     {
         try {
@@ -4776,7 +4780,8 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
                 'claims_no' => isset($request->claims_no) && $request->claims_no != "NULL" ? $request->claims_no : NULL,  
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
-                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
              ];          
 
             $duplicateRecordExisting  =  SmhcAr::where($attributes)->exists();
@@ -4881,10 +4886,7 @@ public function NexTrustBillingArDuplicates(Request $request)
             $e->getMessage();
         }
     }
-
     // TheQueensHealthSystem
-
-
     public function TheQueensHealthSystemAR(Request $request)
     {
         try {
@@ -4894,6 +4896,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL, 
                 'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt : NULL,
                 'procedure_code' => isset($request->procedure_code) && $request->procedure_code != "NULL" ? $request->procedure_code : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
              ];          
 
             $duplicateRecordExisting  =  TqhsAr::where($attributes)->exists();
@@ -5112,7 +5115,8 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,  
                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL, 
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                'total' => isset($request->total) && $request->total != "NULL" ? $request->total : NULL
+                'total' => isset($request->total) && $request->total != "NULL" ? $request->total : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
              ];          
 
             $duplicateRecordExisting  =  BecAr::where($attributes)->exists();
@@ -5208,9 +5212,6 @@ public function NexTrustBillingArDuplicates(Request $request)
             $e->getMessage();
         }
     }
-
-
-
     public function renoOrthopedicCenterAr(Request $request)
     {
         try {
@@ -5218,7 +5219,8 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,  
                  'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
                  'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
-                'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt : NULL
+                'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
              ];          
 
             $duplicateRecordExisting  =  RocAr::where($attributes)->exists();
@@ -5387,7 +5389,8 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
                 'referring_provider' => isset($request->referring_provider) && $request->referring_provider != "NULL" ? $request->referring_provider : NULL,
                 'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
-                'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL
+                'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
              ];          
 
             $duplicateRecordExisting  =  SbgmgEligibilityVerification::where($attributes)->exists();
@@ -5481,7 +5484,8 @@ public function NexTrustBillingArDuplicates(Request $request)
                  'client_amt_due' => isset($request->client_amt_due) && $request->client_amt_due != "NULL" ? $request->client_amt_due : NULL,
                  'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,
                  'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
-                 'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL
+                 'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
+                 'invoke_date' => carbon::now()->format('Y-m-d')
              ];          
 
             $duplicateRecordExisting  =  PbhgEligibilityVerification::where($attributes)->exists();
@@ -5567,7 +5571,8 @@ public function NexTrustBillingArDuplicates(Request $request)
                  'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL,  
                  'ssn' => isset($request->ssn) && $request->ssn != "NULL" ? $request->ssn : NULL,
                  'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
-                 'insured_id' => isset($request->insured_id) && $request->insured_id != "NULL" ? $request->insured_id : NULL
+                 'insured_id' => isset($request->insured_id) && $request->insured_id != "NULL" ? $request->insured_id : NULL,
+                 'invoke_date' => carbon::now()->format('Y-m-d')
              ];          
 
             $duplicateRecordExisting  =  MsEligibilityVerification::where($attributes)->exists();
@@ -5764,7 +5769,8 @@ public function NexTrustBillingArDuplicates(Request $request)
                  'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,  
                  'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                  'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                 'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL
+                 'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                 'invoke_date' => carbon::now()->format('Y-m-d')
              ];         
 
             $duplicateRecordExisting  =  SmbArEvolution::where($attributes)->exists();
@@ -5875,7 +5881,8 @@ public function NexTrustBillingArDuplicates(Request $request)
             $attributes = [
                   'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL,
                   'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL
+                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                 'invoke_date' => carbon::now()->format('Y-m-d')
              ];         
 
             $duplicateRecordExisting  =  SmbArProactive::where($attributes)->exists();
