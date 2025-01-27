@@ -939,7 +939,7 @@ class ProductionController extends Controller
                 $originalModelClass = "App\\Models\\" . $modelName;
                 // $modelClass = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',ucfirst($decodedClientName).ucfirst($decodedsubProjectName)).'Datas';
                 $data = [];
-                foreach ($request->except('_token', 'parent', 'child','page','idValue','auth_comments') as $key => $value) {
+                foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
                     if (is_array($value)) {
                         // $data[$key] = implode('_el_', $value);
                         $data[$key] = in_array(null, $value, true) ? null : implode('_el_', $value);
