@@ -2370,7 +2370,7 @@ class ProductionController extends Controller
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName.'Datas';
                 $originalModelClass = "App\\Models\\" . $modelName;
-                $data['invoke_date'] = date('Y-m-d');
+                
                 // $duplicateParentRecord  =  $originalModelClass::where($request->duplicateColumnData)->first();
                 // $duplicateDatasRecord  =  $modelClass::where($request->duplicateColumnData)->first();
                 unset($data['clientName'], $data['subProjectName']);
