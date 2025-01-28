@@ -126,7 +126,7 @@
                                                 {{ $data['project'] }}
                                             </a>
                                         </td>
-                                        <td>{{camel_case($prjBillableFTE['prjMgrName']) ?? $prjBillableFTE}}</td>
+                                        <td>{{$prjBillableFTE['prjMgrName'] ?? $prjBillableFTE}}</td>
                                         <td>{{$prjBillableFTE['prjBillableCount'] ?? $prjBillableFTE}}</td>
                                         <td>{{$prjBillableFTE['projectSLATarget'] ?? $prjBillableFTE}}</td>
                                         <td>{{(round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'])) ?? $prjBillableFTE}}</td>
