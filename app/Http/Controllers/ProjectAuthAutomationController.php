@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\AopsPreAuthVerification;
 use App\Models\AopsPreAuthVerificationDuplicates;
+use App\Models\NmNcgVob;
+use App\Models\NmNcgVobDuplicates;
 
 class ProjectAuthAutomationController extends Controller
 {
@@ -92,6 +94,104 @@ class ProjectAuthAutomationController extends Controller
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
                 'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function NcgMedicalNcgVobAR(Request $request)
+    {
+        try {
+            $attributes = [
+                'urgency' => isset($request->urgency) && $request->urgency != "NULL" ? $request->urgency : NULL,
+                'queue_time' => isset($request->queue_time) && $request->queue_time != "NULL" ? $request->queue_time : NULL,
+                'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                'practice' => isset($request->practice) && $request->practice != "NULL" ? $request->practice : NULL,
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                'st' => isset($request->st) && $request->st != "NULL" ? $request->st : NULL,
+                'policy' => isset($request->policy) && $request->policy != "NULL" ? $request->policy : NULL,
+                'cgroup' => isset($request->cgroup) && $request->cgroup != "NULL" ? $request->cgroup : NULL,
+                'source' => isset($request->source) && $request->source != "NULL" ? $request->source : NULL,   
+                'comm' => isset($request->comm) && $request->comm != "NULL" ? $request->comm : NULL,  
+                'at' => isset($request->at) && $request->at != "NULL" ? $request->at : NULL,  
+                'benefits' => isset($request->benefits) && $request->benefits != "NULL" ? $request->benefits : NULL,  
+                'invoke_date' => carbon::now()->format('Y-m-d')
+            ];
+
+            $duplicateRecordExisting  =  NmNcgVob::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                NmNcgVob::insert([
+                    'urgency' => isset($request->urgency) && $request->urgency != "NULL" ? $request->urgency : NULL,
+                    'queue_time' => isset($request->queue_time) && $request->queue_time != "NULL" ? $request->queue_time : NULL,
+                    'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                    'practice' => isset($request->practice) && $request->practice != "NULL" ? $request->practice : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                    'st' => isset($request->st) && $request->st != "NULL" ? $request->st : NULL,
+                    'policy' => isset($request->policy) && $request->policy != "NULL" ? $request->policy : NULL,
+                    'cgroup' => isset($request->cgroup) && $request->cgroup != "NULL" ? $request->cgroup : NULL,
+                    'source' => isset($request->source) && $request->source != "NULL" ? $request->source : NULL,   
+                    'comm' => isset($request->comm) && $request->comm != "NULL" ? $request->comm : NULL,  
+                    'at' => isset($request->at) && $request->at != "NULL" ? $request->at : NULL,  
+                    'benefits' => isset($request->benefits) && $request->benefits != "NULL" ? $request->benefits : NULL,    
+                   'invoke_date' => date('Y-m-d'),
+                   'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                   'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                   'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  NmNcgVob::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                if ($duplicateRecord) {
+                    $duplicateRecord->update([
+                        'urgency' => isset($request->urgency) && $request->urgency != "NULL" ? $request->urgency : NULL,
+                        'queue_time' => isset($request->queue_time) && $request->queue_time != "NULL" ? $request->queue_time : NULL,
+                        'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                        'practice' => isset($request->practice) && $request->practice != "NULL" ? $request->practice : NULL,
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                        'st' => isset($request->st) && $request->st != "NULL" ? $request->st : NULL,
+                        'policy' => isset($request->policy) && $request->policy != "NULL" ? $request->policy : NULL,
+                        'cgroup' => isset($request->cgroup) && $request->cgroup != "NULL" ? $request->cgroup : NULL,
+                        'source' => isset($request->source) && $request->source != "NULL" ? $request->source : NULL,   
+                        'comm' => isset($request->comm) && $request->comm != "NULL" ? $request->comm : NULL,  
+                        'at' => isset($request->at) && $request->at != "NULL" ? $request->at : NULL,  
+                        'benefits' => isset($request->benefits) && $request->benefits != "NULL" ? $request->benefits : NULL,  
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function NcgMedicalNcgVobARARDuplicates(Request $request)
+    {
+        try {
+            NmNcgVobDuplicates::insert([
+                'urgency' => isset($request->urgency) && $request->urgency != "NULL" ? $request->urgency : NULL,
+                'queue_time' => isset($request->queue_time) && $request->queue_time != "NULL" ? $request->queue_time : NULL,
+                'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                'practice' => isset($request->practice) && $request->practice != "NULL" ? $request->practice : NULL,
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                'st' => isset($request->st) && $request->st != "NULL" ? $request->st : NULL,
+                'policy' => isset($request->policy) && $request->policy != "NULL" ? $request->policy : NULL,
+                'cgroup' => isset($request->cgroup) && $request->cgroup != "NULL" ? $request->cgroup : NULL,
+                'source' => isset($request->source) && $request->source != "NULL" ? $request->source : NULL,   
+                'comm' => isset($request->comm) && $request->comm != "NULL" ? $request->comm : NULL,  
+                'at' => isset($request->at) && $request->at != "NULL" ? $request->at : NULL,  
+                'benefits' => isset($request->benefits) && $request->benefits != "NULL" ? $request->benefits : NULL,  
+               'invoke_date' => date('Y-m-d'),
+               'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+               'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+               'chart_status' => "CE_Assigned",
             ]);
             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
         } catch (\Exception $e) {
