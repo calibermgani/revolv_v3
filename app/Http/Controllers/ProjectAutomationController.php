@@ -5473,6 +5473,7 @@ public function NexTrustBillingArDuplicates(Request $request)
     {
         try {
             $attributes = [
+                 'organization' => isset($request->organization) && $request->organization != "NULL" ? $request->organization : NULL,  
                  'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,  
                  'claim_time' => isset($request->claim_time) && $request->claim_time != "NULL" ? $request->claim_time : NULL,
                  'client' => isset($request->client) && $request->client != "NULL" ? $request->client : NULL,
@@ -5491,6 +5492,7 @@ public function NexTrustBillingArDuplicates(Request $request)
             $duplicateRecordExisting  =  PbhgEligibilityVerification::where($attributes)->exists();
             if (!$duplicateRecordExisting) {
                 PbhgEligibilityVerification::insert([
+                    'organization' => isset($request->organization) && $request->organization != "NULL" ? $request->organization : NULL,  
                     'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,  
                     'claim_time' => isset($request->claim_time) && $request->claim_time != "NULL" ? $request->claim_time : NULL,
                     'client' => isset($request->client) && $request->client != "NULL" ? $request->client : NULL,
@@ -5513,6 +5515,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                 $duplicateRecord  =  PbhgEligibilityVerification::where($attributes)->where('chart_status',"CE_Assigned")->first();
                 if ($duplicateRecord) {
                     $duplicateRecord->update([
+                        'organization' => isset($request->organization) && $request->organization != "NULL" ? $request->organization : NULL,  
                         'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,  
                         'claim_time' => isset($request->claim_time) && $request->claim_time != "NULL" ? $request->claim_time : NULL,
                         'client' => isset($request->client) && $request->client != "NULL" ? $request->client : NULL,
@@ -5541,6 +5544,7 @@ public function NexTrustBillingArDuplicates(Request $request)
     {
         try {
             PbhgEligibilityVerificationDuplicates::insert([
+                    'organization' => isset($request->organization) && $request->organization != "NULL" ? $request->organization : NULL,  
                     'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,  
                     'claim_time' => isset($request->claim_time) && $request->claim_time != "NULL" ? $request->claim_time : NULL,
                     'client' => isset($request->client) && $request->client != "NULL" ? $request->client : NULL,
