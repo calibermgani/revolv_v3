@@ -126,7 +126,7 @@
                                                 {{ $data['project'] }}
                                             </a>
                                         </td>
-                                        <td>{{$prjBillableFTE['prjMgrName'] ?? $prjBillableFTE}}</td>
+                                        <td>{{ucwords(strtolower($prjBillableFTE['prjMgrName'])) ?? $prjBillableFTE}}</td>
                                         <td>{{$prjBillableFTE['prjBillableCount'] ?? $prjBillableFTE}}</td>
                                         <td>{{$prjBillableFTE['projectSLATarget'] ?? $prjBillableFTE}}</td>
                                         <td>{{(round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'])) ?? $prjBillableFTE}}</td>
