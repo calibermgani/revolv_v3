@@ -150,6 +150,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('aops_pre_auth_verification_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@aopsPreAuthVerificationDuplicates');
     Route::any('ncg_medical_ncg_vob', 'App\Http\Controllers\ProjectAuthAutomationController@NcgMedicalNcgVob');
     Route::any('ncg_medical_ncg_vob_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@NcgMedicalNcgVobDuplicates');
+    Route::any('rh_eligibility_verification', 'App\Http\Controllers\ProjectAuthAutomationController@rhEligibilityVerification');
+    Route::any('rh_eligibility_verification_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@rhEligibilityVerificationDuplicates');
 
 
 
