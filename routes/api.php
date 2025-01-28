@@ -146,10 +146,10 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('smb_ar_evolution_duplicate', 'App\Http\Controllers\ProjectAutomationController@smbArEvolutionDuplicates');
     Route::any('smb_ar_proactive', 'App\Http\Controllers\ProjectAutomationController@smbArProactive');
     Route::any('smb_ar_proactive_duplicate', 'App\Http\Controllers\ProjectAutomationController@smbArProactiveDuplicates');
-    Route::any('aops_pre_auth_verification', 'App\Http\Controllers\ProjectAutomationController@aopsPreAuthVerification');
-    Route::any('aops_pre_auth_verification_duplicate', 'App\Http\Controllers\ProjectAutomationController@aopsPreAuthVerificationDuplicates');
-    Route::any('ncg_medical_ncg_vob_ar', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgVobAR');
-    Route::any('ncg_medical_ncg_vob_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@NcgMedicalNcgVobARDuplicates');
+    Route::any('aops_pre_auth_verification', 'App\Http\Controllers\ProjectAuthAutomationController@aopsPreAuthVerification');
+    Route::any('aops_pre_auth_verification_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@aopsPreAuthVerificationDuplicates');
+    Route::any('ncg_medical_ncg_vob_ar', 'App\Http\Controllers\ProjectAuthAutomationController@NcgMedicalNcgVobAR');
+    Route::any('ncg_medical_ncg_vob_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@NcgMedicalNcgVobARDuplicates');
 
 
 
