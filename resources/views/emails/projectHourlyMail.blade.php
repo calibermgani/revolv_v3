@@ -105,7 +105,7 @@
                           @endphp --}}
                                 {{-- <td style="text-align: center;padding: 5px;">{{ $data['hourlyCount'] }}</td> --}}
                             {{-- @endforeach --}}
-                            <td style="text-align: center; padding: 5px;">{{$prjBillableFTE['prjMgrName'] ?? $prjBillableFTE}}</td>
+                            <td style="text-align: center; padding: 5px;">{{ucwords(strtolower($prjBillableFTE['prjMgrName'])) ?? $prjBillableFTE}}</td>
                             <td style="text-align: center; padding: 5px;">{{$prjBillableFTE['prjBillableCount'] ?? $prjBillableFTE}}</td>
                             <td style="text-align: center; padding: 5px;">{{$prjBillableFTE['projectSLATarget'] ?? $prjBillableFTE}}</td>
                             <td style="text-align: center; padding: 5px;">{{(round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'])) ?? $prjBillableFTE}}</td>
