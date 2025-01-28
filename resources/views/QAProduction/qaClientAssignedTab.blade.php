@@ -1349,26 +1349,39 @@ use Carbon\Carbon;
                                         @endif
                                         @endforeach
                                 @endif
-                                <div class="row mt-4">
-                                    <div class="col-md-6">
-                                        <div class="form-group row">
-                                            <label class="col-md-12" id="ar_status_label">
-                                                Status Code
-                                            </label>
-                                            <label class="col-md-12 pop-non-edt-val" id="ar_status_view">
-                                            </label>
-                                        </div>
+                                @php
+                                    if($popUpHeader->sub_project_id != null && $popUpHeader->sub_project_id != "") {
+                                        $statusActionShow = App\Models\projectInputSetting::where('sub_project_id',$popUpHeader->sub_project_id)->first();                                                                                                                              
+                                    } else {
+                                        $statusActionShow = null;
+                                    }
+                                @endphp
+                                @if($statusActionShow != null)
+                                    <div class="row mt-4">
+                                        @if($statusActionShow->status_input == 1)
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-md-12" id="ar_status_label">
+                                                        Status Code
+                                                    </label>
+                                                    <label class="col-md-12 pop-non-edt-val" id="ar_status_view">
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        @endif
+                                        @if($statusActionShow->action_input == 1)
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-md-12" id="ar_action_label">
+                                                        Action Code
+                                                    </label>
+                                                    <label class="col-md-12 pop-non-edt-val" id="ar_action_view">
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group row">
-                                            <label class="col-md-12" id="ar_action_label">
-                                                Action Code
-                                            </label>
-                                            <label class="col-md-12 pop-non-edt-val" id="ar_action_view">
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
+                                @endif
                                     <hr>
                                     <h6 class="title-h6">QA</h6>&nbsp;&nbsp;
                                     @if (count($popupQAEditableFields) > 0)

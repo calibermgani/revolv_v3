@@ -956,26 +956,39 @@ use Carbon\Carbon;
                                                     @endif
                                                         @endforeach
                                                     @endif
+                                                    @php
+                                                    if($popUpHeader->sub_project_id != null && $popUpHeader->sub_project_id != "") {
+                                                        $statusActionShow = App\Models\projectInputSetting::where('sub_project_id',$popUpHeader->sub_project_id)->first();                                                                                                                              
+                                                    } else {
+                                                        $statusActionShow = null;
+                                                    }
+                                                @endphp
+                                                @if($statusActionShow != null)
                                                     <div class="row mt-4">
-                                                        <div class="col-md-6">
-                                                            <div class="form-group row">
-                                                                <label class="col-md-12" id="ar_status_label">
-                                                                    Status Code
-                                                                </label>
-                                                                <label class="col-md-12 pop-non-edt-val" id="ar_status_view">
-                                                                </label>
+                                                        @if($statusActionShow->status_input == 1)
+                                                            <div class="col-md-6">
+                                                                <div class="form-group row">
+                                                                    <label class="col-md-12" id="ar_status_label">
+                                                                        Status Code
+                                                                    </label>
+                                                                    <label class="col-md-12 pop-non-edt-val" id="ar_status_view">
+                                                                    </label>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group row">
-                                                                <label class="col-md-12" id="ar_action_label">
-                                                                    Action Code
-                                                                </label>
-                                                                <label class="col-md-12 pop-non-edt-val" id="ar_action_view">
-                                                                </label>
+                                                        @endif
+                                                        @if($statusActionShow->action_input == 1)
+                                                            <div class="col-md-6">
+                                                                <div class="form-group row">
+                                                                    <label class="col-md-12" id="ar_action_label">
+                                                                        Action Code
+                                                                    </label>
+                                                                    <label class="col-md-12 pop-non-edt-val" id="ar_action_view">
+                                                                    </label>
+                                                                </div>
                                                             </div>
-                                                        </div>
+                                                        @endif
                                                     </div>
+                                                @endif
                                                     <div class="col-md-6">
                                                         <div class="form-group row" style="margin-left: -2rem">
                                                             <label class="col-md-12">
