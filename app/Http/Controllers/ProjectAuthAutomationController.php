@@ -103,6 +103,7 @@ class ProjectAuthAutomationController extends Controller
     public function NcgMedicalNcgVobAR(Request $request)
     {
         try {
+            dd($request->all());
             $attributes = [
                 'urgency' => isset($request->urgency) && $request->urgency != "NULL" ? $request->urgency : NULL,
                 'queue_time' => isset($request->queue_time) && $request->queue_time != "NULL" ? $request->queue_time : NULL,
