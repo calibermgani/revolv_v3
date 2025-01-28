@@ -100,10 +100,10 @@ class ProjectAuthAutomationController extends Controller
             $e->getMessage();
         }
     }
-    public function NcgMedicalNcgVobAR(Request $request)
+    public function NcgMedicalNcgVob(Request $request)
     {
         try {
-            dd($request->all());
+            
             $attributes = [
                 'urgency' => isset($request->urgency) && $request->urgency != "NULL" ? $request->urgency : NULL,
                 'queue_time' => isset($request->queue_time) && $request->queue_time != "NULL" ? $request->queue_time : NULL,
@@ -172,7 +172,7 @@ class ProjectAuthAutomationController extends Controller
             $e->getMessage();
         }
     }
-    public function NcgMedicalNcgVobARARDuplicates(Request $request)
+    public function NcgMedicalNcgVobDuplicates(Request $request)
     {
         try {
             NmNcgVobDuplicates::insert([

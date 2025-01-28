@@ -148,8 +148,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('smb_ar_proactive_duplicate', 'App\Http\Controllers\ProjectAutomationController@smbArProactiveDuplicates');
     Route::any('aops_pre_auth_verification', 'App\Http\Controllers\ProjectAuthAutomationController@aopsPreAuthVerification');
     Route::any('aops_pre_auth_verification_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@aopsPreAuthVerificationDuplicates');
-    Route::any('ncg_medical_ncg_vob_ar', 'App\Http\Controllers\ProjectAuthAutomationController@NcgMedicalNcgVobAR');
-    Route::any('ncg_medical_ncg_vob_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@NcgMedicalNcgVobARDuplicates');
+    Route::any('ncg_medical_ncg_vob', 'App\Http\Controllers\ProjectAuthAutomationController@NcgMedicalNcgVob');
+    Route::any('ncg_medical_ncg_vob_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@NcgMedicalNcgVobDuplicates');
 
 
 
