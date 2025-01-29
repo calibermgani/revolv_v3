@@ -12,6 +12,8 @@ use App\Models\RhEligibilityVerification;
 use App\Models\RhEligibilityVerificationDuplicates;
 use App\Models\AggPreAuthVerification;
 use App\Models\AggPreAuthVerificationDuplicates;
+use App\Models\RcmEvVob;
+use App\Models\RcmEvVobDuplicates;
 class ProjectAuthAutomationController extends Controller
 {
     public function aopsPreAuthVerification(Request $request)
@@ -369,6 +371,81 @@ class ProjectAuthAutomationController extends Controller
                 'network_status' => isset($request->network_status) && $request->network_status != "NULL" ? $request->network_status : NULL,
                 'secondary_insurance' => isset($request->secondary_insurance) && $request->secondary_insurance != "NULL" ? $request->secondary_insurance : NULL,
                 'secondary_member_id' => isset($request->secondary_member_id) && $request->secondary_member_id != "NULL" ? $request->secondary_member_id : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function rcmEvVob(Request $request)
+    {
+        try {
+            
+            $attributes = [
+                'order_date' => isset($request->order_date) && $request->order_date != "NULL" ? $request->order_date : NULL,
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                'labs_imaging_procedures' => isset($request->labs_imaging_procedures) && $request->labs_imaging_procedures != "NULL" ? $request->labs_imaging_procedures : NULL,
+                'reason' => isset($request->reason) && $request->reason != "NULL" ? $request->reason : NULL,
+                'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,
+                'received_date' => isset($request->received_date) && $request->received_date != "NULL" ? $request->received_date : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
+            ];
+
+            $duplicateRecordExisting  =  RcmEvVob::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                RcmEvVob::insert([
+                    'order_date' => isset($request->order_date) && $request->order_date != "NULL" ? $request->order_date : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'labs_imaging_procedures' => isset($request->labs_imaging_procedures) && $request->labs_imaging_procedures != "NULL" ? $request->labs_imaging_procedures : NULL,
+                    'reason' => isset($request->reason) && $request->reason != "NULL" ? $request->reason : NULL,
+                    'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,
+                    'received_date' => isset($request->received_date) && $request->received_date != "NULL" ? $request->received_date : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  RcmEvVob::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                if ($duplicateRecord) {
+                    $duplicateRecord->update([
+                        'order_date' => isset($request->order_date) && $request->order_date != "NULL" ? $request->order_date : NULL,
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'labs_imaging_procedures' => isset($request->labs_imaging_procedures) && $request->labs_imaging_procedures != "NULL" ? $request->labs_imaging_procedures : NULL,
+                        'reason' => isset($request->reason) && $request->reason != "NULL" ? $request->reason : NULL,
+                        'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,
+                        'received_date' => isset($request->received_date) && $request->received_date != "NULL" ? $request->received_date : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function rcmEvVobDuplicates(Request $request)
+    {
+        try {
+            RcmEvVobDuplicates::insert([
+                'order_date' => isset($request->order_date) && $request->order_date != "NULL" ? $request->order_date : NULL,
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                'labs_imaging_procedures' => isset($request->labs_imaging_procedures) && $request->labs_imaging_procedures != "NULL" ? $request->labs_imaging_procedures : NULL,
+                'reason' => isset($request->reason) && $request->reason != "NULL" ? $request->reason : NULL,
+                'schedule_date' => isset($request->schedule_date) && $request->schedule_date != "NULL" ? $request->schedule_date : NULL,
+                'received_date' => isset($request->received_date) && $request->received_date != "NULL" ? $request->received_date : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,

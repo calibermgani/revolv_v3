@@ -154,6 +154,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('rh_eligibility_verification_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@rhEligibilityVerificationDuplicates');
     Route::any('agg_pre_auth_verification', 'App\Http\Controllers\ProjectAuthAutomationController@aggPreAuthVerification');
     Route::any('agg_pre_auth_verification_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@aggPreAuthVerificationDuplicates');
+    Route::any('rcm_ev_vob', 'App\Http\Controllers\ProjectAuthAutomationController@rcmEvVob');
+    Route::any('rcm_ev_vob_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@rcmEvVobDuplicates');
 
 
 
