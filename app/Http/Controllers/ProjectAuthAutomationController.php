@@ -10,6 +10,8 @@ use App\Models\NmNcgVob;
 use App\Models\NmNcgVobDuplicates;
 use App\Models\RhEligibilityVerification;
 use App\Models\RhEligibilityVerificationDuplicates;
+use App\Models\AggPreAuthVerification;
+use App\Models\AggPreAuthVerificationDuplicates;
 class ProjectAuthAutomationController extends Controller
 {
     public function aopsPreAuthVerification(Request $request)
@@ -271,6 +273,102 @@ class ProjectAuthAutomationController extends Controller
                 'secondary_insurer_name' => isset($request->secondary_insurer_name) && $request->secondary_insurer_name != "NULL" ? $request->secondary_insurer_name : NULL,
                 'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
                 'copay_status' => isset($request->copay_status) && $request->copay_status != "NULL" ? $request->copay_status : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+    public function aggPreAuthVerification(Request $request)
+    {
+        try {
+            
+            $attributes = [
+                'first_name' => isset($request->first_name) && $request->first_name != "NULL" ? $request->first_name : NULL,
+                'last_name' => isset($request->last_name) && $request->last_name != "NULL" ? $request->last_name : NULL,
+                'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'appt_type' => isset($request->appt_type) && $request->appt_type != "NULL" ? $request->appt_type : NULL,
+                'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                'primary_insurance_name' => isset($request->primary_insurance_name) && $request->primary_insurance_name != "NULL" ? $request->primary_insurance_name : NULL,
+                'primary_ins_subscriber_no' => isset($request->primary_ins_subscriber_no) && $request->primary_ins_subscriber_no != "NULL" ? $request->primary_ins_subscriber_no : NULL,
+                'plan_name' => isset($request->plan_name) && $request->plan_name != "NULL" ? $request->plan_name : NULL,
+                'network_status' => isset($request->network_status) && $request->network_status != "NULL" ? $request->network_status : NULL,
+                'secondary_insurance' => isset($request->secondary_insurance) && $request->secondary_insurance != "NULL" ? $request->secondary_insurance : NULL,
+                'secondary_member_id' => isset($request->secondary_member_id) && $request->secondary_member_id != "NULL" ? $request->secondary_member_id : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
+            ];
+
+            $duplicateRecordExisting  =  AggPreAuthVerification::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                AggPreAuthVerification::insert([
+                    'first_name' => isset($request->first_name) && $request->first_name != "NULL" ? $request->first_name : NULL,
+                    'last_name' => isset($request->last_name) && $request->last_name != "NULL" ? $request->last_name : NULL,
+                    'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'appt_type' => isset($request->appt_type) && $request->appt_type != "NULL" ? $request->appt_type : NULL,
+                    'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                    'primary_insurance_name' => isset($request->primary_insurance_name) && $request->primary_insurance_name != "NULL" ? $request->primary_insurance_name : NULL,
+                    'primary_ins_subscriber_no' => isset($request->primary_ins_subscriber_no) && $request->primary_ins_subscriber_no != "NULL" ? $request->primary_ins_subscriber_no : NULL,
+                    'plan_name' => isset($request->plan_name) && $request->plan_name != "NULL" ? $request->plan_name : NULL,
+                    'network_status' => isset($request->network_status) && $request->network_status != "NULL" ? $request->network_status : NULL,
+                    'secondary_insurance' => isset($request->secondary_insurance) && $request->secondary_insurance != "NULL" ? $request->secondary_insurance : NULL,
+                    'secondary_member_id' => isset($request->secondary_member_id) && $request->secondary_member_id != "NULL" ? $request->secondary_member_id : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  AggPreAuthVerification::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                if ($duplicateRecord) {
+                    $duplicateRecord->update([
+                        'first_name' => isset($request->first_name) && $request->first_name != "NULL" ? $request->first_name : NULL,
+                        'last_name' => isset($request->last_name) && $request->last_name != "NULL" ? $request->last_name : NULL,
+                        'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'appt_type' => isset($request->appt_type) && $request->appt_type != "NULL" ? $request->appt_type : NULL,
+                        'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                        'primary_insurance_name' => isset($request->primary_insurance_name) && $request->primary_insurance_name != "NULL" ? $request->primary_insurance_name : NULL,
+                        'primary_ins_subscriber_no' => isset($request->primary_ins_subscriber_no) && $request->primary_ins_subscriber_no != "NULL" ? $request->primary_ins_subscriber_no : NULL,
+                        'plan_name' => isset($request->plan_name) && $request->plan_name != "NULL" ? $request->plan_name : NULL,
+                        'network_status' => isset($request->network_status) && $request->network_status != "NULL" ? $request->network_status : NULL,
+                        'secondary_insurance' => isset($request->secondary_insurance) && $request->secondary_insurance != "NULL" ? $request->secondary_insurance : NULL,
+                        'secondary_member_id' => isset($request->secondary_member_id) && $request->secondary_member_id != "NULL" ? $request->secondary_member_id : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function aggPreAuthVerificationDuplicates(Request $request)
+    {
+        try {
+            AggPreAuthVerificationDuplicates::insert([
+                'first_name' => isset($request->first_name) && $request->first_name != "NULL" ? $request->first_name : NULL,
+                'last_name' => isset($request->last_name) && $request->last_name != "NULL" ? $request->last_name : NULL,
+                'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'appt_type' => isset($request->appt_type) && $request->appt_type != "NULL" ? $request->appt_type : NULL,
+                'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                'primary_insurance_name' => isset($request->primary_insurance_name) && $request->primary_insurance_name != "NULL" ? $request->primary_insurance_name : NULL,
+                'primary_ins_subscriber_no' => isset($request->primary_ins_subscriber_no) && $request->primary_ins_subscriber_no != "NULL" ? $request->primary_ins_subscriber_no : NULL,
+                'plan_name' => isset($request->plan_name) && $request->plan_name != "NULL" ? $request->plan_name : NULL,
+                'network_status' => isset($request->network_status) && $request->network_status != "NULL" ? $request->network_status : NULL,
+                'secondary_insurance' => isset($request->secondary_insurance) && $request->secondary_insurance != "NULL" ? $request->secondary_insurance : NULL,
+                'secondary_member_id' => isset($request->secondary_member_id) && $request->secondary_member_id != "NULL" ? $request->secondary_member_id : NULL,
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
