@@ -2374,6 +2374,7 @@ class ProductionController extends Controller
                 // $duplicateParentRecord  =  $originalModelClass::where($request->duplicateColumnData)->first();
                 // $duplicateDatasRecord  =  $modelClass::where($request->duplicateColumnData)->first();
                 unset($data['clientName'], $data['subProjectName']);
+                $data['invoke_date'] = carbon::now()->format('Y-m-d');
                 $duplicateRecordExisting = $originalModelClass::where($data)->exists();
             //    if($duplicateParentRecord || $duplicateDatasRecord) {
                 if($duplicateRecordExisting) {
