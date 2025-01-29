@@ -27,6 +27,7 @@ use App\Jobs\GetTotalARCountJob;
 use App\Jobs\GetTotalQACountJob;
 use App\Jobs\getProjectSubProjectManager;
 use App\Jobs\getProjectSubProjectBillableFTE;
+use App\Models\CallerChartsWorkLogs;
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
@@ -1594,5 +1595,24 @@ class ProjectController extends Controller
                 return null;
             }
         });
+    }
+    public function projectCallChartWorkLogs() {
+        try {
+           
+            $endTimeCallerChartsWorkLogs = CallerChartsWorkLogs::whereNull('end_time')->get();dd($endTimeCallerChartsWorkLogs);
+            foreach($endTimeCallerChartsWorkLogs as $data) {             
+                $startTime = Carbon::parse($data->start_time);
+                $endTime = $startTime->addMinute();    
+                $workTime = "00:01:00";  
+                $data->update([
+                    'end_time' => $endTime,
+                    'work_time' => $workTime,
+                ]);
+            }                                      
+            Log::info('projectcallChartWorkLogs executed successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error in projectcallChartWorkLogs: ' . $e->getMessage());
+            Log::debug($e->getMessage());
+        }
     }
 }

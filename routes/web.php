@@ -82,6 +82,7 @@ Route::any('manual_caller_chart_work_logs', 'App\Http\Controllers\ProductionCont
 Route::any('manual_duplicate_column_check', 'App\Http\Controllers\ProductionController@manualDuplicateColumnCheck');
 Route::any('nonworkable_status_update', 'App\Http\Controllers\ProductionController@nonworkableStatusUpdate');
 Route::any('workable_status_update', 'App\Http\Controllers\ProductionController@workableStatusUpdate');
+Route::any('project_call_chart_work_logs_reset', 'App\Http\Controllers\ProductionController@projectCallChartWorkLogs');
 
 Route::group(['prefix' => 'qa_production'], function () {
     Route::any('qa_clients', 'App\Http\Controllers\QA\QAProductionController@clients')->name('qaClients');
