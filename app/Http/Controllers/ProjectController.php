@@ -1599,7 +1599,7 @@ class ProjectController extends Controller
     public function projectCallChartWorkLogs() {
         try {
            
-            $endTimeCallerChartsWorkLogs = CallerChartsWorkLogs::whereNull('end_time')->get();dd($endTimeCallerChartsWorkLogs);
+            $endTimeCallerChartsWorkLogs = CallerChartsWorkLogs::whereNull('end_time')->get();
             foreach($endTimeCallerChartsWorkLogs as $data) {             
                 $startTime = Carbon::parse($data->start_time);
                 $endTime = $startTime->addMinute();    
