@@ -1535,70 +1535,18 @@ nav{
             });
             var manualProjectDuplicateColumns = @json($attributes);var duplicateColumnData = []; 
             $(document).on('click', '#project_assign_save', function(e) {
-                //  console.log(inputTypeValue + inputTypeRadioValue + duplicateValue );
                 e.preventDefault();
-                $('#formConfiguration').serializeArray().map(function(input) {
-                    labelName = input.name.replace('[]', '');
-                    if (Object.keys(manualProjectDuplicateColumns).length > 0 && manualProjectDuplicateColumns[labelName]) {                  
-                        duplicateColumnData['clientName'] =clientName;
-                        duplicateColumnData['subProjectName'] =subProjectName;
-                        duplicateColumnData[labelName] = input.value;                       
-                        
-                    }                                                                   
-                    
-                        // if(labelName.substring(0, 3).toLowerCase() == "cpt") {
-                        //     var textValue = input.value;
-                        //     if(textValue.length < 5) {
-                        //         js_notification('error',"The CPT value must be at least 5 characters long" );
-                        //     }
-                        // }
-                        // if(labelName.substring(0, 3).toLowerCase() == "icd") {
-                        //     var textValue = input.value;
-                        //     // if(textValue.length < 3 || textValue.length > 7) {
-                        //     //     js_notification('error', "The ICD value must be between 3 and 7 characters long" );
-                        //     if(textValue.length < 3) {
-                        //         js_notification('error', "The ICD value must be at least 3 characters long" );
-                        //     }
-                        // }
-                        return duplicateColumnData;
-                });
+                // $('#formConfiguration').serializeArray().map(function(input) {
+                //     labelName = input.name.replace('[]', '');
+                //     if (Object.keys(manualProjectDuplicateColumns).length > 0 && manualProjectDuplicateColumns[labelName]) {                  
+                //         duplicateColumnData['clientName'] =clientName;
+                //         duplicateColumnData['subProjectName'] =subProjectName;
+                //         duplicateColumnData[labelName] = input.value;                       
+                //     }             
+                //         return duplicateColumnData;
+                // });
               
-                 var duplicateValue = 0; 
-                // if(Object.keys(duplicateColumnData).length > 0) {
-                //     e.preventDefault();
-                //     const duplicateObj = { ...duplicateColumnData };
-                //            $.ajaxSetup({
-                //                 headers: {
-                //                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
-                //                         'content')
-                //                 }
-                //             });
-
-                //             $.ajax({
-                //                 url: "{{ url('manual_duplicate_column_check') }}",
-                //                 method: 'POST',
-                //                 data: duplicateObj,          
-                                        
-                //                 success: function(response) {
-                //                     if (response.success == true) {
-                //                       //  duplicateValue = 0;console.log(duplicateValue,'duplicateValue success');
-                                        
-                //                     } else {
-                //                         duplicateValue = 1;
-                //                         js_notification('error', 'Duplicate Entryy');
-                //                         console.log(duplicateValue,'duplicateValue error in ');
-                //                     }
-                                      
-                                   
-                //                 },
-                //                 complete: function () {
-                //                     duplicateValue1 = duplicateValue;
-                                   
-                //                 },
-                //             });
-                           
-                // }          
-                
+                 var duplicateValue = 0;                 
                 var fieldNames = $('#formConfiguration').serializeArray().map(function(input) {
                     return input.name;
                 });
@@ -1695,18 +1643,6 @@ nav{
                                         }
                                         return false;
                                     }
-                                    // if(label_id.substring(0, 3) == "cpt") {
-                                    //     var textValue = $(this).val();
-                                    //     if(textValue.length < 4) {
-                                    //         js_notification('error',"The CPT value must be at least 4 characters long" );
-                                    //     }
-                                    // }
-                                    // if(label_id.substring(0, 3) == "icd") {
-                                    //     var textValue = $(this).val();
-                                    //     if(textValue.length < 3 || textValue.length > 7) {
-                                    //         js_notification('error', "The ICD value must be between 3 and 7 characters long" );
-                                    //     }
-                                    // }
                                 });
                             }
                         });
@@ -1745,37 +1681,38 @@ nav{
                 });
                 function checkDuplicate(duplicateColumnData) {
                     return new Promise((resolve, reject) => {
-                        if (Object.keys(duplicateColumnData).length > 0) {
-                            const duplicateObj = { ...duplicateColumnData };
-                            $.ajaxSetup({
-                                headers: {
-                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                                },
-                            });
+                        resolve(0);
+                        // if (Object.keys(duplicateColumnData).length > 0) {
+                        //     const duplicateObj = { ...duplicateColumnData };
+                        //     $.ajaxSetup({
+                        //         headers: {
+                        //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        //         },
+                        //     });
 
-                            $.ajax({
-                                url: "{{ url('manual_duplicate_column_check') }}",
-                                method: 'POST',
-                                data: duplicateObj,
-                                success: function (response) {
-                                    if (response.success === true) {
-                                        resolve(0); // No duplicate
-                                    } else {
-                                        js_notification('error', 'Duplicate Entry');
-                                        resolve(1); // Duplicate found
-                                    }
-                                },
-                                error: function () {
-                                    reject(-1); // Handle error scenario
-                                },
-                            });
-                        } else {
-                            resolve(0); // No data to check
-                        }
+                        //     $.ajax({
+                        //         url: "{{ url('manual_duplicate_column_check') }}",
+                        //         method: 'POST',
+                        //         data: duplicateObj,
+                        //         success: function (response) {
+                        //             if (response.success === true) {
+                        //                 resolve(0); 
+                        //             } else {
+                        //                 js_notification('error', 'Duplicate Entry');
+                        //                 resolve(1);
+                        //             }
+                        //         },
+                        //         error: function () {
+                        //             reject(-1); 
+                        //         },
+                        //     });
+                        // } else {
+                        //     resolve(0); 
+                        // }
                     });
                 }
 
-                // Usage
+              
                 checkDuplicate(duplicateColumnData)
                     .then((duplicateValue) => {
                    
@@ -1819,15 +1756,12 @@ nav{
         
             });
             $("#ckbCheckAll").click(function() {
-                var isChecked = $(this).prop('checked');
-                
+                var isChecked = $(this).prop('checked');                
                 $(".checkBoxClass").prop('checked', isChecked);
-
-                // Iterate over all DataTable pages
                 var table = $('#client_assigned_list').DataTable();
                 for (var i = 0; i < table.page.info().pages; i++) {
-                    table.page(i).draw(false); // Switch to page i
-                    $(".checkBoxClass").prop('checked', isChecked); // Select checkboxes on the current page
+                    table.page(i).draw(false); 
+                    $(".checkBoxClass").prop('checked', isChecked); 
                 }
                 if ($(this).prop('checked') == true && $('.checkBoxClass:checked').length > 0) {
                     $('#workable_dropdown').prop('disabled', false);
