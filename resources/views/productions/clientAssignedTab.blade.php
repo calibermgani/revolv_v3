@@ -26,7 +26,7 @@ use Carbon\Carbon;
                                         @endphp    
                                         <div class="mb-lg-0 mb-6">
                                                 <fieldset class="form-group mb-0 white-smoke-disabled">
-                                                    {!! Form::select('assignee_ar_name', ['' => '--Assignee Ar--'] + $prjTotalArList, null, [
+                                                    {!! Form::select('assignee_ar_name', ['' => 'Select Resource'] + $prjTotalArList, null, [
                                                         'class' => 'form-control kt_select2_assignee_ar',
                                                         'id' => 'assigneeArDropdown',
                                                         'style' => 'width: 100%;'

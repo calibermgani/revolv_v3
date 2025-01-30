@@ -88,7 +88,7 @@ var KTSelect2 = function() {
             placeholder: "Select"
         });
         $('.kt_select2_assignee_ar').select2({
-            placeholder: "Select Ar"
+            placeholder: "Select Resource"
         });
         // loading data from array
         // var data = [{
