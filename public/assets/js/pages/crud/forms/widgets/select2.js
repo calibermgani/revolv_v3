@@ -91,7 +91,7 @@ var KTSelect2 = function() {
             placeholder: "Work Log"
         });
         $('.kt_select2_workable').select2({
-            placeholder: "Select Workable/Non Workable"
+            placeholder: "Workable/Non Workable"
         });
         // loading data from array
         // var data = [{

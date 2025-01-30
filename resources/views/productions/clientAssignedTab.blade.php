@@ -45,7 +45,7 @@ use Carbon\Carbon;
                                                 @php
                                                 $statusDropDown = ["AR_non_workable" => "Non Workable"]
                                                 @endphp
-                                                {!! Form::select('status_val', ['' => 'Select Workable/Non Workable'] + $statusDropDown, null, [
+                                                {!! Form::select('status_val', ['' => 'Workable/Non Workable'] + $statusDropDown, null, [
                                                     'class' => 'form-control white-smoke kt_select2_workable',
                                                     'id' => 'workable_dropdown',
                                                     'style' => 'width: 100%;',
