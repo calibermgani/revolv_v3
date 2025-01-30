@@ -27,12 +27,14 @@ class ReportsController extends Controller
         try {
             $subProject = Helpers::subProjectList($request->project_id);
             // $user = Helpers::getprojectResourceList($request->project_id);
-            $user = [];
+        
             if (!empty($projectId) && is_string($request->project_id)) {
                 getProjectResourceListJob::dispatch($request->project_id)->delay(now()->addSeconds(5));
                 $prjResourceCacheKey = 'project_'.$request->project_id.'prjResourceList' ;
                 $user = Cache::get($prjResourceCacheKey, 0);  
-            }             
+            }  else {
+                $user = [];
+            }           
             return response()->json(['success' => true, 'subProject' => $subProject, 'resource' => $user]);
         } catch (Exception $e) {
             log::debug($e->getMessage());
