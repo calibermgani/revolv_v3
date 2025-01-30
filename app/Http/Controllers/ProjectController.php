@@ -566,9 +566,10 @@ class ProjectController extends Controller
                 }
             
             Log::info('Project Error Mail Send Successfully.');
+            Log::info('Project Error Details: ' . print_r($project_information, true));
             }
         }
-        Log::info('Project Error Details: ' . print_r($project_information, true));
+     
         return response()->json(["message" => "Error Mail Sent by Resolv"]);
     }
     public function getProjectTotalARCount($project_id)
