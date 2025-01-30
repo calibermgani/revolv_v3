@@ -26,7 +26,7 @@ use Carbon\Carbon;
                                         @endphp    
                                         <div class="mb-lg-0 mb-6">
                                                 <fieldset class="form-group mb-0 white-smoke-disabled">
-                                                    {!! Form::select('assignee_ar_name', ['' => 'Select Resource'] + $prjTotalArList, null, [
+                                                    {!! Form::select('assignee_ar_name', ['' => 'Work Log'] + $prjTotalArList, null, [
                                                         'class' => 'form-control kt_select2_assignee_ar',
                                                         'id' => 'assigneeArDropdown',
                                                         'style' => 'width: 100%;'
@@ -45,8 +45,8 @@ use Carbon\Carbon;
                                                 @php
                                                 $statusDropDown = ["AR_non_workable" => "Non Workable"]
                                                 @endphp
-                                                {!! Form::select('status_val', ['' => '--Select--'] + $statusDropDown, null, [
-                                                    'class' => 'form-control white-smoke kt_select2_status',
+                                                {!! Form::select('status_val', ['' => 'Select Workable/Non Workable'] + $statusDropDown, null, [
+                                                    'class' => 'form-control white-smoke kt_select2_workable',
                                                     'id' => 'workable_dropdown',
                                                     'style' => 'width: 100%;',
                                                     'disabled',
@@ -56,7 +56,7 @@ use Carbon\Carbon;
                                         @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)
                                             <div class="col-lg-3 mb-lg-0 mb-6" id="assign_div">
                                                 <fieldset class="form-group mb-0 white-smoke-disabled">
-                                                    {!! Form::select('assignee_name', ['' => '--Assignee--'] + $assignedDropDown, null, [
+                                                    {!! Form::select('assignee_name', ['' => 'Assignee'] + $assignedDropDown, null, [
                                                         'class' => 'form-control kt_select2_assignee',
                                                         'id' => 'assigneeDropdown',
                                                         'style' => 'width: 100%;',

@@ -88,7 +88,10 @@ var KTSelect2 = function() {
             placeholder: "Select"
         });
         $('.kt_select2_assignee_ar').select2({
-            placeholder: "Select Resource"
+            placeholder: "Work Log"
+        });
+        $('.kt_select2_workable').select2({
+            placeholder: "Select Workable/Non Workable"
         });
         // loading data from array
         // var data = [{
