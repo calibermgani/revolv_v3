@@ -28,7 +28,7 @@ class ReportsController extends Controller
             $subProject = Helpers::subProjectList($request->project_id);
             // $user = Helpers::getprojectResourceList($request->project_id);
         
-            if (!empty($projectId) && is_string($request->project_id)) {
+            if (!empty($request->project_id) && is_string($request->project_id)) {
                 getProjectResourceListJob::dispatch($request->project_id)->delay(now()->addSeconds(5));
                 $prjResourceCacheKey = 'project_'.$request->project_id.'prjResourceList' ;
                 $user = Cache::get($prjResourceCacheKey, 0);  
