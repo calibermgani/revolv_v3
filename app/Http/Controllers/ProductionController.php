@@ -2480,18 +2480,23 @@ class ProductionController extends Controller
 
             try {
                  $decodedProjectId = Helpers::encodeAndDecodeID($request['clientName'], 'decode');
-               $decodedPracticeId = $request['subProjectName'] == '--' ? '--' : Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
-               $endTimeCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectId)->where('sub_project_id',$decodedPracticeId)->whereNull('end_time')->get();
-               foreach($endTimeCallerChartsWorkLogs as $data) {             
-                   $startTime = Carbon::parse($data->start_time);
-                   $endTime = $startTime->addMinute();    
-                   $workTime = "00:01:00";  
-                   $data->update([
-                       'end_time' => $endTime,
-                       'work_time' => $workTime,
-                   ]);
-               }                                      
-                return response()->json(['success' => true]);
+                 $decodedPracticeId = $request['subProjectName'] == '--' ? '--' : Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
+                 $endTimeCallerChartsWorkLogs = CallerChartsWorkLogs::where('emp_id',$request['assigneeAr'])->where('project_id',$decodedProjectId)->where('sub_project_id',$decodedPracticeId)->whereNull('end_time')->get();
+                if($endTimeCallerChartsWorkLogs && count($endTimeCallerChartsWorkLogs)) {
+                    foreach($endTimeCallerChartsWorkLogs as $data) {             
+                        $startTime = Carbon::parse($data->start_time);
+                        $endTime = $startTime->addMinute();    
+                        $workTime = "00:01:00";  
+                        $data->update([
+                            'end_time' => $endTime,
+                            'work_time' => $workTime,
+                        ]);
+                    }  
+                    return response()->json(['success' => true]); 
+                } else {
+                    return response()->json(['success' => false,'message' => 'No claims found']);
+                }                                   
+               
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
             }

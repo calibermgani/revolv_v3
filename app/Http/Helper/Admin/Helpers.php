@@ -761,4 +761,40 @@ class Helpers
 		//$data = ARStatusCodes::where('status', 'Active')->whereJsonContains('sub_project_id', $subProjectId)->pluck('status_code', 'id')->prepend(trans('Select Status'), '')->toArray();
 		return $data;
 	}
+
+	
+	public static function getArResourceName($project_id)
+	{
+		try {
+            $payload = [
+                'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                'client_id' => $project_id,
+            ];
+            $data = retry(3, function () use ($payload) {
+                $client = new Client(['verify' => false]);
+                $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_ar_resource_name_resolv', [
+                    'json' => $payload,
+                ]);
+                if ($response->getStatusCode() == 200) {
+                    $responseData = json_decode($response->getBody(), true);
+
+                    if (isset($responseData) && isset($responseData['arDetails'])) {
+                        return $responseData['arDetails'];
+                    } else {
+                        throw new \Exception('arDetails not found in the API response');
+                    }
+                } elseif ($response->getStatusCode() == 429) {
+                    $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
+                    sleep($retryAfter);
+                    throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
+                } else {
+                    throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+                }
+            }, 4000);
+            return $data;
+        } catch (\Exception $e) {
+            Log::error('Error in getArDetails: ' . $e->getMessage());
+            return null;
+        }
+	}
 }

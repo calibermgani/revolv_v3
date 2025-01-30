@@ -87,6 +87,9 @@ var KTSelect2 = function() {
         $('.kt_select2_status').select2({
             placeholder: "Select"
         });
+        $('.kt_select2_assignee_ar').select2({
+            placeholder: "Select Ar"
+        });
         // loading data from array
         // var data = [{
         //     id: 0,
