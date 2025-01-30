@@ -97,32 +97,59 @@
                                 </a>
                             </td>
                             
-                            
-                            {{-- <td style="text-align: center;padding: 5px;">{{ $data['project'] }}</td> --}}
-                            {{-- @foreach ($timeSlots as $timeSlot) --}}
-                            {{-- @php
-                            dd($mailBody,$timeSlots,$data,$timeSlot);
-                          @endphp --}}
-                                {{-- <td style="text-align: center;padding: 5px;">{{ $data['hourlyCount'] }}</td> --}}
-                            {{-- @endforeach --}}
-                            <td style="text-align: center; padding: 5px;">{{ucwords(strtolower($prjBillableFTE['prjMgrName'])) ?? $prjBillableFTE}}</td>
+                            {{-- <td style="text-align: center; padding: 5px;">{{ucwords(strtolower($prjBillableFTE['prjMgrName'])) ?? $prjBillableFTE}}</td>
                             <td style="text-align: center; padding: 5px;">{{$prjBillableFTE['prjBillableCount'] ?? $prjBillableFTE}}</td>
                             <td style="text-align: center; padding: 5px;">{{$prjBillableFTE['projectSLATarget'] ?? $prjBillableFTE}}</td>
                             <td style="text-align: center; padding: 5px;">{{(round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'])) ?? $prjBillableFTE}}</td>
                             <td style="text-align: center; padding: 5px;">{{(round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']/8)) ?? $prjBillableFTE}}</td>
                             @foreach ($data['hourlyCount'] as $count)
-                            {{-- <td>{{ $count }}</td> --}}
-                            @if($prjBillableFTE != '--')
-                            <td style="text-align: center;padding: 5px;color: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8 ? 'red' : 'black' }}; font-weight: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8 ? 'bold' : 'normal' }};">
-                                {{ $count }}
-                            </td>
+                             @if($prjBillableFTE != '--')
+                                <td style="text-align: center;padding: 5px;color: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8 ? 'red' : 'black' }}; font-weight: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8 ? 'bold' : 'normal' }};">
+                                    {{ $count }}
+                                </td>
                             @else
-                            <td style="color:red !important;text-align: center;padding: 5px;">{{ $count }}</td>
+                                   <td style="color:red !important;text-align: center;padding: 5px;">{{ $count }}</td>
                             @endif
+                            @endforeach --}}
+                           <td style="text-align: center; padding: 5px;">
+                                @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjMgrName']))
+                                    {{ ucwords(strtolower($prjBillableFTE['prjMgrName'])) }}
+                                @else
+                                    {{ $prjBillableFTE }}
+                                @endif
+                            </td>
+                           <td style="text-align: center; padding: 5px;">
+                                {{ is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount']) ? $prjBillableFTE['prjBillableCount'] : $prjBillableFTE }}
+                            </td>
+                           <td style="text-align: center; padding: 5px;">
+                                {{ is_array($prjBillableFTE) && isset($prjBillableFTE['projectSLATarget']) ? $prjBillableFTE['projectSLATarget'] : $prjBillableFTE }}
+                            </td>
+                           <td style="text-align: center; padding: 5px;">
+                                @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
+                                    {{ round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']) }}
+                                @else
+                                    {{ $prjBillableFTE }}
+                                @endif
+                            </td>
+                           <td style="text-align: center; padding: 5px;">
+                                @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
+                                    {{ round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8) }}
+                                @else
+                                    {{ $prjBillableFTE }}
+                                @endif
+                            </td>    
+                            @foreach ($data['hourlyCount'] as $count)
+                                @if (is_array($prjBillableFTE) && $prjBillableFTE != '--' && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
+                                    @php
+                                        $targetValue = (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8;
+                                    @endphp
+                                    <td style="text-align: center;padding: 5px;color: {{ $count < $targetValue ? 'red' : 'black' }}; font-weight: {{ $count < $targetValue ? 'bold' : 'normal' }};">
+                                        {{ $count }}
+                                    </td>
+                                @else
+                                    <td style="text-align: center;padding: 5px;color: red !important;">{{ $count }}</td>
+                                @endif
                             @endforeach
-                            {{-- @foreach ($data['hourlyCount'] as $count)
-                               <td style="text-align: center;padding: 5px;">{{ $count }}</td>
-                           @endforeach --}}
                            <td style="text-align: center;padding: 5px;">{{trim($arReasonString,",")}}</td>
                            <td style="text-align: center;padding: 5px;">{{trim($qaReasonString,",")}}</td>
                         </tr>
