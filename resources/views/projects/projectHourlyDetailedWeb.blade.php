@@ -20,9 +20,15 @@
                     <tbody>
                         @if (isset($BodyDetails) && count($BodyDetails) > 0)
                             @foreach ($BodyDetails as $data)
+                            @php
+                                App\Jobs\GetUserNameByEmpId::dispatch($empId)->delay(now()->addSeconds(5));
+                                $userNameCaheKey = "emp_name_{$data['user']}";
+                                $userName = Cache::get($userNameCaheKey, 0);    
+                            @endphp
                                 <td>
-                                    {{ $data['user'] != null ? $data['user'] . ' - ' . App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['user']) : '--' }}
-                                    </td>
+                                    {{-- {{ $data['user'] != null ? $data['user'] . ' - ' . App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['user']) : '--' }} --}}
+                                    {{  $data['user'] != null ? $data['user'].' - '.$userName : '--' }}  
+                                </td>
                                     @foreach ($data['hourlyCount'] as $count)
                                         <td>{{ $count }}</td>
                                     @endforeach
