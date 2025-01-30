@@ -115,9 +115,9 @@
                                         $qaReasons[] = '--'; 
                                         $qaReasonString = '--';
                                     }
-                                      App\Jobs\getProjectSubProjectBillableFTE::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
-                                      $prjBillableFTECacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'BillableFTE' ;
-                                      $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);                                  
+                                      App\Jobs\GetProjSubPrjJob::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
+                                      $prjTotalDetailsCacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'totalDetails' ;
+                                      $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0);                                  
                                 @endphp
                                     <tr>
                                         <td>
