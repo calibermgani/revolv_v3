@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use App\Jobs\GetUserNameByEmpId;
 use Illuminate\Support\Facades\Cache;
 use App\Models\projectInputSetting;
+use App\Jobs\getProjectResourceListJob;
 class ReportsController extends Controller
 {
     public function reporstIndex(){
@@ -25,7 +26,10 @@ class ReportsController extends Controller
     public function getSubProjects(Request $request){
         try {
             $subProject = Helpers::subProjectList($request->project_id);
-            $user = Helpers::getprojectResourceList($request->project_id);
+            // $user = Helpers::getprojectResourceList($request->project_id);
+            getProjectResourceListJob::dispatch($request->project_id)->delay(now()->addSeconds(5));
+            $prjResourceCacheKey = 'project_'.$request->project_id.'prjResourceList' ;
+            $user = Cache::get($prjResourceCacheKey, 0);    
             return response()->json(['success' => true, 'subProject' => $subProject, 'resource' => $user]);
         } catch (Exception $e) {
             log::debug($e->getMessage());
