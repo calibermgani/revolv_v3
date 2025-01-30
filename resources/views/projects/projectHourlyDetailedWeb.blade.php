@@ -21,7 +21,7 @@
                         @if (isset($BodyDetails) && count($BodyDetails) > 0)
                             @foreach ($BodyDetails as $data)
                             @php
-                                App\Jobs\GetUserNameByEmpId::dispatch($empId)->delay(now()->addSeconds(5));
+                                App\Jobs\GetUserNameByEmpId::dispatch($data['user'])->delay(now()->addSeconds(5));
                                 $userNameCaheKey = "emp_name_{$data['user']}";
                                 $userName = Cache::get($userNameCaheKey, 0);    
                             @endphp
