@@ -47,7 +47,7 @@ class ReportsController extends Controller
             try {
                 $subProject = Helpers::subProjectList($request->project_id);
                 $decodedClientName = Helpers::projectName($request->project_id) != null ? Helpers::projectName($request->project_id)->project_name : null;
-                $decodedsubProjectName = $request->sub_project_id == null ? 'project' :Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
+                $decodedsubProjectName = $request->sub_project_id == null ? 'project' :($request->project_id != null ? Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name : null);
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $columnsHeader=[];
                 if (Schema::hasTable($table_name)) {
