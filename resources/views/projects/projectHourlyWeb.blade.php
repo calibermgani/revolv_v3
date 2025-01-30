@@ -126,21 +126,60 @@
                                                 {{ $data['project'] }}
                                             </a>
                                         </td>
-                                        <td>{{ucwords(strtolower($prjBillableFTE['prjMgrName'])) ?? $prjBillableFTE}}</td>
+                                        {{-- <td>{{ucwords(strtolower($prjBillableFTE['prjMgrName'])) ?? $prjBillableFTE}}</td>
                                         <td>{{$prjBillableFTE['prjBillableCount'] ?? $prjBillableFTE}}</td>
                                         <td>{{$prjBillableFTE['projectSLATarget'] ?? $prjBillableFTE}}</td>
                                         <td>{{(round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'])) ?? $prjBillableFTE}}</td>
-                                        <td>{{(round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']/8)) ?? $prjBillableFTE}}</td>
-                                        @foreach ($data['hourlyCount'] as $count)
-                                        {{-- <td>{{ $count }}</td> --}}
-                                        @if($prjBillableFTE != '--')
-                                        <td style="color: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8 ? 'red' : 'black' }}; font-weight: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8 ? 'bold' : 'normal' }};">
-                                            {{ $count }}
+                                        <td>{{(round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']/8)) ?? $prjBillableFTE}}</td> --}}
+                                        <td>
+                                            @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjMgrName']))
+                                                {{ ucwords(strtolower($prjBillableFTE['prjMgrName'])) }}
+                                            @else
+                                                {{ $prjBillableFTE }}
+                                            @endif
                                         </td>
-                                        @else
-                                        <td style="color:red !important">{{ $count }}</td>
-                                        @endif
+                                        <td>
+                                            {{ is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount']) ? $prjBillableFTE['prjBillableCount'] : $prjBillableFTE }}
+                                        </td>
+                                        <td>
+                                            {{ is_array($prjBillableFTE) && isset($prjBillableFTE['projectSLATarget']) ? $prjBillableFTE['projectSLATarget'] : $prjBillableFTE }}
+                                        </td>
+                                        <td>
+                                            @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
+                                                {{ round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']) }}
+                                            @else
+                                                {{ $prjBillableFTE }}
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
+                                                {{ round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8) }}
+                                            @else
+                                                {{ $prjBillableFTE }}
+                                            @endif
+                                        </td>                                        
+                                        {{-- @foreach ($data['hourlyCount'] as $count)
+                                            @if($prjBillableFTE != '--')
+                                                <td style="color: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8 ? 'red' : 'black' }}; font-weight: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8 ? 'bold' : 'normal' }};">
+                                                    {{ $count }}
+                                                </td>
+                                            @else
+                                                <td style="color:red !important">{{ $count }}</td>
+                                            @endif
+                                        @endforeach --}}
+                                        @foreach ($data['hourlyCount'] as $count)
+                                            @if (is_array($prjBillableFTE) && $prjBillableFTE != '--' && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
+                                                @php
+                                                    $targetValue = (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8;
+                                                @endphp
+                                                <td style="color: {{ $count < $targetValue ? 'red' : 'black' }}; font-weight: {{ $count < $targetValue ? 'bold' : 'normal' }};">
+                                                    {{ $count }}
+                                                </td>
+                                            @else
+                                                <td style="color: red !important;">{{ $count }}</td>
+                                            @endif
                                         @endforeach
+
                                         
                                         <td>{{trim($arReasonString,",")}}</td>
                                         <td>{{trim($qaReasonString,",")}}</td>
