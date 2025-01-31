@@ -235,12 +235,7 @@
                 }
                 var project_id = @json($projectId);
                 var subproject_id = @json($subProjectId);
-                $(document).on('click', '#clear_submit', function(e) {
-                    project_id = 0;
-                    sub_project_id = 0;
-                    work_date = 0;
-                    $('.daterange').val('');
-                });
+                
              
                 if (subproject_id != 0) {
                     subProjectNameList(project_id, subproject_id);
@@ -347,6 +342,13 @@
                         opacity: 0.1,
                         message: 'Generating Report...',
                     });
+                });
+                $(document).on('click', '#clear_submit', function(e) {
+                    project_id = 0;
+                    sub_project_id = 0;
+                    work_date = 0;
+                    $('.daterange').val('');
+                    $('#prodcution_report_table').DataTable().destroy();
                 });
 
             });
