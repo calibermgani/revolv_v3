@@ -184,7 +184,7 @@
                                 <tr>
                                     <td>{{ $data['date'] }}</td>
                                     <td>{{ $data['emp_id'] }}</td>
-                                    <td>{{ $data['emp_name'] }}</td>
+                                    <td>{{ ucwords(strtolower($data['emp_name'])) }}</td>
                                     <td>{{ $projectName ? $projectName->aims_project_name : '--' }}</td>
                                     <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
                                     <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
