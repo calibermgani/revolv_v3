@@ -449,22 +449,22 @@ class ProjectController extends Controller
         if (($current_time->hour >= 17 || $current_time->hour < 8) && $today->isSaturday() ==  false  && $today->isSunday() ==  false ) {
             $fileStatus = "The " . $project_information['project_name'] . " inventory is not in the specified location. Could you please check and place the inventory files for today as soon as possible. This will help avoid delays in production.";
             $mailHeader = $project_information['project_name'] . " File not in Specific folder";
-            $client = new Client(['verify' => false]);
-            $payload = [
-                'token' => '1a32e71a46317b9cc6feb7388238c95d',
-                'client_id' => $project_information['project_id']
-            ];
-            $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_emails_above_tl_level', [
-                'json' => $payload
-            ]);
-            if ($response->getStatusCode() == 200) {
-                $apiData = json_decode($response->getBody(), true);
-            } else {
-                return response()->json(['error' => 'API request failed'], $response->getStatusCode());
-            }
+            // $client = new Client(['verify' => false]);
+            // $payload = [
+            //     'token' => '1a32e71a46317b9cc6feb7388238c95d',
+            //     'client_id' => $project_information['project_id']
+            // ];
+            // $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_emails_above_tl_level', [
+            //     'json' => $payload
+            // ]);
+            // if ($response->getStatusCode() == 200) {
+            //     $apiData = json_decode($response->getBody(), true);
+            // } else {
+            //     return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+            // }
             // $toMailId = $apiData['people_email'];
+            // $reportingPerson = $apiData['reprting_person'];            
             $toMailId = "resolvsupport@annexmed.net";
-            $reportingPerson = $apiData['reprting_person'];
             $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'project file not there')->first();
             $ccMailId = explode(",", $ccMail->cc_emails);
             // $toMailId = ["mgani@caliberfocus.com"];
