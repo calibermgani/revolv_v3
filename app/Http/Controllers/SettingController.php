@@ -15,36 +15,43 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\SopDoc;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Jobs\getQaArEmpList;
+use Illuminate\Support\Facades\Cache;
 class SettingController extends Controller
 {
     public function qualitySampling(Request $request)
     {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
             try {
-                $payload = [
-                    'token' => '1a32e71a46317b9cc6feb7388238c95d'
-                ];
-                $client = new Client(['verify' => false]);
-                $response = $client->request('POST',  config("constants.PRO_CODE_URL") . '/api/v1_users/get_quality_ar_emp_list', [
-                    'json' => $payload
-                ]);
-                if ($response->getStatusCode() == 200) {
-                    $data = json_decode($response->getBody(), true);
-                } else {
-                    return response()->json(['error' => 'API request failed'], $response->getStatusCode());
-                }
-                $coderList = $data['coderList'];
+                getQaArEmpList::dispatch()->delay(now()->addSeconds(5));
+                $prjQAArEmpCacheKey = 'project_qa_ar_emp_list' ;
+                $prjQAArEmpList = Cache::get($prjQAArEmpCacheKey, 0);  
+                // $payload = [
+                //     'token' => '1a32e71a46317b9cc6feb7388238c95d'
+                // ];
+                // $client = new Client(['verify' => false]);
+                // $response = $client->request('POST',  config("constants.PRO_CODE_URL") . '/api/v1_users/get_quality_ar_emp_list', [
+                //     'json' => $payload
+                // ]);
+                // if ($response->getStatusCode() == 200) {
+                //     $data = json_decode($response->getBody(), true);
+                // } else {
+                //     return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+                // }
+                // $coderList = $data['coderList'];
+                // $qaResponse = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_qa_emp_list', [
+                //     'json' => $payload
+                // ]);
+                // if ($qaResponse->getStatusCode() == 200) {
+                //     $qaData = json_decode($qaResponse->getBody(), true);
+                // } else {
+                //     return response()->json(['error' => 'API request failed'], $qaResponse->getStatusCode());
+                // }
 
-                $qaResponse = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_qa_emp_list', [
-                    'json' => $payload
-                ]);
-                if ($qaResponse->getStatusCode() == 200) {
-                    $qaData = json_decode($qaResponse->getBody(), true);
-                } else {
-                    return response()->json(['error' => 'API request failed'], $qaResponse->getStatusCode());
-                }
-
-                $qaList = $qaData['qaList'];
+                // $qaList = $qaData['qaList'];
+                
+                $coderList = $prjQAArEmpList['coderList'];
+                $qaList = $prjQAArEmpList['qaList'];
                 $qaSamplingList = QualitySampling::orderBy('id', 'desc')->get()->toArray();
 
                 return view('settings/qualitySampling', compact('coderList', 'qaList', 'qaSamplingList'));

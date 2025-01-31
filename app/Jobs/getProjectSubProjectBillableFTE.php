@@ -30,10 +30,6 @@ class getProjectSubProjectBillableFTE implements ShouldQueue
      */
     public function handle()
     {
-        // $data = app()->call('App\Http\Controllers\ProjectController@getProjectSubPrjBillableFTE', [
-        //     'project_id' => $this->projectId,
-        //     'sub_project_id' => $this->subProjectId,
-        // ]);
         $data = app()->call('App\Http\Controllers\ProjectController@getProjectTotalDetailedInformation', [
             'project_id' => $this->projectId,
             'sub_project_id' => $this->subProjectId,

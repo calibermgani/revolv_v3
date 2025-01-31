@@ -666,7 +666,7 @@ class Helpers
 			$projectResource = array_filter($data['userDetail']);
             return $projectResource;
         } catch (\Exception $e) {
-            Log::error('Error in getArDetails: ' . $e->getMessage());
+            Log::error('Error in getPrjResourceList: ' . $e->getMessage());
             return null;
         }
 	}
@@ -827,37 +827,37 @@ class Helpers
         }
 	}
 
-	// public static function getQualityArEmpList()
-	// {
-	// 	try {
-    //         $payload = [
-    //             'token' => '1a32e71a46317b9cc6feb7388238c95d'
-    //         ];
-    //         $data = retry(3, function () use ($payload) {
-    //             $client = new Client(['verify' => false]);
-    //             $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_quality_ar_emp_list', [
-    //                 'json' => $payload,
-    //             ]);
-    //             if ($response->getStatusCode() == 200) {
-    //                 $responseData = json_decode($response->getBody(), true);
+	public static function getQualityArEmpList()
+	{
+		try {
+            $payload = [
+                'token' => '1a32e71a46317b9cc6feb7388238c95d'
+            ];
+            $data = retry(3, function () use ($payload) {
+                $client = new Client(['verify' => false]);
+                $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_quality_ar_emp_list', [
+                    'json' => $payload,
+                ]);
+                if ($response->getStatusCode() == 200) {
+                    $responseData = json_decode($response->getBody(), true);
 
-    //                 if (isset($responseData)) {
-    //                     return $responseData['arDetails'];
-    //                 } else {
-    //                     throw new \Exception('arDetails not found in the API response');
-    //                 }
-    //             } elseif ($response->getStatusCode() == 429) {
-    //                 $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
-    //                 sleep($retryAfter);
-    //                 throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
-    //             } else {
-    //                 throw new \Exception('API request failed with status: ' . $response->getStatusCode());
-    //             }
-    //         }, 4000);
-    //         return $data;
-    //     } catch (\Exception $e) {
-    //         Log::error('Error in getArDetails: ' . $e->getMessage());
-    //         return null;
-    //     }
-	// }
+                    if (isset($responseData)) {
+                        return $responseData;
+                    } else {
+                        throw new \Exception('ar&qa Details not found in the API response');
+                    }
+                } elseif ($response->getStatusCode() == 429) {
+                    $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
+                    sleep($retryAfter);
+                    throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
+                } else {
+                    throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+                }
+            }, 4000);
+            return $data;
+        } catch (\Exception $e) {
+            Log::error('Error in getQualityAr: ' . $e->getMessage());
+            return null;
+        }
+	}
 }
