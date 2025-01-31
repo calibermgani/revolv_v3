@@ -26,6 +26,9 @@ use App\Models\ProjectColSearchConfig;
 use App\Exports\ProductionExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\ManualProjectDuplicate;
+use App\Jobs\GetProjJob;
+use Illuminate\Support\Facades\Cache;
+
 ini_set('memory_limit', '1024M');
 class ProductionController extends Controller
 {
@@ -43,21 +46,24 @@ class ProductionController extends Controller
     public function clients() {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
             try {
-                $userId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['id'] !=null ? Session::get('loginDetails')['userDetail']['id']:"";
-                $payload = [
-                    'token' => '1a32e71a46317b9cc6feb7388238c95d',
-                    'user_id' => $userId
-                ];
-                $client = new Client(['verify' => false]);
-                $response = $client->request('POST',  config("constants.PRO_CODE_URL").'/api/v1_users/get_clients_on_user', [
-                    'json' => $payload
-                ]);
-                if ($response->getStatusCode() == 200) {
-                     $data = json_decode($response->getBody(), true);
-                } else {
-                     return response()->json(['error' => 'API request failed'], $response->getStatusCode());
-                }
-                $projects = $data['clientList'];
+                // $userId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['id'] !=null ? Session::get('loginDetails')['userDetail']['id']:"";
+                // $payload = [
+                //     'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                //     'user_id' => $userId
+                // ];
+                // $client = new Client(['verify' => false]);
+                // $response = $client->request('POST',  config("constants.PRO_CODE_URL").'/api/v1_users/get_clients_on_user', [
+                //     'json' => $payload
+                // ]);
+                // if ($response->getStatusCode() == 200) {
+                //      $data = json_decode($response->getBody(), true);
+                // } else {
+                //      return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+                // }   
+                //   $projects = $data['clientList'];
+                GetProjJob::dispatch()->delay(now()->addSeconds(5));
+                $prjCacheKey = 'clients_on_user' ; 
+                $projects = Cache::get($prjCacheKey, 0); 
                   return view('productions/clients',compact('projects'));
             } catch (\Exception $e) {
                 log::debug($e->getMessage());

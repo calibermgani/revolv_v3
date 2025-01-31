@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Helper\Admin\Helpers as Helpers;
 use App\Models\InventoryExeFile;
 use App\Models\ProjectReason;
+use App\Jobs\GetProjJob;
+use Illuminate\Support\Facades\Cache;
 class DashboardController extends Controller
 {
     public function dashboard(Request $request)
@@ -54,7 +56,10 @@ class DashboardController extends Controller
                 $loginEmpId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null ? Session::get('loginDetails')['userDetail']['emp_id'] : "";
                 $userId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['id'] != null ? Session::get('loginDetails')['userDetail']['id'] : "";
                 $agingHeader = Aging::select('days','days_range')->get()->toArray();
-                $projects = $this->getProjects();
+                // $projects = $this->getProjects();
+                GetProjJob::dispatch()->delay(now()->addSeconds(5));
+                $prjCacheKey = 'clients_on_user' ; 
+                $projects = Cache::get($prjCacheKey, 0);    
                 // $startDate = Carbon::now()->startOfDay()->toDateString();
                 // $endDate = Carbon::now()->endOfDay()->toDateString();
                 // $startDate = Carbon::now()->startOfWeek()->startOfDay()->toDateString();
@@ -262,11 +267,14 @@ class DashboardController extends Controller
                 $loginEmpId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null ? Session::get('loginDetails')['userDetail']['emp_id'] : "";
                 $agingHeader = Aging::select('days', 'days_range')->get()->toArray();
                 $userId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['id'] != null ? Session::get('loginDetails')['userDetail']['id'] : "";
-                $projects = $this->getProjects();
+                // $projects = $this->getProjects();
                 // $startDate = Carbon::now()->startOfDay()->toDateString();
                 // $endDate = Carbon::now()->endOfDay()->toDateString();
                 // $startDate = Carbon::now()->startOfWeek()->startOfDay()->toDateString();
                 // $endDate = Carbon::now()->endOfWeek()->endOfDay()->toDateString();
+                GetProjJob::dispatch()->delay(now()->addSeconds(5));
+                $prjCacheKey = 'clients_on_user' ; 
+                $projects = Cache::get($prjCacheKey, 0);
                 $startDate = Carbon::now()->startOfMonth()->toDateString();
                 $endDate = Carbon::now()->endOfMonth()->toDateString();
                 $models = $projectIds = [];
@@ -583,7 +591,10 @@ class DashboardController extends Controller
                 // $startDate = Carbon::now()->subDays($days)->startOfDay()->toDateString();
                 // $endDate = Carbon::now()->endOfDay()->toDateString();
                 $models = [];
-                $projects = $this->getProjects();
+                // $projects = $this->getProjects();
+                GetProjJob::dispatch()->delay(now()->addSeconds(5));
+                $prjCacheKey = 'clients_on_user' ; 
+                $projects = Cache::get($prjCacheKey, 0);    
                 foreach ($projects as $project) {
                     $project["client_name"] = Helpers::projectName($project["id"])->project_name;
                     if (count($project["subprject_name"]) > 0) {
@@ -645,33 +656,45 @@ class DashboardController extends Controller
             return redirect('/');
         }
     }
-    public function getProjects()
-    {
-        if (Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
-            try {
-                $loginEmpId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null ? Session::get('loginDetails')['userDetail']['emp_id'] : "";
-                $userId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['id'] != null ? Session::get('loginDetails')['userDetail']['id'] : "";
-                $payload = [
-                    'token' => '1a32e71a46317b9cc6feb7388238c95d',
-                    'user_id' => $userId,
-                ];
-                $client = new Client(['verify' => false]);
-                $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_clients_on_user', [
-                    'json' => $payload,
-                ]);
-                if ($response->getStatusCode() == 200) {
-                    $data = json_decode($response->getBody(), true);
-                } else {
-                    return response()->json(['error' => 'API request failed'], $response->getStatusCode());
-                }
-                return $data['clientList'];
-            } catch (\Exception $e) {
-                Log::debug($e->getMessage());
-            }
-        } else {
-            return redirect('/');
-        }
-    }
+    // public function getProjects()
+    // {
+    //     if (Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
+    //         try {
+    //             $loginEmpId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null ? Session::get('loginDetails')['userDetail']['emp_id'] : "";
+    //             $userId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['id'] != null ? Session::get('loginDetails')['userDetail']['id'] : "";
+    //             $payload = [
+    //                 'token' => '1a32e71a46317b9cc6feb7388238c95d',
+    //                 'user_id' => $userId,
+    //             ];
+    //             $data = retry(3, function () use ($payload) {
+    //                 $client = new Client(['verify' => false]);
+    //                 $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_clients_on_user', [
+    //                     'json' => $payload,
+    //                 ]);
+    //                 if ($response->getStatusCode() == 200) {
+    //                     // $data = json_decode($response->getBody(), true);
+    //                     $responseData = json_decode($response->getBody(), true);
+    //                     if (isset($responseData)) {
+    //                         return $responseData['clientList'];
+    //                     } else {
+    //                         throw new \Exception('clientList not found in the API response');
+    //                     }
+    //                 } elseif ($response->getStatusCode() == 429) {
+    //                     $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
+    //                     sleep($retryAfter);
+    //                     throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
+    //                 } else {
+    //                     throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+    //                 }
+    //             }, 4000);
+    //             return $data;
+    //         } catch (\Exception $e) {
+    //             Log::debug($e->getMessage());
+    //         }
+    //     } else {
+    //         return redirect('/');
+    //     }
+    // }
 
     public function prjCalendarFilter(Request $request)
     {
@@ -680,7 +703,10 @@ class DashboardController extends Controller
                 $loginEmpId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null ? Session::get('loginDetails')['userDetail']['emp_id'] : "";
                 $userId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['id'] != null ? Session::get('loginDetails')['userDetail']['id'] : "";
                 $calendarId = $request->CalendarId;
-                $projects = $this->getProjects();
+                // $projects = $this->getProjects();
+                GetProjJob::dispatch()->delay(now()->addSeconds(5));
+                $prjCacheKey = 'clients_on_user' ; 
+                $projects = Cache::get($prjCacheKey, 0);    
                 if ($calendarId == "year") {
                     // $days = Carbon::now()->daysInYear;
                     $startDate = Carbon::now()->startOfYear()->toDateString();
@@ -819,7 +845,10 @@ class DashboardController extends Controller
                 $loginEmpId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null ? Session::get('loginDetails')['userDetail']['emp_id'] : "";
                 $userId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['id'] != null ? Session::get('loginDetails')['userDetail']['id'] : "";
                 $calendarId = $request->CalendarId;
-                $projects = $this->getProjects();
+                // $projects = $this->getProjects();
+                GetProjJob::dispatch()->delay(now()->addSeconds(5));
+                $prjCacheKey = 'clients_on_user' ; 
+                $projects = Cache::get($prjCacheKey, 0);    
                 if ($calendarId == "year") {
                     // $days = Carbon::now()->daysInYear;
                     $startDate = Carbon::now()->startOfYear()->toDateString();
