@@ -933,5 +933,41 @@ class Helpers
             return redirect('/');
         }
     }
+	public function getSubProjects($project_id)
+    {
+        if (Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
+            try {
+                 $payload = [
+					'token' => '1a32e71a46317b9cc6feb7388238c95d',
+					'client_id' => $project_id,
+				];
+                $data = retry(3, function () use ($payload) {
+                    $client = new Client(['verify' => false]);
+                    $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_practice_on_client', [
+                        'json' => $payload,
+                    ]);
+                    if ($response->getStatusCode() == 200) {
+                        $responseData = json_decode($response->getBody(), true);
+                        if (isset($responseData)) {
+                            return $responseData;
+                        } else {
+                            throw new \Exception('practice on client not found in the API response');
+                        }
+                    } elseif ($response->getStatusCode() == 429) {
+                        $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
+                        sleep($retryAfter);
+                        throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
+                    } else {
+                        throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+                    }
+                }, 4000);
+                return $data;
+            } catch (\Exception $e) {
+                Log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
 	
 }

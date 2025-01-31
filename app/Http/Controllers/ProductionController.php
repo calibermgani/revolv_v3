@@ -28,6 +28,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Models\ManualProjectDuplicate;
 use App\Jobs\GetProjJob;
 use Illuminate\Support\Facades\Cache;
+use App\Jobs\GetSubPrjJob;
 
 ini_set('memory_limit', '1024M');
 class ProductionController extends Controller
@@ -76,21 +77,26 @@ class ProductionController extends Controller
         try {
             $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
             $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
-            $payload = [
-                'token' => '1a32e71a46317b9cc6feb7388238c95d',
-                'client_id' => $request->project_id
-            ];
-            $client = new Client(['verify' => false]);
-            $response = $client->request('POST', config("constants.PRO_CODE_URL").'/api/v1_users/get_practice_on_client', [
-                'json' => $payload
-            ]);
-            if ($response->getStatusCode() == 200) {
-                 $data = json_decode($response->getBody(), true);
-            } else {
-                 return response()->json(['error' => 'API request failed'], $response->getStatusCode());
-            }
-            $subprojects = $data['practiceList'];
-            $clientDetails = $data['clientInfo'];
+            // $payload = [
+            //     'token' => '1a32e71a46317b9cc6feb7388238c95d',
+            //     'client_id' => $request->project_id
+            // ];
+            // $client = new Client(['verify' => false]);
+            // $response = $client->request('POST', config("constants.PRO_CODE_URL").'/api/v1_users/get_practice_on_client', [
+            //     'json' => $payload
+            // ]);
+            // if ($response->getStatusCode() == 200) {
+            //      $data = json_decode($response->getBody(), true);
+            // } else {
+            //      return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+            // }
+            // $subprojects = $data['practiceList'];
+            // $clientDetails = $data['clientInfo'];
+            GetSubPrjJob::dispatch($request->project_id)->delay(now()->addSeconds(5));
+            $subPrjCacheKey = 'project_'.$request->project_id.'sub_projects' ;
+            $subPrjDetails = Cache::get($subPrjCacheKey, 0);    
+            $subprojects = $subPrjDetails['practiceList'];
+            $clientDetails = $subPrjDetails['clientInfo'];
 
           //  $subprojects = subproject::with(['clientName'])->where('project_id',$request->project_id)->where('status','Active')->get();
             $subProjectsWithCount = [];
