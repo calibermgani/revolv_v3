@@ -28,6 +28,9 @@ use App\Models\qaClassCatScope;
 use App\Models\ProjectColSearchConfig;
 use App\Exports\ProductionExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Jobs\getemailsAboveTlLevelJob;
+use Illuminate\Support\Facades\Cache;
+
 ini_set('memory_limit', '1024M');
 class QAProductionController extends Controller
 {
@@ -1024,26 +1027,26 @@ class QAProductionController extends Controller
                     $modelClass::create($data);
                 }
                 if($data['chart_status'] == "Revoke" &&  $datasRecord['coder_rework_status'] == "Rebuttal") {
-                    $client = new Client(['verify' => false]);
-                    $payload = [
-                        'token' => '1a32e71a46317b9cc6feb7388238c95d',
-                        'client_id' => $decodedProjectName
-                    ];
-                     $response = $client->request('POST', config("constants.PRO_CODE_URL").'/api/v1_users/get_emails_above_tl_level', [
-                        'json' => $payload
-                    ]);
-                    if ($response->getStatusCode() == 200) {
-                        $apiData = json_decode($response->getBody(), true);
-                    } else {
-                        return response()->json(['error' => 'API request failed'], $response->getStatusCode());
-                    }
+                    getemailsAboveTlLevelJob::dispatch($decodedProjectName)->delay(now()->addSeconds(5));
+                    $prjemailsCacheKey = 'project_'.$decodedProjectName.'emailsAboveTlLevel';
+                    $apiData = Cache::get($prjemailsCacheKey, 0);  
+                    // $client = new Client(['verify' => false]);
+                    // $payload = [
+                    //     'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                    //     'client_id' => $decodedProjectName
+                    // ];
+                    //  $response = $client->request('POST', config("constants.PRO_CODE_URL").'/api/v1_users/get_emails_above_tl_level', [
+                    //     'json' => $payload
+                    // ]);
+                    // if ($response->getStatusCode() == 200) {
+                    //     $apiData = json_decode($response->getBody(), true);
+                    // } else {
+                    //     return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+                    // }
                     $toMailId = $apiData['people_email'];
                     $reportingPerson = $apiData['reprting_person'];
-                    // $toMailId = ["prabaharan@annexmed.net","rajeswari@annexmed.net","ram@annexmed.net"];
-                    // $ccMailId = ["vijayalaxmi@caliberfocus.com","mgani@caliberfocus.com","elan@caliberfocus.com"];
                     $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'manager rebuttal')->first();
                     $ccMailId = explode(",", $ccMail->cc_emails);
-                    //$mailHeader = $decodedClientName." Rebuttal Mail";
                     $mailHeader = "Assistance Needed: ".$decodedClientName." Audit Rebuttal";
                     $mailBody = $record;
                     if(isset($toMailId) && !empty($toMailId)) {
@@ -1188,22 +1191,24 @@ class QAProductionController extends Controller
                     $modelClass::create($data);
                 }
                 if($data['chart_status'] == "Revoke" &&  $datasRecord['coder_rework_status'] == "Rebuttal") {
-                    $client = new Client(['verify' => false]);
-                    $payload = [
-                        'token' => '1a32e71a46317b9cc6feb7388238c95d',
-                        'client_id' => $decodedProjectName
-                    ];
-                     $response = $client->request('POST', config("constants.PRO_CODE_URL").'/api/v1_users/get_emails_above_tl_level', [
-                        'json' => $payload
-                    ]);
-                    if ($response->getStatusCode() == 200) {
-                        $apiData = json_decode($response->getBody(), true);
-                    } else {
-                        return response()->json(['error' => 'API request failed'], $response->getStatusCode());
-                    }
+                    getemailsAboveTlLevelJob::dispatch($decodedProjectName)->delay(now()->addSeconds(5));
+                    $prjemailsCacheKey = 'project_'.$decodedProjectName.'emailsAboveTlLevel';
+                    $apiData = Cache::get($prjemailsCacheKey, 0); 
+                    // $client = new Client(['verify' => false]);
+                    // $payload = [
+                    //     'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                    //     'client_id' => $decodedProjectName
+                    // ];
+                    //  $response = $client->request('POST', config("constants.PRO_CODE_URL").'/api/v1_users/get_emails_above_tl_level', [
+                    //     'json' => $payload
+                    // ]);
+                    // if ($response->getStatusCode() == 200) {
+                    //     $apiData = json_decode($response->getBody(), true);
+                    // } else {
+                    //     return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+                    // }
                     $toMailId = $apiData['people_email'];
                     $reportingPerson = $apiData['reprting_person'];
-                    // $ccMailId = ["vijayalaxmi@caliberfocus.com","mgani@caliberfocus.com","elan@caliberfocus.com"];
                     $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'manager rebuttal')->first();
                     $ccMailId = explode(",", $ccMail->cc_emails);
                     $mailHeader = "Assistance Needed: ".$decodedClientName." Audit Rebuttal";
