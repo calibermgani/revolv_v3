@@ -217,8 +217,6 @@ class ProjectAuthAutomationController extends Controller
                 'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
                 'primary_insurer_name' => isset($request->primary_insurer_name) && $request->primary_insurer_name != "NULL" ? $request->primary_insurer_name : NULL,
                 'secondary_insurer_name' => isset($request->secondary_insurer_name) && $request->secondary_insurer_name != "NULL" ? $request->secondary_insurer_name : NULL,
-                'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
-                'copay_status' => isset($request->copay_status) && $request->copay_status != "NULL" ? $request->copay_status : NULL,
                 'invoke_date' => carbon::now()->format('Y-m-d')
             ];
 
@@ -231,8 +229,6 @@ class ProjectAuthAutomationController extends Controller
                     'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
                     'primary_insurer_name' => isset($request->primary_insurer_name) && $request->primary_insurer_name != "NULL" ? $request->primary_insurer_name : NULL,
                     'secondary_insurer_name' => isset($request->secondary_insurer_name) && $request->secondary_insurer_name != "NULL" ? $request->secondary_insurer_name : NULL,
-                    'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
-                    'copay_status' => isset($request->copay_status) && $request->copay_status != "NULL" ? $request->copay_status : NULL, 
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
@@ -249,8 +245,6 @@ class ProjectAuthAutomationController extends Controller
                         'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
                         'primary_insurer_name' => isset($request->primary_insurer_name) && $request->primary_insurer_name != "NULL" ? $request->primary_insurer_name : NULL,
                         'secondary_insurer_name' => isset($request->secondary_insurer_name) && $request->secondary_insurer_name != "NULL" ? $request->secondary_insurer_name : NULL,
-                        'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
-                        'copay_status' => isset($request->copay_status) && $request->copay_status != "NULL" ? $request->copay_status : NULL,
                         'invoke_date' => date('Y-m-d'),
                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
@@ -273,8 +267,6 @@ class ProjectAuthAutomationController extends Controller
                 'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
                 'primary_insurer_name' => isset($request->primary_insurer_name) && $request->primary_insurer_name != "NULL" ? $request->primary_insurer_name : NULL,
                 'secondary_insurer_name' => isset($request->secondary_insurer_name) && $request->secondary_insurer_name != "NULL" ? $request->secondary_insurer_name : NULL,
-                'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
-                'copay_status' => isset($request->copay_status) && $request->copay_status != "NULL" ? $request->copay_status : NULL,
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
