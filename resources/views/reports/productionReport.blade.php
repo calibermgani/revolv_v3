@@ -349,6 +349,9 @@
                     work_date = 0;
                     $('.daterange').val('');
                     $('#prodcution_report_table').DataTable().destroy();
+                    window.location.href = baseUrl + "/report/production_reports/" + "?parent=" +
+                        getUrlVars()[
+                            "parent"] + "&child=" + getUrlVars()["child"];
                 });
 
             });
