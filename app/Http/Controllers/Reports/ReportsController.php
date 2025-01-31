@@ -537,19 +537,19 @@ class ReportsController extends Controller
     {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
             try {
-                $payload = [
-                    'token' => '1a32e71a46317b9cc6feb7388238c95d'
-                ];
-                $client = new Client(['verify' => false]);
-                $response = $client->request('POST',  config("constants.PRO_CODE_URL") . '/api/v1_users/get_quality_ar_emp_list', [
-                    'json' => $payload
-                ]);
-                if ($response->getStatusCode() == 200) {
-                    $data = json_decode($response->getBody(), true);
-                } else {
-                    return response()->json(['error' => 'API request failed'], $response->getStatusCode());
-                }
-                $coderList = $data['coderList'];                         
+                // $payload = [
+                //     'token' => '1a32e71a46317b9cc6feb7388238c95d'
+                // ];
+                // $client = new Client(['verify' => false]);
+                // $response = $client->request('POST',  config("constants.PRO_CODE_URL") . '/api/v1_users/get_quality_ar_emp_list', [
+                //     'json' => $payload
+                // ]);
+                // if ($response->getStatusCode() == 200) {
+                //     $data = json_decode($response->getBody(), true);
+                // } else {
+                //     return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+                // }
+                // $coderList = $data['coderList'];                         
                 $qaSamplingList = 0;
                 $projectId = $subProjectId = $workDate = 0;
                 if($request->project_id) {
@@ -751,7 +751,7 @@ class ReportsController extends Controller
                 }               
              
                 
-                return view('reports.productionReport', compact('coderList', 'productionReportArray','projectId','subProjectId','workDate','workingDates','finalData','excel_name'));
+                return view('reports.productionReport', compact('productionReportArray','projectId','subProjectId','workDate','workingDates','finalData','excel_name'));
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
             }
