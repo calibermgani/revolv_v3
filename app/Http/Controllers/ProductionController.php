@@ -1207,7 +1207,8 @@ class ProductionController extends Controller
                 $modelHistory = "App\\Models\\" . $modelName.'History';
                 // $modelClass = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',ucfirst($decodedClientName).ucfirst($decodedsubProjectName));
                 // $modelHistory = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',ucfirst($decodedClientName).ucfirst($decodedsubProjectName)).'History';
-                foreach($request['checkedRowValues'] as $data) {
+                $checkedValues = json_decode($request->input('checkedRowValues'), true);
+                foreach($checkedValues as $data) {
                     $existingRecord = $modelClass::where('id',$data['value'])->first();
                     $historyRecord = $existingRecord->toArray();
                     $historyRecord['parent_id']= $historyRecord['id'];
@@ -2417,24 +2418,41 @@ class ProductionController extends Controller
                 $modelClass = "App\\Models\\" . $modelName;
                 $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
                 $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
+                $checkedValues = json_decode($request->input('checkedRowValues'), true);
                 if($request['selectedRecords'] == "none") {
                     if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
-                        foreach($request['checkedRowValues'] as $data) {
+                        foreach($checkedValues as $data) {
                             $existingRecord = $modelClass::where('id',$data['value'])->where('chart_status','CE_Assigned')->first();
                             $existingRecord->update(['chart_status' => 'AR_non_workable']);
                         }
                     } else {
-                        foreach($request['checkedRowValues'] as $data) {
+                        foreach($checkedValues as $data) {
                             $existingRecord = $modelClass::where('id',$data['value'])->where('CE_emp_id',$loginEmpId)->where('chart_status','CE_Assigned')->first();
                             $existingRecord->update(['chart_status' => 'AR_non_workable']);
                         }
                     }   
                 } else {
+                    $query = $modelClass::query();
+                    $searchData = []; 
+                    foreach ($request->except('_token', 'checkedRowValues', 'clientName','subProjectName','selectedRecords') as $key => $value) {
+                        $searchData[$key] = $value;
+                        if (is_numeric($value) || is_bool($value)) {
+                            $query->where($key, $value);  
+                        } elseif ($this->isDate($value)) {  
+                            $query->whereDate($key, '=', $value);  
+                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                            $query->where($key, $value); 
+                        } else {
+                            if($value != null) {
+                            $query->where($key, 'like', '%' . $value . '%'); 
+                            }
+                        }
+                    }
                     if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
-                        $modelClass::where('chart_status', 'CE_Assigned')->update(['chart_status' => 'AR_non_workable']);
+                        $query->where('chart_status', 'CE_Assigned')->update(['chart_status' => 'AR_non_workable']);
 
                     } else {
-                       $modelClass::where('CE_emp_id',$loginEmpId)->where('chart_status','CE_Assigned')->update(['chart_status' => 'AR_non_workable']);
+                       $query->where('CE_emp_id',$loginEmpId)->where('chart_status','CE_Assigned')->update(['chart_status' => 'AR_non_workable']);
                     }
                 }
                 return response()->json(['success' => true]);
@@ -2458,24 +2476,41 @@ class ProductionController extends Controller
                 $modelClass = "App\\Models\\" . $modelName;
                 $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
                 $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
+                $checkedValues = json_decode($request->input('checkedRowValues'), true);
                 if($request['selectedRecords'] == "none") {
                     if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
-                        foreach($request['checkedRowValues'] as $data) {
+                        foreach($checkedValues as $data) {
                             $existingRecord = $modelClass::where('id',$data['value'])->where('chart_status','AR_non_workable')->first();
                             $existingRecord->update(['chart_status' => 'CE_Assigned']);
                         }
                     } else {
-                        foreach($request['checkedRowValues'] as $data) {
+                        foreach($checkedValues as $data) {
                             $existingRecord = $modelClass::where('id',$data['value'])->where('CE_emp_id',$loginEmpId)->where('chart_status','AR_non_workable')->first();
                             $existingRecord->update(['chart_status' => 'CE_Assigned']);
                         }
                     }   
                 } else {
+                    $query = $modelClass::query();
+                    $searchData = []; 
+                    foreach ($request->except('_token', 'checkedRowValues', 'clientName','subProjectName','selectedRecords') as $key => $value) {
+                        $searchData[$key] = $value;
+                        if (is_numeric($value) || is_bool($value)) {
+                            $query->where($key, $value);  
+                        } elseif ($this->isDate($value)) {  
+                            $query->whereDate($key, '=', $value);  
+                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                            $query->where($key, $value); 
+                        } else {
+                            if($value != null) {
+                            $query->where($key, 'like', '%' . $value . '%'); 
+                            }
+                        }
+                    }
                     if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
-                        $modelClass::where('chart_status', 'AR_non_workable')->update(['chart_status' => 'CE_Assigned']);
+                        $query->where('chart_status', 'AR_non_workable')->update(['chart_status' => 'CE_Assigned']);
 
                     } else {
-                       $modelClass::where('CE_emp_id',$loginEmpId)->where('chart_status','AR_non_workable')->update(['chart_status' => 'CE_Assigned']);
+                        $query->where('CE_emp_id',$loginEmpId)->where('chart_status','AR_non_workable')->update(['chart_status' => 'CE_Assigned']);
                     }
                 }
                 return response()->json(['success' => true]);

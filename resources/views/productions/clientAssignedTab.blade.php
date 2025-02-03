@@ -333,8 +333,8 @@ use Carbon\Carbon;
                                 @php
                                 $pageSelectedRecord = ($assignedProjectDetails->lastItem() - $assignedProjectDetails->firstItem()) + 1;
                                 @endphp
-                                <p id="select_p1" style="text-align:center;display:none">All {{$pageSelectedRecord}} {{$pageSelectedRecord == 1 ? 'record on this page is selected' : 'records on this page are selected'}} . <a href="#select_all_status" id="select_all_status">Select all {{$assignedProjectDetails->total()}} records</a></p>
-                                <p id="clear_p1" style="text-align:center;display:none">All {{$assignedProjectDetails->total()}} records are selected.<a href="#clear_all_status" id="clear_all_status">Clear Selection.</a></p>
+                                <p id="select_p1" style="text-align:center;display:none">All {{$pageSelectedRecord}} {{$pageSelectedRecord == 1 ? 'record on this page is selected' : 'records on this page are selected'}} . <a style="color:#6993FF !important;cursor:pointer !important" id="select_all_status">Select all {{$assignedProjectDetails->total()}} records</a></p>
+                                <p id="clear_p1" style="text-align:center;display:none">All {{$assignedProjectDetails->total()}} records are selected.<a style="color:#6993FF !important;cursor:pointer !important" id="clear_all_status">Clear Selection.</a></p>
                                 <div class="card-body py-0 px-7">
                                     <input type="hidden" value={{ $clientName }} id="clientName">
                                     <input type="hidden" value={{ $subProjectName }} id="subProjectName">
@@ -1906,6 +1906,11 @@ nav{
                             'content')
                     }
                 });
+                var formData = $('#formSearch').serialize();
+                    formData += '&checkedRowValues=' + encodeURIComponent(JSON.stringify(checkedRowValues));
+                    formData += '&clientName=' + clientName;
+                    formData += '&subProjectName=' + subProjectName;
+                    formData += '&assigneeId=' + assigneeId;
                 swal.fire({
                     text: "Do you want to change assignee?",
                     icon: "success",
@@ -1923,12 +1928,13 @@ nav{
                         $.ajax({
                             url: "{{ url('assignee_change') }}",
                             method: 'POST',
-                            data: {
-                                assigneeId: assigneeId,
-                                checkedRowValues: checkedRowValues,
-                                clientName: clientName,
-                                subProjectName: subProjectName
-                            },
+                            data: formData,
+                            // data: {
+                            //     assigneeId: assigneeId,
+                            //     checkedRowValues: checkedRowValues,
+                            //     clientName: clientName,
+                            //     subProjectName: subProjectName
+                            // },
                             success: function(response) {
                                 if (response.success == true) {
                                     js_notification('success',
@@ -1968,7 +1974,11 @@ nav{
                 var popupRecord = clearId == "none" ? <?= json_encode($assignedProjectDetails->lastItem()); ?> : <?= json_encode($assignedProjectDetails->total()); ?>;
                 var recordText = checkedRowValues.length > 1 ? "Do you want to update all "+ checkedRowValues.length + " records to non-workable?" : "Do you want to update this record to non-workable?";
                 var allRecordText = popupRecord > 1 ? "Do you want to update all "+ popupRecord + " records to non-workable?" : "Do you want to update this record to non-workable?";
-                
+                var formData = $('#formSearch').serialize();
+                formData += '&checkedRowValues=' + encodeURIComponent(JSON.stringify(checkedRowValues));
+                formData += '&clientName=' + clientName;
+                formData += '&subProjectName=' + subProjectName;
+                formData += '&selectedRecords=' + clearId;
                 swal.fire({
                     text: selectId == "none" && clearId == "none" ?  recordText : allRecordText ,
                     icon: "success",
@@ -1986,12 +1996,14 @@ nav{
                         $.ajax({
                             url: "{{ url('nonworkable_status_update') }}",
                             method: 'POST',
-                            data: {
-                                 checkedRowValues: checkedRowValues,
-                                clientName: clientName,
-                                subProjectName: subProjectName,
-                                selectedRecords : clearId
-                            },
+                            data: formData,
+                            // data: {
+                            //      checkedRowValues: checkedRowValues,
+                            //     clientName: clientName,
+                            //     subProjectName: subProjectName,
+                            //     selectedRecords : clearId,
+                            //     formData: formData
+                            // },
                             success: function(response) {
                                 if (response.success == true) {
                                     js_notification('success',

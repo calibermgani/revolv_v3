@@ -278,6 +278,12 @@ use Carbon\Carbon;
                                 </div>
                           
                                 {!! Form::close() !!}
+                                @php
+                                $pageSelectedRecord = ($unAssignedProjectDetails->lastItem() - $unAssignedProjectDetails->firstItem()) + 1;
+                                @endphp
+                                <p id="select_p1" style="text-align:center;display:none">All {{$pageSelectedRecord}} {{$pageSelectedRecord == 1 ? 'record on this page is selected' : 'records on this page are selected'}} . <a style="color:#6993FF !important;cursor:pointer !important" id="select_all_status">Select all {{$unAssignedProjectDetails->total()}} records</a></p>
+                                <p id="clear_p1" style="text-align:center;display:none">All {{$unAssignedProjectDetails->total()}} records are selected.<a style="color:#6993FF !important;cursor:pointer !important" id="clear_all_status">Clear Selection.</a></p>
+              
                                 <div class="card-body py-0 px-7">
                                     <input type="hidden" value={{ $clientName }} id="clientName">
                                     <input type="hidden" value={{ $subProjectName }} id="subProjectName">
@@ -1554,11 +1560,26 @@ use Carbon\Carbon;
                 }
                 if ($(this).prop('checked') == true && $('.checkBoxClass:checked').length > 0) {
                     $('#assigneeDropdown').prop('disabled', false); 
+                    $('#select_p1').css('display', 'block');
                     assigneeDropdown();
                 } else {
                     $('#assigneeDropdown').prop('disabled', true);
+                    $('#select_p1').css('display','none')
 
                 }
+            });
+            $('#select_all_status').click(function() {
+                $('#select_p1').css('display','none');
+                $('#clear_p1').css('display','block');
+               
+            });
+            $('#clear_all_status').click(function() {
+                var isChecked = false;
+                $("#ckbCheckAll").prop('checked', isChecked);
+                $(".checkBoxClass").prop('checked', isChecked);
+                $('#clear_p1').css('display','none');              
+                 $('#workable_dropdown').prop('disabled', true);            
+               
             });
             function handleCheckboxChange() {
                 // $('.checkBoxClass').change(function() {
@@ -1567,8 +1588,11 @@ use Carbon\Carbon;
                             .length;
                         if (allCheckboxesChecked) {
                             $("#ckbCheckAll").prop('checked', $(this).prop('checked'));
+                            $('#select_p1').css('display','block');
                         } else {
                             $("#ckbCheckAll").prop('checked', false);
+                            $('#select_p1').css('display','none');
+                            $('#clear_p1').css('display','none');
                         }
                         console.log(allCheckboxesChecked, 'allCheckboxesChecked', anyCheckboxChecked);
                         $('#assigneeDropdown').prop('disabled', !(anyCheckboxChecked || allCheckboxesChecked));
@@ -1636,6 +1660,11 @@ use Carbon\Carbon;
                             'content')
                     }
                 });
+                var formData = $('#formSearch').serialize();
+                    formData += '&checkedRowValues=' + encodeURIComponent(JSON.stringify(checkedRowValues));
+                    formData += '&clientName=' + clientName;
+                    formData += '&subProjectName=' + subProjectName;
+                    formData += '&assigneeId=' + assigneeId;
                 swal.fire({
                     text: "Do you want to assign?",
                     icon: "success",
@@ -1653,12 +1682,13 @@ use Carbon\Carbon;
                         $.ajax({
                             url: "{{ url('assignee_change') }}",
                             method: 'POST',
-                            data: {
-                                assigneeId: assigneeId,
-                                checkedRowValues: checkedRowValues,
-                                clientName: clientName,
-                                subProjectName: subProjectName
-                            },
+                            data: formData,
+                            // data: {
+                            //     assigneeId: assigneeId,
+                            //     checkedRowValues: checkedRowValues,
+                            //     clientName: clientName,
+                            //     subProjectName: subProjectName
+                            // },
                             success: function(response) {
                                 console.log(response, 'response', response.success);
                                 if (response.success == true) {
