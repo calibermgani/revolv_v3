@@ -692,8 +692,7 @@ class ProjectController extends Controller
                 $endTime = $currentTime;
             }
 
-            Log::info("Calculated start time: {$startTime}");
-            Log::info("Calculated end time: {$endTime}");
+     
 
             // Generate time slots dynamically
             $timeSlots = [];
@@ -710,7 +709,7 @@ class ProjectController extends Controller
                 $slotStart = $slotEnd;
             }
 
-            Log::info("Generated time slots: ", $timeSlots);
+          
 
             // Initialize headers and mail body
             $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
@@ -744,7 +743,7 @@ class ProjectController extends Controller
                             ->where('chart_status', 'CE_Completed')
                             ->count();
 
-                        Log::info("Hourly count for {$tableName} from {$slotStart} to {$slotEnd}: {$hourlyCount}");
+                     
 
                         $hourlyCounts[] = $hourlyCount; // Add to the array for this project
                     }
@@ -760,7 +759,7 @@ class ProjectController extends Controller
                 }
             }
 
-            Log::info("Final mail body: ", $mailBody);
+       
 
             $today = Carbon::now();
 
@@ -1009,8 +1008,6 @@ class ProjectController extends Controller
                     $endTime = $currentTime;
                 }
             }
-            Log::info("Calculated start time: {$startTime}");
-            Log::info("Calculated end time: {$endTime}");
 
             // Generate time slots dynamically
             $timeSlots = [];
@@ -1023,11 +1020,11 @@ class ProjectController extends Controller
                     'end' => $slotEnd,
                     'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $slotEnd->format('m/d/Y h:i A'),
                 ];
-                Log::info("Time slot added: {$slotStart} to {$slotEnd}");
+             
                 $slotStart = $slotEnd;
             }
 
-            Log::info("Generated time slots: ", $timeSlots);
+          
 
             // Initialize headers and mail body
             $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
@@ -1080,12 +1077,12 @@ class ProjectController extends Controller
                 }
             }
 
-            Log::info("Final mail body: ", $mailBody);
+          
 
             $today = Carbon::now();
             return view('projects.projectHourlyWeb', compact( 'mailBody','headers', 'startTime', 'endTime', 'today'));
         } catch (\Exception $e) {
-            Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
+            Log::error('Error in ProjectHourlyWeb: ' . $e->getMessage());
             Log::debug($e->getTraceAsString());
         }
     }
