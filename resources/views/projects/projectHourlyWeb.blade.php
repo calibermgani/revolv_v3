@@ -138,7 +138,7 @@
                                             @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjMgrName']))
                                                 {{ ucwords(strtolower($prjBillableFTE['prjMgrName'])) }}
                                             @else
-                                               {{ is_array($prjBillableFTE) ? json_encode($prjBillableFTE) : $prjBillableFTE }}
+                                            {{ is_array($prjBillableFTE) && $prjBillableFTE['prjMgrName']  == null ? '--' : $prjBillableFTE }}
                                             @endif
                                         </td>
                                         <td>
