@@ -117,7 +117,10 @@
                                     }
                                       App\Jobs\GetProjSubPrjJob::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
                                       $prjTotalDetailsCacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'totalDetails' ;
-                                      $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0);                                  
+                                      $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0);    
+                                      if (!is_array($prjBillableFTE)) {
+                                            $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
+                                        }                              
                                 @endphp
                                     <tr>
                                         <td>
@@ -135,27 +138,27 @@
                                             @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjMgrName']))
                                                 {{ ucwords(strtolower($prjBillableFTE['prjMgrName'])) }}
                                             @else
-                                                {{ $prjBillableFTE }}
+                                               {{ is_array($prjBillableFTE) ? json_encode($prjBillableFTE) : $prjBillableFTE }}
                                             @endif
                                         </td>
                                         <td>
-                                            {{ is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount']) ? $prjBillableFTE['prjBillableCount'] : $prjBillableFTE }}
+                                            {{ is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount']) ? $prjBillableFTE['prjBillableCount'] : ($ is_array($prjBillableFTE) ? json_encode($prjBillableFTE) : $prjBillableFTE) }}
                                         </td>
                                         <td>
-                                            {{ is_array($prjBillableFTE) && isset($prjBillableFTE['projectSLATarget']) ? $prjBillableFTE['projectSLATarget'] : $prjBillableFTE }}
+                                            {{ is_array($prjBillableFTE) && isset($prjBillableFTE['projectSLATarget']) ? $prjBillableFTE['projectSLATarget'] : ($ is_array($prjBillableFTE) ? json_encode($prjBillableFTE) : $prjBillableFTE) }}
                                         </td>
                                         <td>
                                             @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
                                                 {{ round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']) }}
                                             @else
-                                                {{ $prjBillableFTE }}
+                                                {{ ($ is_array($prjBillableFTE) ? json_encode($prjBillableFTE) : $prjBillableFTE) }}
                                             @endif
                                         </td>
                                         <td>
                                             @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
                                                 {{ round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8) }}
                                             @else
-                                                {{ $prjBillableFTE }}
+                                                {{ ($ is_array($prjBillableFTE) ? json_encode($prjBillableFTE) : $prjBillableFTE) }}
                                             @endif
                                         </td>                                        
                                         {{-- @foreach ($data['hourlyCount'] as $count)
@@ -167,7 +170,7 @@
                                                 <td style="color:red !important">{{ $count }}</td>
                                             @endif
                                         @endforeach --}}
-                                        @foreach ($data['hourlyCount'] as $count)
+                                        {{-- @foreach ($data['hourlyCount'] as $count)
                                             @if (is_array($prjBillableFTE) && $prjBillableFTE != '--' && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
                                                 @php
                                                     $targetValue = (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8;
@@ -178,11 +181,27 @@
                                             @else
                                                 <td style="color: red !important;">{{ $count }}</td>
                                             @endif
+                                        @endforeach --}}
+                                        @foreach ($data['hourlyCount'] as $count)
+                                            @if (is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
+                                                @php
+                                                    $targetValue = (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8;
+                                                @endphp
+                                                <td style="color: {{ $count < $targetValue ? 'red' : 'black' }}; font-weight: {{ $count < $targetValue ? 'bold' : 'normal' }};">
+                                                    {{ is_scalar($count) ? $count : json_encode($count) }}
+                                                </td>
+                                            @else
+                                                <td style="color: red !important;">{{ is_scalar($count) ? $count : json_encode($count) }}</td>
+                                            @endif
                                         @endforeach
 
+
                                         
-                                        <td>{{trim($arReasonString,",")}}</td>
-                                        <td>{{trim($qaReasonString,",")}}</td>
+                                        {{-- <td>{{trim($arReasonString,",")}}</td>
+                                        <td>{{trim($qaReasonString,",")}}</td> --}}
+                                        <td>{{ is_string($arReasonString) ? trim($arReasonString, ",") : implode(', ', (array) $arReasonString) }}</td>
+                                        <td>{{ is_string($qaReasonString) ? trim($qaReasonString, ",") : implode(', ', (array) $qaReasonString) }}</td> 
+
                                        
                                     </tr>
                                 @endforeach
