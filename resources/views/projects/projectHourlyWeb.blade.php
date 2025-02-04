@@ -142,7 +142,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            {{ is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount']) ? $prjBillableFTE['prjBillableCount'] : ($prjBillableFTE) }}
+                                            {{ is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount']) ? $prjBillableFTE['prjBillableCount'] : (is_array($prjBillableFTE) ? '--' : $prjBillableFTE) }}
                                         </td>
                                         <td>
                                             {{ is_array($prjBillableFTE) && isset($prjBillableFTE['projectSLATarget']) ? $prjBillableFTE['projectSLATarget'] : (is_array($prjBillableFTE) ? json_encode($prjBillableFTE) : $prjBillableFTE) }}
