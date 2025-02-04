@@ -151,14 +151,14 @@
                                             @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
                                                 {{ round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']) }}
                                             @else
-                                                {{ (is_array($prjBillableFTE) ? json_encode($prjBillableFTE) : $prjBillableFTE) }}
+                                                {{ is_array($prjBillableFTE) ? json_encode($prjBillableFTE) : $prjBillableFTE }}
                                             @endif
                                         </td>
                                         <td>
                                             @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
                                                 {{ round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8) }}
                                             @else
-                                                {{ (is_array($prjBillableFTE) ? json_encode($prjBillableFTE) : $prjBillableFTE) }}
+                                                {{ is_array($prjBillableFTE) ? json_encode($prjBillableFTE) : $prjBillableFTE }}
                                             @endif
                                         </td>                                        
                                         {{-- @foreach ($data['hourlyCount'] as $count)
