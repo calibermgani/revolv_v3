@@ -118,27 +118,27 @@
                                 @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjMgrName']))
                                     {{ ucwords(strtolower($prjBillableFTE['prjMgrName'])) }}
                                 @else
-                                   {{ is_array($prjBillableFTE) ? json_encode($prjBillableFTE) : $prjBillableFTE }}
+                                   {{ is_array($prjBillableFTE) && $prjBillableFTE['prjMgrName']  == null ? '--' : $prjBillableFTE }}
                                 @endif
                             </td>
                            <td style="text-align: center; padding: 5px;">
-                                {{ is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount']) ? $prjBillableFTE['prjBillableCount'] : (is_array($prjBillableFTE) ? json_encode($prjBillableFTE) : $prjBillableFTE) }}
+                                {{ is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount']) ? $prjBillableFTE['prjBillableCount'] : (is_array($prjBillableFTE) && $prjBillableFTE['prjBillableCount']  == null ? '--' : $prjBillableFTE) }}
                             </td>
                            <td style="text-align: center; padding: 5px;">
-                                {{ is_array($prjBillableFTE) && isset($prjBillableFTE['projectSLATarget']) ? $prjBillableFTE['projectSLATarget'] : (is_array($prjBillableFTE) ? json_encode($prjBillableFTE) : $prjBillableFTE) }}
+                                {{ is_array($prjBillableFTE) && isset($prjBillableFTE['projectSLATarget']) ? $prjBillableFTE['projectSLATarget'] : (is_array($prjBillableFTE) && $prjBillableFTE['projectSLATarget']  == null ? '--' : $prjBillableFTE) }}
                             </td>
                            <td style="text-align: center; padding: 5px;">
                                 @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
                                     {{ round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']) }}
                                 @else
-                                    {{ is_array($prjBillableFTE) ? json_encode($prjBillableFTE) : $prjBillableFTE }}
+                                {{ is_array($prjBillableFTE) && ($prjBillableFTE['prjBillableCount'] == null  || $prjBillableFTE['projectSLATarget'] == null) ? '--'  : $prjBillableFTE }}
                                 @endif
                             </td>
                            <td style="text-align: center; padding: 5px;">
                                 @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
                                     {{ round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8) }}
                                 @else
-                                    {{ is_array($prjBillableFTE) ? json_encode($prjBillableFTE) : $prjBillableFTE }}
+                                {{ is_array($prjBillableFTE) && ($prjBillableFTE['prjBillableCount'] == null  || $prjBillableFTE['projectSLATarget'] == null) ? '--'  : $prjBillableFTE }}
                                 @endif
                             </td>    
                             @foreach ($data['hourlyCount'] as $count)
