@@ -4333,17 +4333,18 @@ public function NexTrustBillingArDuplicates(Request $request)
     {
         try {
             $attributes = [
-                'organization' => isset($request->organization) && $request->organization != "NULL" ? $request->organization : NULL,  
+              //  'organization' => isset($request->organization) && $request->organization != "NULL" ? $request->organization : NULL,  
                 'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL, 
-                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+             //   'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
                 'responsible_plan' => isset($request->responsible_plan) && $request->responsible_plan != "NULL" ? $request->responsible_plan : NULL,  
-                'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,                 
-                'address' => isset($request->address) && $request->address != "NULL" ? $request->address : NULL ,              
+              //  'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,                 
+              //  'address' => isset($request->address) && $request->address != "NULL" ? $request->address : NULL ,              
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
-                'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed : NULL,  
-                'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL, 
-                'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,  
+             //   'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed : NULL,  
+             //   'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL, 
+              //  'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,  
                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')        
                
             ];           
 
