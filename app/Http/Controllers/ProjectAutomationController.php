@@ -3300,7 +3300,7 @@ class ProjectAutomationController extends Controller
              $attributes = [
                     'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,  
                     'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
-                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
+                  //  'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,  
                     'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,  
                     'ar_balance' => isset($request->ar_balance) && $request->ar_balance != "NULL" ? $request->ar_balance : NULL, 
                     'invoke_date' => carbon::now()->format('Y-m-d') 
