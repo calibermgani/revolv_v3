@@ -4445,19 +4445,21 @@ public function NexTrustBillingArDuplicates(Request $request)
         try {
             $attributes = [
                 'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,  
-                'client' => isset($request->client) && $request->client != "NULL" ? $request->client : NULL, 
-                'staff' => isset($request->staff) && $request->staff != "NULL" ? $request->staff : NULL,  
-                'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,  
+                // 'client' => isset($request->client) && $request->client != "NULL" ? $request->client : NULL, 
+                // 'staff' => isset($request->staff) && $request->staff != "NULL" ? $request->staff : NULL,  
+                // 'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,  
                 'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,                 
-                'item_id' => isset($request->item_id) && $request->item_id != "NULL" ? $request->item_id : NULL ,              
+              //  'item_id' => isset($request->item_id) && $request->item_id != "NULL" ? $request->item_id : NULL ,              
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
                 'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed : NULL,  
-                'expected' => isset($request->expected) && $request->expected != "NULL" ? $request->expected : NULL, 
+             //   'expected' => isset($request->expected) && $request->expected != "NULL" ? $request->expected : NULL, 
                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
-                'prj_approved' => isset($request->prj_approved) && $request->prj_approved != "NULL" ? $request->prj_approved : NULL,  
-                'prj_errors' => isset($request->prj_errors) && $request->prj_errors != "NULL" ? $request->prj_errors : NULL,  
-                'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL,  
-                'client_activity' => isset($request->client_activity) && $request->client_activity != "NULL" ? $request->client_activity : NULL,
+              //  'prj_approved' => isset($request->prj_approved) && $request->prj_approved != "NULL" ? $request->prj_approved : NULL,  
+             //   'prj_errors' => isset($request->prj_errors) && $request->prj_errors != "NULL" ? $request->prj_errors : NULL,  
+             //   'prj_procedure' => isset($request->prj_procedure) && $request->prj_procedure != "NULL" ? $request->prj_procedure : NULL,  
+              //  'client_activity' => isset($request->client_activity) && $request->client_activity != "NULL" ? $request->client_activity : NULL,
+              'invoke_date' => carbon::now()->format('Y-m-d')        
+              
             ];           
 
             $duplicateRecordExisting  =  PbhgAr::where($attributes)->exists();
@@ -5527,8 +5529,9 @@ public function NexTrustBillingArDuplicates(Request $request)
                  'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
                  'client_amt_due' => isset($request->client_amt_due) && $request->client_amt_due != "NULL" ? $request->client_amt_due : NULL,
                  'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,
-                 'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
-                 'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
+              //   'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+               //  'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
+                 'invoke_date' => carbon::now()->format('Y-m-d')
              ];          
 
             $duplicateRecordExisting  =  PbhgEligibilityVerification::where($attributes)->exists();
@@ -5546,7 +5549,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                     'client_amt_due' => isset($request->client_amt_due) && $request->client_amt_due != "NULL" ? $request->client_amt_due : NULL,
                     'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,
                     'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
-                    'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
+                 //   'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
@@ -5569,7 +5572,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                         'client_amt_due' => isset($request->client_amt_due) && $request->client_amt_due != "NULL" ? $request->client_amt_due : NULL,
                         'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,
                         'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
-                        'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
+                     //   'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
                         'invoke_date' => date('Y-m-d'),
                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
@@ -5590,7 +5593,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                         'client_amt_due' => isset($request->client_amt_due) && $request->client_amt_due != "NULL" ? $request->client_amt_due : NULL,
                         'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,
                         'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
-                        'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
+                      //  'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
                         'invoke_date' => date('Y-m-d'),
                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
@@ -5620,7 +5623,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                     'client_amt_due' => isset($request->client_amt_due) && $request->client_amt_due != "NULL" ? $request->client_amt_due : NULL,
                     'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,
                     'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
-                    'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
+                  //  'ar_notes' => isset($request->ar_notes) && $request->ar_notes != "NULL" ? $request->ar_notes : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
