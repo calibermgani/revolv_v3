@@ -5639,11 +5639,14 @@ public function NexTrustBillingArDuplicates(Request $request)
     {
         try {
             $attributes = [
-                 'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL,  
-                 'ssn' => isset($request->ssn) && $request->ssn != "NULL" ? $request->ssn : NULL,
-                 'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
-                 'insured_id' => isset($request->insured_id) && $request->insured_id != "NULL" ? $request->insured_id : NULL,
-                 'invoke_date' => carbon::now()->format('Y-m-d')
+                'last_name' => isset($request->last_name) && $request->last_name != "NULL" ? $request->last_name : NULL,
+                'first_name' => isset($request->first_name) && $request->first_name != "NULL" ? $request->first_name : NULL,
+                'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                'next_appt_with' => isset($request->next_appt_with) && $request->next_appt_with != "NULL" ? $request->next_appt_with : NULL,
+                'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                'insured_id' => isset($request->insured_id) && $request->insured_id != "NULL" ? $request->insured_id : NULL,
+                'clinicians' => isset($request->clinicians) && $request->clinicians != "NULL" ? $request->clinicians : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
              ];          
 
             $duplicateRecordExisting  =  MsEligibilityVerification::where($attributes)->exists();
