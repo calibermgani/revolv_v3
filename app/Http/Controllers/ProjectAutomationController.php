@@ -4262,9 +4262,9 @@ public function NexTrustBillingArDuplicates(Request $request)
                 'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL, 
                 'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,  
                 'amount' => isset($request->amount) && $request->amount != "NULL" ? $request->amount : NULL,  
-                'responsible_provider' => isset($request->responsible_provider) && $request->responsible_provider != "NULL" ? $request->responsible_provider : NULL,  
+               // 'responsible_provider' => isset($request->responsible_provider) && $request->responsible_provider != "NULL" ? $request->responsible_provider : NULL,  
                 'reg_date' => isset($request->reg_date) && $request->reg_date != "NULL" ? $request->reg_date : NULL,  
-                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+            //    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
                 'invoke_date' => carbon::now()->format('Y-m-d')        
             ];           
 
