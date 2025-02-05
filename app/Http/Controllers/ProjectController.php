@@ -990,11 +990,11 @@ class ProjectController extends Controller
             try {
                 $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
                 if($loginEmpId == "AM4122" || $loginEmpId == "AM4049" || $loginEmpId == "AM4058" || $loginEmpId == "AM4293") {
-                   $projects = collect($this->getProjects());dd($projects);
+                   $projects = collect($this->getProjects());//dd($projects);
                 } else {
                     GetProjJob::dispatch()->delay(now()->addSeconds(5));
                     $prjCacheKey = 'clients_on_user' ; 
-                    $projects = Cache::get($prjCacheKey, 0); dd($projects);
+                    $projects = Cache::get($prjCacheKey, 0); //dd($projects);
                 }
             
                 if($request['startDateTime'] && $request['endDateTime']) {
@@ -1042,7 +1042,7 @@ class ProjectController extends Controller
                 $mailBody = [];
 
                 // Process each project
-                foreach ($projects as $project) {
+                foreach ($projects as $project) {dd($project);
                     $prjName = Helpers::projectName($project['id'])->project_name ?? null;
                     if ($prjName === null) {
                         Log::warning("Project name is null for project ID {$project['id']}");
