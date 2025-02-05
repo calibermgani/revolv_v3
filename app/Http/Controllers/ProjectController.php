@@ -986,110 +986,118 @@ class ProjectController extends Controller
     }
     public function projectHourlyWeb(Request $request)
     {
-        try {
-           // $projects = collect($this->getProjects());
-           GetProjJob::dispatch()->delay(now()->addSeconds(5));
-           $prjCacheKey = 'clients_on_user' ; 
-           $projects = Cache::get($prjCacheKey, 0); 
-          
-            if($request['startDateTime'] && $request['endDateTime']) {
-                $startTime =  Carbon::parse($request['startDateTime']);
-                $endTime = Carbon::parse($request['endDateTime']);
-            } else {
-                  $currentTime = Carbon::now(); 
-                 Log::info("Current time: {$currentTime}");
-                if ($currentTime->hour < 17) {
-                    if ($currentTime->hour < 5) {
-                        // Before 5 PM: Yesterday 5 PM to Current Time
-                        $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
-                        $endTime = $currentTime;
-                    } else if($currentTime->hour > 5 && $currentTime->hour < 17){
-                        // Before 5 PM: Today 5 PM to Current Time
-                        $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
-                        $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
-                    }
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+            try {
+                $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
+                if($loginEmpId == "AM3198") {
+                   $projects = collect($this->getProjects());
                 } else {
-                    // After 5 PM: Today 5 PM to Current Time
-                    $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
-                    $endTime = $currentTime;
+                    GetProjJob::dispatch()->delay(now()->addSeconds(5));
+                    $prjCacheKey = 'clients_on_user' ; 
+                    $projects = Cache::get($prjCacheKey, 0); 
                 }
-            }
-
-            // Generate time slots dynamically
-            $timeSlots = [];
-            $slotStart = $startTime->copy();
-
-            while ($slotStart->lessThan($endTime)) {
-                $slotEnd = $slotStart->copy()->addHour();
-                $timeSlots[] = [
-                    'start' => $slotStart,
-                    'end' => $slotEnd,
-                    'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $slotEnd->format('m/d/Y h:i A'),
-                ];
-             
-                $slotStart = $slotEnd;
-            }
-
-          
-
-            // Initialize headers and mail body
-            $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
-            $mailBody = [];
-
-            // Process each project
-            foreach ($projects as $project) {
-                $prjName = Helpers::projectName($project['id'])->project_name ?? null;
-                if ($prjName === null) {
-                    Log::warning("Project name is null for project ID {$project['id']}");
-                    continue;
+            
+                if($request['startDateTime'] && $request['endDateTime']) {
+                    $startTime =  Carbon::parse($request['startDateTime']);
+                    $endTime = Carbon::parse($request['endDateTime']);
+                } else {
+                    $currentTime = Carbon::now(); 
+                    Log::info("Current time: {$currentTime}");
+                    if ($currentTime->hour < 17) {
+                        if ($currentTime->hour < 5) {
+                            // Before 5 PM: Yesterday 5 PM to Current Time
+                            $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                            $endTime = $currentTime;
+                        } else if($currentTime->hour > 5 && $currentTime->hour < 17){
+                            // Before 5 PM: Today 5 PM to Current Time
+                            $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                            $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
+                        }
+                    } else {
+                        // After 5 PM: Today 5 PM to Current Time
+                        $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
+                        $endTime = $currentTime;
+                    }
                 }
 
-                $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
-                foreach ($subProjects as $subKey => $subProject) {
-                    $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
-                    $modelClass = "App\\Models\\" . Str::studly($tableName);
+                // Generate time slots dynamically
+                $timeSlots = [];
+                $slotStart = $startTime->copy();
 
-                    if (!class_exists($modelClass)) {
-                        Log::warning("Model class does not exist: {$modelClass}");
+                while ($slotStart->lessThan($endTime)) {
+                    $slotEnd = $slotStart->copy()->addHour();
+                    $timeSlots[] = [
+                        'start' => $slotStart,
+                        'end' => $slotEnd,
+                        'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $slotEnd->format('m/d/Y h:i A'),
+                    ];
+                
+                    $slotStart = $slotEnd;
+                }
+
+            
+
+                // Initialize headers and mail body
+                $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
+                $mailBody = [];
+
+                // Process each project
+                foreach ($projects as $project) {
+                    $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+                    if ($prjName === null) {
+                        Log::warning("Project name is null for project ID {$project['id']}");
                         continue;
                     }
 
-                    $hourlyCounts = [];
-                    foreach ($timeSlots as $slot) {
-                        $slotStart = $slot['start'];
-                        $slotEnd = $slot['end'];
-                        $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
-                            ->where('chart_status', 'CE_Completed')
-                            ->count();
+                    $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
+                    foreach ($subProjects as $subKey => $subProject) {
+                        $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
+                        $modelClass = "App\\Models\\" . Str::studly($tableName);
 
-                        $hourlyCounts[] = $hourlyCount; 
+                        if (!class_exists($modelClass)) {
+                            Log::warning("Model class does not exist: {$modelClass}");
+                            continue;
+                        }
+
+                        $hourlyCounts = [];
+                        foreach ($timeSlots as $slot) {
+                            $slotStart = $slot['start'];
+                            $slotEnd = $slot['end'];
+                            $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
+                                ->where('chart_status', 'CE_Completed')
+                                ->count();
+
+                            $hourlyCounts[] = $hourlyCount; 
+                        }
+                        // getProjectSubProjectManager::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
+                        // getProjectSubProjectBillableFTE::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
+                        // $prjSLATarget = (int)$this->getProjectTotalSlaTarget($project['id'],$subKey)['projectSLATarget'];
+                    // $prjMgrCacheKey = 'project_'.$project['id'].$subKey.'Manager' ;
+                        // $prjBillableFTECacheKey = 'project_'.$project['id'].$subKey.'BillableFTE' ;
+                        // $prjMgrName = Cache::get($prjMgrCacheKey, 0);
+                        // $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
+                        $mailBody[] = [
+                            'project' => $project['client_name'] . '-' . $subProject,
+                            'hourlyCount' => $hourlyCounts, // Full array of counts for all slots                        
+                            'project_id' => $project['id'],
+                            'subproject_id' => $subKey,
+                            // 'prjMgrName'=>$prjMgrName,
+                            // 'prjBillableFTE'=>$prjBillableFTE,
+                            // 'prjSLATarget'=>$prjSLATarget
+                        ];
                     }
-                    // getProjectSubProjectManager::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
-                    // getProjectSubProjectBillableFTE::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
-                    // $prjSLATarget = (int)$this->getProjectTotalSlaTarget($project['id'],$subKey)['projectSLATarget'];
-                   // $prjMgrCacheKey = 'project_'.$project['id'].$subKey.'Manager' ;
-                    // $prjBillableFTECacheKey = 'project_'.$project['id'].$subKey.'BillableFTE' ;
-                    // $prjMgrName = Cache::get($prjMgrCacheKey, 0);
-                    // $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
-                    $mailBody[] = [
-                        'project' => $project['client_name'] . '-' . $subProject,
-                        'hourlyCount' => $hourlyCounts, // Full array of counts for all slots                        
-                        'project_id' => $project['id'],
-                        'subproject_id' => $subKey,
-                        // 'prjMgrName'=>$prjMgrName,
-                        // 'prjBillableFTE'=>$prjBillableFTE,
-                        // 'prjSLATarget'=>$prjSLATarget
-                    ];
                 }
+
+            
+
+                $today = Carbon::now();
+                return view('projects.projectHourlyWeb', compact( 'mailBody','headers', 'startTime', 'endTime', 'today'));
+            } catch (\Exception $e) {
+                Log::error('Error in ProjectHourlyWeb: ' . $e->getMessage());
+                Log::debug($e->getTraceAsString());
             }
-
-          
-
-            $today = Carbon::now();
-            return view('projects.projectHourlyWeb', compact( 'mailBody','headers', 'startTime', 'endTime', 'today'));
-        } catch (\Exception $e) {
-            Log::error('Error in ProjectHourlyWeb: ' . $e->getMessage());
-            Log::debug($e->getTraceAsString());
+        } else {
+            return redirect('/');
         }
     }
     public function projectDetailedInformationWeb(Request $request){
