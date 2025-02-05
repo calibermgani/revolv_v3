@@ -1041,7 +1041,7 @@ class ProjectController extends Controller
                 // Initialize headers and mail body
                 $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
                 $mailBody = [];
-                Log::info("Model class does not exist: $resolvPrjIds");
+              
                 // Process each project
                 foreach ($projects as $project) {
                     if(in_array($project['id'],$resolvPrjIds)) {
@@ -1057,7 +1057,8 @@ class ProjectController extends Controller
                             $modelClass = "App\\Models\\" . Str::studly($tableName);
 
                             if (!class_exists($modelClass)) {
-                                Log::warning("Model class does not exist: {$modelClass}{$project['id']}");
+                                Log::warning("Model class does not exist: {$modelClass}");
+                                Log::warning("id class does not exist: {$project['id']}");
                                 continue;
                             }
 
