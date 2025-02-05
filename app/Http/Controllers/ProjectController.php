@@ -28,6 +28,7 @@ use App\Jobs\GetTotalQACountJob;
 use App\Jobs\getProjectSubProjectManager;
 use App\Jobs\getProjectSubProjectBillableFTE;
 use App\Models\CallerChartsWorkLogs;
+use App\Jobs\GetProjJob;
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
@@ -986,7 +987,10 @@ class ProjectController extends Controller
     public function projectHourlyWeb(Request $request)
     {
         try {
-            $projects = collect($this->getProjects());
+           // $projects = collect($this->getProjects());
+           GetProjJob::dispatch()->delay(now()->addSeconds(5));
+           $prjCacheKey = 'clients_on_user' ; 
+           $projects = Cache::get($prjCacheKey, 0); 
           
             if($request['startDateTime'] && $request['endDateTime']) {
                 $startTime =  Carbon::parse($request['startDateTime']);
