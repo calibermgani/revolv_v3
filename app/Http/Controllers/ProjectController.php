@@ -29,6 +29,7 @@ use App\Jobs\getProjectSubProjectManager;
 use App\Jobs\getProjectSubProjectBillableFTE;
 use App\Models\CallerChartsWorkLogs;
 use App\Jobs\GetProjJob;
+use App\Models\ProjectColSearchConfig;
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
@@ -996,7 +997,7 @@ class ProjectController extends Controller
                     $prjCacheKey = 'clients_on_user' ; 
                     $projects = Cache::get($prjCacheKey, 0); //dd($projects);
                 }
-            
+                $resolvPrjIds =ProjectColSearchConfig::select('project_id')->groupBy('project_id')->pluck('project_id')->toArray();
                 if($request['startDateTime'] && $request['endDateTime']) {
                     $startTime =  Carbon::parse($request['startDateTime']);
                     $endTime = Carbon::parse($request['endDateTime']);
@@ -1043,48 +1044,50 @@ class ProjectController extends Controller
 
                 // Process each project
                 foreach ($projects as $project) {
-                    $prjName = Helpers::projectName($project['id'])->project_name ?? null;
-                    if ($prjName === null) {
-                        Log::warning("Project name is null for project ID {$project['id']}");
-                        continue;
-                    }
-
-                    $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
-                    foreach ($subProjects as $subKey => $subProject) {
-                        $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
-                        $modelClass = "App\\Models\\" . Str::studly($tableName);
-
-                        if (!class_exists($modelClass)) {
-                            Log::warning("Model class does not exist: {$modelClass}");
+                    if(in_array($project['id'],$resolvPrjIds)) {
+                        $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+                        if ($prjName === null) {
+                            Log::warning("Project name is null for project ID {$project['id']}");
                             continue;
                         }
 
-                        $hourlyCounts = [];
-                        foreach ($timeSlots as $slot) {
-                            $slotStart = $slot['start'];
-                            $slotEnd = $slot['end'];
-                            $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
-                                ->where('chart_status', 'CE_Completed')
-                                ->count();
+                        $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
+                        foreach ($subProjects as $subKey => $subProject) {
+                            $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
+                            $modelClass = "App\\Models\\" . Str::studly($tableName);
 
-                            $hourlyCounts[] = $hourlyCount; 
+                            if (!class_exists($modelClass)) {
+                                Log::warning("Model class does not exist: {$modelClass}");
+                                continue;
+                            }
+
+                            $hourlyCounts = [];
+                            foreach ($timeSlots as $slot) {
+                                $slotStart = $slot['start'];
+                                $slotEnd = $slot['end'];
+                                $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
+                                    ->where('chart_status', 'CE_Completed')
+                                    ->count();
+
+                                $hourlyCounts[] = $hourlyCount; 
+                            }
+                            // getProjectSubProjectManager::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
+                            // getProjectSubProjectBillableFTE::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
+                            // $prjSLATarget = (int)$this->getProjectTotalSlaTarget($project['id'],$subKey)['projectSLATarget'];
+                        // $prjMgrCacheKey = 'project_'.$project['id'].$subKey.'Manager' ;
+                            // $prjBillableFTECacheKey = 'project_'.$project['id'].$subKey.'BillableFTE' ;
+                            // $prjMgrName = Cache::get($prjMgrCacheKey, 0);
+                            // $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
+                            $mailBody[] = [
+                                'project' => $project['client_name'] . '-' . $subProject,
+                                'hourlyCount' => $hourlyCounts, // Full array of counts for all slots                        
+                                'project_id' => $project['id'],
+                                'subproject_id' => $subKey,
+                                // 'prjMgrName'=>$prjMgrName,
+                                // 'prjBillableFTE'=>$prjBillableFTE,
+                                // 'prjSLATarget'=>$prjSLATarget
+                            ];
                         }
-                        // getProjectSubProjectManager::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
-                        // getProjectSubProjectBillableFTE::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
-                        // $prjSLATarget = (int)$this->getProjectTotalSlaTarget($project['id'],$subKey)['projectSLATarget'];
-                    // $prjMgrCacheKey = 'project_'.$project['id'].$subKey.'Manager' ;
-                        // $prjBillableFTECacheKey = 'project_'.$project['id'].$subKey.'BillableFTE' ;
-                        // $prjMgrName = Cache::get($prjMgrCacheKey, 0);
-                        // $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
-                        $mailBody[] = [
-                            'project' => $project['client_name'] . '-' . $subProject,
-                            'hourlyCount' => $hourlyCounts, // Full array of counts for all slots                        
-                            'project_id' => $project['id'],
-                            'subproject_id' => $subKey,
-                            // 'prjMgrName'=>$prjMgrName,
-                            // 'prjBillableFTE'=>$prjBillableFTE,
-                            // 'prjSLATarget'=>$prjSLATarget
-                        ];
                     }
                 }
 
