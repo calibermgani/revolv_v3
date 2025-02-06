@@ -989,10 +989,11 @@ class ProjectController extends Controller
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
             try {
                 $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
+                $userId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['id'] != null ? Session::get('loginDetails')['userDetail']['id'] : "";
                 if($loginEmpId == "AM4122" || $loginEmpId == "AM4049" || $loginEmpId == "AM4058" || $loginEmpId == "AM4293") {
                    $projects = collect($this->getProjects());//dd($projects);
                 } else {
-                    GetProjJob::dispatch()->delay(now()->addSeconds(5));
+                    GetProjJob::dispatch($userId)->delay(now()->addSeconds(5));
                     $prjCacheKey = 'clients_on_user' ; 
                     $projects = Cache::get($prjCacheKey, 0); //dd($projects);
                 }

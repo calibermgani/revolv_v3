@@ -20,9 +20,10 @@ class GetProjJob implements ShouldQueue
      *
      * @return void
      */
-    public function __construct()
+    public string $userId;
+    public function __construct(string $userId)
     {
-        //
+        $this->userId = $userId;
     }
 
     /**
@@ -34,7 +35,8 @@ class GetProjJob implements ShouldQueue
     {
         $cacheKey = 'clients_on_user' ;
         $data = Cache::remember($cacheKey, now()->addMinutes(30), function () {
-            return app()->call('App\Http\Helper\Admin\Helpers@getProjects', [        
+            return app()->call('App\Http\Helper\Admin\Helpers@getProjects', [      
+                'userId' => $this->userId  
             ]); 
          });
      
