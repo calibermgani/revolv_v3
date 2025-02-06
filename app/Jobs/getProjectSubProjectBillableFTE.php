@@ -36,6 +36,16 @@ class getProjectSubProjectBillableFTE implements ShouldQueue
         ]);  
         Log::info("Processed Project Id and sub Project Id", ['projectId' => $this->projectId,'subProjectId' => $this->subProjectId]);
         $cacheKey = 'project_'.$this->projectId.$this->subProjectId.'BillableFTE' ;
-        Cache::put($cacheKey, $data, now()->addMinutes(30));
+        // Cache::put($cacheKey, $data, now()->addMinutes(30));
+        try {
+            Cache::lock($cacheKey)->get(function () use ($cacheKey, $data) {
+                Cache::put($cacheKey, $data, now()->addMinutes(30));
+            });            
+        } catch (\Exception $e) {
+            Log::error('Cache write failed in hourly web', [
+                'error' => $e->getMessage(),
+                'cacheKey' => $cacheKey,
+            ]);
+        }
     }
 }

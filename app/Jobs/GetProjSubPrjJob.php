@@ -39,11 +39,15 @@ class GetProjSubPrjJob implements ShouldQueue
                 'sub_project_id' => $this->subProjectId,
             ]);
         });
-
         try {
-            Cache::put($cacheKey, $data, now()->addMinutes(30));
+            Cache::lock($cacheKey)->get(function () use ($cacheKey, $data) {
+                Cache::put($cacheKey, $data, now()->addMinutes(30));
+            });            
         } catch (\Exception $e) {
-            Log::error('Cache write failed for key: '.$cacheKey, ['error' => $e->getMessage()]);
+            Log::error('Cache write failed in hourly web', [
+                'error' => $e->getMessage(),
+                'cacheKey' => $cacheKey,
+            ]);
         }
     }
 }
