@@ -28,10 +28,12 @@ class getProjectResourceListJob implements ShouldQueue
      */
     public function handle()
     {
-        $data = app()->call('App\Http\Helper\Admin\Helpers@getprojectResourceList', [
-            'clientId' => $this->projectId
-        ]);      
         $cacheKey = 'project_'.$this->projectId.'prjResourceList' ;
+        $data = Cache::remember($cacheKey, now()->addMinutes(30), function () {
+            return app()->call('App\Http\Helper\Admin\Helpers@getprojectResourceList', [
+            'clientId' => $this->projectId
+            ]);      
+        });       
         Cache::put($cacheKey, $data, now()->addMinutes(30));
   
     }

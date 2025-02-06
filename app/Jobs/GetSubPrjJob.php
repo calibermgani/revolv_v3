@@ -28,10 +28,12 @@ class GetSubPrjJob implements ShouldQueue
      */
     public function handle()
     {
-        $data = app()->call('App\Http\Helper\Admin\Helpers@getSubProjects', [
-            'project_id' => $this->projectId
-        ]);      
         $cacheKey = 'project_'.$this->projectId.'sub_projects' ;
+        $data = Cache::remember($cacheKey, now()->addMinutes(30), function () {
+            return app()->call('App\Http\Helper\Admin\Helpers@getSubProjects', [
+            'project_id' => $this->projectId
+            ]);     
+        });       
         Cache::put($cacheKey, $data, now()->addMinutes(30));
   
     }
