@@ -47,24 +47,24 @@ class ProductionController extends Controller
     public function clients() {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
             try {
-                // $userId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['id'] !=null ? Session::get('loginDetails')['userDetail']['id']:"";
-                // $payload = [
-                //     'token' => '1a32e71a46317b9cc6feb7388238c95d',
-                //     'user_id' => $userId
-                // ];
-                // $client = new Client(['verify' => false]);
-                // $response = $client->request('POST',  config("constants.PRO_CODE_URL").'/api/v1_users/get_clients_on_user', [
-                //     'json' => $payload
-                // ]);
-                // if ($response->getStatusCode() == 200) {
-                //      $data = json_decode($response->getBody(), true);
-                // } else {
-                //      return response()->json(['error' => 'API request failed'], $response->getStatusCode());
-                // }   
-                //   $projects = $data['clientList'];
-                GetProjJob::dispatch()->delay(now()->addSeconds(5));
-                $prjCacheKey = 'clients_on_user' ; 
-                $projects = Cache::get($prjCacheKey, 0); 
+                $userId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['id'] !=null ? Session::get('loginDetails')['userDetail']['id']:"";
+                $payload = [
+                    'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                    'user_id' => $userId
+                ];
+                $client = new Client(['verify' => false]);
+                $response = $client->request('POST',  config("constants.PRO_CODE_URL").'/api/v1_users/get_clients_on_user', [
+                    'json' => $payload
+                ]);
+                if ($response->getStatusCode() == 200) {
+                     $data = json_decode($response->getBody(), true);
+                } else {
+                     return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+                }   
+                  $projects = $data['clientList'];
+                // GetProjJob::dispatch()->delay(now()->addSeconds(5));
+                // $prjCacheKey = 'clients_on_user' ; 
+                // $projects = Cache::get($prjCacheKey, 0); 
                   return view('productions/clients',compact('projects'));
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -323,7 +323,8 @@ class ProductionController extends Controller
                             $attributes[$duplicateColumn['duplicate_column']]= $duplicateColumn['duplicate_column'];
                     }
                 }
-               return view('productions/clientAssignedTab',compact('assignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','assignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','searchData','resourceName','projectTypeSettings','existingCallerChartsWorkLogsInprocess','attributes'));
+                $popupMulineFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('field_type_3','popup_visible')->where('field_type','editable')->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->get();
+               return view('productions/clientAssignedTab',compact('assignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','assignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','searchData','resourceName','projectTypeSettings','existingCallerChartsWorkLogsInprocess','attributes','popupMulineFields'));
            } catch (\Exception $e) {
                log::debug($e->getMessage());
            }
@@ -941,6 +942,7 @@ class ProductionController extends Controller
     public function clientsStore(Request $request,$clientName,$subProjectName) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
             try {
+                dd($request->all());
                 // $data = $request->all();
                 $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
                 $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
@@ -2544,6 +2546,123 @@ class ProductionController extends Controller
                     return response()->json(['success' => false,'message' => 'No claims found']);
                 }                                   
                
+            } catch (\Exception $e) {
+                log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
+    public function clientMultiStore(Request $request) {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+            try {//dd($request->all());
+                $checkedValues = json_decode($request->input('checkedRowValues'), true);            
+                $decodedProjectName = Helpers::encodeAndDecodeID($request->clientName, 'decode');
+                $decodedPracticeName =  $request->subProjectName == '--' ? NULL : Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $decodedsubProjectName = $decodedPracticeName == NULL ? 'project':Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
+                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
+                $modelName = Str::studly($table_name);
+                $modelClass = "App\\Models\\" . $modelName.'Datas';
+                $originalModelClass = "App\\Models\\" . $modelName;
+                $data = $callData = [];
+                $callData['project_id'] = $decodedProjectName; 
+                $callData['sub_project_id'] = $decodedPracticeName; 
+                foreach ($request->except('_token', 'parent', 'child','page','clientName','subProjectName','checkedRowValues') as $key => $value) {
+                    if (is_array($value)) {
+                        $data[$key] = in_array(null, $value, true) ? null : implode('_el_', $value);
+                    } else {
+                        $data[$key] = $value;
+                    }
+                }   
+              
+                foreach($checkedValues as $originId) {
+                    $data['parent_id'] = $originId['value']; 
+                    $callData['record_id'] = $originId['value']; 
+                    $loginEmpId = $originalModelClass::where('id',$data['parent_id'])->first()->CE_emp_id;
+                    $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','desc')->first();
+                    $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->get();
+                    $coderCompletedRecordsCount = count($coderCompletedRecords); $data['coder_work_date'] = NULL;
+                    if( $data['chart_status'] == "CE_Completed") {
+                        $data['coder_work_date'] = Carbon::now()->format('Y-m-d');
+                        if($decodedPracticeName == NULL) {
+                            $qasamplingDetailsList = QualitySampling::where('project_id', $decodedProjectName)
+                            ->where(function($query) use ($loginEmpId) {
+                                $query->where('coder_emp_id', $loginEmpId)
+                                    ->orWhereNull('coder_emp_id');
+                            })->orderBy('id', 'desc')->get();
+                            $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
+                            foreach ($qasamplingDetailsList as $qasamplingDetails) {
+                                if($qasamplingDetails != null) {
+                                    $qaPercentage = $qasamplingDetails["qa_percentage"];
+                                    $qarecords = $coderCompletedRecordsCount*$qaPercentage/100;
+                                    $samplingRecord = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])->where('qa_work_status','Sampling')->get();
+                                    $samplingRecordCount =  count($samplingRecord);
+                                    if($qarecords > $samplingRecordCount) {
+                                        $data['QA_emp_id'] =  $qasamplingDetails["qa_emp_id"];
+                                        $data['qa_work_status'] = "Sampling";
+                                        $data['chart_status'] = "CE_Completed";
+                                        break;
+                                    } else {
+                                        $data['qa_work_status'] = "Auto_Close";
+                                    }
+                                }
+                            }
+                        } else {
+                            $qasamplingDetailsList = QualitySampling::where('project_id', $decodedProjectName)
+                                                    ->where('sub_project_id', $decodedPracticeName)
+                                                    ->where(function($query) use ($loginEmpId) {
+                                                        $query->where('coder_emp_id', $loginEmpId)
+                                                            ->orWhereNull('coder_emp_id');
+                                                    })->orderBy('id', 'desc')->get();
+                            $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
+                            foreach ($qasamplingDetailsList as $qasamplingDetails) {
+                                if($qasamplingDetails != null) {
+                                    $qaPercentage = $qasamplingDetails["qa_percentage"];
+                                    $qarecords = $coderCompletedRecordsCount*$qaPercentage/100;
+                                    $samplingRecord = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])->where('qa_work_status','Sampling')->get();
+                                    $samplingRecordCount =  count($samplingRecord);
+                                    if($qarecords >= $samplingRecordCount ) {
+                                        $data['QA_emp_id'] =  $qasamplingDetails["qa_emp_id"];
+                                        $data['qa_work_status'] = "Sampling";
+                                        $data['chart_status'] = "CE_Completed";
+                                        break;
+                                    } else {
+                                        $data['qa_work_status'] = "Auto_Close";
+                        
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                    $record = $originalModelClass::where('id', $data['parent_id'])->first();
+               
+                    $data['invoke_date'] = date('Y-m-d');
+                    $data['CE_emp_id'] = $loginEmpId;
+                    $callData['emp_id'] = $loginEmpId; 
+                    $qaData = $originalModelClass::where('id', $data['parent_id'])->first()->toArray();
+                    $excludeKeys = ['id', 'created_at', 'updated_at', 'deleted_at'];
+                    $filteredQAData = collect($qaData)->except($excludeKeys)->toArray();
+                    $data = array_merge($data, array_diff_key($filteredQAData, $data));
+                    $currentTime = Carbon::now()->format('H:i:s');
+                    $callData['start_time'] = $currentTime; 
+                    $callData['end_time'] = $currentTime; 
+                    $callData['work_time'] = "00:00:00"; 
+                    $callData['record_status'] =  $data['chart_status']; 
+              //   dd($request->all(),$checkedValues,$data,'if',$datasRecord,$loginEmpId,$callData);
+                    if($datasRecord != null) {
+                        $datasRecord->update($data);
+                    ($data['chart_status'] == "CE_Completed") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'coder_work_date' => $data['coder_work_date']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason']] );
+                    } else {
+                    ($data['chart_status'] == "CE_Completed") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'coder_work_date' => $data['coder_work_date']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason']] );
+                    $modelClass::create($data);
+                    }
+                    CallerChartsWorkLogs::create($callData);
+                    
+           
+              }           
+              return response()->json(['success' => true]); 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
             }
