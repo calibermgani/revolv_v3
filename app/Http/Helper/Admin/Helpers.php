@@ -903,7 +903,7 @@ class Helpers
                 $payload = [
                     'token' => '1a32e71a46317b9cc6feb7388238c95d',
                     'user_id' => $userId,
-                ];
+                ];dd($userId);
                 $data = retry(3, function () use ($payload) {
                     $client = new Client(['verify' => false]);
                     $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_clients_on_user', [
