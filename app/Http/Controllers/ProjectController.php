@@ -990,7 +990,7 @@ class ProjectController extends Controller
             try {
                 $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
                 $userId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['id'] != null ? Session::get('loginDetails')['userDetail']['id'] : "";
-                dd($userId);
+             
                 if($loginEmpId == "AM4122" || $loginEmpId == "AM4049" || $loginEmpId == "AM4058" || $loginEmpId == "AM4293") {
                    $projects = collect($this->getProjects());//dd($projects);
                 } else {
