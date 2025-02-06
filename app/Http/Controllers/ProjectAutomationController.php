@@ -5355,7 +5355,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                         'title' => isset($request->title) && $request->title != "NULL" ? $request->title : NULL,
                         'has_corr_mail' => isset($request->has_corr_mail) && $request->has_corr_mail != "NULL" ? $request->has_corr_mail : NULL,
                         'adj_denied' => isset($request->adj_denied) && $request->adj_denied != "NULL" ? $request->adj_denied : NULL,
-                        'invoke_date' => date('Y-m-d'),
+                        //'invoke_date' => date('Y-m-d'),
                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
                         'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
