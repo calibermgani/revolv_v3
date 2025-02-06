@@ -994,9 +994,10 @@ class ProjectController extends Controller
                 if($loginEmpId == "AM4122" || $loginEmpId == "AM4049" || $loginEmpId == "AM4058" || $loginEmpId == "AM4293") {
                    $projects = collect($this->getProjects());//dd($projects);
                 } else {
-                    GetProjJob::dispatch($userId)->delay(now()->addSeconds(5));
-                    $prjCacheKey = 'clients_on_user' ; 
-                    $projects = Cache::get($prjCacheKey, 0); //dd($projects);
+                    $projects = collect($this->getClientProjects());
+                    // GetProjJob::dispatch($userId)->delay(now()->addSeconds(5));
+                    // $prjCacheKey = 'clients_on_user' ; 
+                    // $projects = Cache::get($prjCacheKey, 0); //dd($projects);
                 }
             
                 if($request['startDateTime'] && $request['endDateTime']) {
@@ -1661,6 +1662,46 @@ class ProjectController extends Controller
         } catch (\Exception $e) {
             Log::error('Error in projectcallChartWorkLogs: ' . $e->getMessage());
             Log::debug($e->getMessage());
+        }
+        
+    }
+    public function getClientProjects()
+    {
+        if (Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
+            try {
+                $loginEmpId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null ? Session::get('loginDetails')['userDetail']['emp_id'] : "";
+                $userId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['id'] != null ? Session::get('loginDetails')['userDetail']['id'] : "";
+                $payload = [
+                    'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                    'user_id' => $userId,
+                ];
+                $data = retry(3, function () use ($payload) {
+                    $client = new Client(['verify' => false]);
+                    $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_clients_on_user', [
+                        'json' => $payload,
+                    ]);
+                    if ($response->getStatusCode() == 200) {
+                        // $data = json_decode($response->getBody(), true);
+                        $responseData = json_decode($response->getBody(), true);
+                        if (isset($responseData)) {
+                            return $responseData['clientList'];
+                        } else {
+                            throw new \Exception('clientList not found in the API response');
+                        }
+                    } elseif ($response->getStatusCode() == 429) {
+                        $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
+                        sleep($retryAfter);
+                        throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
+                    } else {
+                        throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+                    }
+                }, 4000);
+                return $data;
+            } catch (\Exception $e) {
+                Log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
         }
     }
 }
