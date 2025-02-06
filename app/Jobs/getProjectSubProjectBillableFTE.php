@@ -30,12 +30,14 @@ class getProjectSubProjectBillableFTE implements ShouldQueue
      */
     public function handle()
     {
-        $data = app()->call('App\Http\Controllers\ProjectController@getProjectTotalDetailedInformation', [
-            'project_id' => $this->projectId,
-            'sub_project_id' => $this->subProjectId,
-        ]);  
-        Log::info("Processed Project Id and sub Project Id", ['projectId' => $this->projectId,'subProjectId' => $this->subProjectId]);
         $cacheKey = 'project_'.$this->projectId.$this->subProjectId.'BillableFTE' ;
+        
+        $data = Cache::remember($cacheKey, now()->addMinutes(30), function () {
+             return   app()->call('App\Http\Controllers\ProjectController@getProjectTotalDetailedInformation', [
+                    'project_id' => $this->projectId,
+                    'sub_project_id' => $this->subProjectId,
+                ]);  
+            });    
         // Cache::put($cacheKey, $data, now()->addMinutes(30));
         try {
             Cache::lock($cacheKey)->get(function () use ($cacheKey, $data) {
