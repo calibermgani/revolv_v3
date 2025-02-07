@@ -40,7 +40,7 @@ class GetProjJob implements ShouldQueue
             ]); 
          });
      
-        Cache::put($cacheKey, $data, now()->addMinutes(30));
+        Cache::put($cacheKey, $data, now()->addMinutes(2));
   
     }
 }
