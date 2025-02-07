@@ -994,10 +994,10 @@ class ProjectController extends Controller
                 if($loginEmpId == "AM4122" || $loginEmpId == "AM4049" || $loginEmpId == "AM4058" || $loginEmpId == "AM4293") {
                    $projects = collect($this->getProjects());//dd($projects);
                 } else {
-                 //   $projects = collect($this->getClientProjects());
-                    GetProjJob::dispatch($userId)->delay(now()->addSeconds(5));
-                    $prjCacheKey = 'clients_on_user' ; 
-                    $projects = Cache::get($prjCacheKey, 0); //dd($projects);
+                    $projects = collect($this->getClientProjects());
+                    // GetProjJob::dispatch($userId)->delay(now()->addSeconds(5));
+                    // $prjCacheKey = 'clients_on_user' ; 
+                    // $projects = Cache::get($prjCacheKey, 0); //dd($projects);
                 }
             
                 if($request['startDateTime'] && $request['endDateTime']) {
