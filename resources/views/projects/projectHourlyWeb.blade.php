@@ -149,14 +149,14 @@
                                         </td>
                                         <td>
                                             @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
-                                                {{ round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']) }}
+                                                {{ ((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']) }}
                                             @else
                                                 {{ is_array($prjBillableFTE) && ($prjBillableFTE['prjBillableCount'] == null  || $prjBillableFTE['projectSLATarget'] == null) ? '--'  : $prjBillableFTE }}
                                             @endif
                                         </td>
                                         <td>
                                             @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
-                                                {{ round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8) }}
+                                                {{ ((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8) }}
                                             @else
                                                 {{ is_array($prjBillableFTE) && ($prjBillableFTE['prjBillableCount'] == null  || $prjBillableFTE['projectSLATarget'] == null) ? '--' : $prjBillableFTE }}
                                             @endif
