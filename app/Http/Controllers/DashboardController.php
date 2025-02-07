@@ -58,9 +58,9 @@ class DashboardController extends Controller
                 $userId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['id'] != null ? Session::get('loginDetails')['userDetail']['id'] : "";
                 $agingHeader = Aging::select('days','days_range')->get()->toArray();
                  $projects = $this->getProjects();
-                GetProjJob::dispatch($userId)->delay(now()->addSeconds(5));
-                $prjCacheKey = 'clients_on_user' ; 
-                $projects = Cache::get($prjCacheKey, 0);    
+                // GetProjJob::dispatch($userId)->delay(now()->addSeconds(5));
+                // $prjCacheKey = 'clients_on_user' ; 
+                // $projects = Cache::get($prjCacheKey, 0);    
                 // $startDate = Carbon::now()->startOfDay()->toDateString();
                 // $endDate = Carbon::now()->endOfDay()->toDateString();
                 // $startDate = Carbon::now()->startOfWeek()->startOfDay()->toDateString();
