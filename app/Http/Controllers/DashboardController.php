@@ -273,14 +273,14 @@ class DashboardController extends Controller
                 $loginEmpId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null ? Session::get('loginDetails')['userDetail']['emp_id'] : "";
                 $agingHeader = Aging::select('days', 'days_range')->get()->toArray();
                 $userId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['id'] != null ? Session::get('loginDetails')['userDetail']['id'] : "";
-                 $projects = $this->getProjects();
+                //  $projects = $this->getProjects();
                 // $startDate = Carbon::now()->startOfDay()->toDateString();
                 // $endDate = Carbon::now()->endOfDay()->toDateString();
                 // $startDate = Carbon::now()->startOfWeek()->startOfDay()->toDateString();
                 // $endDate = Carbon::now()->endOfWeek()->endOfDay()->toDateString();
-                // GetProjJob::dispatch()->delay(now()->addSeconds(5));
-                // $prjCacheKey = 'clients_on_user' ; 
-                // $projects = Cache::get($prjCacheKey, 0);
+                GetProjJob::dispatch($userId)->delay(now()->addSeconds(5));
+                $prjCacheKey = 'clients_on_user' ; 
+                $projects = Cache::get($prjCacheKey, 0);
                 $startDate = Carbon::now()->startOfMonth()->toDateString();
                 $endDate = Carbon::now()->endOfMonth()->toDateString();
                 $models = $projectIds = [];
