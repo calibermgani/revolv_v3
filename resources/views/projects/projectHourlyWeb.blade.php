@@ -120,7 +120,8 @@
                                       $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0);    
                                       if (!is_array($prjBillableFTE)) {
                                             $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
-                                        }                              
+                                        }                     
+                                        $targetPerHour =  round((float)$prjBillableFTE['prjBillableCount'] * (float)$prjBillableFTE['projectSLATarget'] / 8);        
                                 @endphp
                                     <tr>
                                         <td>
@@ -156,7 +157,7 @@
                                         </td>
                                         <td>
                                             @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
-                                                {{ round((float)$prjBillableFTE['prjBillableCount'] * (float)$prjBillableFTE['projectSLATarget'] / 8) }}
+                                                {{ floor($targetPerHour) == $targetPerHour ? $targetPerHour : round($targetPerHour, 1); }}
                                             @else
                                                 {{ is_array($prjBillableFTE) && ($prjBillableFTE['prjBillableCount'] == null  || $prjBillableFTE['projectSLATarget'] == null) ? '--' : $prjBillableFTE }}
                                             @endif
