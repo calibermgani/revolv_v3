@@ -1186,6 +1186,8 @@ class ProductionController extends Controller
                 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
+                return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName)->with('error','An unexpected error occurred. Please recheck data once.');
+              
             }
         } else {
             return redirect('/');
@@ -1486,6 +1488,9 @@ class ProductionController extends Controller
                 return redirect('/projects_'.$tabUrl.'/'.$clientName.'/'.$subProjectName);
              } catch (\Exception $e) {
                 log::debug($e->getMessage());
+                $data = $request->all();
+                $tabUrl = $data['record_old_status'] == "Revoke" ? $data['record_old_status'] : lcfirst(str_replace('CE_', '', $data['record_old_status']));
+                return redirect('/projects_'.$tabUrl.'/'.$clientName.'/'.$subProjectName)->with('error','An unexpected error occurred. Please recheck data once.');
             }
         } else {
             return redirect('/');
@@ -2564,20 +2569,26 @@ class ProductionController extends Controller
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName.'Datas';
                 $originalModelClass = "App\\Models\\" . $modelName;
-                $data = $callData = [];
+                $data = $callData = $originDataArray = [];
                 $callData['project_id'] = $decodedProjectName; 
                 $callData['sub_project_id'] = $decodedPracticeName; 
                 foreach ($request->except('_token', 'parent', 'child','page','clientName','subProjectName','checkedRowValues') as $key => $value) {
                     if (is_array($value)) {
-                        $data[$key] = in_array(null, $value, true) ? null : implode('_el_', $value);
+                        $originDataArray[$key] = in_array(null, $value, true) ? null : implode('_el_', $value);
                     } else {
-                        $data[$key] = $value;
+                        $originDataArray[$key] = $value;
                     }
                 }   
               
                 foreach($checkedValues as $originId) {
-                    $data['parent_id'] = $originId['value']; 
+                    $originDataArray['parent_id'] = $originId['value']; 
                     $callData['record_id'] = $originId['value']; 
+                    $originData = $originalModelClass::where('id',$originDataArray['parent_id'])->first()->toArray();
+                    unset($originData['id']);
+                    unset($originData['created_at']);
+                    unset($originData['updated_at']);
+                    $data = array_merge($originData,$originDataArray);
+                   // dd($originDataArray,$data,$checkedValues);
                     $loginEmpId = $originalModelClass::where('id',$data['parent_id'])->first()->CE_emp_id;
                     $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','desc')->first();
                     $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->get();
@@ -2644,9 +2655,9 @@ class ProductionController extends Controller
                     $excludeKeys = ['id', 'created_at', 'updated_at', 'deleted_at'];
                     $filteredQAData = collect($qaData)->except($excludeKeys)->toArray();
                     $data = array_merge($data, array_diff_key($filteredQAData, $data));
-                    $currentTime = Carbon::now()->format('H:i:s');
-                    $callData['start_time'] = $currentTime; 
-                    $callData['end_time'] = $currentTime; 
+                    $currentTime = Carbon::now();
+                    $callData['start_time'] = $currentTime->format('Y-m-d H:i:s'); 
+                    $callData['end_time'] = $currentTime->format('Y-m-d H:i:s'); 
                     $callData['work_time'] = "00:00:00"; 
                     $callData['record_status'] =  $data['chart_status']; 
               //   dd($request->all(),$checkedValues,$data,'if',$datasRecord,$loginEmpId,$callData);
@@ -2657,7 +2668,19 @@ class ProductionController extends Controller
                     ($data['chart_status'] == "CE_Completed") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'coder_work_date' => $data['coder_work_date']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason']] );
                     $modelClass::create($data);
                     }
-                    CallerChartsWorkLogs::create($callData);
+                    $callChartWorkLogExistingRecords = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
+                    ->where('project_id', $decodedProjectName)
+                    ->where('sub_project_id', $decodedPracticeName)
+                    ->where('emp_id', $loginEmpId)->where('end_time',NULL)->get();
+                        if ($callChartWorkLogExistingRecords->isNotEmpty()) {
+                            foreach ($callChartWorkLogExistingRecords as $callChartWorkLog) {
+                                $start_time = Carbon::parse($callChartWorkLog->start_time);
+                                $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
+                                $callChartWorkLog->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time] );
+                            }
+                       } else {
+                           CallerChartsWorkLogs::create($callData);
+                       }
                     
            
               }           

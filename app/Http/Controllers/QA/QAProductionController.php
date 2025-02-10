@@ -1092,6 +1092,7 @@ class QAProductionController extends Controller
                 return redirect('qa_production/qa_projects_assigned/'.$clientName.'/'.$subProjectName);
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
+                return redirect('qa_production/qa_projects_assigned/'.$clientName.'/'.$subProjectName)->with('error','An unexpected error occurred. Please recheck data once.');
             }
         } else {
             return redirect('/');
@@ -1261,6 +1262,9 @@ class QAProductionController extends Controller
                 return redirect('qa_production/qa_projects_'.$tabUrl.'/'.$clientName.'/'.$subProjectName);
              } catch (\Exception $e) {
                 log::debug($e->getMessage());
+                $data = $request->all();
+                $tabUrl = lcfirst(str_replace('QA_', '', $data['record_old_status']));
+                return redirect('qa_production/qa_projects_'.$tabUrl.'/'.$clientName.'/'.$subProjectName)->with('error','An unexpected error occurred. Please recheck data once.');
             }
         } else {
             return redirect('/');
