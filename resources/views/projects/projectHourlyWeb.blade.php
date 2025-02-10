@@ -149,14 +149,14 @@
                                         </td>
                                         <td>
                                             @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
-                                                {{ round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']) }}
+                                                {{ round((float)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']) }}
                                             @else
                                                 {{ is_array($prjBillableFTE) && ($prjBillableFTE['prjBillableCount'] == null  || $prjBillableFTE['projectSLATarget'] == null) ? '--'  : $prjBillableFTE }}
                                             @endif
                                         </td>
                                         <td>
                                             @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
-                                                {{ round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8) }}
+                                                {{ round((float)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8) }}
                                             @else
                                                 {{ is_array($prjBillableFTE) && ($prjBillableFTE['prjBillableCount'] == null  || $prjBillableFTE['projectSLATarget'] == null) ? '--' : $prjBillableFTE }}
                                             @endif
@@ -185,7 +185,7 @@
                                         @foreach ($data['hourlyCount'] as $count)
                                             @if (is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
                                                 @php
-                                                    $targetValue = (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8;
+                                                    $targetValue = (float)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8;
                                                 @endphp
                                                 <td style="color: {{ $count < $targetValue ? 'red' : 'black' }}; font-weight: {{ $count < $targetValue ? 'bold' : 'normal' }};">
                                                     {{ is_scalar($count) ? $count : json_encode($count) }}
