@@ -121,7 +121,7 @@
                                       if (!is_array($prjBillableFTE)) {
                                             $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
                                         }                     
-                                        $targetPerHour =  round((float)$prjBillableFTE['prjBillableCount'] * (float)$prjBillableFTE['projectSLATarget'] / 8);        
+                                        $targetPerHour =  ((float)$prjBillableFTE['prjBillableCount'] * (float)$prjBillableFTE['projectSLATarget'] / 8);        
                                 @endphp
                                     <tr>
                                         <td>
