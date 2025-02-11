@@ -80,6 +80,8 @@ class FormController extends Controller
                     $requiredData['added_by'] = Session::get('loginDetails')['userInfo']['user_id'];
                     $requiredData['user_type'] = $data['user_type'][$i];
                     $requiredData['input_type_editable'] = $data['input_type_editable'][$i];
+                    $requiredData['project_type'] = $data['project_type'];
+                    $requiredData['claim_type'] = $data['claim_type'];
                     formConfiguration::create($requiredData);
                     // $columnName = Str::lower(str_replace([' ', '/'], ['_'], $data['label_name'][$i]));
                     $columnName = Str::lower(str_replace([' ', '/'], ['_', '_else_'], $data['label_name'][$i]));
@@ -456,16 +458,16 @@ class FormController extends Controller
                 $projectId = Helpers::encodeAndDecodeID($project_id,'decode');
                 $subProjectId = $sub_project_id == '--' ? '--' :Helpers::encodeAndDecodeID($sub_project_id,'decode');
                 if($sub_project_id != '--') {
-                    $projectDetails = formConfiguration::groupBy(['project_id', 'sub_project_id'])
+                    $projectDetails = formConfiguration::groupBy(['project_id', 'sub_project_id','project_type','claim_type'])
                     ->where('project_id',$projectId)->where('sub_project_id',$subProjectId)
-                    ->select('project_id', 'sub_project_id')
+                    ->select('project_id', 'sub_project_id','project_type','claim_type')
                     ->first();
                     $formDetails = formConfiguration::where('project_id',$projectId)->where('sub_project_id',$subProjectId)
                     ->get();
                 } else {
-                    $projectDetails = formConfiguration::groupBy(['project_id', 'sub_project_id'])
+                    $projectDetails = formConfiguration::groupBy(['project_id', 'sub_project_id','project_type','claim_type'])
                     ->where('project_id',$projectId)
-                    ->select('project_id', 'sub_project_id')
+                    ->select('project_id', 'sub_project_id','project_type','claim_type')
                     ->first();
                     $formDetails = formConfiguration::where('project_id',$projectId)
                     ->get();
@@ -504,6 +506,8 @@ class FormController extends Controller
                         $requiredData['added_by'] = Session::get('loginDetails')['userInfo']['user_id'];//dd($existingRecord,$requiredData);
                         $requiredData['user_type'] = $data['user_type'][$i];
                         $requiredData['input_type_editable'] = $data['input_type_editable'][$i];
+                        $requiredData['project_type'] = $data['project_type_val'];
+                        $requiredData['claim_type'] = $data['claim_type_val'];
                         $existingRecord->update($requiredData);
                     } else {
                         $requiredData['project_id'] = $data['project_id_val'];
@@ -518,6 +522,8 @@ class FormController extends Controller
                         $requiredData['added_by'] = Session::get('loginDetails')['userInfo']['user_id'];
                         $requiredData['user_type'] = $data['user_type'][$i];
                         $requiredData['input_type_editable'] = $data['input_type_editable'][$i];
+                        $requiredData['project_type'] = $data['project_type_val'];
+                        $requiredData['claim_type'] = $data['claim_type_val'];
                         formConfiguration::create($requiredData);
                        // $columnName = Str::lower(str_replace([' ', '/'], '_', $data['label_name'][$i]));
                         $columnName = Str::lower(str_replace([' ', '/'], ['_', '_else_'], $data['label_name'][$i]));

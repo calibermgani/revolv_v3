@@ -37,7 +37,7 @@
 
                 <div class="col-6 mt-4 pr-0">
                     <div class="row">
-                        <div class="col-6"></div>
+                        {{-- <div class="col-6"></div> --}}
                         <div class="col-3 pr-1">
                             @php $projectList = App\Http\Helper\Admin\Helpers::projectList(); @endphp
                             <div class="form-group mb-0">
@@ -51,9 +51,27 @@
                             <div class="form-group mb-0">
                                 @php $subProjectList = []; @endphp
                                 {!! Form::select('sub_project_id', $subProjectList, null, [
-                                    'class' => 'form-control kt_select2_sub_project',
+                                    'class' => 'form-control white-smoke kt_select2_sub_project',
                                     'id' => 'sub_project_list',
                                 ]) !!}
+                            </div>
+                        </div>
+                        <div class="col-3 pl-1">
+                            @php $projectType =  [''=>'Select', 2 => 'Manual' ] @endphp
+                            <div class="form-group mb-0">
+                                {!! Form::select('project_type', $projectType, null, [
+                                    'class' => 'form-control  kt_select2_project_type',
+                                    'id' => 'projectType',
+                                ]) !!}
+                            </div>
+                        </div>
+                        <div class="col-3 pl-1">                        
+                            @php $claimType =  [''=>'Select', 2 => 'Multi Line' ] @endphp
+                            <div class="form-group mb-0">
+                                {!! Form::select('claim_type', $claimType, null, [
+                                    'class' => 'form-control  kt_select2_claim_type',
+                                    'id' => 'claimType',
+                                ]) !!}                           
                             </div>
                         </div>
                     </div>

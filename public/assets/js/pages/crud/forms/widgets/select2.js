@@ -93,6 +93,12 @@ var KTSelect2 = function() {
         $('.kt_select2_workable').select2({
             placeholder: "Workable/Non Workable"
         });
+        $('.kt_select2_project_type').select2({
+            placeholder: "Select Project Type"
+        });
+        $('.kt_select2_claim_type').select2({
+            placeholder: "Select Claim Type"
+        });
         // loading data from array
         // var data = [{
         //     id: 0,

@@ -44,7 +44,7 @@
 
                     <div class="col-6 mt-4 pr-0">
                         <div class="row">
-                            <div class="col-6"></div>
+                            {{-- <div class="col-6"></div> --}}
                             <div class="col-3 pr-1">
                                 @php $projectList = App\Http\Helper\Admin\Helpers::projectList(); @endphp
                                 <div class="form-group mb-0 white-smoke-disabled">
@@ -84,6 +84,30 @@
                                         ]) !!}
                                         <input type="hidden" value="{{ $projectDetails->sub_project_id ?? '' }}">
                                     @endif
+                                </div>
+                            </div>
+                            <div class="col-3 pl-1">
+                                @php $projectType =  [''=>'Select', 2 => 'Manual' ] @endphp
+                                <div class="form-group mb-0 white-smoke-disabled">
+                                    {!! Form::select('project_type', $projectType, $projectDetails->project_type ?? null, [
+                                        'class' => 'form-control  kt_select2_project_type',
+                                        'id' => 'projectType',
+                                        'disabled',
+                                    ]) !!}
+                                      <input type="hidden" name="project_type_val"
+                                      value="{{ $projectDetails->project_type ?? '' }}">
+                                </div>
+                            </div>
+                            <div class="col-3 pl-1">                        
+                                @php $claimType =  [''=>'Select', 2 => 'Multi Line' ] @endphp
+                                <div class="form-group mb-0 white-smoke-disabled">
+                                    {!! Form::select('claim_type', $claimType, $projectDetails->claim_type ?? null, [
+                                        'class' => 'form-control  kt_select2_claim_type',
+                                        'id' => 'claimType',
+                                        'disabled',
+                                    ]) !!}         
+                                     <input type="hidden" name="claim_type_val"
+                                     value="{{ $projectDetails->claim_type ?? '' }}">                  
                                 </div>
                             </div>
                         </div>
