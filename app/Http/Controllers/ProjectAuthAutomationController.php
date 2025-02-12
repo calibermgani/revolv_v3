@@ -213,7 +213,7 @@ class ProjectAuthAutomationController extends Controller
             $attributes = [
                 'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                'exam_room' => isset($request->exam_room) && $request->exam_room != "NULL" ? $request->exam_room : NULL,
+                'examroom' => isset($request->examroom) && $request->examroom != "NULL" ? $request->examroom : NULL,
                 'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
                 'primary_insurer_name' => isset($request->primary_insurer_name) && $request->primary_insurer_name != "NULL" ? $request->primary_insurer_name : NULL,
                 'secondary_insurer_name' => isset($request->secondary_insurer_name) && $request->secondary_insurer_name != "NULL" ? $request->secondary_insurer_name : NULL,
@@ -224,11 +224,13 @@ class ProjectAuthAutomationController extends Controller
             if (!$duplicateRecordExisting) {
                 RhEligibilityVerification::insert([
                     'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
                     'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                    'exam_room' => isset($request->exam_room) && $request->exam_room != "NULL" ? $request->exam_room : NULL,
+                    'examroom' => isset($request->examroom) && $request->examroom != "NULL" ? $request->examroom : NULL,
                     'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
                     'primary_insurer_name' => isset($request->primary_insurer_name) && $request->primary_insurer_name != "NULL" ? $request->primary_insurer_name : NULL,
                     'secondary_insurer_name' => isset($request->secondary_insurer_name) && $request->secondary_insurer_name != "NULL" ? $request->secondary_insurer_name : NULL,
+                    'teritary_insurer_name' => isset($request->teritary_insurer_name) && $request->teritary_insurer_name != "NULL" ? $request->teritary_insurer_name : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
@@ -240,11 +242,13 @@ class ProjectAuthAutomationController extends Controller
                 if ($duplicateRecord) {
                     $duplicateRecord->update([
                         'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
                         'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                        'exam_room' => isset($request->exam_room) && $request->exam_room != "NULL" ? $request->exam_room : NULL,
+                        'examroom' => isset($request->examroom) && $request->examroom != "NULL" ? $request->examroom : NULL,
                         'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
                         'primary_insurer_name' => isset($request->primary_insurer_name) && $request->primary_insurer_name != "NULL" ? $request->primary_insurer_name : NULL,
                         'secondary_insurer_name' => isset($request->secondary_insurer_name) && $request->secondary_insurer_name != "NULL" ? $request->secondary_insurer_name : NULL,
+                        'teritary_insurer_name' => isset($request->teritary_insurer_name) && $request->teritary_insurer_name != "NULL" ? $request->teritary_insurer_name : NULL,
                         'invoke_date' => date('Y-m-d'),
                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
@@ -262,11 +266,13 @@ class ProjectAuthAutomationController extends Controller
         try {
             RhEligibilityVerificationDuplicates::insert([
                 'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                'exam_room' => isset($request->exam_room) && $request->exam_room != "NULL" ? $request->exam_room : NULL,
+                'examroom' => isset($request->examroom) && $request->examroom != "NULL" ? $request->examroom : NULL,
                 'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
                 'primary_insurer_name' => isset($request->primary_insurer_name) && $request->primary_insurer_name != "NULL" ? $request->primary_insurer_name : NULL,
                 'secondary_insurer_name' => isset($request->secondary_insurer_name) && $request->secondary_insurer_name != "NULL" ? $request->secondary_insurer_name : NULL,
+                'teritary_insurer_name' => isset($request->teritary_insurer_name) && $request->teritary_insurer_name != "NULL" ? $request->teritary_insurer_name : NULL,
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
