@@ -29,6 +29,7 @@ use App\Jobs\getProjectSubProjectManager;
 use App\Jobs\getProjectSubProjectBillableFTE;
 use App\Models\CallerChartsWorkLogs;
 use App\Jobs\GetProjJob;
+use Illuminate\Support\Facades\Schema;
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
@@ -742,10 +743,16 @@ class ProjectController extends Controller
                         $slotEnd = $slot['end'];
 
                         // Query hourly count for the specific time slot
-                        $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
-                            ->where('chart_status', 'CE_Completed')
-                            ->count();
-
+                        // $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
+                        //     ->where('chart_status', 'CE_Completed')
+                        //     ->count();
+                        $tableName = (new $modelClass)->getTable();
+                        $columnExists = Schema::hasColumn($tableName, 'ar_at');
+                        $hasNonNullArAt = $columnExists && $modelClass::whereNotNull('ar_at')->exists();
+                        $columnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                        $hourlyCount = $modelClass::whereBetween($columnToUse, [$slotStart, $slotEnd])
+                        ->where('chart_status', 'CE_Completed')
+                        ->count();
                      
 
                         $hourlyCounts[] = $hourlyCount; // Add to the array for this project
@@ -841,9 +848,16 @@ class ProjectController extends Controller
                     foreach ($timeSlots as $slot) {
                         $slotStart = $slot['start'];
                         $slotEnd = $slot['end'];
-                           $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
-                            ->where('chart_status', 'CE_Completed')->where('CE_emp_id', $user)
-                            ->count();
+                        //    $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
+                        //     ->where('chart_status', 'CE_Completed')->where('CE_emp_id', $user)
+                        //     ->count();
+                        $tableName = (new $modelClass)->getTable();
+                        $columnExists = Schema::hasColumn($tableName, 'ar_at');
+                        $hasNonNullArAt = $columnExists && $modelClass::whereNotNull('ar_at')->exists();
+                        $columnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                        $hourlyCount = $modelClass::whereBetween($columnToUse, [$slotStart, $slotEnd])
+                        ->where('chart_status', 'CE_Completed')->where('CE_emp_id', $user)
+                        ->count();
 
                         Log::info("Hourly count for {$tableName} from {$slotStart} to {$slotEnd}: {$hourlyCount}");
 
@@ -1066,9 +1080,16 @@ class ProjectController extends Controller
                         foreach ($timeSlots as $slot) {
                             $slotStart = $slot['start'];
                             $slotEnd = $slot['end'];
-                            $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
-                                ->where('chart_status', 'CE_Completed')
-                                ->count();
+                            // $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
+                            //     ->where('chart_status', 'CE_Completed')
+                            //     ->count();
+                            $tableName = (new $modelClass)->getTable();
+                            $columnExists = Schema::hasColumn($tableName, 'ar_at');
+                            $hasNonNullArAt = $columnExists && $modelClass::whereNotNull('ar_at')->exists();
+                            $columnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                            $hourlyCount = $modelClass::whereBetween($columnToUse, [$slotStart, $slotEnd])
+                            ->where('chart_status', 'CE_Completed')
+                            ->count();
 
                             $hourlyCounts[] = $hourlyCount; 
                         }
@@ -1150,9 +1171,16 @@ class ProjectController extends Controller
                     foreach ($timeSlots as $slot) {
                         $slotStart = $slot['start'];
                         $slotEnd = $slot['end'];
-                           $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
-                            ->where('chart_status', 'CE_Completed')->where('CE_emp_id', $user)
-                            ->count();
+                        //    $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
+                        //     ->where('chart_status', 'CE_Completed')->where('CE_emp_id', $user)
+                        //     ->count();
+                        $tableName = (new $modelClass)->getTable();
+                        $columnExists = Schema::hasColumn($tableName, 'ar_at');
+                        $hasNonNullArAt = $columnExists && $modelClass::whereNotNull('ar_at')->exists();
+                        $columnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                        $hourlyCount = $modelClass::whereBetween($columnToUse, [$slotStart, $slotEnd])
+                        ->where('chart_status', 'CE_Completed')->where('CE_emp_id', $user)
+                        ->count();
 
                         Log::info("Hourly count for {$tableName} from {$slotStart} to {$slotEnd}: {$hourlyCount}");
 

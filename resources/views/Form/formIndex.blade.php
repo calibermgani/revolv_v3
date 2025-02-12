@@ -108,6 +108,7 @@
                                                         'date' => 'Date',
                                                         'date_range' => 'Date Range',
                                                         'textarea' => 'Text Area',
+                                                        'datetime' => 'DateTime',
                                                     ],
                                                     null,
                                                     [
@@ -271,7 +272,7 @@
                     j +
                     '" name="label_name[]" class="white-smoke form-control label_name"> </div></div><div class="col-md-2"><label>Input Type</label><div class="form-group mb-1"><select  class="white-smoke form-control input_type" name="input_type[]" id="input_type_id_' +
                     j +
-                    '"><option value="text">Text Box</option><option value="select">Drop Down</option><option value="checkbox">CheckBox</option><option value="radio">Radio</option><option value="date">Date</option><option value="date_range">Date Range</option><option value="textarea">Text Area</option></select></div></div> <div class="col-md-2 options_div" style="display:none" id="options_div_' +
+                    '"><option value="text">Text Box</option><option value="select">Drop Down</option><option value="checkbox">CheckBox</option><option value="radio">Radio</option><option value="date">Date</option><option value="date_range">Date Range</option><option value="textarea">Text Area</option><option value="datetime">DateTime</option></select></div></div> <div class="col-md-2 options_div" style="display:none" id="options_div_' +
                     j +
                     '"><label class="options_name_label required" style="display:none"  id="options_name_label_' +
                     j +

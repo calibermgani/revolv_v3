@@ -60,7 +60,9 @@
                 lengthChange: false,
                 searching: true,
                 pageLength: 20,
-                "order": [[16, "asc"]]
+                "order": [[16, "asc"]],
+                scrollCollapse: true,
+                scrollX: true,
             });
         });
     </script>

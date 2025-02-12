@@ -203,6 +203,7 @@
                                                                         'date' => 'Date',
                                                                         'date_range' => 'Date Range',
                                                                         'textarea' => 'Text Area',
+                                                                        'datetime' => 'DateTime',
                                                                     ],
                                                                     $data->input_type ?? '',
                                                                     [
@@ -398,6 +399,7 @@
                                                                         'date' => 'Date',
                                                                         'date_range' => 'Date Range',
                                                                         'textarea' => 'Text Area',
+                                                                        'datetime' => 'DateTime',
                                                                     ],
                                                                     $data->input_type ?? '',
                                                                     [
@@ -608,7 +610,7 @@
                     j +
                     ']" id="input_type_id_' +
                     j +
-                    '"><option value="text">Text Box</option><option value="select">Drop Down</option><option value="checkbox">CheckBox</option><option value="radio">Radio</option><option value="date">Date</option><option value="date_range">Date Range</option><option value="textarea">Text Area</option></select></div></div> <div class="col-md-2 options_div" style="display:none" id="options_div_' +
+                    '"><option value="text">Text Box</option><option value="select">Drop Down</option><option value="checkbox">CheckBox</option><option value="radio">Radio</option><option value="date">Date</option><option value="date_range">Date Range</option><option value="textarea">Text Area</option><option value="datetime">DateTime</option></select></div></div> <div class="col-md-2 options_div" style="display:none" id="options_div_' +
                     j +
                     '"><label class="options_name_label required" style="display:none"  id="options_name_label_' +
                     j +

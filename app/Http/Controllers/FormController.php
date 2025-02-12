@@ -94,6 +94,8 @@ class FormController extends Controller
                         $columns[$columnName] = 'DATE';
                     } else if ($data['input_type'][$i] == 'textarea') {
                         $columns[$columnName] = 'TEXT';
+                    } else if ($data['input_type'][$i] == 'datetime' ) {
+                        $columns[$columnName] = 'DATETIME';
                     }
                 }
                 $subProjectName = $data['sub_project_id'] != null ? $subProjectArray->sub_project_name : 'project';
@@ -536,6 +538,8 @@ class FormController extends Controller
                             $columns[$columnName] = 'DATE';
                         } else if ($data['input_type'][$i] == 'textarea') {
                             $columns[$columnName] = 'TEXT';
+                        } else if ($data['input_type'][$i] == 'datetime' ) {
+                            $columns[$columnName] = 'DATETIME';
                         }
                     }
 
@@ -888,6 +892,8 @@ class FormController extends Controller
                     }
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
             } catch (\Exception $e) {
+                dd($e->getMessage());
+                return response()->json(['error' => $e->getMessage()], 500);
                 Log::debug($e->getMessage());
             }
         } else {
