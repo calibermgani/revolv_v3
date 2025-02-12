@@ -1029,15 +1029,15 @@ use Carbon\Carbon;
                                             </div>
                                         </div>
                                         <div class="row" id="qa_class_cat_scope" ></div>
-                                            <hr>
+                                            <hr style="display:none">
                                                 <div class="row mt-4">
                                                     <div class="col-md-12">
                                                         <div class="form-group row">
-                                                            <label class="col-md-12" id="QA_rework_comments_label">
+                                                            <label class="col-md-12" id="QA_rework_comments_label" style="display:none">
                                                             Notes
                                                             </label>
                                                             <div class="col-md-10">
-                                                                {!! Form::textarea('QA_rework_comments',  null, ['class' => 'text-black form-control QA_rework_comments','rows' => 6,'id' => 'QA_rework_comments','readonly']) !!}
+                                                                {!! Form::textarea('QA_rework_comments',  null, ['class' => 'text-black form-control QA_rework_comments','rows' => 6,'id' => 'QA_rework_comments','style' => 'display:none']) !!}
 
                                                             </div>
                                                         </div>
