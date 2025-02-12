@@ -17,6 +17,11 @@ use Carbon\Carbon;
                                 </div>
                                 <div class="col-md-6">
                                     <div class="row" style="justify-content: flex-end;margin-right:1.4rem">
+                                        @if($projectTypeSettings['claim_type'] == 2)
+                                            <div class="d-flex align-items-center" id="multi_line">
+                                                <button type="button" class="btn text-white mr-3 multiline_click" style="background-color:#139AB3;cursor: pointer;display:none !important">Bulk Update</button>
+                                            </div>
+                                        @endif
                                         @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)
                                         @php
                                            $clientId = App\Http\Helper\Admin\Helpers::encodeAndDecodeID($clientName, 'decode');
@@ -24,6 +29,8 @@ use Carbon\Carbon;
                                             $prjTotalArListCacheKey = 'project_'.$clientId.'arResourceName';
                                             $prjTotalArList = Cache::get($prjTotalArListCacheKey, 0); 
                                         @endphp    
+                                       
+                       
                                         <div class="mb-lg-0 mb-6">
                                                 <fieldset class="form-group mb-0 white-smoke-disabled">
                                                     {!! Form::select('assignee_ar_name', ['' => 'Work Log'] + $prjTotalArList, null, [
@@ -1106,6 +1113,289 @@ use Carbon\Carbon;
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="modal fade modal-third" id="myModal_multiline" tabindex="-1" role="dialog"aria-labelledby="myModalLabel" data-backdrop="static" aria-hidden="true">
+                                    @if ($popUpHeader != null)
+                                        <div class="modal-dialog" style="max-width: 40%;">
+                                            @php
+                                                $clientName = App\Http\Helper\Admin\Helpers::projectName(
+                                                    $popUpHeader->project_id,
+                                                );
+                                                if ($popUpHeader->sub_project_id != NULL) {
+                                                    $practiceName = App\Http\Helper\Admin\Helpers::subProjectName(
+                                                        $popUpHeader->project_id,
+                                                        $popUpHeader->sub_project_id,
+                                                    );
+                                                    $subProjectName = App\Http\Helper\Admin\Helpers::encodeAndDecodeID(
+                                                        $popUpHeader->sub_project_id,
+                                                        'encode',
+                                                    );
+                                                } else {
+                                                    $practiceName = '';
+                                                    $subProjectName = '--';
+                                                }
+                                                $projectName = App\Http\Helper\Admin\Helpers::encodeAndDecodeID(
+                                                    $popUpHeader->project_id,
+                                                    'encode',
+                                                );
+                                            @endphp
+                            
+                                            <div class="modal-content" style="margin-top: 7rem">
+                                                <div class="modal-header" style="background-color: #139AB3; height: 84px">
+                                                    <div class="row" >
+                                                        <div class="col-md-6">
+                                                            <div class="align-items-center" style="display: -webkit-box !important;">
+                                                                <div class="rounded-circle bg-white text-black mr-2"
+                                                                    style="width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; font-weight; bold">
+                                                                    <span>{{ strtoupper(substr($clientName->project_name, 0, 1)) }}</span>
+                                                                </div>&nbsp;&nbsp;
+                                                                <div>
+                                                                    <h6 class="modal-title mb-0" id="myModalLabel" style="color: #ffffff;">
+                                                                        {{ ucfirst($clientName->aims_project_name) }}
+                                                                    </h6>
+                                                                    @if ($practiceName != '')
+                                                                        <h6 style="color: #ffffff; font-size: 1rem;">
+                                                                            {{ ucfirst($practiceName->sub_project_name) }}
+                                                                        </h6>
+                                                                    @endif
+                                                                </div>&nbsp;&nbsp;
+                                                                <div class="bg-white rounded-pill px-2 text-black"
+                                                                    style="margin-bottom: 2rem; margin-left: 2.2px; font-size: 10px; font-weight: 500; background-color: #E9F3FF; color: #139AB3;">
+                                                                    <span id="title_status"></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {!! Form::open([
+                                                    'url' =>'',
+                                                    'class' => 'form',
+                                                    'id' => 'multiformConfiguration',
+                                                    'enctype' => 'multipart/form-data',
+                                                ]) !!}
+                                                @csrf
+                                                <div class="modal-body">
+                                                    <div class="row">                                                              
+                                                        <div class="col-md-12"  data-scroll="true" data-height="400">
+                                                            <h6 class="title-h6">AR
+                                                            </h6>&nbsp;&nbsp;                                                                   
+                                                            @if (count($popupMulineFields) > 0)
+                                                            @php $count = 0; @endphp
+                                                            @foreach ($popupMulineFields as $key => $data)
+                                                            @php
+                                                            $labelName = $data->label_name;
+                                                            $columnName = Str::lower(
+                                                                str_replace([' ', '/'], ['_', '_else_'], $data->label_name),
+                                                            );
+                                                            $inputType = $data->input_type;
+                                                            $options =
+                                                                $data->options_name != null ? explode(',', $data->options_name) : null;
+                                                            $associativeOptions = [];
+                                                            if ($options !== null) {
+                                                                foreach ($options as $option) {
+                                                                    $associativeOptions[$option] = $option;
+                                                                }
+                                                                }
+                                                        @endphp
+                                                        @if ($count % 2 == 0)
+                                                            <div class="row" id={{ $columnName }}>
+                                                        @endif
+                                                        @if($labelName == "Activity" || $labelName == "Sub Activity"  || $labelName == "Notes" || $labelName == "AR Notes" )
+                                                            <div class="col-md-6">
+                                                                <div class="form-group row row_mar_bm">
+                                                                    <label
+                                                                        class="col-md-12 {{ $data->field_type_2 == 'mandatory' && ($data->input_type_editable == 1 || $data->input_type_editable == 3) ? 'required' : '' }}">
+                                                                        {{ $labelName }}
+                                                                    </label>
+                                                                    <div class="col-md-10">
+                                                                        @if ($options == null)
+                                                                                {!! Form::$inputType($columnName . '[]', null, [
+                                                                                    'class' => 'form-control multi_' . $columnName . ' white-smoke pop-non-edt-val',
+                                                                                    'autocomplete' => 'none',
+                                                                                    'style' => 'cursor:pointer',
+                                                                                    'rows' => 3,
+                                                                                    'id' => $columnName,
+                                                                                    $data->field_type_2 == 'mandatory' && ($data->input_type_editable == 1 || $data->input_type_editable == 3) ? 'required' : '',
+                                                                                    ($data->input_type_editable == 1 || $data->input_type_editable == 3) ? '' : 'readonly'
+                                                                                ]) !!}
+                                                                        @else
+                                                                            @if ($inputType == 'select')
+                                                                                {!! Form::$inputType($columnName . '[]', ['' => '-- Select --'] + $associativeOptions, null, [
+                                                                                    'class' => 'form-control multi_' . $columnName . ' white-smoke pop-non-edt-val',
+                                                                                    'autocomplete' => 'none',
+                                                                                    'style' => 'cursor:pointer;' . (($data->input_type_editable == 1 || $data->input_type_editable == 3) ? '' : 'pointer-events: none;'),
+                                                                                    'id' => $columnName,
+                                                                                    $data->field_type_2 == 'mandatory' && ($data->input_type_editable == 1 || $data->input_type_editable == 3) ? 'required' : '',
+                                                                                ]) !!}
+                                                                            @endif
+                                                                        @endif
+                            
+                                                                    </div>
+                                                                    <div class="col-md-1 col-form-label pt-0 pb-4" style="margin-left: -1.3rem;">
+                                                                        <input type="hidden"
+                                                                            value="{{ $associativeOptions != null ? json_encode($associativeOptions) : null }}"
+                                                                            class="add_options">
+
+                                                                        @if ($data->field_type_1 == 'multiple')
+                                                                        <i class="fa fa-plus add_more"
+                                                                                id="add_more_{{ $columnName }}"
+                                                                                style="{{ $data->field_type_1 == 'multiple' ? 'visibility: visible;' : 'visibility: hidden;' }}"></i>
+                                                                            <input type="hidden"
+                                                                                value="{{ $data->field_type_1 == 'multiple' ? $labelName : '' }}"
+                                                                                class="add_labelName">
+                                                                            <input type="hidden"
+                                                                                value="{{ $data->field_type_1 == 'multiple' ? $columnName : '' }}"
+                                                                                class="add_columnName">
+                                                                            <input type="hidden"
+                                                                                value="{{ $data->field_type_1 == 'multiple' ? $inputType : '' }}"
+                                                                                class="add_inputtype">
+                                                                            <input type="hidden"
+                                                                                value="{{ $data->field_type_1 == 'multiple' ? ($data->field_type_2 == 'mandatory' ? 'required' : '') : '' }}"
+                                                                                class="add_mandatory">
+
+                                                                        @endif
+                                                                    </div>
+                                                                    <div></div>
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                                        @php $count++; @endphp
+                                                        @if ($count % 2 == 0 || $loop->last)
+                                                        </div>
+                                                        @endif
+                                                            @endforeach
+                                                        @endif
+                                                            @php
+                                                                if($popUpHeader->sub_project_id != null && $popUpHeader->sub_project_id != "") {
+                                                                    $statusActionShow = App\Models\projectInputSetting::where('sub_project_id',$popUpHeader->sub_project_id)->first();                                                                                                                              
+                                                                } else {
+                                                                    $statusActionShow = null;
+                                                                }
+                                                            @endphp
+                                                            @if($statusActionShow != null)
+                                                                <div class="row mt-4">
+                                                                    @if($statusActionShow->status_input == 1)
+                                                                        <div class="col-md-6">
+                                                                            <div class="form-group row">
+                                                                                <label class="col-md-12">
+                                                                                    Status Code
+                                                                                </label>
+                                                                                @php $arStatusList = $popUpHeader->sub_project_id != null && $popUpHeader->sub_project_id != "" ? App\Http\Helper\Admin\Helpers::arStatusListBySubPrjId( $popUpHeader->sub_project_id) : []; @endphp
+                            
+                                                                                <div class="col-md-10">
+                                                                                    {!! Form::Select(
+                                                                                        'ar_status_code',
+                                                                                        $arStatusList,
+                                                                                        null,
+                                                                                        [
+                                                                                            'class' => 'form-control white-smoke  kt_select2_qa_status pop-non-edt-val ',
+                                                                                            'autocomplete' => 'none',
+                                                                                            'id' => 'ar_status_code',
+                                                                                            'style' => 'cursor:pointer',
+                                                                                        ],
+                                                                                    ) !!}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endif
+                                                                    @if($statusActionShow->action_input == 1)
+                                                                    <div class="col-md-6">
+                                                                        <div class="form-group row">
+                                                                            <label class="col-md-12">
+                                                                                Action Code
+                                                                            </label>
+                                                                            @php $arActionList = []; @endphp
+                                                                            <div class="col-md-10">
+                                                                                {!! Form::Select(
+                                                                                    'ar_action_code',
+                                                                                    $arActionList,
+                                                                                    null,
+                                                                                    [
+                                                                                        'class' => 'form-control white-smoke  kt_select2_ar_action_code pop-non-edt-val ',
+                                                                                        'autocomplete' => 'none',
+                                                                                        'id' => 'ar_action_code',
+                                                                                        'style' => 'cursor:pointer',
+                                                                                    ],
+                                                                                ) !!}
+                            
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    @endif
+                                                                </div>
+                                                            @endif
+                                                            <div class="row mt-4">
+                                                                <div class="col-md-6">
+                                                                    <input type="hidden" name="invoke_date">
+                                                                    <input type="hidden" name="CE_emp_id">
+                                                                    <div class="form-group row">
+                                                                        <label class="col-md-12 required">
+                                                                            Charge Status
+                                                                        </label>
+                                                                        <div class="col-md-10">
+                                                                            @if($projectTypeSettings['project_type'] == 2)
+                                                                            {!! Form::Select(
+                                                                                'chart_status',
+                                                                                [
+                                                                                    '' => '--Select--',
+                                                                                    'CE_Pending' => 'Pending',
+                                                                                    'CE_Completed' => 'Completed',
+                                                                                    'CE_Hold' => 'Hold',
+                                                                                    'AR_non_workable'=>'Non Workable'
+                                                                                ],
+                                                                                null,
+                                                                                [
+                                                                                    'class' => 'form-control white-smoke  pop-non-edt-val ',
+                                                                                    'autocomplete' => 'none',
+                                                                                    'id' => 'multi_chart_status',
+                                                                                    'style' => 'cursor:pointer',
+                                                                                ],
+                                                                            ) !!}
+                                                                            @else
+                                                                            {!! Form::Select(
+                                                                                'chart_status',
+                                                                                [
+                                                                                      'CE_Completed' => 'Completed'
+                                                                                ],
+                                                                                null,
+                                                                                [
+                                                                                    'class' => 'form-control white-smoke  pop-non-edt-val ',
+                                                                                    'autocomplete' => 'none',
+                                                                                    'id' => 'multi_chart_status',
+                                                                                    'style' => 'cursor:pointer',
+                                                                                ],
+                                                                            ) !!}
+                                                                            @endif
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group row" >
+                                                                        <label class="col-md-12 required" id="multi_ce_hold_reason_label" style = 'display:none'>
+                                                                            Hold Reason
+                                                                        </label>
+                                                                        <div class="col-md-10">
+                                                                            {!! Form::textarea('ce_hold_reason',  null, ['class' => 'text-black form-control','rows' => 3,'id' => 'multi_ce_hold_reason','style' => 'display:none']) !!}
+                            
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer" style="justify-content: end;">
+                                                        <button class="btn btn-light-danger float-right" id="close_assign" tabindex="10" type="button"
+                                                            data-dismiss="modal">
+                                                            <span><span>Close</span></span>
+                                                        </button>
+                                                        <button type="submit" class="btn1" id="project_multi_assign_save" style="margin-right: -2rem">Submit</button>
+                                                    </div>
+                                                </div>
+                                                {{-- {!! Form::close() !!} --}}
+                                            </div>
+                                        </div>
+                                    @endif
+                               </div>
                         </div>
                     </div>
                 </div>
@@ -1799,11 +2089,13 @@ nav{
                     // $('#p1').text("All " + <?= json_encode($assignedProjectDetails->lastItem()); ?> + " records on this page are selected. Select all " + <?= json_encode($assignedProjectDetails->total()); ?> + " records");
 
                     assigneeDropdown();
+                    $('.multiline_click').css('display','block');
                   
                 } else {
                     $('#select_p1').css('display','none')
                     $('#assigneeDropdown').prop('disabled', true);
                     $('#workable_dropdown').prop('disabled', true);
+                    $('.multiline_click').css('display','none');
 
                 }
             });
@@ -1838,6 +2130,7 @@ nav{
                 }
                 $('#assigneeDropdown').prop('disabled', !(anyCheckboxChecked || allCheckboxesChecked));
                 $('#workable_dropdown').prop('disabled', !(anyCheckboxChecked || allCheckboxesChecked));
+                $('.multiline_click').css('display', anyCheckboxChecked || allCheckboxesChecked ? 'block' : 'none');
                 if ($(this).prop('checked') == true) {
                   assigneeDropdown();
                 }
@@ -2577,6 +2870,163 @@ nav{
                     },
                 });           
            });
+           $(document).on('click', '.multiline_click', function(e) {
+                $('#myModal_multiline').modal('show');
+           });
+           $(document).on('change', '#multi_chart_status', function() {
+                    var claimStatus = $(this).val();
+                    if(claimStatus == "CE_Hold") {console.log(claimStatus,'claimStatus');
+                    
+                        $('#multi_ce_hold_reason').css('display', 'block');
+                        $('#multi_ce_hold_reason_label').css('display', 'block');
+                    } else {
+                        $('#multi_ce_hold_reason').css('display', 'none');
+                        $('#multi_ce_hold_reason_label').css('display', 'none');
+                        $('#multi_ce_hold_reason').css('border-color', '');
+                       $('#multi_ce_hold_reason').val('');
+                    }
+            })
+            $(document).on('click', '#project_multi_assign_save', function(e) { 
+                e.preventDefault();      
+                 var duplicateValue = 0;                 
+                    var fieldNames = $('#multiformConfiguration').serializeArray().map(function(input) {
+                        return input.name;
+                    });
+                
+                    var requiredFields = {};
+                    var requiredFieldsType = {};
+                    var inputclass = [];
+                    var inputTypeValue = 0; var inputTypeRadioValue = 0;
+                    var claimStatus =  $('#multi_chart_status').val();
+                    if(claimStatus == "CE_Hold") {
+                        var ceHoldReason = $('#multi_ce_hold_reason');
+                        if(ceHoldReason.val() == '') {
+                            ceHoldReason.css('border-color', 'red', 'important');
+                                inputTypeValue = 1;
+                        } else {
+                                ceHoldReason.css('border-color', '');
+                                inputTypeValue = 0;
+                        }
+                    }
+                
+                    $('#multiformConfiguration').find(':input[required], select[required], textarea[required]',
+                    ':input[type="checkbox"][required], input[type="radio"][required]').each(function() {
+                        var fieldName = $(this).attr('name');
+                        var fieldType = $(this).attr('type') || $(this).prop('tagName').toLowerCase();
+                        if (!requiredFields[fieldType]) {
+                            requiredFields[fieldType] = [];
+                        }
+                        requiredFields[fieldType].push(fieldName);
+                    });
+               
+                    for (var fieldType in requiredFields) {
+                        if (requiredFields.hasOwnProperty(
+                                fieldType)) {
+                            var fieldNames = requiredFields[fieldType];
+                            fieldNames.forEach(function(fieldNameVal) {
+                                var label_id = $('' + fieldType + '[name="' + fieldNameVal + '"]').attr(
+                                    'class');
+                                var classValue = (fieldType === 'text' || fieldType === 'date') ? $(
+                                        'input' + '[name="' + fieldNameVal + '"]').attr(
+                                        'class') : $('' + fieldType + '[name="' + fieldNameVal + '"]')
+                                    .attr(
+                                        'class');
+                                if (classValue !== undefined) {
+                                    var classes = classValue.split(' ');
+                                    inputclass.push($('.' + classes[1]));
+                                    inclass = $('.multi_' + classes[1]);
+                                    
+                                    inclass.each(function(element) {
+
+                                        var label_id = $(this).attr('id');
+                                        if ($(this).val() == '') {
+                                            if ($(this).val() == '') {
+                                                e.preventDefault();
+                                                $(this).css('border-color', 'red', 'important');
+                                                inputTypeValue =1;                                               
+                                            } else {
+                                                $(this).css('border-color', '');
+                                                inputTypeValue =
+                                                    0;
+                                            }
+                                            return false;
+                                        }
+                                    });
+                                }
+                            });
+
+                        }
+                    }                   
+                    if (inputTypeValue == 0 && inputTypeRadioValue == 0 && duplicateValue == 0)  {
+                    var checkedRowValues = [];
+                    $('#client_assigned_list').DataTable().$('input[name="check[]"]:checked').each(function() {
+                        var rowData = {
+                            name: 'check[]',
+                            value: $(this).val()
+                        };
+                        checkedRowValues.push(rowData);
+                    });
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                                'content')
+                        }
+                    });
+                    var formData = $('#multiformConfiguration').serialize();
+                    formData += '&checkedRowValues=' + encodeURIComponent(JSON.stringify(checkedRowValues));
+                    formData += '&clientName=' + clientName;
+                    formData += '&subProjectName=' + subProjectName;
+                    swal.fire({
+                        text: "Do you want to update?",
+                        icon: "success",
+                        buttonsStyling: false,
+                        showCancelButton: true,
+                        confirmButtonText: "Yes",
+                        cancelButtonText: "No",
+                        reverseButtons: true,
+                        customClass: {
+                            confirmButton: "btn font-weight-bold btn-white-black",
+                            cancelButton: "btn font-weight-bold btn-light-danger",
+                        }
+
+                    }).then(function(result) {
+                        if (result.value == true) {
+                            KTApp.block('#myModal_multiline', {
+                                overlayColor: '#000000',
+                                state: 'danger',
+                                opacity: 0.1,
+                                message: 'Fetching...',
+                            });
+                            $.ajax({
+                                url: "{{ url('project_multi_store') }}",
+                                method: 'POST',
+                                data: formData,
+                                success: function(response) {
+                                    if (response.success == true) {
+                                        js_notification('success',
+                                            'multiline updated successfully');
+                                    } else if(response.success == false) {
+                                        js_notification('error', response.message);
+                                    } else {
+                                        js_notification('error', 'Something went wrong');
+                                    }
+                                    $('#myModal_multiline').modal('hide');
+                                    setTimeout(function() {
+                                        location.reload();
+                                    }, 2000);
+                                },
+                            });
+                            // KTApp.unblock('#myModal_multiline');
+
+                        } else {
+
+                        }
+                    });
+
+                    } else {
+                    return false;
+                    }                   
+            });   
         })
 
         function updateTime() {
