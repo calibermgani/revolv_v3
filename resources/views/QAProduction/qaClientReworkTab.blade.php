@@ -270,7 +270,8 @@ use Carbon\Carbon;
                                                           @endphp
                                                             @if (!in_array($columnName, $columnsToExclude))
                                                                 <td style="max-width: 300px;white-space: normal;">
-                                                                    @if (str_contains($columnValue, '-') && strtotime($columnValue))
+                                                                    {{-- @if (str_contains($columnValue, '-') && strtotime($columnValue)) --}}
+                                                                    @if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $columnValue))
                                                                         {{ date('m/d/Y', strtotime($columnValue)) }}
                                                                     @else
                                                                         @if ($columnName == 'chart_status' && str_contains($columnValue, 'QA_'))

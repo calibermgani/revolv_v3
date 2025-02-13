@@ -413,7 +413,8 @@ use Carbon\Carbon;
                                                             style="max-width: 300px;
                                                                         white-space: normal;">
                                                           
-                                                                @if (str_contains($columnValue, '-') && strtotime($columnValue))
+                                                                {{-- @if (str_contains($columnValue, '-') && strtotime($columnValue)) --}}
+                                                                @if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $columnValue))
                                                                     {{ date('m/d/Y', strtotime($columnValue)) }}
                                                                 @elseif ($columnName == 'chart_status' && str_contains($columnValue, 'CE_') && $data->qa_work_status !== null)
                                                                     {{-- {{ str_replace('CE_', '', $columnValue) }} --}}
@@ -480,7 +481,8 @@ use Carbon\Carbon;
                                                         <td style="display:none;max-width: 300px;
                                                                         white-space: normal;"
                                                             id="table_id">
-                                                            @if (str_contains($columnValue, '-') && strtotime($columnValue))
+                                                            {{-- @if (str_contains($columnValue, '-') && strtotime($columnValue)) --}}
+                                                            @if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $columnValue))
                                                                 {{ date('m/d/Y', strtotime($columnValue)) }}
                                                             @elseif ($columnName == 'aging')                                                                                  
                                                                 {{ $agingCount }}
