@@ -1258,7 +1258,7 @@ class ProjectController extends Controller
                             $qaColumnExists = Schema::hasColumn($tableName, 'qa_at');
                             $hasNonNullQaAt = $qaColumnExists && $modelClass::whereNotNull('qa_at')->exists();
                             $qaColumnToUse = $hasNonNullQaAt ? 'qa_at' : 'updated_at';
-
+                            
                             $aCount = $modelClass::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
                             ->where('chart_status', 'CE_Assigned')->count();
                             $cCount = $modelClass::whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
@@ -1312,7 +1312,7 @@ class ProjectController extends Controller
                     }
                 }
                 // return ['data' => $projectData, 'ids' => $project_id];
-            });dd('hi');
+            });
             GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
             GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
             return view('projects.projectUtilizationWeb', compact('projectsPending', 'yesterday','yesterDayStartDate','yesterDayEndDate','projectIds'));
