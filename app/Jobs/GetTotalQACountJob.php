@@ -24,7 +24,7 @@ class GetTotalQACountJob implements ShouldQueue
 
     public function handle()
     {
-        $cacheKey = 'project_' . implode('_', $this->projectIds) . '_qa_count';dd($this->projectIds);
+        $cacheKey = 'project_' . implode('_', $this->projectIds) . '_qa_count';
         $data = Cache::remember($cacheKey, now()->addMinutes(30), function () {
                 return app()->call('App\Http\Controllers\ProjectController@getProjectTotalQACount1', [
                 'project_id' => $this->projectIds,
