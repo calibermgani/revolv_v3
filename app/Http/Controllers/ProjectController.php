@@ -1340,7 +1340,7 @@ class ProjectController extends Controller
                                     ->count();
                 }
             }
-            $loggedResolvQA = 0;dd($totalQA['totalQAList']);
+            $loggedResolvQA = 0;dd($totalQA['totalQAList'],$rowProjectId);
             foreach($totalQA['totalQAList'] as $key => $qaList){    
                 if($qaList['client_id'] == $rowProjectId && $qaList['assigned_people'] != null){
                 $loggedResolvQA +=  EmployeeLogin::where('user_id', $qaList['assigned_people'])
