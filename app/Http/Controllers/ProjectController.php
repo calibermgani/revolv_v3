@@ -276,15 +276,25 @@ class ProjectController extends Controller
                         $modelClass = "App\\Models\\" . Str::studly($tableName);
                         
                         if (class_exists($modelClass)) {
+                            $tableName = (new $modelClass)->getTable();
+                            
+                            $arColumnExists = Schema::hasColumn($tableName, 'ar_at');
+                            $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
+                            $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+
+                            $qaColumnExists = Schema::hasColumn($tableName, 'qa_at');
+                            $hasNonNullQaAt = $qaColumnExists && $modelClass::whereNotNull('qa_at')->exists();
+                            $qaColumnToUse = $hasNonNullQaAt ? 'qa_at' : 'updated_at';
+                            
                             $aCount = $modelClass::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
                             ->where('chart_status', 'CE_Assigned')->count();
-                            $cCount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                            $cCount = $modelClass::whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                         ->where('chart_status', 'CE_Completed')->count();
-                            $qCount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                            $qCount = $modelClass::whereBetween($qaColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                         ->where('chart_status', 'QA_Completed')->count();
-                            $productionARCount = $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today) {
-                                $query->where(function ($subQuery) use ($yesterDayStartDate, $yesterDayEndDate) {
-                                    $subQuery->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                            $productionARCount = $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today, $arColumnToUse) {
+                                $query->where(function ($subQuery) use ($yesterDayStartDate, $yesterDayEndDate, $arColumnToUse) {
+                                    $subQuery->whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                                 ->whereIn('chart_status', [
                                                     'CE_Inprocess',
                                                     'CE_Pending',
@@ -309,7 +319,7 @@ class ProjectController extends Controller
                             ->get()
                             ->count();
                                     
-                        $productionQACount = $modelClass::whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                        $productionQACount = $modelClass::whereBetween($qaColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                             ->whereIn('chart_status', ['QA_Assigned', 'QA_Inprocess', 'QA_Pending', 'QA_Completed', 'QA_Clarification', 'QA_Hold'])
                             ->whereNotNull('QA_emp_id')
                             ->distinct('QA_emp_id')
@@ -339,7 +349,7 @@ class ProjectController extends Controller
     
             Log::info('ProjectWorkMail executed successfully.');
         } catch (\Exception $e) {
-            Log::error('Error in ProjectWorkWeb: ' . $e->getMessage());
+            Log::error('Error in ProjectWorkMail: ' . $e->getMessage());
             Log::debug($e->getMessage());
         }
     }
@@ -1251,6 +1261,7 @@ class ProjectController extends Controller
                         
                         if (class_exists($modelClass)) {
                             $tableName = (new $modelClass)->getTable();
+
                             $arColumnExists = Schema::hasColumn($tableName, 'ar_at');
                             $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
                             $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
