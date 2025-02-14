@@ -131,7 +131,12 @@
                     "title": 'Resolv Utilization',
                     "filename": 'resolv_utilization_report',
                     "exportOptions": {
-                        "columns": ':not(.notexport)' // Exclude first two columns
+                        "columns": ':not(.notexport)', // Exclude first two columns
+                        format: {
+                            body: function(data, row, column, node) {
+                                return $(node).text();
+                            }
+                        }
                     }
                 }],
                 dom: "<'row'<'col-md-12'f><'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>"
