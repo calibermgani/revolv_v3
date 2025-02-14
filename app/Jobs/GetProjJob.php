@@ -34,7 +34,7 @@ class GetProjJob implements ShouldQueue
     public function handle()
     {
         $cacheKey = 'clients_on_user' ;
-        $data = Cache::remember($cacheKey, now()->addMinutes(30), function () {
+        $data = Cache::remember($cacheKey, now()->addMinutes(2), function () {
             return app()->call('App\Http\Helper\Admin\Helpers@getProjects', [      
                 'userId' => $this->userId  
             ]); 

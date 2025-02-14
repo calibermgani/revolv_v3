@@ -33,11 +33,11 @@ class getQaArEmpList implements ShouldQueue
     public function handle()
     {
         $cacheKey = 'project_qa_ar_emp_list' ;
-        $data = Cache::remember($cacheKey, now()->addMinutes(30), function () {
+        $data = Cache::remember($cacheKey, now()->addMinutes(10), function () {
             return app()->call('App\Http\Helper\Admin\Helpers@getQualityArEmpList', [          
           ]);      
         });
-        Cache::put($cacheKey, $data, now()->addMinutes(30));
+        Cache::put($cacheKey, $data, now()->addMinutes(10));
   
     }
 }

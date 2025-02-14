@@ -32,7 +32,7 @@ class getProjectSubProjectBillableFTE implements ShouldQueue
     {
         $cacheKey = 'project_'.$this->projectId.$this->subProjectId.'BillableFTE' ;
         
-        $data = Cache::remember($cacheKey, now()->addMinutes(30), function () {
+        $data = Cache::remember($cacheKey, now()->addMinutes(10), function () {
              return   app()->call('App\Http\Controllers\ProjectController@getProjectTotalDetailedInformation', [
                     'project_id' => $this->projectId,
                     'sub_project_id' => $this->subProjectId,
@@ -41,7 +41,7 @@ class getProjectSubProjectBillableFTE implements ShouldQueue
         // Cache::put($cacheKey, $data, now()->addMinutes(30));
         try {
             Cache::lock($cacheKey)->get(function () use ($cacheKey, $data) {
-                Cache::put($cacheKey, $data, now()->addMinutes(30));
+                Cache::put($cacheKey, $data, now()->addMinutes(10));
             });            
         } catch (\Exception $e) {
             Log::error('Cache write failed in hourly web', [

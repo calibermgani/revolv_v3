@@ -29,13 +29,13 @@ class getemailsAboveTlLevelJob implements ShouldQueue
     public function handle()
     {
         $cacheKey = 'project_'.$this->projectId.'emailsAboveTlLevel';
-        $data = Cache::remember($cacheKey, now()->addMinutes(30), function () {
+        $data = Cache::remember($cacheKey, now()->addMinutes(10), function () {
             return app()->call('App\Http\Helper\Admin\Helpers@getEmailsAboveTlLevel', [
                 'project_id' => $this->projectId
             ]);  
         });    
      
-        Cache::put($cacheKey, $data, now()->addMinutes(30));
+        Cache::put($cacheKey, $data, now()->addMinutes(10));
   
     }
 }
