@@ -30,7 +30,7 @@ class GetTotalQACountJob implements ShouldQueue
                 'project_id' => $this->projectIds,
             ]);
         });        
-        Cache::put($cacheKey, $data, now()->addMinutes(30));
+        Cache::put($cacheKey, $data, now()->addMinutes(10));
         
     }
 }
