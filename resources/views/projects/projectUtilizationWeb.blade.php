@@ -176,6 +176,7 @@
                     var projectId = @json($projectIds);
                     var yesterDayStartDate = @json($yesterDayStartDate);
                     var yesterDayEndDate = @json($yesterDayEndDate);
+console.log(yesterDayStartDate,'yesterDay',yesterDayEndDate);
 
                     if (projectId) {
                         fetch(`project-ar-qa-counts/` + projectId +
