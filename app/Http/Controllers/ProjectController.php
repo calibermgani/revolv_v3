@@ -1768,12 +1768,34 @@ class ProjectController extends Controller
                 $decodedsubProjectName = $request->sub_project_id == NULL ? 'project':Helpers::subProjectName($request->project_id,$request->sub_project_id)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
-                $modelClass = "App\\Models\\" . $modelName.'Datas';
-                $originalModelClass = "App\\Models\\" . $modelName;
-                $parentRecords = $originalModelClass::where('chart_status','CE_Assigned')->where($attributes)->get();
-                $datasRecords = $modelClass::where('chart_status','CE_Assigned')->where($attributes)->get();
+                 $originalModelClass = "App\\Models\\" . $modelName;
+                 if (class_exists($originalModelClass)) {
+                    $query = $originalModelClass::query();
+                    if($request['_token'] != null) {
+                        foreach ($request->except('_token', 'project_id', 'sub_project_id') as $key => $value) {
+                        $searchData[$key] = $value;
+                            if (is_array($value)) {
+                                $value = implode('_el_', $value); 
+                            }
+
+                            // Assuming 'like' is needed for partial match searches (optional), adjust based on requirements
+                            if (is_numeric($value) || is_bool($value)) {
+                                $query->where($key, $value);  // Exact match for numeric/boolean
+                            } elseif ($this->isDate($value)) {  // Check if it's a date
+                                $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
+                            } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                                $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
+                            } else {
+                                if($value != null) {
+                                $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
+                                }
+                            }
+                        }
+                    }
+                     $parentRecords = $query->where('chart_status','CE_Assigned')->get(); dd($attributes,$parentRecords);
+                 }
+                  
                
-                dd($attributes,$parentRecords,$datasRecords);
             } catch (\Exception $e) {
                 $e->getMessage();
             }
