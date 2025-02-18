@@ -1773,7 +1773,7 @@ class ProjectController extends Controller
                     $query = $originalModelClass::query();
                     if($request['_token'] != null) {
                         foreach ($request->except('_token', 'project_id', 'sub_project_id') as $key => $value) {
-                        $searchData[$key] = $value;
+                        $searchData[$key] = $value;dd($key,$value);
                             if (is_array($value)) {
                                 $value = implode('_el_', $value); 
                             }
