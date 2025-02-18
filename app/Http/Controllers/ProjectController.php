@@ -1769,7 +1769,7 @@ class ProjectController extends Controller
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName.'Datas';
-                $originalModelClass = "App\\Models\\" . $modelName;dd($originalModelClass,$modelClass,$attributes);
+                $originalModelClass = "App\\Models\\" . $modelName;
                 $parentRecords = $originalModelClass::where('chart_status','CE_Assigned')->where($attributes)->get();
                 $datasRecords = $modelClass::where('chart_status','CE_Assigned')->where($attributes)->get();
                
