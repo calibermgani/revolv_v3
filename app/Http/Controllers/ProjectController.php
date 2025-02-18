@@ -1771,9 +1771,8 @@ class ProjectController extends Controller
                  $originalModelClass = "App\\Models\\" . $modelName;
                  if (class_exists($originalModelClass)) {
                     $query = $originalModelClass::query();
-                    if($request['_token'] != null) {
-                        foreach ($request->except('_token', 'project_id', 'sub_project_id') as $key => $value) {
-                        $searchData[$key] = $value;dd($key,$value);
+                        foreach ($request->except('token', 'project_id', 'sub_project_id') as $key => $value) {
+                            dd($key,$value);
                             if (is_array($value)) {
                                 $value = implode('_el_', $value); 
                             }
@@ -1790,9 +1789,9 @@ class ProjectController extends Controller
                                 $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
                                 }
                             }
-                        }
+                       
                     }
-                     $parentRecords = $query->where('chart_status','CE_Assigned')->get(); dd($attributes,$parentRecords);
+                     //$parentRecords = $query->where('chart_status','CE_Assigned')->get(); dd($attributes,$parentRecords);
                  }
                   
                
