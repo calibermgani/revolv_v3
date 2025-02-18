@@ -1710,22 +1710,22 @@ use Carbon\Carbon;
 
                 $(document).on('click', '#project_pending_save', function(e) {
                     e.preventDefault();
-                    $('#pendingFormConfiguration').serializeArray().map(function(input) {
-                        labelName = input.name;
-                        if(labelName.substring(0, 3).toLowerCase() == "cpt") {
-                            var textValue = input.value;
-                            if(textValue.length < 5) {
-                                js_notification('error',"The CPT value must be at least 5 characters long" );
-                            }
-                        }
-                        if(labelName.substring(0, 3).toLowerCase() == "icd") {
-                            var textValue = input.value;
-                            if(textValue.length < 3) {
-                                js_notification('error', "The ICD value must be at least 3 characters long" );
-                            }
-                        }
-                        return labelName;
-                    });
+                    // $('#pendingFormConfiguration').serializeArray().map(function(input) {
+                    //     labelName = input.name;
+                    //     if(labelName.substring(0, 3).toLowerCase() == "cpt") {
+                    //         var textValue = input.value;
+                    //         if(textValue.length < 5) {
+                    //             js_notification('error',"The CPT value must be at least 5 characters long" );
+                    //         }
+                    //     }
+                    //     if(labelName.substring(0, 3).toLowerCase() == "icd") {
+                    //         var textValue = input.value;
+                    //         if(textValue.length < 3) {
+                    //             js_notification('error', "The ICD value must be at least 3 characters long" );
+                    //         }
+                    //     }
+                    //     return labelName;
+                    // });
                     var fieldNames = $('#pendingFormConfiguration').serializeArray().map(function(input) {
                         return input.name;
                     });

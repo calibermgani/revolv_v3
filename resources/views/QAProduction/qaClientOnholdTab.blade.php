@@ -2385,28 +2385,28 @@ use Carbon\Carbon;
                         inputTypeValue = 1;
                         return false;
                     }
-                    $('#holdFormConfiguration').serializeArray().map(function(input) {
-                        labelName = input.name;
-                            if(labelName.substring(0, 3).toLowerCase() == "cpt") {
-                                var textValue = input.value;
-                                if(textValue.length < 5) {
-                                    inputTypeValue = 1;
-                                    js_notification('error',"The CPT value must be at least 5 characters long" );
-                                } else {
-                                    inputTypeValue = 0;
-                                }
-                            }
-                            if(labelName.substring(0, 3).toLowerCase() == "icd") {
-                                var textValue = input.value;
-                                if(textValue.length < 3) {
-                                    inputTypeValue = 1;
-                                    js_notification('error', "The ICD value must be at least 3 characters long" );
-                                } else {
-                                    inputTypeValue = 0;
-                                }
-                            }
-                            return inputTypeValue;
-                    });
+                    // $('#holdFormConfiguration').serializeArray().map(function(input) {
+                    //     labelName = input.name;
+                    //         if(labelName.substring(0, 3).toLowerCase() == "cpt") {
+                    //             var textValue = input.value;
+                    //             if(textValue.length < 5) {
+                    //                 inputTypeValue = 1;
+                    //                 js_notification('error',"The CPT value must be at least 5 characters long" );
+                    //             } else {
+                    //                 inputTypeValue = 0;
+                    //             }
+                    //         }
+                    //         if(labelName.substring(0, 3).toLowerCase() == "icd") {
+                    //             var textValue = input.value;
+                    //             if(textValue.length < 3) {
+                    //                 inputTypeValue = 1;
+                    //                 js_notification('error', "The ICD value must be at least 3 characters long" );
+                    //             } else {
+                    //                 inputTypeValue = 0;
+                    //             }
+                    //         }
+                    //         return inputTypeValue;
+                    // });
                     var fieldNames = $('#holdFormConfiguration').serializeArray().map(function(input) {
                         return input.name;
                     });

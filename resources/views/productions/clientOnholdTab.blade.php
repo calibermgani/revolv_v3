@@ -1723,22 +1723,22 @@ use Carbon\Carbon;
 
             $(document).on('click', '#project_hold_save', function(e) {
                     e.preventDefault();
-                    $('#holdFormConfiguration').serializeArray().map(function(input) {
-                        labelName = input.name;
-                            if(labelName.substring(0, 3).toLowerCase() == "cpt") {
-                                var textValue = input.value;
-                                if(textValue.length < 5) {
-                                    js_notification('error',"The CPT value must be at least 5 characters long" );
-                                }
-                            }
-                            if(labelName.substring(0, 3).toLowerCase() == "icd") {
-                                var textValue = input.value;
-                                if(textValue.length < 3) {
-                                    js_notification('error', "The ICD value must be at least 3 characters long" );
-                                }
-                            }
-                            return labelName;
-                    });
+                    // $('#holdFormConfiguration').serializeArray().map(function(input) {
+                    //     labelName = input.name;
+                    //         if(labelName.substring(0, 3).toLowerCase() == "cpt") {
+                    //             var textValue = input.value;
+                    //             if(textValue.length < 5) {
+                    //                 js_notification('error',"The CPT value must be at least 5 characters long" );
+                    //             }
+                    //         }
+                    //         if(labelName.substring(0, 3).toLowerCase() == "icd") {
+                    //             var textValue = input.value;
+                    //             if(textValue.length < 3) {
+                    //                 js_notification('error', "The ICD value must be at least 3 characters long" );
+                    //             }
+                    //         }
+                    //         return labelName;
+                    // });
 
                     var fieldNames = $('#holdFormConfiguration').serializeArray().map(function(input) {
                         return input.name;
