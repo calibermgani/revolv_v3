@@ -1756,7 +1756,7 @@ class ProjectController extends Controller
     
     public function productionAutoClose(Request $request)
     {
-             try {
+             try {dd($request->all());
                 $manualDuplciate = ManualProjectDuplicate::select('duplicate_column')->where('project_id', $request->project_id)
                 ->where('sub_project_id', $request->sub_project_id)->get();
                 if(count($manualDuplciate) > 0) {
