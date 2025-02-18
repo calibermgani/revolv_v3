@@ -1756,7 +1756,7 @@ class ProjectController extends Controller
     
     public function productionAutoClose(Request $request)
     {
-             try {dd($request->all());
+             try {
                 $manualDuplciate = ManualProjectDuplicate::select('duplicate_column')->where('project_id', $request->project_id)
                 ->where('sub_project_id', $request->sub_project_id)->get();
                 if(count($manualDuplciate) > 0) {
@@ -1764,18 +1764,16 @@ class ProjectController extends Controller
                             $attributes[$duplicateColumn['duplicate_column']]= $duplicateColumn['duplicate_column'];
                     }
                 }
-                $decodedProjectName = Helpers::encodeAndDecodeID($request->project_id, 'decode');
-                $decodedPracticeName =  $request->sub_project_id == '--' ? NULL : Helpers::encodeAndDecodeID($request->sub_project_id, 'decode');
-                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
-                $decodedsubProjectName = $decodedPracticeName == NULL ? 'project':Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
+                   $decodedClientName = Helpers::projectName($request->project_id)->project_name;
+                $decodedsubProjectName = $request->sub_project_id == NULL ? 'project':Helpers::subProjectName($request->project_id,$request->sub_project_id)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName.'Datas';
                 $originalModelClass = "App\\Models\\" . $modelName;
                 $parentRecords = $originalModelClass::where('chart_status','CE_Assigned')->where($attributes)->get();
                 $datasRecords = $modelClass::where('chart_status','CE_Assigned')->where($attributes)->get();
+               
                 dd($attributes,$parentRecords,$datasRecords);
-
             } catch (\Exception $e) {
                 $e->getMessage();
             }
