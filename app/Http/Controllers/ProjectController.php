@@ -1765,11 +1765,11 @@ class ProjectController extends Controller
                     }
                 }
                    $decodedClientName = Helpers::projectName($request->project_id)->project_name;
-                $decodedsubProjectName = $request->sub_project_id == NULL ? 'project':Helpers::subProjectName($request->project_id,$request->sub_project_id)->sub_project_name;dd($decodedClientName,$decodedsubProjectName);
+                $decodedsubProjectName = $request->sub_project_id == NULL ? 'project':Helpers::subProjectName($request->project_id,$request->sub_project_id)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName.'Datas';
-                $originalModelClass = "App\\Models\\" . $modelName;
+                $originalModelClass = "App\\Models\\" . $modelName;dd($originalModelClass,$modelClass);
                 $parentRecords = $originalModelClass::where('chart_status','CE_Assigned')->where($attributes)->get();
                 $datasRecords = $modelClass::where('chart_status','CE_Assigned')->where($attributes)->get();
                
