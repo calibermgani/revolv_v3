@@ -1790,8 +1790,8 @@ class ProjectController extends Controller
                                 }
                             }
                        
-                    }dd($query->get());
-                     //$parentRecords = $query->where('chart_status','CE_Assigned')->get(); dd($attributes,$parentRecords);
+                    }
+                     $parentRecords = $query->where('chart_status','CE_Assigned')->get(); dd($parentRecords);
                  }
                   
                
