@@ -162,6 +162,7 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('integris_health_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@integrisHealthArDuplicates');
     Route::any('ms_charge_entry', 'App\Http\Controllers\ProjectAuthAutomationController@msChargeEntry');
     Route::any('ms_charge_entry_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@msChargeEntryDuplicates');
+    Route::any('production_auto_close', 'App\Http\Controllers\ProjectController@productionAutoClose');
 
 
 });

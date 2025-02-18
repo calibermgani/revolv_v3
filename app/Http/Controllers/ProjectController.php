@@ -30,6 +30,7 @@ use App\Jobs\getProjectSubProjectBillableFTE;
 use App\Models\CallerChartsWorkLogs;
 use App\Jobs\GetProjJob;
 use Illuminate\Support\Facades\Schema;
+use App\Models\ManualProjectDuplicate;
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
@@ -1747,6 +1748,37 @@ class ProjectController extends Controller
                 return $data;
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
+    
+    public function productionAutoClose(Request $request)
+    {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+            try {
+                $manualDuplciate = ManualProjectDuplicate::select('duplicate_column')->where('project_id', $request->project_id)
+                ->where('sub_project_id', $request->sub_project_id)->get();
+                if(count($manualDuplciate) > 0) {
+                    foreach($manualDuplciate as $duplicateColumn) {        
+                            $attributes[$duplicateColumn['duplicate_column']]= $duplicateColumn['duplicate_column'];
+                    }
+                }
+                $decodedProjectName = Helpers::encodeAndDecodeID($request->project_id, 'decode');
+                $decodedPracticeName =  $request->sub_project_id == '--' ? NULL : Helpers::encodeAndDecodeID($request->sub_project_id, 'decode');
+                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $decodedsubProjectName = $decodedPracticeName == NULL ? 'project':Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
+                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
+                $modelName = Str::studly($table_name);
+                $modelClass = "App\\Models\\" . $modelName.'Datas';
+                $originalModelClass = "App\\Models\\" . $modelName;
+                $parentRecords = $originalModelClass::where('chart_status','CE_Assigned')->where($attributes)->get();
+                $datasRecords = $modelClass::where('chart_status','CE_Assigned')->where($attributes)->get();
+                dd($attributes,$parentRecords,$datasRecords);
+
+            } catch (\Exception $e) {
+                $e->getMessage();
             }
         } else {
             return redirect('/');
