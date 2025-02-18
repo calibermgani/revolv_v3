@@ -1756,8 +1756,7 @@ class ProjectController extends Controller
     
     public function productionAutoClose(Request $request)
     {
-        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
-            try {
+             try {
                 $manualDuplciate = ManualProjectDuplicate::select('duplicate_column')->where('project_id', $request->project_id)
                 ->where('sub_project_id', $request->sub_project_id)->get();
                 if(count($manualDuplciate) > 0) {
@@ -1780,8 +1779,6 @@ class ProjectController extends Controller
             } catch (\Exception $e) {
                 $e->getMessage();
             }
-        } else {
-            return redirect('/');
-        }
+      
     }
 }
