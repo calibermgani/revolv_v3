@@ -1757,13 +1757,7 @@ class ProjectController extends Controller
     public function productionAutoClose(Request $request)
     {
              try {
-                $manualDuplciate = ManualProjectDuplicate::select('duplicate_column')->where('project_id', $request->project_id)
-                ->where('sub_project_id', $request->sub_project_id)->get();
-                if(count($manualDuplciate) > 0) {
-                    foreach($manualDuplciate as $duplicateColumn) {        
-                            $attributes[$duplicateColumn['duplicate_column']]= $duplicateColumn['duplicate_column'];
-                    }
-                }
+               
                    $decodedClientName = Helpers::projectName($request->project_id)->project_name;
                 $decodedsubProjectName = $request->sub_project_id == NULL ? 'project':Helpers::subProjectName($request->project_id,$request->sub_project_id)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
