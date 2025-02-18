@@ -158,7 +158,7 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('rcm_ev_vob_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@rcmEvVobDuplicates');
     Route::any('pmg_ar', 'App\Http\Controllers\ProjectAuthAutomationController@premierMedicalGroupAr');
     Route::any('pmg_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@premierMedicalGroupArDuplicates');
-
-
+    Route::any('integris_health_ar', 'App\Http\Controllers\ProjectAuthAutomationController@integrisHealthAr');
+    Route::any('integris_health_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@integrisHealthArDuplicates');
 
 });
