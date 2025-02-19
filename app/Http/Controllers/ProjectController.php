@@ -31,6 +31,7 @@ use App\Models\CallerChartsWorkLogs;
 use App\Jobs\GetProjJob;
 use Illuminate\Support\Facades\Schema;
 use App\Models\ManualProjectDuplicate;
+use Illuminate\Support\Facades\DB;
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
@@ -1763,6 +1764,30 @@ class ProjectController extends Controller
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
                  $originalModelClass = "App\\Models\\" . $modelName;
+                 $newEnumValues = [
+                    'CE_Assigned',
+                    'CE_Inprocess',
+                    'CE_Pending',
+                    'CE_Completed',
+                    'CE_Clarification',
+                    'CE_Hold',
+                    'AR_non_workable',
+                    'QA_Assigned',
+                    'QA_Inprocess',
+                    'QA_Pending',
+                    'QA_Completed',
+                    'QA_Clarification',
+                    'QA_Hold',
+                    'Revoke',
+                    'Rebuttal',
+                    'Auto_Close' // new option added here
+                ];
+                
+                $newEnumValuesString = implode("','", $newEnumValues);
+                
+                DB::statement("ALTER TABLE {$table_name} MODIFY COLUMN `chart_status` ENUM('{$newEnumValuesString}') NOT NULL DEFAULT 'CE_Assigned'");
+                
+dd('completed');
                  if (class_exists($originalModelClass)) {
                     $query = $originalModelClass::query();
                         foreach ($request->except('token', 'project_id', 'sub_project_id') as $key => $value) {
