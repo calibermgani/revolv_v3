@@ -31,7 +31,6 @@ use App\Models\CallerChartsWorkLogs;
 use App\Jobs\GetProjJob;
 use Illuminate\Support\Facades\Schema;
 use App\Models\ManualProjectDuplicate;
-use Illuminate\Support\Facades\DB;
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
