@@ -1778,6 +1778,7 @@ class ProjectController extends Controller
                                 dd($key,$value);
                                 $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
                             } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                                dd($key,$value);
                                 $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                             } else {
                                 if($value != null) {  
