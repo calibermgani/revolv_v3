@@ -1773,22 +1773,19 @@ class ProjectController extends Controller
                             $d = \DateTime::createFromFormat('Y-m-d', $value);
                             $isValid = $d && $d->format('Y-m-d') === $value;
                   
-                            if (is_numeric($value) || is_bool($value)) {dd($key,$value,"iff");
+                            if (is_numeric($value) || is_bool($value)) {
                                 $query->where($key, $value,"if");  // Exact match for numeric/boolean
                             } elseif ($isValid) {  // Check if it's a date
-                                dd($key,$value,"elseif1");
-                                $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
+                                 $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
                             } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
-                                dd($key,$value,"elseif2");
                                 $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                             } else {
-                                dd($key,$value,"else");
-                                if($value != null) {  
+                                 if($value != null) {  
                                 $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
                                 }
-                            }dd( $query,"query");
+                            }
                        
-                    }dd($query->get(),"get");
+                    }
                      $parentRecords = $query->where('chart_status','CE_Assigned')->get(); dd($parentRecords);
                  }
                   
