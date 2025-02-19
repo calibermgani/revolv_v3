@@ -1770,7 +1770,7 @@ class ProjectController extends Controller
                             if (is_array($value)) {
                                 $value = implode('_el_', $value); 
                             }
-                            dd($key,$value);
+                          
                             // Assuming 'like' is needed for partial match searches (optional), adjust based on requirements
                             if (is_numeric($value) || is_bool($value)) {
                                 $query->where($key, $value);  // Exact match for numeric/boolean
@@ -1779,7 +1779,7 @@ class ProjectController extends Controller
                             } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                                 $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                             } else {
-                                if($value != null) {
+                                if($value != null) {  dd($key,$value);
                                 $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
                                 }
                             }dd( $query);
