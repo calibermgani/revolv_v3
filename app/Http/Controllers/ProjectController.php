@@ -1781,6 +1781,7 @@ class ProjectController extends Controller
                                 dd($key,$value);
                                 $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                             } else {
+                                dd($key,$value);
                                 if($value != null) {  
                                 $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
                                 }
