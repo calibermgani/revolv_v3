@@ -28,7 +28,7 @@ class ProductionExport implements FromCollection, WithHeadings
 
             foreach ($this->fields as $field) {
                 $headerField = ucwords(str_replace(['_else_', '_'], ['/', ' '], $field));
-                if (isset($field) == 'dos') {
+                if (isset($field) == 'dos' && $record->dos != null) {
                     $dosDate = Carbon::parse($record->dos);
                     $currentDate = Carbon::now();
                     $agingCount = $dosDate->diffInDays($currentDate);
