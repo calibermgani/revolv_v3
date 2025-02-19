@@ -1769,7 +1769,11 @@ class ProjectController extends Controller
                          
                             if (is_array($value)) {
                                 $value = implode('_el_', $value); 
-                            }dd($this->isDate("2025-12-12"));
+                            }
+                            $d = \DateTime::createFromFormat('Y-m-d', $value);
+                            $isValid = $d && $d->format('Y-m-d') === $value;
+                            dd($isValid);
+                            dd($this->isDate("2025-12-12"));
                            // dd($key,$value);
                             // Assuming 'like' is needed for partial match searches (optional), adjust based on requirements
                             if (is_numeric($value) || is_bool($value)) {dd($key,$value,"iff");
