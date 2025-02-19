@@ -1840,117 +1840,115 @@ class ProjectController extends Controller
     //         }
       
     // }
-    public function alterTableChartStatusColumn(Request $request)
-{
-    try {
-        // Get client and sub-project names
-        $decodedClientName = Helpers::projectName($request->project_id)->project_name;
-        $decodedSubProjectName = $request->sub_project_id
-            ? Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name
-            : 'project';
+    public function alterTableChartStatusColumn(Request $request) {
+        try {
+            // Get client and sub-project names
+            $decodedClientName = Helpers::projectName($request->project_id)->project_name;
+            $decodedSubProjectName = $request->sub_project_id
+                ? Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name
+                : 'project';
 
-        // Create a base name and generate all table names
-        $baseName = Str::slug(Str::lower($decodedClientName . '_' . $decodedSubProjectName), '_');
-        $tables = [
-            $baseName,
-            "{$baseName}_datas",
-            "{$baseName}_duplicates",
-            "{$baseName}_history",
-            "{$baseName}_revoke_history",
-        ];
+            // Create a base name and generate all table names
+            $baseName = Str::slug(Str::lower($decodedClientName . '_' . $decodedSubProjectName), '_');
+            $tables = [
+                $baseName,
+                "{$baseName}_datas",
+                "{$baseName}_duplicates",
+                "{$baseName}_history",
+                "{$baseName}_revoke_history",
+            ];
 
-        // Ensure each table name is slugified properly (if needed)
-        $tables = array_map(function ($table) {
-            return Str::slug($table, '_');
-        }, $tables);
+            // Ensure each table name is slugified properly (if needed)
+            $tables = array_map(function ($table) {
+                return Str::slug($table, '_');
+            }, $tables);
 
-        // Define new ENUM values including the new option 'Auto_Close'
-        $newEnumValues = [
-            'CE_Assigned',
-            'CE_Inprocess',
-            'CE_Pending',
-            'CE_Completed',
-            'CE_Clarification',
-            'CE_Hold',
-            'AR_non_workable',
-            'QA_Assigned',
-            'QA_Inprocess',
-            'QA_Pending',
-            'QA_Completed',
-            'QA_Clarification',
-            'QA_Hold',
-            'Revoke',
-            'Rebuttal',
-            'Auto_Close'
-        ];
-        $enumString = implode("','", $newEnumValues);
+            // Define new ENUM values including the new option 'Auto_Close'
+            $newEnumValues = [
+                'CE_Assigned',
+                'CE_Inprocess',
+                'CE_Pending',
+                'CE_Completed',
+                'CE_Clarification',
+                'CE_Hold',
+                'AR_non_workable',
+                'QA_Assigned',
+                'QA_Inprocess',
+                'QA_Pending',
+                'QA_Completed',
+                'QA_Clarification',
+                'QA_Hold',
+                'Revoke',
+                'Rebuttal',
+                'Auto_Close'
+            ];
+            $enumString = implode("','", $newEnumValues);
 
-        // Loop over each table and alter the chart_status column
-        foreach ($tables as $table) {
-            DB::statement("ALTER TABLE {$table} MODIFY COLUMN `chart_status` ENUM('{$enumString}') NOT NULL DEFAULT 'CE_Assigned'");
-        }
-
-        return "{$decodedClientName} project table Chart status column altered successfully";
-    } catch (\Exception $e) {
-        return $e->getMessage();
-    }
-}
-public function productionAutoClose(Request $request)
-{
-    try {
-        $decodedClientName = Helpers::projectName($request->project_id)->project_name;
-        $decodedSubProjectName = $request->sub_project_id == NULL
-            ? 'project'
-            : Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
-        $table_name = Str::slug(Str::lower($decodedClientName.'_'.$decodedSubProjectName), '_');
-        $modelName = Str::studly($table_name);
-        $originalModelClass = "App\\Models\\" . $modelName;
-
-        if (class_exists($originalModelClass)) {
-            $query = $originalModelClass::query();
-
-            // Build query based on request parameters (except token, project_id, sub_project_id)
-            foreach ($request->except('token', 'project_id', 'sub_project_id') as $key => $value) {
-                if (is_array($value)) {
-                    $value = implode('_el_', $value);
-                }
-                $d = \DateTime::createFromFormat('Y-m-d', $value);
-                $isValid = $d && $d->format('Y-m-d') === $value;
-
-                if (is_numeric($value) || is_bool($value)) {
-                    $query->where($key, $value);
-                } elseif ($isValid) {
-                    $query->whereDate($key, '=', $value);
-                } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
-                    $query->where($key, $value);
-                } else {
-                    if ($value != null) {
-                        $query->where($key, 'like', '%' . $value . '%');
-                    }
-                }
+            // Loop over each table and alter the chart_status column
+            foreach ($tables as $table) {
+                DB::statement("ALTER TABLE {$table} MODIFY COLUMN `chart_status` ENUM('{$enumString}') NOT NULL DEFAULT 'CE_Assigned'");
             }
 
-            // Update the records that currently have 'chart_status' as 'CE_Assigned'
-            $updatedRows = $query->where('chart_status', 'CE_Assigned')
-                                   ->update(['chart_status' => 'Auto_Close']);
+            return "{$decodedClientName} project table Chart status column altered successfully";
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+    public function productionAutoClose(Request $request) {
+        try {
+            $decodedClientName = Helpers::projectName($request->project_id)->project_name;
+            $decodedSubProjectName = $request->sub_project_id == NULL
+                ? 'project'
+                : Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
+            $table_name = Str::slug(Str::lower($decodedClientName.'_'.$decodedSubProjectName), '_');
+            $modelName = Str::studly($table_name);
+            $originalModelClass = "App\\Models\\" . $modelName;
 
-            return response()->json([
-                'success' => true,
-                'message' => "Successfully updated {$updatedRows} records."
-            ]);
-        } else {
+            if (class_exists($originalModelClass)) {
+                $query = $originalModelClass::query();
+
+                // Build query based on request parameters (except token, project_id, sub_project_id)
+                foreach ($request->except('token', 'project_id', 'sub_project_id') as $key => $value) {
+                    if (is_array($value)) {
+                        $value = implode('_el_', $value);
+                    }
+                    $d = \DateTime::createFromFormat('Y-m-d', $value);
+                    $isValid = $d && $d->format('Y-m-d') === $value;
+
+                    if (is_numeric($value) || is_bool($value)) {
+                        $query->where($key, $value);
+                    } elseif ($isValid) {
+                        $query->whereDate($key, '=', $value);
+                    } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                        $query->where($key, $value);
+                    } else {
+                        if ($value != null) {
+                            $query->where($key, 'like', '%' . $value . '%');
+                        }
+                    }
+                }
+
+                // Update the records that currently have 'chart_status' as 'CE_Assigned'
+                $updatedRows = $query->where('chart_status', 'CE_Assigned')
+                                    ->update(['chart_status' => 'Auto_Close']);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => "Successfully updated {$updatedRows} records."
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Model class {$originalModelClass} not found."
+                ], 404);
+            }
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => "Model class {$originalModelClass} not found."
-            ], 404);
+                'error' => $e->getMessage()
+            ], 500);
         }
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'error' => $e->getMessage()
-        ], 500);
     }
-}
 
 
 }
