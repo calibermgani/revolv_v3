@@ -1766,6 +1766,7 @@ class ProjectController extends Controller
                  if (class_exists($originalModelClass)) {
                     $query = $originalModelClass::query();
                         foreach ($request->except('token', 'project_id', 'sub_project_id') as $key => $value) {
+                            dd($request->all());
                             if (is_array($value)) {
                                 $value = implode('_el_', $value); 
                             }
