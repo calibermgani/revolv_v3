@@ -1778,8 +1778,8 @@ class ProjectController extends Controller
                                 $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
                             } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                                 $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
-                            } else {
-                                if($value != null) {  dd($key,$value);
+                            } else {dd($key,$value);
+                                if($value != null) {  
                                 $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
                                 }
                             }dd( $query);
