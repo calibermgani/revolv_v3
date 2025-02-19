@@ -1770,7 +1770,7 @@ class ProjectController extends Controller
                             if (is_array($value)) {
                                 $value = implode('_el_', $value); 
                             }
-                          
+                            dd($key,$value);
                             // Assuming 'like' is needed for partial match searches (optional), adjust based on requirements
                             if (is_numeric($value) || is_bool($value)) {dd($key,$value);
                                 $query->where($key, $value);  // Exact match for numeric/boolean
