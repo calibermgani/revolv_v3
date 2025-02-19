@@ -1762,7 +1762,7 @@ class ProjectController extends Controller
                 $decodedsubProjectName = $request->sub_project_id == NULL ? 'project':Helpers::subProjectName($request->project_id,$request->sub_project_id)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
-                 $originalModelClass = "App\\Models\\" . $modelName;dd($request->all());
+                 $originalModelClass = "App\\Models\\" . $modelName;
                  if (class_exists($originalModelClass)) {
                     $query = $originalModelClass::query();
                         foreach ($request->except('token', 'project_id', 'sub_project_id') as $key => $value) {
