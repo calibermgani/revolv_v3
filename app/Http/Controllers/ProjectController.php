@@ -1772,13 +1772,10 @@ class ProjectController extends Controller
                             }
                             $d = \DateTime::createFromFormat('Y-m-d', $value);
                             $isValid = $d && $d->format('Y-m-d') === $value;
-                            dd($isValid);
-                            dd($this->isDate("2025-12-12"));
-                           // dd($key,$value);
-                            // Assuming 'like' is needed for partial match searches (optional), adjust based on requirements
+                  
                             if (is_numeric($value) || is_bool($value)) {dd($key,$value,"iff");
                                 $query->where($key, $value,"if");  // Exact match for numeric/boolean
-                            } elseif ($this->isDate($value)) {  // Check if it's a date
+                            } elseif ($isValid) {  // Check if it's a date
                                 dd($key,$value,"elseif1");
                                 $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
                             } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
