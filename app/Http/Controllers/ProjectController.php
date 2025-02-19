@@ -1763,30 +1763,6 @@ class ProjectController extends Controller
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
                  $originalModelClass = "App\\Models\\" . $modelName;
-                 $newEnumValues = [
-                    'CE_Assigned',
-                    'CE_Inprocess',
-                    'CE_Pending',
-                    'CE_Completed',
-                    'CE_Clarification',
-                    'CE_Hold',
-                    'AR_non_workable',
-                    'QA_Assigned',
-                    'QA_Inprocess',
-                    'QA_Pending',
-                    'QA_Completed',
-                    'QA_Clarification',
-                    'QA_Hold',
-                    'Revoke',
-                    'Rebuttal',
-                    'Auto_Close' // new option added here
-                ];
-                
-                $newEnumValuesString = implode("','", $newEnumValues);
-                
-                DB::statement("ALTER TABLE {$table_name} MODIFY COLUMN `chart_status` ENUM('{$newEnumValuesString}') NOT NULL DEFAULT 'CE_Assigned'");
-                
-dd('completed');
                  if (class_exists($originalModelClass)) {
                     $query = $originalModelClass::query();
                         foreach ($request->except('token', 'project_id', 'sub_project_id') as $key => $value) {
@@ -1819,4 +1795,105 @@ dd('completed');
             }
       
     }
+
+    // public function alterTableChartStatusColumn(Request $request)
+    // {
+    //          try {
+               
+    //              $decodedClientName = Helpers::projectName($request->project_id)->project_name;
+    //             $decodedsubProjectName = $request->sub_project_id == NULL ? 'project':Helpers::subProjectName($request->project_id,$request->sub_project_id)->sub_project_name;
+    //             $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
+    //             $tableDataName = Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName). '_datas'),'_');
+    //             $duplicateTableName = Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName) . '_duplicates'),'_');
+    //             $tableHistoryName =Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName). '_history'),'_');
+    //             $tableRevokeHistoryName =Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName). '_revoke_history'),'_');
+    //                $newEnumValues = [
+    //                 'CE_Assigned',
+    //                 'CE_Inprocess',
+    //                 'CE_Pending',
+    //                 'CE_Completed',
+    //                 'CE_Clarification',
+    //                 'CE_Hold',
+    //                 'AR_non_workable',
+    //                 'QA_Assigned',
+    //                 'QA_Inprocess',
+    //                 'QA_Pending',
+    //                 'QA_Completed',
+    //                 'QA_Clarification',
+    //                 'QA_Hold',
+    //                 'Revoke',
+    //                 'Rebuttal',
+    //                 'Auto_Close' 
+    //             ];
+                
+    //             $newEnumValuesString = implode("','", $newEnumValues);
+                
+    //             DB::statement("ALTER TABLE {$table_name} MODIFY COLUMN `chart_status` ENUM('{$newEnumValuesString}') NOT NULL DEFAULT 'CE_Assigned'");
+    //             DB::statement("ALTER TABLE {$tableDataName} MODIFY COLUMN `chart_status` ENUM('{$newEnumValuesString}') NOT NULL DEFAULT 'CE_Assigned'");
+    //             DB::statement("ALTER TABLE {$duplicateTableName} MODIFY COLUMN `chart_status` ENUM('{$newEnumValuesString}') NOT NULL DEFAULT 'CE_Assigned'");
+    //             DB::statement("ALTER TABLE {$tableHistoryName} MODIFY COLUMN `chart_status` ENUM('{$newEnumValuesString}') NOT NULL DEFAULT 'CE_Assigned'");
+    //             DB::statement("ALTER TABLE {$tableRevokeHistoryName} MODIFY COLUMN `chart_status` ENUM('{$newEnumValuesString}') NOT NULL DEFAULT 'CE_Assigned'");
+    //             return $decodedClientName."project table Chart status column altered successfully";                       
+               
+    //         } catch (\Exception $e) {
+    //             $e->getMessage();
+    //         }
+      
+    // }
+    public function alterTableChartStatusColumn(Request $request)
+{
+    try {
+        // Get client and sub-project names
+        $decodedClientName = Helpers::projectName($request->project_id)->project_name;
+        $decodedSubProjectName = $request->sub_project_id
+            ? Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name
+            : 'project';
+
+        // Create a base name and generate all table names
+        $baseName = Str::slug(Str::lower($decodedClientName . '_' . $decodedSubProjectName), '_');
+        $tables = [
+            $baseName,
+            "{$baseName}_datas",
+            "{$baseName}_duplicates",
+            "{$baseName}_history",
+            "{$baseName}_revoke_history",
+        ];
+
+        // Ensure each table name is slugified properly (if needed)
+        $tables = array_map(function ($table) {
+            return Str::slug($table, '_');
+        }, $tables);
+
+        // Define new ENUM values including the new option 'Auto_Close'
+        $newEnumValues = [
+            'CE_Assigned',
+            'CE_Inprocess',
+            'CE_Pending',
+            'CE_Completed',
+            'CE_Clarification',
+            'CE_Hold',
+            'AR_non_workable',
+            'QA_Assigned',
+            'QA_Inprocess',
+            'QA_Pending',
+            'QA_Completed',
+            'QA_Clarification',
+            'QA_Hold',
+            'Revoke',
+            'Rebuttal',
+            'Auto_Close'
+        ];
+        $enumString = implode("','", $newEnumValues);
+
+        // Loop over each table and alter the chart_status column
+        foreach ($tables as $table) {
+            DB::statement("ALTER TABLE {$table} MODIFY COLUMN `chart_status` ENUM('{$enumString}') NOT NULL DEFAULT 'CE_Assigned'");
+        }
+
+        return "{$decodedClientName} project table Chart status column altered successfully";
+    } catch (\Exception $e) {
+        return $e->getMessage();
+    }
+}
+
 }

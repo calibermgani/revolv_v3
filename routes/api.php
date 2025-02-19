@@ -163,6 +163,5 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('ms_charge_entry', 'App\Http\Controllers\ProjectAuthAutomationController@msChargeEntry');
     Route::any('ms_charge_entry_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@msChargeEntryDuplicates');
     Route::any('production_auto_close', 'App\Http\Controllers\ProjectController@productionAutoClose');
-
-
+    Route::any('alter_table_chart_status_column', 'App\Http\Controllers\ProjectController@alterTableChartStatusColumn');
 });
