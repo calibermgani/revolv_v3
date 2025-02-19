@@ -1787,7 +1787,7 @@ class ProjectController extends Controller
                                 }
                             }dd( $query);
                        
-                    }dd($query->get());
+                    }dd($query->get(),'get');
                      $parentRecords = $query->where('chart_status','CE_Assigned')->get(); dd($parentRecords);
                  }
                   
