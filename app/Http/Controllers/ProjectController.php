@@ -1774,8 +1774,10 @@ class ProjectController extends Controller
                             // Assuming 'like' is needed for partial match searches (optional), adjust based on requirements
                             if (is_numeric($value) || is_bool($value)) {dd($key,$value,"iff");
                                 $query->where($key, $value,"if");  // Exact match for numeric/boolean
-                          
-                            } else {
+                            } elseif ($this->isDate($value)) {  // Check if it's a date
+                                dd($key,$value,"elseif1");
+                                $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
+                            }  else {
                                 dd($key,$value,"else");
                                 if($value != null) {  
                                 $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
