@@ -1781,7 +1781,7 @@ class ProjectController extends Controller
                                 if($value != null) {
                                 $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
                                 }
-                            }
+                            }dd( $query);
                        
                     }dd($query->get());
                      $parentRecords = $query->where('chart_status','CE_Assigned')->get(); dd($parentRecords);
