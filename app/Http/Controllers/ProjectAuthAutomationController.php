@@ -20,6 +20,8 @@ use App\Models\IhAr;
 use App\Models\IhArDuplicates;
 use App\Models\MsChargeEntry;
 use App\Models\MsChargeEntryDuplicates;
+use App\Models\DkmgChargeEntry;
+use App\Models\DkmgChargeEntryDuplicates;
 
 class ProjectAuthAutomationController extends Controller
 {
@@ -731,6 +733,93 @@ class ProjectAuthAutomationController extends Controller
                     'primary_insurer_name' => isset($request->primary_insurer_name) && $request->primary_insurer_name != "NULL" ? $request->primary_insurer_name : NULL,
                     'secondary_insurer_name' => isset($request->secondary_insurer_name) && $request->secondary_insurer_name != "NULL" ? $request->secondary_insurer_name : NULL,
                     'rate' => isset($request->rate) && $request->rate != "NULL" ? $request->rate : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+    public function dkmgChargeEntry(Request $request)
+    {
+        try {
+            $attributes = [
+                 'slip' => isset($request->slip) && $request->slip != "NULL" ? $request->slip : NULL,
+                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                 'pateint_id' => isset($request->pateint_id) && $request->pateint_id != "NULL" ? $request->pateint_id : NULL,
+                 'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                 'department' => isset($request->department) && $request->department != "NULL" ? $request->department : NULL,
+                 'appointment_type' => isset($request->appointment_type) && $request->appointment_type != "NULL" ? $request->appointment_type : NULL,
+                 'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                 'worked_date' => isset($request->worked_date) && $request->worked_date != "NULL" ? $request->worked_date : NULL,
+                 'worked_by' => isset($request->worked_by) && $request->worked_by != "NULL" ? $request->worked_by : NULL,
+                 'invoke_date' => carbon::now()->format('Y-m-d')
+             ];         
+
+            $duplicateRecordExisting  =  DkmgChargeEntry::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                DkmgChargeEntry::insert([
+                        'slip' => isset($request->slip) && $request->slip != "NULL" ? $request->slip : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'pateint_id' => isset($request->pateint_id) && $request->pateint_id != "NULL" ? $request->pateint_id : NULL,
+                        'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                        'department' => isset($request->department) && $request->department != "NULL" ? $request->department : NULL,
+                        'appointment_type' => isset($request->appointment_type) && $request->appointment_type != "NULL" ? $request->appointment_type : NULL,
+                        'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                        'worked_date' => isset($request->worked_date) && $request->worked_date != "NULL" ? $request->worked_date : NULL,
+                        'worked_by' => isset($request->worked_by) && $request->worked_by != "NULL" ? $request->worked_by : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  DkmgChargeEntry::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                if ($duplicateRecord) {
+                    $duplicateRecord->update([
+                        'slip' => isset($request->slip) && $request->slip != "NULL" ? $request->slip : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'pateint_id' => isset($request->pateint_id) && $request->pateint_id != "NULL" ? $request->pateint_id : NULL,
+                        'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                        'department' => isset($request->department) && $request->department != "NULL" ? $request->department : NULL,
+                        'appointment_type' => isset($request->appointment_type) && $request->appointment_type != "NULL" ? $request->appointment_type : NULL,
+                        'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                        'worked_date' => isset($request->worked_date) && $request->worked_date != "NULL" ? $request->worked_date : NULL,
+                        'worked_by' => isset($request->worked_by) && $request->worked_by != "NULL" ? $request->worked_by : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function dkmgChargeEntryDuplicates(Request $request)
+    {
+        try {
+                DkmgChargeEntryDuplicates::insert([
+                    'slip' => isset($request->slip) && $request->slip != "NULL" ? $request->slip : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'pateint_id' => isset($request->pateint_id) && $request->pateint_id != "NULL" ? $request->pateint_id : NULL,
+                    'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                    'department' => isset($request->department) && $request->department != "NULL" ? $request->department : NULL,
+                    'appointment_type' => isset($request->appointment_type) && $request->appointment_type != "NULL" ? $request->appointment_type : NULL,
+                    'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                    'worked_date' => isset($request->worked_date) && $request->worked_date != "NULL" ? $request->worked_date : NULL,
+                    'worked_by' => isset($request->worked_by) && $request->worked_by != "NULL" ? $request->worked_by : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
