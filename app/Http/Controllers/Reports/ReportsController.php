@@ -179,7 +179,7 @@ class ReportsController extends Controller
 
                             if ($request->client_status) {
                                 // $query->where('chart_status',$request->client_status);
-                                $query->whereBetween('caller_charts_work_logs.record_status', $request->client_status);
+                                $query->where('caller_charts_work_logs.record_status', $request->client_status);
                             }else{
                                 $query;
                             }
