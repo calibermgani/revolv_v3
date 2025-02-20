@@ -756,8 +756,6 @@ class ProjectAuthAutomationController extends Controller
                  'department' => isset($request->department) && $request->department != "NULL" ? $request->department : NULL,
                  'appointment_type' => isset($request->appointment_type) && $request->appointment_type != "NULL" ? $request->appointment_type : NULL,
                  'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
-                 'worked_date' => isset($request->worked_date) && $request->worked_date != "NULL" ? $request->worked_date : NULL,
-                 'worked_by' => isset($request->worked_by) && $request->worked_by != "NULL" ? $request->worked_by : NULL,
                  'invoke_date' => carbon::now()->format('Y-m-d')
              ];         
 
@@ -772,8 +770,6 @@ class ProjectAuthAutomationController extends Controller
                         'department' => isset($request->department) && $request->department != "NULL" ? $request->department : NULL,
                         'appointment_type' => isset($request->appointment_type) && $request->appointment_type != "NULL" ? $request->appointment_type : NULL,
                         'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
-                        'worked_date' => isset($request->worked_date) && $request->worked_date != "NULL" ? $request->worked_date : NULL,
-                        'worked_by' => isset($request->worked_by) && $request->worked_by != "NULL" ? $request->worked_by : NULL,
                         'invoke_date' => date('Y-m-d'),
                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
@@ -792,8 +788,6 @@ class ProjectAuthAutomationController extends Controller
                         'department' => isset($request->department) && $request->department != "NULL" ? $request->department : NULL,
                         'appointment_type' => isset($request->appointment_type) && $request->appointment_type != "NULL" ? $request->appointment_type : NULL,
                         'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
-                        'worked_date' => isset($request->worked_date) && $request->worked_date != "NULL" ? $request->worked_date : NULL,
-                        'worked_by' => isset($request->worked_by) && $request->worked_by != "NULL" ? $request->worked_by : NULL,
                         'invoke_date' => date('Y-m-d'),
                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
@@ -818,8 +812,6 @@ class ProjectAuthAutomationController extends Controller
                     'department' => isset($request->department) && $request->department != "NULL" ? $request->department : NULL,
                     'appointment_type' => isset($request->appointment_type) && $request->appointment_type != "NULL" ? $request->appointment_type : NULL,
                     'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
-                    'worked_date' => isset($request->worked_date) && $request->worked_date != "NULL" ? $request->worked_date : NULL,
-                    'worked_by' => isset($request->worked_by) && $request->worked_by != "NULL" ? $request->worked_by : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
