@@ -60,6 +60,7 @@ class FormController extends Controller
 
     public static function formConfigurationStore(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userInfo'] && Session::get('loginDetails')['userInfo']['user_id'] !=null) {
+            DB::beginTransaction();
             try {
                 $data = $request->all();
                 // $projectName = project::where('id',$data['project_id'])->first();
@@ -448,6 +449,8 @@ class FormController extends Controller
 
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
             } catch (\Exception $e) {
+                DB::rollBack();
+                return response()->json(['error' => $e->getMessage()], 500);
                 Log::debug($e->getMessage());
             }
         } else {
@@ -485,6 +488,7 @@ class FormController extends Controller
 
     public static function formConfigurationUpdate(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userInfo'] && Session::get('loginDetails')['userInfo']['user_id'] !=null) {
+            DB::beginTransaction();
             try {
                 $data = $request->all();
                 // $projectName = project::where('id',$data['project_id_val'])->first();
@@ -892,7 +896,7 @@ class FormController extends Controller
                     }
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
             } catch (\Exception $e) {
-                dd($e->getMessage());
+                DB::rollBack();
                 return response()->json(['error' => $e->getMessage()], 500);
                 Log::debug($e->getMessage());
             }
