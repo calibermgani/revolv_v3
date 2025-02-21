@@ -239,9 +239,9 @@ class ProjectController extends Controller
             $mailBody = $prjoectsPending->toArray();
             Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday));
     
-            Log::info('ProjectWorkMail executed successfully.');
+            Log::info('ProjectWorkMail1 executed successfully.');
         } catch (\Exception $e) {
-            Log::error('Error in ProjectWorkMail: ' . $e->getMessage());
+            Log::error('Error in ProjectWorkMail1: ' . $e->getMessage());
             Log::debug($e->getMessage());
         }
     }
@@ -290,7 +290,9 @@ class ProjectController extends Controller
                             $aCount = $modelClass::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
                             ->where('chart_status', 'CE_Assigned')->count();
                             $cCount = $modelClass::whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
-                                        ->where('chart_status', 'CE_Completed')->count();
+                                        // ->where('chart_status', 'CE_Completed')
+                                        ->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                                        ->count();
                             $qCount = $modelClass::whereBetween($qaColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                         ->where('chart_status', 'QA_Completed')->count();
                             $productionARCount = $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today, $arColumnToUse) {
@@ -762,7 +764,8 @@ class ProjectController extends Controller
                         $hasNonNullArAt = $columnExists && $modelClass::whereNotNull('ar_at')->exists();
                         $columnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
                         $hourlyCount = $modelClass::whereBetween($columnToUse, [$slotStart, $slotEnd])
-                        ->where('chart_status', 'CE_Completed')
+                       // ->where('chart_status', 'CE_Completed')
+                       ->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
                         ->count();
                      
 
@@ -867,7 +870,9 @@ class ProjectController extends Controller
                         $hasNonNullArAt = $columnExists && $modelClass::whereNotNull('ar_at')->exists();
                         $columnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
                         $hourlyCount = $modelClass::whereBetween($columnToUse, [$slotStart, $slotEnd])
-                        ->where('chart_status', 'CE_Completed')->where('CE_emp_id', $user)
+                        // ->where('chart_status', 'CE_Completed')
+                        ->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                        ->where('CE_emp_id', $user)
                         ->count();
 
                         Log::info("Hourly count for {$tableName} from {$slotStart} to {$slotEnd}: {$hourlyCount}");
@@ -1003,9 +1008,9 @@ class ProjectController extends Controller
             });
             $mailBody = $prjoectsPending->toArray();
             return view('projects.projectUtilizationWeb', compact('mailHeader', 'mailBody', 'yesterday'));
-            Log::info('ProjectWorkWeb executed successfully.');
+            Log::info('ProjectWorkWeb1 executed successfully.');
         } catch (\Exception $e) {
-            Log::error('Error in ProjectWorkWeb: ' . $e->getMessage());
+            Log::error('Error in ProjectWorkWeb1: ' . $e->getMessage());
             Log::debug($e->getMessage());
         }
     }
@@ -1190,7 +1195,9 @@ class ProjectController extends Controller
                         $hasNonNullArAt = $columnExists && $modelClass::whereNotNull('ar_at')->exists();
                         $columnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
                         $hourlyCount = $modelClass::whereBetween($columnToUse, [$slotStart, $slotEnd])
-                        ->where('chart_status', 'CE_Completed')->where('CE_emp_id', $user)
+                        // ->where('chart_status', 'CE_Completed')
+                        ->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                        ->where('CE_emp_id', $user)
                         ->count();
 
                         Log::info("Hourly count for {$tableName} from {$slotStart} to {$slotEnd}: {$hourlyCount}");
@@ -1274,7 +1281,9 @@ class ProjectController extends Controller
                             $aCount = $modelClass::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
                             ->where('chart_status', 'CE_Assigned')->count();
                             $cCount = $modelClass::whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
-                                        ->where('chart_status', 'CE_Completed')->count();
+                                        // ->where('chart_status', 'CE_Completed')
+                                        ->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                                        ->count();
                             $qCount = $modelClass::whereBetween($qaColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                         ->where('chart_status', 'QA_Completed')->count();
                             $productionARCount = $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today,$arColumnToUse) {
