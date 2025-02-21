@@ -248,7 +248,7 @@ class ProjectController extends Controller
     public function projectWorkMail() {
         try {
             Log::info('Executing ProjectWorkMail logic.');
-             $toMailId = ["britto@annexmed.com","anukishan@annexmed.com","devi@annexmed.com","elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com"];
+             $toMailId = ["britto@annexmed.com","anukishan@annexmed.com","elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com"];
             $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net","vijayalaxmi@caliberfocus.com"];
             // $toMailId = ["mgani@caliberfocus.com"];
             // $ccMailId = ["vijayalaxmi@caliberfocus.com"];
@@ -678,7 +678,7 @@ class ProjectController extends Controller
         try {
             Log::info('Executing Project Hourly Mail logic.');
 
-            $toMailId = ["anukishan@annexmed.com","devi@annexmed.com","elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com"];
+            $toMailId = ["anukishan@annexmed.com","elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com"];
             $ccMailId = ['anbalagan@annexmed.net','dominic@annexmed.net','durga@annexmed.net','francis@annexmed.net','jaiganesh@annexmed.net','mohan@annexmed.com',
             'nicson@annexmed.net','krajkumar@annexmed.net','athamim@annexmed.net','tikkaram@annexmed.net','vinodh@annexmed.net','sbishop@annexmed.net','karthikeyan@annexmed.net','vijaychandran@annexmed.net',
             'hemanathan@annexmed.net','vigneshwaran@annexmed.net','mgani@caliberfocus.com','margaretmary@annexmed.net','vijayalaxmi@caliberfocus.com'];
