@@ -929,10 +929,10 @@ class ProductionController extends Controller
                 foreach($request['checkedRowValues'] as $data) {
                     $duplicateRecord = $modelClassDuplcates::where('id',$data['value'])->first();
                    // $duplicateRecord->update(['duplicate_status' => $status]);
-                   unset($duplicateRecord['id']);
-                   unset($duplicateRecord['duplicate_status']); 
+                //    unset($duplicateRecord['id']);
+                //    unset($duplicateRecord['duplicate_status']); 
                     $duplicateRecord->update(['duplicate_status' => $status]);
-                    $modelClass::create($duplicateRecord->toArray());
+                    // $modelClass::create($duplicateRecord->toArray());
                 }
                 return response()->json(['success' => true]);
             } catch (\Exception $e) {
