@@ -928,7 +928,10 @@ class ProductionController extends Controller
                 // Config::set('database.connections.mysql.database',$databaseConnection);
                 foreach($request['checkedRowValues'] as $data) {
                     $duplicateRecord = $modelClassDuplcates::where('id',$data['value'])->first();
+                   // $duplicateRecord->update(['duplicate_status' => $status]);
+                   unset($duplicateRecord['duplicate_status']);dd($duplicateRecord);                    
                     $duplicateRecord->update(['duplicate_status' => $status]);
+                    $modelClass::create($duplicateRecord);
                 }
                 return response()->json(['success' => true]);
             } catch (\Exception $e) {
