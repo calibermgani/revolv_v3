@@ -864,7 +864,7 @@ class ProductionController extends Controller
                if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
                    if (class_exists($modelClassDuplcates)) {
                         //   $duplicateProjectDetails =  $modelClass::whereNotIn('status',['agree','dis_agree'])->orderBy('id','desc')->get();
-                        $duplicateProjectDetails = $query->whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->orderBy('id','ASC')->whereBetween('created_at',[$startDate,$endDate])->paginate(50);
+                        $duplicateProjectDetails = $query->orderBy('id','ASC')->whereBetween('created_at',[$startDate,$endDate])->paginate(50);
                         $assignedCount =  $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->whereNotNull('CE_emp_id')->count();
                         $completedCount = $modelClass::where('chart_status','CE_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $pendingCount =   $modelClass::where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate])->count();
