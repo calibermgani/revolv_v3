@@ -623,20 +623,38 @@ use Carbon\Carbon;
                             'content')
                     }
                 });
-                $.ajax({
-                    url: "{{ url('clients_duplicate_status') }}",
-                    method: 'POST',
-                    data: {
-                        // dbConn: dbConn,
-                        clientName: clientName,
-                        subProjectName: subProjectName,
-                        dropdownStatus: dropdownStatus,
-                        checkedRowValues: checkedRowValues
-                    },
-                    success: function(response) {
-                        location.reload();
-                    },
+                swal.fire({
+                    text: "Do you want to change status?",
+                    icon: "success",
+                    buttonsStyling: false,
+                    showCancelButton: true,
+                    confirmButtonText: "Yes",
+                    cancelButtonText: "No",
+                    customClass: {
+                        confirmButton: "btn font-weight-bold btn-white-black",
+                        cancelButton: "btn font-weight-bold  btn-light-danger",
+                    }
 
+                }).then(function(result) {
+                    if (result.value == true) {
+                        $.ajax({
+                            url: "{{ url('clients_duplicate_status') }}",
+                            method: 'POST',
+                            data: {
+                                // dbConn: dbConn,
+                                clientName: clientName,
+                                subProjectName: subProjectName,
+                                dropdownStatus: dropdownStatus,
+                                checkedRowValues: checkedRowValues
+                            },
+                            success: function(response) {
+                                location.reload();
+                            },
+
+                        });
+                    } else {
+                        location.reload();
+                    }
                 });
             })
 
