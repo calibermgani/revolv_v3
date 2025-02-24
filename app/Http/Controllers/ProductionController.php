@@ -930,7 +930,7 @@ class ProductionController extends Controller
                     $duplicateRecord = $modelClassDuplcates::where('id',$data['value'])->first();
                    // $duplicateRecord->update(['duplicate_status' => $status]);
                    unset($duplicateRecord['id']);
-                   unset($duplicateRecord['duplicate_status']); dd($duplicateRecord->toArray());          
+                   unset($duplicateRecord['duplicate_status']); 
                     $duplicateRecord->update(['duplicate_status' => $status]);
                     $modelClass::create($duplicateRecord->toArray());
                 }
