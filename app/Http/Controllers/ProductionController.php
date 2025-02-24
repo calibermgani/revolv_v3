@@ -934,7 +934,7 @@ class ProductionController extends Controller
                    unset($duplicateRecord['duplicate_status']); 
                     $duplicateRecord->update(['duplicate_status' => $status]);
                     if($dupStatus == NULL) {
-                        dd($dupStatus);
+                        //dd($dupStatus);
                        $modelClass::create($duplicateRecord->toArray());
                     }
                 }
