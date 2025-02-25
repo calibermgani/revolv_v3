@@ -240,7 +240,7 @@ class ProductionController extends Controller
                                     $holdCount = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
                                     // $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$resourceName)->where('updated_at','<=',$yesterDayDate)->count();
                                     $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                                    $duplicateCount = $modelClassDuplcates::count();
+                                    $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                                     $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
                                     $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','ASC')->pluck('chart_status')->toArray(); 
                                     $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
@@ -267,7 +267,7 @@ class ProductionController extends Controller
                                     $holdCount = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
                                     //    $reworkCount = $modelClass::where('chart_status','Revoke')->where('updated_at','<=',$yesterDayDate)->count();
                                     $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                                    $duplicateCount = $modelClassDuplcates::count();
+                                    $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                                     $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
                                     $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','ASC')->pluck('chart_status')->toArray();   
                                     $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->whereBetween('updated_at',[$startDate,$endDate])->count();   
@@ -401,7 +401,7 @@ class ProductionController extends Controller
                     //    $reworkCount = $modelClass::where('chart_status','Revoke')->where('updated_at','<=',$yesterDayDate)->count();
                        $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $modelClassDuplcates = "App\\Models\\" .$modelName.'Duplicates';
-                       $duplicateCount = $modelClassDuplcates::count();
+                       $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                        $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
                        $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
@@ -523,7 +523,7 @@ class ProductionController extends Controller
                             // $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$resourceName)->where('updated_at','<=',$yesterDayDate)->count();
                             $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
                             $modelClassDuplcates = "App\\Models\\" . $modelName.'Duplicates';
-                            $duplicateCount = $modelClassDuplcates::count();
+                            $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                             $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->where('CE_emp_id',$resourceName)->whereNull('CE_emp_id')->count();
                             $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
                             $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
@@ -545,7 +545,7 @@ class ProductionController extends Controller
                             // $reworkCount = $modelClass::where('chart_status','Revoke')->where('updated_at','<=',$yesterDayDate)->count();
                             $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
                             $modelClassDuplcates = "App\\Models\\" . $modelName.'Duplicates';
-                            $duplicateCount = $modelClassDuplcates::count();
+                            $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                             $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
                             $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->whereBetween('updated_at',[$startDate,$endDate])->count(); 
                             $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
@@ -658,7 +658,7 @@ class ProductionController extends Controller
                     //    $reworkCount = $modelClass::where('chart_status','Revoke')->where('updated_at','<=',$yesterDayDate)->count();
                        $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $modelClassDuplcates = "App\\Models\\" . $modelName.'Duplicates';
-                       $duplicateCount = $modelClassDuplcates::count();
+                       $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                        $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
                        $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
@@ -770,7 +770,7 @@ class ProductionController extends Controller
                        $holdCount = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $modelClassDuplcates = "App\\Models\\" .$modelName.'Duplicates';
-                       $duplicateCount = $modelClassDuplcates::count();
+                       $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                        $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
                        $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
@@ -884,7 +884,7 @@ class ProductionController extends Controller
                         $holdCount = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         // $reworkCount = $modelClass::where('chart_status','Revoke')->where('updated_at','<=',$yesterDayDate)->count();
                         $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        $duplicateCount = $modelClassDuplcates::count();
+                        $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                         $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
                         $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
@@ -895,7 +895,7 @@ class ProductionController extends Controller
                    }
                 } elseif ($loginEmpId) {
                     if (class_exists($modelClassDuplcates)) {
-                       $duplicateProjectDetails = $query->where('chart_status','CE_Assigned')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','ASC')->paginate(50);
+                       $duplicateProjectDetails = $query->where('chart_status','CE_Assigned')->whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','ASC')->paginate(50);
                        $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->count();
                        $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
@@ -943,7 +943,15 @@ class ProductionController extends Controller
                 // Config::set('database.connections.mysql.database',$databaseConnection);
                 foreach($request['checkedRowValues'] as $data) {
                     $duplicateRecord = $modelClassDuplcates::where('id',$data['value'])->first();
+                   // $duplicateRecord->update(['duplicate_status' => $status]);
+                   $dupStatus = $duplicateRecord['duplicate_status'];
+                   unset($duplicateRecord['id']);
+                   unset($duplicateRecord['duplicate_status']); 
                     $duplicateRecord->update(['duplicate_status' => $status]);
+                    if($dupStatus == NULL &&  $status="agree") {
+                        //dd($dupStatus);
+                       $modelClass::create($duplicateRecord->toArray());
+                    }
                 }
                 return response()->json(['success' => true]);
             } catch (\Exception $e) {
@@ -1830,7 +1838,7 @@ class ProductionController extends Controller
                        $holdCount = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         //    $reworkCount = $modelClass::where('chart_status','Revoke')->where('updated_at','<=',$yesterDayDate)->count();
                         $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                       $duplicateCount = $modelClassDuplcates::count();
+                       $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                        $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
                        $unAssignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','ASC')->pluck('chart_status')->toArray();
                        $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->whereBetween('updated_at',[$startDate,$endDate])->count();
@@ -1995,7 +2003,7 @@ class ProductionController extends Controller
                     //    $reworkCount = $modelClass::where('chart_status','Revoke')->where('updated_at','<=',$yesterDayDate)->count();
                        $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $modelClassDuplcates = "App\\Models\\" . $modelName.'Duplicates';
-                       $duplicateCount = $modelClassDuplcates::count();
+                       $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                        $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
                        $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
@@ -2105,7 +2113,7 @@ class ProductionController extends Controller
                                         ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
                             })->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $modelClassDuplcates = "App\\Models\\" .$modelName.'Duplicates';
-                       $duplicateCount = $modelClassDuplcates::count();
+                       $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                        $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
                        $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','desc')->pluck('record_id')->toArray();
                        $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
