@@ -896,7 +896,7 @@ class ProductionController extends Controller
                    }
                 } elseif ($loginEmpId) {
                     if (class_exists($modelClassDuplcates)) {
-                       $duplicateProjectDetails = $query->where('chart_status','CE_Assigned')->whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','ASC')->paginate(50);
+                       $duplicateProjectDetails = $query->where('chart_status','CE_Assigned')->whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->where('CE_emp_id',$loginEmpId)->orderBy('id','ASC')->paginate(50);
                        $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->count();
                        $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
