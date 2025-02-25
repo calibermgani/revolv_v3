@@ -731,7 +731,7 @@ use Carbon\Carbon;
                                                                                             // 'CE_Clarification' => 'Clarification',
                                                                                             'CE_Hold' => 'Hold',
                                                                                             'AR_non_workable'=>'Non Workable',
-                                                                                             'Auto_Close'=>'Auto Close'
+                                                                                            // 'Auto_Close'=>'Auto Close'
                                                                                         ],
                                                                                         null,
                                                                                         [
