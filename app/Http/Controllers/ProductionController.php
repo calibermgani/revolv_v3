@@ -993,7 +993,7 @@ class ProductionController extends Controller
                 $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->get();
                 $coderCompletedRecordsCount = count($coderCompletedRecords); $data['coder_work_date'] = $data['ar_at'] = NULL;
                 $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
-                if( $data['chart_status'] == "CE_Completed") {
+                if( $data['chart_status'] == "CE_Completed" || $data['chart_status'] == "Auto_Close") {
                     $data['coder_work_date'] = Carbon::now()->format('Y-m-d');
                     if($decodedPracticeName == NULL) {
                         $qasamplingDetailsList = QualitySampling::where('project_id', $decodedProjectName)
@@ -1090,9 +1090,9 @@ class ProductionController extends Controller
                 }
                  if($datasRecord != null) {
                     $datasRecord->update($data);
-                  ($data['chart_status'] == "CE_Completed") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
+                  ($data['chart_status'] == "CE_Completed" || $data['chart_status'] == "Auto_Close") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
                 } else {
-                   ($data['chart_status'] == "CE_Completed") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
+                   ($data['chart_status'] == "CE_Completed" || $data['chart_status'] == "Auto_Close") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
                    $modelClass::create($data);
                 }
                 $currentTime = Carbon::now();
@@ -1369,7 +1369,7 @@ class ProductionController extends Controller
                 $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->get();
                 $coderCompletedRecordsCount = count($coderCompletedRecords); $data['coder_work_date'] = $data['ar_at'] = NULL;
                 $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
-                if( $data['chart_status'] == "CE_Completed") {
+                if( $data['chart_status'] == "CE_Completed" || $data['chart_status'] == "Auto_Close") {
                     $data['coder_work_date'] = Carbon::now()->format('Y-m-d');
                     if($decodedPracticeName == NULL) {
                         $qasamplingDetailsList = QualitySampling::where('project_id', $decodedProjectName)
@@ -1477,10 +1477,10 @@ class ProductionController extends Controller
                     
                     $data = array_diff_key($data, array_flip($fieldsToExclude));//dd($data);
                     $datasRecord->update($data);
-                    ($data['chart_status'] == "CE_Completed") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'QA_required_sampling' => $data['QA_required_sampling'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
+                    ($data['chart_status'] == "CE_Completed" || $data['chart_status'] == "Auto_Close") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'QA_required_sampling' => $data['QA_required_sampling'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
                 } else {
                     $data['parent_id'] = $data['idValue'];
-                    ($data['chart_status'] == "CE_Completed") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'QA_required_sampling' => $data['QA_required_sampling'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
+                    ($data['chart_status'] == "CE_Completed" || $data['chart_status'] == "Auto_Close") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'QA_required_sampling' => $data['QA_required_sampling'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
                     $modelClass::create($data);
                 }
                 $currentTime = Carbon::now();
@@ -1689,7 +1689,7 @@ class ProductionController extends Controller
                 $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->get();
                 $coderCompletedRecordsCount = count($coderCompletedRecords); $data['coder_work_date'] = $data['ar_at'] = NULL;
                 $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
-                if( $data['chart_status'] == "CE_Completed") {
+                if( $data['chart_status'] == "CE_Completed" || $data['chart_status'] == "Auto_Close") {
                     $data['coder_work_date'] = Carbon::now()->format('Y-m-d');
                     $data['qa_work_status'] = "Sampling";
                 }
@@ -1720,7 +1720,7 @@ class ProductionController extends Controller
                     if(isset($data['annex_coder_trends']) && $data['annex_coder_trends'] != null) {
                         $data['annex_coder_trends'] = isset($data['annex_coder_trends']) && $data['annex_coder_trends'] != null ?  str_replace("\r\n", '_el_', $data['annex_coder_trends']) : null;
                     }
-                    if($data['chart_status'] == "CE_Completed") {                     
+                    if($data['chart_status'] == "CE_Completed" || $data['chart_status'] == "Auto_Close") {                     
                         if($datasRecord != null) {
                             $newDataRecord = $datasRecord->getAttributes();
                             unset($newDataRecord["id"]);
@@ -1743,10 +1743,10 @@ class ProductionController extends Controller
                     
                     $data = array_diff_key($data, array_flip($fieldsToExclude));
                     $datasRecord->update($data);
-                    ($data['chart_status'] == "CE_Completed") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'QA_required_sampling' => $data['QA_required_sampling'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
+                    ($data['chart_status'] == "CE_Completed" || $data['chart_status'] == "Auto_Close") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'QA_required_sampling' => $data['QA_required_sampling'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
                 } else {
                     $data['parent_id'] = $data['idValue'];
-                    ($data['chart_status'] == "CE_Completed") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'QA_required_sampling' => $data['QA_required_sampling'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
+                    ($data['chart_status'] == "CE_Completed" || $data['chart_status'] == "Auto_Close") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'QA_required_sampling' => $data['QA_required_sampling'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
                     $modelClass::create($data);
                 }
                 $currentTime = Carbon::now();
@@ -2627,7 +2627,7 @@ class ProductionController extends Controller
                     $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->get();
                     $coderCompletedRecordsCount = count($coderCompletedRecords); $data['coder_work_date'] = $data['ar_at'] = NULL;
                     $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
-                    if( $data['chart_status'] == "CE_Completed") {
+                    if( $data['chart_status'] == "CE_Completed" || $data['chart_status'] == "Auto_Close") {
                         $data['coder_work_date'] = Carbon::now()->format('Y-m-d');
                         if($decodedPracticeName == NULL) {
                             $qasamplingDetailsList = QualitySampling::where('project_id', $decodedProjectName)
@@ -2697,9 +2697,9 @@ class ProductionController extends Controller
               //   dd($request->all(),$checkedValues,$data,'if',$datasRecord,$loginEmpId,$callData);
                     if($datasRecord != null) {
                         $datasRecord->update($data);
-                    ($data['chart_status'] == "CE_Completed") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
+                    ($data['chart_status'] == "CE_Completed" || $data['chart_status'] == "Auto_Close") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
                     } else {
-                    ($data['chart_status'] == "CE_Completed") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
+                    ($data['chart_status'] == "CE_Completed" || $data['chart_status'] == "Auto_Close") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
                     $modelClass::create($data);
                     }
                     $callChartWorkLogExistingRecords = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
@@ -2846,6 +2846,7 @@ class ProductionController extends Controller
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName;
+                $datasModelClass =  "App\\Models\\" . $modelName.'Datas';;
                 $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
                 $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                 $checkedValues = json_decode($request->input('checkedRowValues'), true);
@@ -2853,12 +2854,21 @@ class ProductionController extends Controller
                     if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
                         foreach($checkedValues as $data) {
                             $existingRecord = $modelClass::where('id',$data['value'])->where('chart_status','Auto_Close')->first();
-                            $existingRecord->update(['chart_status' => 'CE_Assigned']);
+                            $existingRecord->update(['chart_status' => 'CE_Assigned','QA_emp_id' => NULL,'qa_work_status' => NULL,'coder_work_date' => NULL,'updated_at' => NULL]);
+                            $datasExistingRecord = $datasModelClass::where('parent_id',$data['value'])->where('chart_status','Auto_Close')->first();
+                            if ($datasExistingRecord) {
+                                $datasExistingRecord->forceDelete();
+                            }
                         }
                     } else {
                         foreach($checkedValues as $data) {
                             $existingRecord = $modelClass::where('id',$data['value'])->where('CE_emp_id',$loginEmpId)->where('chart_status','Auto_Close')->first();
-                            $existingRecord->update(['chart_status' => 'CE_Assigned']);
+                            $existingRecord->update(['chart_status' => 'CE_Assigned','QA_emp_id' => NULL,'qa_work_status' => NULL,'coder_work_date' => NULL,'updated_at' => NULL]);
+                            $datasExistingRecord = $datasModelClass::where('parent_id',$data['value'])->where('chart_status','Auto_Close')->first();
+                            if ($datasExistingRecord) {
+                                $datasExistingRecord->forceDelete();
+                            }
+                            // $existingRecord->update(['chart_status' => 'CE_Assigned']);
                         }
                     }   
                 } else {
@@ -2877,13 +2887,23 @@ class ProductionController extends Controller
                             $query->where($key, 'like', '%' . $value . '%'); 
                             }
                         }
+                        if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
+                            // $query->where('chart_status', 'Auto_Close')->update(['chart_status' => 'CE_Assigned']);
+                            $query->where('id',$value)->where('chart_status', 'Auto_Close')->update(['chart_status' => 'CE_Assigned','QA_emp_id' => NULL,'qa_work_status' => NULL,'coder_work_date' => NULL,'updated_at' => NULL]);
+                            $datasExistingRecord = $datasModelClass::where('parent_id',$value)->where('chart_status','Auto_Close')->first();
+                            if ($datasExistingRecord) {
+                                $datasExistingRecord->forceDelete();
+                            }
+                        } else {
+                            // $query->where('CE_emp_id',$loginEmpId)->where('chart_status','Auto_Close')->update(['chart_status' => 'CE_Assigned']);
+                            $query->where('id',$value)->where('CE_emp_id',$loginEmpId)->where('chart_status', 'Auto_Close')->update(['chart_status' => 'CE_Assigned','QA_emp_id' => NULL,'qa_work_status' => NULL,'coder_work_date' => NULL,'updated_at' => NULL]);
+                            $datasExistingRecord = $datasModelClass::where('parent_id',$value)->where('chart_status','Auto_Close')->first();
+                            if ($datasExistingRecord) {
+                                $datasExistingRecord->forceDelete();
+                            }
+                        }
                     }
-                    if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
-                        $query->where('chart_status', 'Auto_Close')->update(['chart_status' => 'CE_Assigned']);
-
-                    } else {
-                        $query->where('CE_emp_id',$loginEmpId)->where('chart_status','Auto_Close')->update(['chart_status' => 'CE_Assigned']);
-                    }
+                    
                 }
                 return response()->json(['success' => true]);
             } catch (\Exception $e) {

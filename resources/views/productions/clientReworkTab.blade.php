@@ -870,7 +870,8 @@ use Carbon\Carbon;
                                                              'Revoke'=>'Revoke',
                                                              'CE_Hold' => 'Hold',
                                                              'AR_non_workable'=>'Non Workable',
-                                                              'Rebuttal'=>'Rebuttal'
+                                                              'Rebuttal'=>'Rebuttal',
+                                                              'Auto_Close'=>'Auto Close'
                                                          ],
                                                          null,
                                                          [
