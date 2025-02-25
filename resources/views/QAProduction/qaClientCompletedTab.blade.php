@@ -237,8 +237,10 @@ use Carbon\Carbon;
                                         <div class="form-group row row_mar_bm">
                                             <label
                                                 class="col-md-12">
-                                             @if(str_contains($labelName, 'Coder '))
+                                              @if(str_contains($labelName, 'Coder '))
                                                 {{ str_replace('Coder ', 'AR ', $labelName) }}
+                                              @elseif ($data->column_name == 'CE_emp_id')
+                                                AR Emp Id
                                               @else
                                                 {{ $labelName }}
                                               @endif

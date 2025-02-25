@@ -259,9 +259,11 @@ use Carbon\Carbon;
                                                             class="col-md-12">
                                                             @if(str_contains($labelName, 'Coder '))
                                                              {{ str_replace('Coder ', 'AR ', $labelName) }}
-                                                           @else
-                                                             {{ $labelName }}
-                                                           @endif
+                                                             @elseif ($data->column_name == 'CE_emp_id')
+                                                             AR Emp Id
+                                                            @else
+                                                                {{ $labelName }}
+                                                            @endif
                                                         </label>
                                                         <div class="col-md-10">
                                                             @if ($options == null)
