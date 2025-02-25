@@ -1951,7 +1951,7 @@ class ProjectController extends Controller
                 $data = [];
                 // Build query based on request parameters (except token, project_id, sub_project_id)
                 foreach ($request->except('token', 'project_id', 'sub_project_id') as $key => $value) {
-                    $data[$key] = $value;
+                   // $data[$key] = $value;
                     if (is_array($value)) {
                         $value = implode('_el_', $value);
                     }
@@ -1974,7 +1974,12 @@ class ProjectController extends Controller
                 $assignedRows = $query->where('chart_status', 'CE_Assigned')->get();
                     if(count($assignedRows) > 0) {
                       //  $updatedRows = $query->where('chart_status', 'CE_Assigned')->update(['chart_status' => 'Auto_Close']);
-                            foreach($assignedRows as $dataAssignedRows) {                       
+                            foreach($assignedRows as $dataAssignedRows) {                                
+                                $data = $dataAssignedRows->toArray();
+                                unset($data['id']);
+                                unset($data['created_at']);
+                                unset($data['updated_at']);
+                             //    dd($data,$dataAssignedRows);                    
                                 $autoCloseRecords = $originalModelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$dataAssignedRows->CE_emp_id)->get();
                                 $arEmpId = $dataAssignedRows->CE_emp_id;
                                 $autoCloseRecordsCount = count($autoCloseRecords);
