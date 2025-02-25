@@ -32,6 +32,7 @@ use App\Jobs\GetProjJob;
 use Illuminate\Support\Facades\Schema;
 use App\Models\ManualProjectDuplicate;
 use App\Jobs\GetProjSubPrjJob;
+use App\Models\QualitySampling;
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
@@ -1943,12 +1944,14 @@ class ProjectController extends Controller
             $table_name = Str::slug(Str::lower($decodedClientName.'_'.$decodedSubProjectName), '_');
             $modelName = Str::studly($table_name);
             $originalModelClass = "App\\Models\\" . $modelName;
+            $modelClass = "App\\Models\\" . $modelName.'Datas';
 
             if (class_exists($originalModelClass)) {
                 $query = $originalModelClass::query();
-
+                $data = [];
                 // Build query based on request parameters (except token, project_id, sub_project_id)
                 foreach ($request->except('token', 'project_id', 'sub_project_id') as $key => $value) {
+                    $data[$key] = $value;
                     if (is_array($value)) {
                         $value = implode('_el_', $value);
                     }
@@ -1968,14 +1971,55 @@ class ProjectController extends Controller
                     }
                 }
 
-                // Update the records that currently have 'chart_status' as 'CE_Assigned'
-                $updatedRows = $query->where('chart_status', 'CE_Assigned')
-                                    ->update(['chart_status' => 'Auto_Close']);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => "Successfully updated {$updatedRows} records."
-                ]);
+                $assignedRows = $query->where('chart_status', 'CE_Assigned')->get();
+                    if(count($assignedRows) > 0) {
+                      //  $updatedRows = $query->where('chart_status', 'CE_Assigned')->update(['chart_status' => 'Auto_Close']);
+                            foreach($assignedRows as $dataAssignedRows) {                       
+                                $autoCloseRecords = $originalModelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$dataAssignedRows->CE_emp_id)->get();
+                                $arEmpId = $dataAssignedRows->CE_emp_id;
+                                $autoCloseRecordsCount = count($autoCloseRecords);
+                                $data['invoke_date'] = date('Y-m-d',strtotime($dataAssignedRows->invoke_date));
+                                $data['parent_id'] = $dataAssignedRows->id;
+                                $record = $originalModelClass::where('id', $data['parent_id'])->first();
+                                        $data['coder_work_date'] = Carbon::now()->format('Y-m-d');
+                                        $qasamplingDetailsList = QualitySampling::where('project_id', $request->project_id)
+                                                                ->where('sub_project_id', $request->sub_project_id)
+                                                                ->where(function($query) use ($arEmpId) {
+                                                                    $query->where('coder_emp_id', $arEmpId)
+                                                                        ->orWhereNull('coder_emp_id');
+                                                                })->orderBy('id', 'desc')->get();
+                                            $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
+                                        foreach ($qasamplingDetailsList as $qasamplingDetails) {
+                                            if($qasamplingDetails != null) {
+                                                $qaPercentage = $qasamplingDetails["qa_percentage"];
+                                                $qarecords = $autoCloseRecordsCount*$qaPercentage/100;
+                                                $samplingRecord = $originalModelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$arEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])->where('qa_work_status','Sampling')->get();
+                                                $samplingRecordCount =  count($samplingRecord);
+                                                if($qarecords >= $samplingRecordCount ) {
+                                                    $data['QA_emp_id'] =  $qasamplingDetails["qa_emp_id"];
+                                                    $data['qa_work_status'] = "Sampling";
+                                                    $data['chart_status'] = "Auto_Close";
+                                                    break;
+                                                } else {
+                                                    $data['qa_work_status'] = "Auto_Close";
+                                                     $data['chart_status'] = "Auto_Close";
+                
+                                                }
+                                            }
+                                        }
+                                        $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'coder_work_date' => $data['coder_work_date']]);
+                                        $modelClass::create($data);
+                            }
+                            return response()->json([
+                                'success' => true,
+                                'message' => "Successfully updated record."
+                            ]);
+                    } else {
+                        return response()->json([
+                            'success' => true,
+                            'message' => "These record are already worked."
+                        ]);
+                    }               
             } else {
                 return response()->json([
                     'success' => false,
