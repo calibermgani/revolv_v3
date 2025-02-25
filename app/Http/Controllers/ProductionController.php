@@ -258,7 +258,7 @@ class ProductionController extends Controller
                                     }
                                     if (!empty($existingCallerChartsWorkLogsInprocess) && $existingCallerChartsWorkLogsInprocess[0] != null) {
                                         $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogsInprocess) . ') DESC');
-                                    }
+                                    }dd($assignedProjectDetails->get());
                                     $assignedProjectDetails = $assignedProjectDetails->orderBy('id', 'ASC')->paginate(50);
                                     $assignedProjectDetails = $query->whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->whereNotNull('CE_emp_id')->orderBy('id','ASC')->paginate(50);
                                     $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->whereNotNull('CE_emp_id')->count();
