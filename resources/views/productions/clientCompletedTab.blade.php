@@ -161,13 +161,25 @@ use Carbon\Carbon;
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="wizard-step mb-0 nine" data-wizard-type="step">
+                                    <div class="wizard-step mb-0 nine" data-wizard-type="done">
                                         <div class="wizard-wrapper py-2">
                                             <div class="wizard-label p-2 mt-2">
                                                 <div class="wizard-title" style="display: flex; align-items: center;">
                                                     <h6 style="margin-right: 5px;">Rebuttal</h6>
                                                     @include('CountVar.countRectangle', [
                                                         'count' => $rebuttalCount,
+                                                    ])
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="wizard-step mb-0 ten" data-wizard-type="done">
+                                        <div class="wizard-wrapper py-2">
+                                            <div class="wizard-label p-2 mt-2">
+                                                <div class="wizard-title" style="display: flex; align-items: center;">
+                                                    <h6 style="margin-right: 5px;">Auto Close</h6>
+                                                    @include('CountVar.countRectangle', [
+                                                        'count' => $arAutoCloseCount,
                                                     ])
                                                 </div>
                                             </div>
@@ -955,6 +967,12 @@ use Carbon\Carbon;
             })
             $(document).on('click', '.nine', function() {
                 window.location.href = baseUrl + 'ar_rebuttal/' + clientName + '/' + subProjectName +
+                    "?parent=" +
+                    getUrlVars()[
+                        "parent"] + "&child=" + getUrlVars()["child"];
+            })
+            $(document).on('click', '.ten', function() {
+                window.location.href = baseUrl + 'projects_auto_close/' + clientName + '/' + subProjectName +
                     "?parent=" +
                     getUrlVars()[
                         "parent"] + "&child=" + getUrlVars()["child"];

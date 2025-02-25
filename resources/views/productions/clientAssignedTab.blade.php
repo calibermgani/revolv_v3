@@ -216,6 +216,18 @@ use Carbon\Carbon;
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="wizard-step mb-0 ten" data-wizard-type="step">
+                                        <div class="wizard-wrapper py-2">
+                                            <div class="wizard-label p-2 mt-2">
+                                                <div class="wizard-title" style="display: flex; align-items: center;">
+                                                    <h6 style="margin-right: 5px;">Auto Close</h6>
+                                                    @include('CountVar.countRectangle', [
+                                                        'count' => $arAutoCloseCount,
+                                                    ])
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     @if($reworkCount >= 1 && ($loginEmpId  !== "Admin" && strpos($empDesignation, 'Manager') !== 0 && strpos($empDesignation, 'VP') !== 0 && strpos($empDesignation, 'Leader') !== 0 && strpos($empDesignation, 'Team Lead') !== 0 && strpos($empDesignation, 'CEO') !== 0 && strpos($empDesignation, 'Vice') !== 0))<p style="color:red; font-weight: 600;">*you have rework records!</p>@endif
                                 </div>
                             </div>
@@ -617,11 +629,18 @@ use Carbon\Carbon;
                                                                 </div>
                                                                 <div class="col-md-9" style="border-left: 1px solid #ccc;" data-scroll="true" data-height="400">
                                                                     <h6 class="title-h6">AR
-                                                                        {{-- <span type = "button" id="expandButton"  class="float-right">
-                                                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
-                                                                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z"/>
-                                                                        <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466"/>
-                                                                      </svg></span> --}}
+                                                                        @php
+                                                                              $clientName = App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->project_id, 'encode');
+                                                                              $subProjectName = $data->sub_project_id != null ? App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->sub_project_id, 'encode') : '--';
+                                                                        @endphp
+                                                                        {{-- <span type = "button" id="expandButton"  class="float-right"> --}}
+                                                                            {{-- <span type = "button"  class="float-right" title="History">
+                                                                                <a href="{{ url('get_claim_History/' . $clientName . '/' . $subProjectName) . '?parent=' . request()->parent . '&child=' . request()->child }}" target="_blank">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
+                                                                                    <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z"/>
+                                                                                    <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466"/>
+                                                                                  </svg></a>
+                                                                       </span> --}}
 
                                                                     </h6>&nbsp;&nbsp;
                                                                     @if (count($popupEditableFields) > 0)
@@ -2366,6 +2385,12 @@ nav{
             })
             $(document).on('click', '.nine', function() {
                 window.location.href = baseUrl + 'ar_rebuttal/' + clientName + '/' + subProjectName +
+                    "?parent=" +
+                    getUrlVars()[
+                        "parent"] + "&child=" + getUrlVars()["child"];
+            })
+            $(document).on('click', '.ten', function() {
+                window.location.href = baseUrl + 'projects_auto_close/' + clientName + '/' + subProjectName +
                     "?parent=" +
                     getUrlVars()[
                         "parent"] + "&child=" + getUrlVars()["child"];
