@@ -479,7 +479,7 @@ use Carbon\Carbon;
                                                                 {{-- @if (str_contains($columnValue, '-') && strtotime($columnValue)) --}}
                                                                 @if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $columnValue))
                                                                     {{ date('m/d/Y', strtotime($columnValue)) }}
-                                                                @elseif ($columnName == 'chart_status' && str_contains($columnValue, 'CE_') && $data->qa_work_status !== null)
+                                                                @elseif ($columnName == 'chart_status' && (str_contains($columnValue, 'CE_') || str_contains($columnValue, 'Auto_'))&& $data->qa_work_status !== null)
                                                                     {{-- {{ str_replace('CE_', '', $columnValue) }} --}}
                                                                     {{ str_replace('_', ' ', $data->qa_work_status) }}
                                                                 @elseif ($columnName == 'chart_status' && str_contains($columnValue, 'QA_'))
