@@ -1729,7 +1729,7 @@ class ProjectController extends Controller
                     }
                 }, 4000);
             } catch (\Exception $e) {
-                Log::error('Error in getprjDetailedInf: ' . $e->getMessage());
+                Log::error('Error in getprjDetailedInfHoulryWeb: ' . $e->getMessage());
                 return null;
             }
         });
