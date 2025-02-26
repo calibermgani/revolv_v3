@@ -1100,7 +1100,7 @@ class ProductionController extends Controller
                             if($qasamplingDetails != null) {
                                 $qaPercentage = $qasamplingDetails["qa_percentage"];
                                 $qarecords = $autoCloseRecordsCount*$qaPercentage/100;
-                                $samplingRecord = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])->where('qa_work_status','Sampling')->get();
+                                $samplingRecord = $originalModelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])->where('qa_work_status','Sampling')->get();
                                 $samplingRecordCount =  count($samplingRecord);
                                 if($qarecords >= $samplingRecordCount ) {
                                     $data['QA_emp_id'] =  $qasamplingDetails["qa_emp_id"];
@@ -1533,7 +1533,7 @@ class ProductionController extends Controller
                             if($qasamplingDetails != null) {
                                 $qaPercentage = $qasamplingDetails["qa_percentage"];
                                 $qarecords = $autoCloseRecordsCount*$qaPercentage/100;
-                                $samplingRecord = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])->where('qa_work_status','Sampling')->get();
+                                $samplingRecord = $originalModelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])->where('qa_work_status','Sampling')->get();
                                 $samplingRecordCount =  count($samplingRecord);
                                 if($qarecords > $samplingRecordCount) {
                                     $data['QA_emp_id'] =  $qasamplingDetails["qa_emp_id"];
