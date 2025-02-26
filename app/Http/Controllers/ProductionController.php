@@ -2967,7 +2967,7 @@ class ProductionController extends Controller
                     if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
                         foreach($checkedValues as $data) {
                             $existingRecord = $modelClass::where('id',$data['value'])->where('chart_status','Auto_Close')->first();
-                            $existingRecord->update(['chart_status' => 'CE_Assigned','QA_emp_id' => NULL,'qa_work_status' => NULL,'coder_work_date' => NULL,'updated_at' => NULL]);
+                            $existingRecord->update(['chart_status' => 'CE_Assigned','QA_emp_id' => NULL,'qa_work_status' => NULL,'coder_work_date' => NULL,'ar_at' => NULL,'updated_at' => NULL]);
                             $datasExistingRecord = $datasModelClass::where('parent_id',$data['value'])->where('chart_status','Auto_Close')->first();
                             if ($datasExistingRecord) {
                                 $datasExistingRecord->forceDelete();
@@ -2976,7 +2976,7 @@ class ProductionController extends Controller
                     } else {
                         foreach($checkedValues as $data) {
                             $existingRecord = $modelClass::where('id',$data['value'])->where('CE_emp_id',$loginEmpId)->where('chart_status','Auto_Close')->first();
-                            $existingRecord->update(['chart_status' => 'CE_Assigned','QA_emp_id' => NULL,'qa_work_status' => NULL,'coder_work_date' => NULL,'updated_at' => NULL]);
+                            $existingRecord->update(['chart_status' => 'CE_Assigned','QA_emp_id' => NULL,'qa_work_status' => NULL,'coder_work_date' => NULL,'ar_at' => NULL,'updated_at' => NULL]);
                             $datasExistingRecord = $datasModelClass::where('parent_id',$data['value'])->where('chart_status','Auto_Close')->first();
                             if ($datasExistingRecord) {
                                 $datasExistingRecord->forceDelete();
@@ -3002,14 +3002,14 @@ class ProductionController extends Controller
                         }
                         if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
                             // $query->where('chart_status', 'Auto_Close')->update(['chart_status' => 'CE_Assigned']);
-                            $query->where('id',$value)->where('chart_status', 'Auto_Close')->update(['chart_status' => 'CE_Assigned','QA_emp_id' => NULL,'qa_work_status' => NULL,'coder_work_date' => NULL,'updated_at' => NULL]);
+                            $query->where('id',$value)->where('chart_status', 'Auto_Close')->update(['chart_status' => 'CE_Assigned','QA_emp_id' => NULL,'qa_work_status' => NULL,'coder_work_date' => NULL,'ar_at' => NULL,'updated_at' => NULL]);
                             $datasExistingRecord = $datasModelClass::where('parent_id',$value)->where('chart_status','Auto_Close')->first();
                             if ($datasExistingRecord) {
                                 $datasExistingRecord->forceDelete();
                             }
                         } else {
                             // $query->where('CE_emp_id',$loginEmpId)->where('chart_status','Auto_Close')->update(['chart_status' => 'CE_Assigned']);
-                            $query->where('id',$value)->where('CE_emp_id',$loginEmpId)->where('chart_status', 'Auto_Close')->update(['chart_status' => 'CE_Assigned','QA_emp_id' => NULL,'qa_work_status' => NULL,'coder_work_date' => NULL,'updated_at' => NULL]);
+                            $query->where('id',$value)->where('CE_emp_id',$loginEmpId)->where('chart_status', 'Auto_Close')->update(['chart_status' => 'CE_Assigned','QA_emp_id' => NULL,'qa_work_status' => NULL,'coder_work_date' => NULL,'ar_at' => NULL,'updated_at' => NULL]);
                             $datasExistingRecord = $datasModelClass::where('parent_id',$value)->where('chart_status','Auto_Close')->first();
                             if ($datasExistingRecord) {
                                 $datasExistingRecord->forceDelete();
