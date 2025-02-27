@@ -25,176 +25,21 @@
                     <div class="col-md-6">
                         <span class="project_header" style="margin-left: 4px !important;">Claim History</span>
                     </div>
-                    
-                </div>
-            </div>
-          
-
-            <div class="card card-custom custom-top-border">
-                <div><span type="button" id="filterExpandButton" class="float-right mr-8 mt-5">
-                        <i class="ki ki-arrow-down icon-nm"></i></span></div>
-
-                <div class="card-body py-0 px-7" id="filter_section" style="display:none">
-
-                    @if (count($projectColSearchFields) > 0)
-                        @php $count = 0; @endphp
-                        @foreach ($projectColSearchFields as $key => $data)
-                            @php
-                                $decodedClientName = App\Http\Helper\Admin\Helpers::projectName($data->project_id)
-                                    ->project_name;
-                                $decodedsubProjectName =
-                                    $data->sub_project_i == null
-                                        ? 'project'
-                                        : App\Http\Helper\Admin\Helpers::subProjectName(
-                                            $data->project_id,
-                                            $data->sub_project_id,
-                                        );
-                                $table_name = Str::slug(
-                                    Str::lower($decodedClientName) . '_' . Str::lower($decodedsubProjectName),
-                                    '_',
-                                );
-                                $modelName = Str::studly($table_name);
-                                $modelClass = 'App\\Models\\' . $modelName;
-                                $labelName = ucwords(str_replace(['_else_', '_'], ['/', ' '], $data->column_name));
-                                $columnName = Str::lower(str_replace([' ', '/'], ['_', '_else_'], $data->column_name));
-                                $inputType = $data->column_type;
-                                $options = null;
-                                if ($inputType == 'select') {
-                                    $options = $modelClass
-                                        ::select($columnName)
-                                        ->distinct()
-                                        ->get()
-                                        ->pluck($columnName)
-                                        ->toArray();
-                                    $associativeOptions = [];
-                                    if ($options !== null) {
-                                        foreach ($options as $option) {
-                                            $option = trim($option);
-                                            $associativeOptions[$option] = $option;
-                                        }
-                                    }
-                                }
-                                $clientName = App\Http\Helper\Admin\Helpers::encodeAndDecodeID(
-                                    $data->project_id,
-                                    'encode',
-                                );
-                                $subProjectName =
-                                    $data->sub_project_id != null
-                                        ? App\Http\Helper\Admin\Helpers::encodeAndDecodeID(
-                                            $data->sub_project_id,
-                                            'encode',
-                                        )
-                                        : '--';
-                            @endphp
-                            {!! Form::open([
-                                'url' =>
-                                    url('get_claim_History/' . $clientName . '/' . $subProjectName) .
-                                    '?parent=' .
-                                    request()->parent .
-                                    '&child=' .
-                                    request()->child,
-                                'class' => 'form',
-                                'id' => 'formSearch',
-                                'enctype' => 'multipart/form-data',
-                            ]) !!}
-                            @csrf
-
-                            @if ($count % 4 == 0)
-                                <div class="row mr-0 ml-0 mt-5">
-                            @endif
-                            <div class="col-md-3">
-                                <div class="form-group row row_mar_bm">
-                                    <label class="col-md-12">
-                                        @if (str_contains($labelName, 'Coder '))
-                                            {{ str_replace('Coder ', 'AR ', $labelName) }}
-                                        @else
-                                            {{ $labelName }}
-                                        @endif
-                                    </label>
-                                    <div class="col-md-10">
-                                        @if ($options == null)
-                                            @if ($inputType != 'date_range')
-                                                {!! Form::$inputType(
-                                                    $columnName,
-                                                    isset($searchData) && !empty($searchData) && isset($searchData[$columnName]) && $searchData[$columnName]
-                                                        ? $searchData[$columnName]
-                                                        : null,
-                                                    [
-                                                        'class' => 'form-control white-smoke pop-non-edt-val',
-                                                        'autocomplete' => 'none',
-                                                        'style' => 'cursor:pointer',
-                                                        'rows' => 3,
-                                                    ],
-                                                ) !!}
-                                            @else
-                                                {!! Form::text($columnName, null, [
-                                                    'class' => 'form-control date_range white-smoke pop-non-edt-val',
-                                                    'autocomplete' => 'none',
-                                                    'style' => 'cursor:pointer',
-                                                ]) !!}
-                                            @endif
-                                        @else
-                                            @if ($inputType == 'select')
-                                                {!! Form::$inputType(
-                                                    $columnName,
-                                                    ['' => '-- Select --'] + $associativeOptions,
-                                                    isset($searchData) && !empty($searchData) && isset($searchData[$columnName]) && $searchData[$columnName]
-                                                        ? $searchData[$columnName]
-                                                        : null,
-                                                    [
-                                                        'class' => 'form-control white-smoke pop-non-edt-val select2',
-                                                        'autocomplete' => 'none',
-                                                    ],
-                                                ) !!}
-                                            @endif
-                                        @endif
-                                    </div>
-
-
-                                </div>
-                            </div>
-                            @php $count++; @endphp
-                            @if ($count % 4 == 0 || $loop->last)
-                </div>
-                @endif
-                @endforeach
-                <div class="form-footer" style="justify-content: center !important">
-                    <button type="submit" class="btn  btn-white-black font-weight-bold"
-                        id="filter_search">Search</button> &nbsp;&nbsp; <button class="btn btn-light-danger"
-                        id="filter_clear" tabindex="10" type="button">
-                        <span>
-                            <span>Clear</span>
-                        </span>
-                    </button>
-                </div>
-                @endif
-            </div>
-
-            {!! Form::close() !!}
-            @php
-                $pageSelectedRecord =
-                    $arAutoCloseProjectDetails->lastItem() - $arAutoCloseProjectDetails->firstItem() + 1;
-            @endphp
-            <p id="select_p1" style="text-align:center;display:none">All {{ $pageSelectedRecord }}
-                {{ $pageSelectedRecord == 1 ? 'record on this page is selected' : 'records on this page are selected' }} .
-                <a id="select_all_status" style="color:#6993FF !important;cursor:pointer !important">Select all
-                    {{ $arAutoCloseProjectDetails->total() }} records</a></p>
-            <p id="clear_p1" style="text-align:center;display:none">All {{ $arAutoCloseProjectDetails->total() }} records
-                are selected.<a style="color:#6993FF !important;cursor:pointer !important" id="clear_all_status">Clear
-                    Selection.</a></p>
-
+                    <div class="col-md-6">
+                        <div class="outside float-right" href="javascript:void(0);"></div>
+                    </div>
+                </div>               
+            </div>                
             <div class="card-body py-0 px-7">
                 <input type="hidden" value={{ $clientName }} id="clientName">
                 <input type="hidden" value={{ $subProjectName }} id="subProjectName">
                 <div class="table-responsive pt-5 pb-5 clietnts_table">
-                    <table class="table table-separate table-head-custom no-footer dtr-column "
-                        id="client_non_workable_list" data-order='[[ 0, "desc" ]]'>
+                    <table class="table table-separate table-head-custom no-footer dtr-column" id="client_non_workable_list" data-order='[[ 0, "desc" ]]'>
                         <thead>
                             @if (!empty($columnsHeader))
                                 <tr>
-                                    {{-- <th class='notexport' style="color:white !important">Action</th> --}}
-                                    <th class='notexport'><input type="checkbox" id="ckbCheckAll" class="cursor_hand">
-                                    </th>
+                                    {{-- <th class='notexport'><input type="checkbox" id="ckbCheckAll" class="cursor_hand">
+                                    </th> --}}
                                     @foreach ($columnsHeader as $columnName => $columnValue)
                                         @if ($columnValue != 'id')
                                             <th><input type="hidden" value={{ $columnValue }}>
@@ -229,20 +74,19 @@
                                     @endforeach
                                 </tr>
                             @endif
-
                         </thead>
                         <tbody>
-                            @if (isset($arAutoCloseProjectDetails))
-                                @foreach ($arAutoCloseProjectDetails as $data)
+                            @if (isset($claimHistoryDetails))
+                                @foreach ($claimHistoryDetails as $data)
                                     @php
                                         $arrayAttrributes = $data->getAttributes();
                                         $arrayAttrributes['aging'] = null;
                                         $arrayAttrributes['aging_range'] = null;
                                     @endphp
                                     <tr>
-                                        <td><input type="checkbox" class="checkBoxClass cursor_hand" name='check[]'
+                                        {{-- <td><input type="checkbox" class="checkBoxClass cursor_hand" name='check[]'
                                                 value="{{ $data->id }}">
-                                        </td>
+                                        </td> --}}
                                         @foreach ($arrayAttrributes as $columnName => $columnValue)
                                             @php
                                                 $columnsToExclude = [
@@ -278,6 +122,7 @@
                                                     'created_at',
                                                     'updated_at',
                                                     'deleted_at',
+                                                    'parent_id','ar_manager_rebuttal_status','ar_manager_rebuttal_comments','qa_manager_rebuttal_status','qa_manager_rebuttal_comments','QA_comments_count'
                                                 ];
                                                 if (isset($arrayAttrributes['dos'])) {
                                                     $dosDate = Carbon::parse($arrayAttrributes['dos']);
@@ -305,18 +150,38 @@
                                             @endphp
                                             @if (!in_array($columnName, $columnsToExclude))
                                                 @if ($columnName != 'id')
-                                                    <td
-                                                        style="max-width: 300px;
-                                                                white-space: normal;">
+                                                    <td style="max-width: 300px;white-space: normal;">
                                                         @if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $columnValue))
                                                             {{ date('m/d/Y', strtotime($columnValue)) }}
                                                         @else
-                                                            @if ($columnName == 'chart_status' && str_contains($columnValue, 'Auto_Close'))
-                                                                Auto Close
+                                                            @if ($columnName == 'chart_status' && str_contains($columnValue, 'CE_'))
+                                                               {{ str_replace('CE_', 'AR ', $columnValue) }}
+                                                            @elseif ($columnName == 'chart_status' && str_contains($columnValue, 'QA_'))
+                                                               {{ str_replace('QA_', 'QA ', $columnValue) }}
+                                                            @elseif ($columnName == 'chart_status' && str_contains($columnValue, 'Auto_Close'))
+                                                              Auto Close
                                                             @elseif ($columnName == 'aging')
                                                                 {{ $agingCount }}
                                                             @elseif ($columnName == 'aging_range')
                                                                 {{ $agingRange }}
+                                                            @elseif(str_contains($columnValue, '_el_'))
+                                                                {{str_replace('_el_', ',', $columnValue)}}
+                                                            @elseif ($columnName == 'ar_status_code') 
+                                                                @php
+                                                                    if($columnValue != '--' && $columnValue != null) {                                                                   
+                                                                            $status = App\Http\Helper\Admin\Helpers::arStatusById($columnValue);
+                                                                            $columnValue = $status != null ? $status['status_code'] : $columnValue;                                                                  
+                                                                    }                                                              
+                                                                @endphp 
+                                                                {{$columnValue}}  
+                                                            @elseif ($columnName == 'ar_action_code')                                                      
+                                                                @php
+                                                                    if($columnValue != '--' && $columnValue != null) {                                                                   
+                                                                        $action = App\Http\Helper\Admin\Helpers::arActionById($columnValue);
+                                                                        $columnValue = $action != null ? $action['action_code'] : $columnValue;                                                                
+                                                                    }                                                              
+                                                                @endphp 
+                                                                {{$columnValue}}  
                                                             @else
                                                                 {{ $columnValue }}
                                                             @endif
@@ -326,13 +191,36 @@
                                                     <td style="display:none;max-width: 300px;
                                                                 white-space: normal;"
                                                         id="table_id">
-                                                        {{-- @if (str_contains($columnValue, '-') && strtotime($columnValue)) --}}
-                                                        @if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $columnValue))
+                                                         @if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $columnValue))
                                                             {{ date('m/d/Y', strtotime($columnValue)) }}
+                                                        @elseif ($columnName == 'chart_status' && str_contains($columnValue, 'CE_'))
+                                                            {{ str_replace('CE_', 'AR ', $columnValue) }}
+                                                        @elseif ($columnName == 'chart_status' && str_contains($columnValue, 'QA_'))
+                                                            {{ str_replace('QA_', 'QA ', $columnValue) }}
+                                                        @elseif ($columnName == 'chart_status' && str_contains($columnValue, 'Auto_Close'))
+                                                            Auto Close
                                                         @elseif ($columnName == 'aging')
                                                             {{ $agingCount }}
                                                         @elseif ($columnName == 'aging_range')
                                                             {{ $agingRange }}
+                                                        @elseif(str_contains($columnValue, '_el_'))
+                                                            {{str_replace('_el_', ',', $columnValue)}}
+                                                        @elseif ($columnName == 'ar_status_code') 
+                                                            @php
+                                                                if($columnValue != '--' && $columnValue != null) {                                                                   
+                                                                        $status = App\Http\Helper\Admin\Helpers::arStatusById($columnValue);
+                                                                        $columnValue = $status != null ? $status['status_code'] : $columnValue;                                                                  
+                                                                }                                                              
+                                                            @endphp 
+                                                            {{$columnValue}}  
+                                                        @elseif ($columnName == 'ar_action_code')                                                      
+                                                            @php
+                                                                if($columnValue != '--' && $columnValue != null) {                                                                   
+                                                                    $action = App\Http\Helper\Admin\Helpers::arActionById($columnValue);
+                                                                    $columnValue = $action != null ? $action['action_code'] : $columnValue;                                                                
+                                                                }                                                              
+                                                            @endphp 
+                                                            {{$columnValue}}  
                                                         @else
                                                             {{ $columnValue }}
                                                         @endif
@@ -346,233 +234,9 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="ml-3">
-                        Showing
-                        {{ $arAutoCloseProjectDetails->firstItem() != null ? $arAutoCloseProjectDetails->firstItem() : 0 }}
-                        to
-                        {{ $arAutoCloseProjectDetails->lastItem() != null ? $arAutoCloseProjectDetails->lastItem() : 0 }}
-                        of {{ $arAutoCloseProjectDetails->total() }} entries
-                    </div>
-                    <div>
-                        {{ $arAutoCloseProjectDetails->appends(request()->all())->links() }}
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-    <div class="modal fade modal-first" id="myModal_view" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-        data-backdrop="static" aria-hidden="true">
-        @if ($popUpHeader != null)
-            <div class="modal-dialog">
-                @php
-                    $clientName = App\Http\Helper\Admin\Helpers::projectName($popUpHeader->project_id);
-                    $projectName = App\Http\Helper\Admin\Helpers::encodeAndDecodeID($popUpHeader->project_id, 'encode');
-                    if ($popUpHeader->sub_project_id != null) {
-                        $practiceName = App\Http\Helper\Admin\Helpers::subProjectName(
-                            $popUpHeader->project_id,
-                            $popUpHeader->sub_project_id,
-                        );
-                        $subProjectName = App\Http\Helper\Admin\Helpers::encodeAndDecodeID(
-                            $popUpHeader->sub_project_id,
-                            'encode',
-                        );
-                    } else {
-                        $practiceName = '';
-                        $subProjectName = '--';
-                    }
-
-                @endphp
-
-
-                <div class="modal-content" style="margin-top: 7rem">
-                    <div class="modal-header" style="background-color: #139AB3;height: 84px">
-
-                        <div class="col-md-4">
-                            <div class="align-items-center" style="display: -webkit-box !important;">
-                                <div class="rounded-circle bg-white text-black mr-2"
-                                    style="width: 50px; height: 50px; display: flex; justify-content: center; align-items: center;font-weight;bold">
-                                    <span>{{ strtoupper(substr($clientName->project_name, 0, 1)) }}</span>
-                                </div>&nbsp;&nbsp;
-                                <div>
-                                    <h4 class="modal-title mb-0" id="myModalLabel" style="color: #ffffff;">
-                                        {{ ucfirst($clientName->aims_project_name) }}
-                                    </h4>
-                                    @if ($practiceName != '')
-                                        <h6 style="color: #ffffff;font-size:1rem;">
-                                            {{ ucfirst($practiceName->sub_project_name) }}</h6>
-                                    @endif
-                                </div>&nbsp;&nbsp;
-                                <div class="bg-white rounded-pill px-2 text-black"
-                                    style="margin-bottom: 2rem;margin-left:2.2px;font-size:10px;font-weight:500;background-color:#E9F3FF;color:#139AB3;">
-                                    <span id="title_status_view"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <button type="button" class="close comment_close" data-dismiss="modal" aria-hidden="true"
-                            style="color:#ffffff !important">&times;</button>
-
-                    </div>
-
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-3" data-scroll="true" data-height="400">
-                                <h6 class="title-h6">Basic Information</h6>&nbsp;&nbsp;
-                                <input type="hidden" name="idValue">
-                                @if (count($popupNonEditableFields) > 0)
-                                    @php $count = 0; @endphp
-
-                                    @foreach ($popupNonEditableFields as $data)
-                                        @php
-                                            $columnName = Str::lower(
-                                                str_replace([' ', '/'], ['_', '_else_'], $data->label_name),
-                                            );
-                                        @endphp
-
-                                        <label class="col-md-12">{{ $data->label_name }}
-                                        </label>
-                                        <input type="hidden" name="{{ $columnName }}">
-
-                                        <label class="col-md-12 pop-non-edt-val" id={{ $columnName }}>
-                                        </label>
-                                        <hr style="margin-left:1rem">
-                                    @endforeach
-                                @endif
-                            </div>
-                            <div class="col-md-9" style="border-left: 1px solid #ccc;" data-scroll="true"
-                                data-height="400">
-                                <h6 class="title-h6">AR</h6>&nbsp;&nbsp;
-                                @if (count($popupEditableFields) > 0)
-                                    @php $count = 0; @endphp
-                                    @foreach ($popupEditableFields as $key => $data)
-                                        @php
-                                            $labelName = $data->label_name;
-                                            $columnName = Str::lower(
-                                                str_replace([' ', '/'], ['_', '_else_'], $data->label_name),
-                                            );
-
-                                        @endphp
-                                        @if ($count % 2 == 0)
-                                            <div class="row" id={{ $columnName }}>
-                                        @endif
-                                        <div class="col-md-6">
-                                            <div class="form-group row">
-                                                <label class="col-md-12">
-                                                    {{ $labelName }}
-                                                </label>
-                                                <label class="col-md-12 pop-non-edt-val" id={{ $columnName }}>
-                                                </label>
-
-                                                <div></div>
-                                            </div>
-                                        </div>
-                                        @php $count++; @endphp
-                                        @if ($count % 2 == 0 || $loop->last)
-                            </div>
-        @endif
-        @endforeach
-        @endif
-        @php
-            if ($popUpHeader->sub_project_id != null && $popUpHeader->sub_project_id != '') {
-                $statusActionShow = App\Models\projectInputSetting::where(
-                    'sub_project_id',
-                    $popUpHeader->sub_project_id,
-                )->first();
-            } else {
-                $statusActionShow = null;
-            }
-        @endphp
-        @if ($statusActionShow != null)
-            <div class="row mt-4">
-                @if ($statusActionShow->status_input == 1)
-                    <div class="col-md-6">
-                        <div class="form-group row">
-                            <label class="col-md-12" id="ar_status_label">
-                                Status Code
-                            </label>
-                            <label class="col-md-12 pop-non-edt-val" id="ar_status_view">
-                            </label>
-                        </div>
-                    </div>
-                @endif
-                @if ($statusActionShow->action_input == 1)
-                    <div class="col-md-6">
-                        <div class="form-group row">
-                            <label class="col-md-12" id="ar_action_label">
-                                Action Code
-                            </label>
-                            <label class="col-md-12 pop-non-edt-val" id="ar_action_view">
-                            </label>
-                        </div>
-                    </div>
-                @endif
-            </div>
-        @endif
-        <div class="col-md-6">
-            <div class="form-group row" style="margin-left: -2rem">
-                <label class="col-md-12">
-                    Charge Status
-                </label>
-                <label class="col-md-12 pop-non-edt-val" id="chart_status">
-                </label>
             </div>
         </div>
-    </div>
-    </div>
-    <div class="modal-footer">
-
-        <button class="btn btn-light-danger float-right" id="close_assign" tabindex="10" type="button"
-            data-dismiss="modal">
-            <span>
-                <span>Close</span>
-            </span>
-        </button>
-    </div>
-    </div>
-    </div>
-    </div>
-    @endif
-    </div>
-    <div class="modal fade modal-second modal-left" id="myModal_sop" tabindex="-1" role="dialog"
-        aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                @if ($popUpHeader != null)
-                    @php
-                        $clientName = App\Http\Helper\Admin\Helpers::projectName($popUpHeader->project_id);
-                        $sopDetails = App\Models\SopDoc::where('project_id', $popUpHeader->project_id)
-                            ->where('sub_project_id', $popUpHeader->sub_project_id)
-                            ->latest()
-                            ->first('sop_path');
-                    @endphp
-                @endif
-                <div class="modal-header" style="background-color: #139AB3;height: 84px">
-                    <h5 class="modal-title" id="exampleModalLabel" style="color: #ffffff;">SOP</h5>
-                    <a href={{ isset($sopDetails) && isset($sopDetails->sop_path) ? asset($sopDetails->sop_path) : '#' }}
-                        target="_blank">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
-                            class="bi bi-arrow-up-right-square" viewBox="0 0 16 16"
-                            style="color: #ffffff; margin-left: 365px;">
-                            <path fill-rule="evenodd"
-                                d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm5.854 8.803a.5.5 0 1 1-.708-.707L9.243 6H6.475a.5.5 0 1 1 0-1h3.975a.5.5 0 0 1 .5.5v3.975a.5.5 0 1 1-1 0V6.707z" />
-                        </svg>
-                    </a>
-                    <button type="button" class="close comment_close" data-dismiss="modal"
-                        aria-hidden="true">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <iframe
-                        src={{ isset($sopDetails) && isset($sopDetails->sop_path) ? asset($sopDetails->sop_path) : '#' }}
-                        style="width: 100%; height: 418px;" frameborder="0" type="application/pdf"></iframe>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light-danger" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    </div>   
 @endsection
 <style>
     .dropdown-item.active {
@@ -606,15 +270,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script>
         $(document).ready(function() {
-          
-            $("#filterExpandButton").click(function() {
-                var div = document.getElementById('filter_section');
-                if (div.style.display !== 'none') {
-                    div.style.display = 'none';
-                } else {
-                    div.style.display = 'block';
-                }
-            });
             var indvidualSearchFieldsCount = Object.keys(@json($projectColSearchFields)).length;
             const url = window.location.href;
             const startIndex = url.indexOf('projects_') + 'projects_'.length;
@@ -630,9 +285,10 @@
                 ordering: true,
                 clientSide: true,
                 lengthChange: false,
-                searching: indvidualSearchFieldsCount > 0 ? false : true,
-                paging: false,
-                info: false,
+                // searching: indvidualSearchFieldsCount > 0 ? false : true,
+                searching: true,
+                paging: true,
+                info: true,
                 scrollCollapse: true,
                 scrollX: true,
                 "initComplete": function(settings, json) {
@@ -642,6 +298,17 @@
                     "search": '',
                     "searchPlaceholder": "   Search",
                 },
+                 buttons: [{
+                    "extend": 'excel',
+                    "text": `<span data-dismiss="modal" data-toggle="tooltip" data-placement="left" data-original-title="Export" style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
+                             </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></span>`,
+                    "className": 'btn btn-primary-export text-white',
+                    "title": 'PROCODE',
+                    "filename": 'claim_history_'+date,
+                    "exportOptions": {
+                        "columns": ':not(.notexport)'// Exclude first two columns
+                    }
+                }],
                 dom: "<'row'<'col-md-12'f><'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>"
             })
             table.buttons().container()
@@ -650,80 +317,6 @@
 
             var clientName = $('#clientName').val();
             var subProjectName = $('#subProjectName').val();
-            $(document).on('click', '.clickable-view', function(e) {
-                var record_id = $(this).closest('tr').find('#table_id').text();
-                var $row = $(this).closest('tr');
-                var tdCount = $row.find('td').length;
-                var thCount = tdCount - 1;
-
-                var headers = [];
-                $row.closest('table').find('thead th input').each(function() {
-                    if ($(this).val() != undefined) {
-                        headers.push($(this).val());
-                    }
-                });
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
-                            'content')
-                    }
-                });
-
-                $.ajax({
-                    url: "{{ url('client_view_details') }}",
-                    method: 'POST',
-                    data: {
-                        record_id: record_id,
-                        clientName: clientName,
-                        subProjectName: subProjectName,
-                    },
-                    success: function(response) {
-                        if (response.success == true) {
-
-                            $('#myModal_view').modal('show');
-                            handleClientData(response.clientData, headers);
-                        } else {
-                            $('#myModal_view').modal('hide');
-                            js_notification('error', 'Something went wrong');
-                        }
-                    },
-                });
-
-                function handleClientData(clientData, headers) {
-                    $.each(headers, function(index, header) {
-                        value = clientData[header];
-                        $('label[id="' + header + '"]').html("");
-                        if (/_el_/.test(value)) {
-                            var values = value.split('_el_');
-                            var formattedDatas = [];
-                            values.forEach(function(data, index) {
-                                var circle = $('<span>').addClass('circle');
-                                var span = $('<span>').addClass('date-label').text(data);
-                                span.prepend(circle);
-                                formattedDatas.push(span);
-                            });
-                            formattedDatas.forEach(function(span, index) {
-                                $('label[id="' + header + '"]').append(span);
-                            });
-                        } else {
-                            if (header === 'chart_status' && value.includes('CE_')) {
-                                value = value.replace('CE_', '');
-                                $('#title_status_view').text(value);
-                            }
-                            
-                            $('label[id="' + header + '"]').text(value);
-                        }
-
-                        function formatDate(dateString) {
-                            var parts = dateString.split('-');
-                            var formattedDatas = parts[1] + '/' + parts[2] + '/' + parts[0];
-                            return formattedDatas;
-                        }
-                    });
-
-                }
-            });
-
             $(document).on('click', '.one', function() {
                 window.location.href = baseUrl + 'projects_assigned/' + clientName + '/' + subProjectName +
                     "?parent=" +
@@ -799,59 +392,6 @@
                         "parent"] +
                     "&child=" + getUrlVars()["child"];
             })
-            $(document).on('click', '#assign_export', function(e) {
-                var resourceName = null;
-                var formData = $('#formSearch').serialize();
-                var chartStatus = "Auto_Close";
-                formData += '&chart_status=' + chartStatus;
-                formData += '&clientName=' + clientName;
-                formData += '&subProjectName=' + subProjectName;
-                formData += '&resourceName=' + resourceName;
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
-                            'content')
-                    }
-                });
-                KTApp.block('#export_div', {
-                    overlayColor: '#000000',
-                    state: 'danger',
-                    opacity: 0.1,
-                    message: 'Fetching...',
-                });
-                $.ajax({
-                    url: "{{ url('client_export') }}",
-                    method: 'POST',
-                    data: formData,
-                    xhrFields: {
-                        responseType: 'blob'
-                    },
-                    success: function(response, status, xhr) {
-                        var filename = "";
-                        var disposition = xhr.getResponseHeader('Content-Disposition');
-                        if (disposition && disposition.indexOf('attachment') !== -1) {
-                            var matches = /filename[^;=\n]*=([^;\n]*)/.exec(disposition);
-                            if (matches != null && matches[1]) {
-                                filename = matches[1].trim().replace(/^"|"$/g, '');
-                            }
-                        }
-
-                        var blob = new Blob([response], {
-                            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                        });
-                        var link = document.createElement('a');
-                        link.href = window.URL.createObjectURL(blob);
-                        link.download = filename || 'export.xlsx';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        KTApp.unblock('#export_div');
-                    },
-                    error: function(response) {
-                        console.log('Error generating Excel file', response);
-                    }
-                });
-            });
 
             $("#ckbCheckAll").click(function() {
                 var isChecked = $(this).prop('checked');
@@ -911,74 +451,7 @@
             table.on('draw', function() {
                 attachCheckboxHandlers();
             });
-            $('#workable_dropdown').change(function() {
-
-                var checkedRowValues = [];
-                $('#client_non_workable_list').DataTable().$('input[name="check[]"]:checked').each(
-                function() {
-                    var rowData = {
-                        name: 'check[]',
-                        value: $(this).val()
-                    };
-                    checkedRowValues.push(rowData);
-                });
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
-                            'content')
-                    }
-                });
-                var selectId = $('#select_p1').css('display');
-                var clearId = $('#clear_p1').css('display');
-                var popupRecord = clearId == "none" ?
-                    <?= json_encode($arAutoCloseProjectDetails->lastItem()) ?> :
-                    <?= json_encode($arAutoCloseProjectDetails->total()) ?>;
-                var recordText = checkedRowValues.length > 1 ? "Do you want to update all " +
-                    checkedRowValues.length + " records to Workable?" :
-                    "Do you want to update this record to Workable?";
-                var allRecordText = popupRecord > 1 ? "Do you want to update all " + popupRecord +
-                    " records to Workable?" : "Do you want to update this record to Workable?";
-                var formData = $('#formSearch').serialize();
-                formData += '&checkedRowValues=' + encodeURIComponent(JSON.stringify(checkedRowValues));
-                formData += '&clientName=' + clientName;
-                formData += '&subProjectName=' + subProjectName;
-                formData += '&selectedRecords=' + clearId;
-                swal.fire({
-                    text: selectId == "none" && clearId == "none" ? recordText : allRecordText,
-                    icon: "success",
-                    buttonsStyling: false,
-                    showCancelButton: true,
-                    confirmButtonText: "Yes",
-                    cancelButtonText: "No",
-                    customClass: {
-                        confirmButton: "btn font-weight-bold btn-white-black",
-                        cancelButton: "btn font-weight-bold  btn-light-danger",
-                    }
-
-                }).then(function(result) {
-                    if (result.value == true) {
-                        $.ajax({
-                            url: "{{ url('autoclose_status_update') }}",
-                            method: 'POST',
-                            data: formData,
-                            success: function(response) {
-                                if (response.success == true) {
-                                    js_notification('success',
-                                        'Updated Successfully');
-                                } else {
-                                    js_notification('error', 'Something went wrong');
-                                }
-                                setTimeout(function() {
-                                    location.reload();
-                                }, 2000);
-                            },
-                        });
-
-                    } else {
-                        location.reload();
-                    }
-                });
-            })
+         
         })
     </script>
 @endpush

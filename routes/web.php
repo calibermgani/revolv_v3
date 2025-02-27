@@ -86,7 +86,7 @@ Route::any('project_call_chart_work_logs_reset', 'App\Http\Controllers\Productio
 Route::any('project_multi_store', 'App\Http\Controllers\ProductionController@clientMultiStore');
 Route::any('projects_auto_close/{clientName}/{subProjectName}', 'App\Http\Controllers\ProductionController@arAutoClose')->name('arAutoClose');
 Route::any('autoclose_status_update', 'App\Http\Controllers\ProductionController@autoCloseStatusUpdate');
-Route::any('get_claim_History/{clientName}/{subProjectName}', 'App\Http\Controllers\ProductionController@getClaimHistory');
+Route::any('get_claim_History', 'App\Http\Controllers\ProductionController@getClaimHistory');
 
 Route::group(['prefix' => 'qa_production'], function () {
     Route::any('qa_clients', 'App\Http\Controllers\QA\QAProductionController@clients')->name('qaClients');

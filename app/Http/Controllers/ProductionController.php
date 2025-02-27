@@ -29,6 +29,8 @@ use App\Models\ManualProjectDuplicate;
 use App\Jobs\GetProjJob;
 use Illuminate\Support\Facades\Cache;
 use App\Jobs\GetSubPrjJob;
+use App\Models\ClaimHistoryUniqueColumn;
+
 
 ini_set('memory_limit', '1024M');
 class ProductionController extends Controller
@@ -326,8 +328,16 @@ class ProductionController extends Controller
                             $attributes[$duplicateColumn['duplicate_column']]= $duplicateColumn['duplicate_column'];
                     }
                 }
+                    $claimHistoryAttributes = [];
+                    $clmnHistoryField = ClaimHistoryUniqueColumn::select('unique_column')->where('project_id', $decodedProjectName)
+                    ->where('sub_project_id',$decodedPracticeName)->get();
+                    if(count($clmnHistoryField) > 0) {
+                            foreach($clmnHistoryField as $historyColumn) {        
+                                    $claimHistoryAttributes[$historyColumn['unique_column']]= $historyColumn['unique_column'];
+                            }
+                        }
                 $popupMulineFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('field_type_3','popup_visible')->where('field_type','editable')->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->get();
-               return view('productions/clientAssignedTab',compact('assignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','assignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','searchData','resourceName','projectTypeSettings','existingCallerChartsWorkLogsInprocess','attributes','popupMulineFields','arAutoCloseCount'));
+               return view('productions/clientAssignedTab',compact('assignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','assignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','searchData','resourceName','projectTypeSettings','existingCallerChartsWorkLogsInprocess','attributes','popupMulineFields','arAutoCloseCount','claimHistoryAttributes'));
            } catch (\Exception $e) {
                log::debug($e->getMessage());
            }
@@ -2945,7 +2955,7 @@ class ProductionController extends Controller
                     }
                 }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
-               $completedProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
+               $arAutoCloseProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
                if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
                    if (class_exists($modelClass)) {
                        $arAutoCloseProjectDetails =  $query->where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','ASC')->paginate(50);
@@ -3083,64 +3093,70 @@ class ProductionController extends Controller
         }
     }
 
-    public function getClaimHistory(Request $request,$clientName,$subProjectName) {
-
+    // public function getClaimHistory(Request $request,$clientName,$subProjectName) {
+        public function getClaimHistory(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
            try {
-               $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
-               $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
-               $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
-               $decodedPracticeName = $subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($subProjectName, 'decode');
-               $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
-               $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
-               $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
-               $columnsHeader=[];
+                $uniqueColumnData = $request->input('uniqueColumnData');
+                if (!$uniqueColumnData) {
+                    return response()->json(['error' => 'Invalid Data Received'], 400);
+                }
+                $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
+                $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
+                $clientName=$uniqueColumnData['clientName'];
+                $subProjectName=$uniqueColumnData['subProjectName'];
+                $decodedProjectName = Helpers::encodeAndDecodeID($uniqueColumnData['clientName'], 'decode');
+                $decodedPracticeName = $uniqueColumnData['subProjectName'] == '--' ? '--' :Helpers::encodeAndDecodeID($uniqueColumnData['subProjectName'], 'decode');
+                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
+                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
+                $columnsHeader=[];
                if (Schema::hasTable($table_name)) {
                     $column_names = DB::select("DESCRIBE $table_name");
                     $columns = array_column($column_names, 'Field');
                     $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
                     'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
-                    'updated_at','created_at', 'deleted_at'];
+                    'updated_at','created_at', 'deleted_at','parent_id','ar_manager_rebuttal_status','ar_manager_rebuttal_comments','qa_manager_rebuttal_status','qa_manager_rebuttal_comments','QA_comments_count'];
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
                     });
                     array_push($columnsHeader,'aging','aging_range');
                }
                $modelName = Str::studly($table_name);
-               $modelClass = "App\\Models\\" . $modelName;
+               $modelClass = "App\\Models\\" . $modelName.'Datas';
                $query = $modelClass::query();
-               $searchData = [];
-               if($request['_token'] != null) {
-                    foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
-                       $searchData[$key] = $value;
+               $searchData = []; $filteredData = Arr::except($uniqueColumnData, ['clientName', 'subProjectName']);
+           
+                    foreach ($filteredData as $key => $value) {
+                       $searchData[$key] = $value; 
                         if (is_array($value)) {
-                            $value = implode('_el_', $value);  // If it's an array, handle it accordingly
+                            $value = implode('_el_', $value);
                         }
 
-                        // Assuming 'like' is needed for partial match searches (optional), adjust based on requirements
                         if (is_numeric($value) || is_bool($value)) {
-                            $query->where($key, $value);  // Exact match for numeric/boolean
-                        } elseif ($this->isDate($value)) {  // Check if it's a date
-                            $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
+                            $query->where($key, $value);  
+                        } elseif ($this->isDate($value)) { 
+                            $query->whereDate($key, '=', $value);  
                         } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
-                            $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
+                            $query->where($key, $value); 
                         } else {
                             if($value != null) {
-                              $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
+                              $query->where($key,$value); 
                             }
                         }
                     }
-                }
+              
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
-               $completedProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
+               $claimHistoryDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $uniqueColumnData['subProjectName'] == '--' ?  NULL : $decodedPracticeName;
                if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)) {
                    if (class_exists($modelClass)) {
-                       $arAutoCloseProjectDetails =  $query->where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','ASC')->paginate(50);
+                       $claimHistoryDetails =  $query->orderBy('id','ASC')->get();
+                       //->paginate(50);
                    }
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
-                      $arAutoCloseProjectDetails = $query->where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','ASC')->paginate(50);
-                  
+                      $claimHistoryDetails = $query->where('CE_emp_id',$loginEmpId)->orderBy('id','ASC')->get();
+                      //->paginate(50);                  
                    }
                  }
                  $dept= Session::get('loginDetails')['userInfo']['department']['id'];
@@ -3153,7 +3169,7 @@ class ProductionController extends Controller
                  $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                  $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
              
-                 return view('productions/claimHistory',compact('arAutoCloseProjectDetails','columnsHeader','clientName','subProjectName','modelClass','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','projectColSearchFields','projectColSearchFieldsType','searchData'));
+                 return view('productions/claimHistory',compact('claimHistoryDetails','columnsHeader','clientName','subProjectName','modelClass','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','projectColSearchFields','projectColSearchFieldsType','searchData'));
 
            } catch (\Exception $e) {
                log::debug($e->getMessage());

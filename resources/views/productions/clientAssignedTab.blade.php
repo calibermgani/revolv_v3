@@ -636,13 +636,12 @@ use Carbon\Carbon;
                                                                               $subProjectName = $data->sub_project_id != null ? App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->sub_project_id, 'encode') : '--';
                                                                         @endphp
                                                                         {{-- <span type = "button" id="expandButton"  class="float-right"> --}}
-                                                                            {{-- <span type = "button"  class="float-right" title="History">
-                                                                                <a href="{{ url('get_claim_History/' . $clientName . '/' . $subProjectName) . '?parent=' . request()->parent . '&child=' . request()->child }}" target="_blank">
+                                                                            <span type = "button"  id="history_tab" class="float-right" title="History" style="color:#6993FF;background-color:white;border-color:white;cursor: pointer;">
                                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
                                                                                     <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z"/>
                                                                                     <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466"/>
-                                                                                  </svg></a>
-                                                                       </span> --}}
+                                                                                </svg>
+                                                                            </span>
 
                                                                     </h6>&nbsp;&nbsp;
                                                                     @if (count($popupEditableFields) > 0)
@@ -1457,6 +1456,9 @@ use Carbon\Carbon;
     }
 nav{
     float: right !important;
+}
+#history_tab {
+    pointer-events: auto !important;
 }
 
 
@@ -3057,8 +3059,65 @@ nav{
 
                     } else {
                     return false;
-                    }                   
+                    }                 
             });   
+            $(document).on('click', '#history_tab', function (e) {
+                e.preventDefault();
+
+                var claimHistoryUniqueColumns = @json($claimHistoryAttributes);
+                var uniqueColumnData = {};
+
+                $('#formConfiguration').serializeArray().forEach(function (input) {
+                    let labelName = input.name.replace('[]', '');
+                    if (Object.keys(claimHistoryUniqueColumns).length > 0 && claimHistoryUniqueColumns[labelName]) {
+                        uniqueColumnData['clientName'] = clientName;
+                        uniqueColumnData['subProjectName'] = subProjectName;
+                        uniqueColumnData[labelName] = input.value;
+                    }
+                });
+
+                if (Object.keys(uniqueColumnData).length === 0) {
+                    alert("No data found to send!");
+                    return;
+                }
+
+                var form = document.createElement("form");
+                form.method = "POST";
+                form.action = baseUrl + "get_claim_History"+"?parent=" +
+                getUrlVars()[
+                    "parent"] + "&child=" + getUrlVars()["child"]; 
+                    
+                form.target = "_blank"; 
+
+                var csrfToken = document.createElement("input");
+                csrfToken.type = "hidden";
+                csrfToken.name = "_token";
+                csrfToken.value = $('meta[name="csrf-token"]').attr('content');
+                form.appendChild(csrfToken);
+                for (const key in uniqueColumnData) {
+                    if (uniqueColumnData.hasOwnProperty(key)) {
+                        var input = document.createElement("input");
+                        input.type = "hidden";
+                        input.name = "uniqueColumnData[" + key + "]";
+                        input.value = uniqueColumnData[key];
+                        form.appendChild(input);
+                    }
+                }
+                var parentInput = document.createElement("input");
+                parentInput.type = "hidden";
+                parentInput.name = "parent";
+                parentInput.value = getUrlVars()["parent"] || "defaultParent";
+                form.appendChild(parentInput);
+
+                var childInput = document.createElement("input");
+                childInput.type = "hidden";
+                childInput.name = "child";
+                childInput.value = getUrlVars()["child"] || "defaultChild";
+                form.appendChild(childInput);
+
+                document.body.appendChild(form);
+                form.submit(); 
+            });
         })
 
         function updateTime() {
