@@ -164,7 +164,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('ms_charge_entry_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@msChargeEntryDuplicates');
     Route::any('dkmg_charge_entry', 'App\Http\Controllers\ProjectAuthAutomationController@dkmgChargeEntry');
     Route::any('dkmg_charge_entry_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@dkmgChargeEntryDuplicates');
-
+    Route::any('smhc_ev_vob', 'App\Http\Controllers\ProjectAuthAutomationController@smhcEvVob');
+    Route::any('smhc_ev_vob_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@smhcEvVobDuplicates');
 
     
     Route::any('production_auto_close', 'App\Http\Controllers\ProjectController@productionAutoClose');

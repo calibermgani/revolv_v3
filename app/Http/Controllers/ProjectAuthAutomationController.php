@@ -22,6 +22,8 @@ use App\Models\MsChargeEntry;
 use App\Models\MsChargeEntryDuplicates;
 use App\Models\DkmgChargeEntry;
 use App\Models\DkmgChargeEntryDuplicates;
+use App\Models\SmhcEvVob;
+use App\Models\smhcEvVobDuplicates;
 
 class ProjectAuthAutomationController extends Controller
 {
@@ -812,6 +814,117 @@ class ProjectAuthAutomationController extends Controller
                     'department' => isset($request->department) && $request->department != "NULL" ? $request->department : NULL,
                     'appointment_type' => isset($request->appointment_type) && $request->appointment_type != "NULL" ? $request->appointment_type : NULL,
                     'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+    public function smhcEvVob(Request $request)
+    {
+        try {
+            $attributes = [
+                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                 'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                 'mrn' => isset($request->mrn) && $request->mrn != "NULL" ? $request->mrn : NULL,
+                 'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                 'subscriber' => isset($request->subscriber) && $request->subscriber != "NULL" ? $request->subscriber : NULL,
+                 'policy_id' => isset($request->policy_id) && $request->policy_id != "NULL" ? $request->policy_id : NULL,
+                 'policy_start_date' => isset($request->policy_start_date) && $request->policy_start_date != "NULL" ? $request->policy_start_date : NULL,
+                 'policy_end_date' => isset($request->policy_end_date) && $request->policy_end_date != "NULL" ? $request->policy_end_date : NULL,
+                 'visit_date' => isset($request->visit_date) && $request->visit_date != "NULL" ? $request->visit_date : NULL,
+                 'visit_time' => isset($request->visit_time) && $request->visit_time != "NULL" ? $request->visit_time : NULL,
+                 'last_verification_date' => isset($request->last_verification_date) && $request->last_verification_date != "NULL" ? $request->last_verification_date : NULL,
+                 'last_verification_time' => isset($request->last_verification_time) && $request->last_verification_time != "NULL" ? $request->last_verification_time : NULL,
+                 'eligibility_status' => isset($request->eligibility_status) && $request->eligibility_status != "NULL" ? $request->eligibility_status : NULL,
+                 'eligibility_response' => isset($request->eligibility_response) && $request->eligibility_response != "NULL" ? $request->eligibility_response : NULL,
+                 'submitter_name' => isset($request->submitter_name) && $request->submitter_name != "NULL" ? $request->submitter_name : NULL,
+                 'submitter_npi' => isset($request->submitter_npi) && $request->submitter_npi != "NULL" ? $request->submitter_npi : NULL,
+                 'invoke_date' => carbon::now()->format('Y-m-d')
+             ];         
+
+            $duplicateRecordExisting  =  SmhcEvVob::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                SmhcEvVob::insert([
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                        'mrn' => isset($request->mrn) && $request->mrn != "NULL" ? $request->mrn : NULL,
+                        'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                        'subscriber' => isset($request->subscriber) && $request->subscriber != "NULL" ? $request->subscriber : NULL,
+                        'policy_id' => isset($request->policy_id) && $request->policy_id != "NULL" ? $request->policy_id : NULL,
+                        'policy_start_date' => isset($request->policy_start_date) && $request->policy_start_date != "NULL" ? $request->policy_start_date : NULL,
+                        'policy_end_date' => isset($request->policy_end_date) && $request->policy_end_date != "NULL" ? $request->policy_end_date : NULL,
+                        'visit_date' => isset($request->visit_date) && $request->visit_date != "NULL" ? $request->visit_date : NULL,
+                        'visit_time' => isset($request->visit_time) && $request->visit_time != "NULL" ? $request->visit_time : NULL,
+                        'last_verification_date' => isset($request->last_verification_date) && $request->last_verification_date != "NULL" ? $request->last_verification_date : NULL,
+                        'last_verification_time' => isset($request->last_verification_time) && $request->last_verification_time != "NULL" ? $request->last_verification_time : NULL,
+                        'eligibility_status' => isset($request->eligibility_status) && $request->eligibility_status != "NULL" ? $request->eligibility_status : NULL,
+                        'eligibility_response' => isset($request->eligibility_response) && $request->eligibility_response != "NULL" ? $request->eligibility_response : NULL,
+                        'submitter_name' => isset($request->submitter_name) && $request->submitter_name != "NULL" ? $request->submitter_name : NULL,
+                        'submitter_npi' => isset($request->submitter_npi) && $request->submitter_npi != "NULL" ? $request->submitter_npi : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  SmhcEvVob::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                if ($duplicateRecord) {
+                    $duplicateRecord->update([
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                        'mrn' => isset($request->mrn) && $request->mrn != "NULL" ? $request->mrn : NULL,
+                        'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                        'subscriber' => isset($request->subscriber) && $request->subscriber != "NULL" ? $request->subscriber : NULL,
+                        'policy_id' => isset($request->policy_id) && $request->policy_id != "NULL" ? $request->policy_id : NULL,
+                        'policy_start_date' => isset($request->policy_start_date) && $request->policy_start_date != "NULL" ? $request->policy_start_date : NULL,
+                        'policy_end_date' => isset($request->policy_end_date) && $request->policy_end_date != "NULL" ? $request->policy_end_date : NULL,
+                        'visit_date' => isset($request->visit_date) && $request->visit_date != "NULL" ? $request->visit_date : NULL,
+                        'visit_time' => isset($request->visit_time) && $request->visit_time != "NULL" ? $request->visit_time : NULL,
+                        'last_verification_date' => isset($request->last_verification_date) && $request->last_verification_date != "NULL" ? $request->last_verification_date : NULL,
+                        'last_verification_time' => isset($request->last_verification_time) && $request->last_verification_time != "NULL" ? $request->last_verification_time : NULL,
+                        'eligibility_status' => isset($request->eligibility_status) && $request->eligibility_status != "NULL" ? $request->eligibility_status : NULL,
+                        'eligibility_response' => isset($request->eligibility_response) && $request->eligibility_response != "NULL" ? $request->eligibility_response : NULL,
+                        'submitter_name' => isset($request->submitter_name) && $request->submitter_name != "NULL" ? $request->submitter_name : NULL,
+                        'submitter_npi' => isset($request->submitter_npi) && $request->submitter_npi != "NULL" ? $request->submitter_npi : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function smhcEvVobDuplicates(Request $request)
+    {
+        try {
+               SmhcEvVobDuplicates::insert([
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                    'mrn' => isset($request->mrn) && $request->mrn != "NULL" ? $request->mrn : NULL,
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                    'subscriber' => isset($request->subscriber) && $request->subscriber != "NULL" ? $request->subscriber : NULL,
+                    'policy_id' => isset($request->policy_id) && $request->policy_id != "NULL" ? $request->policy_id : NULL,
+                    'policy_start_date' => isset($request->policy_start_date) && $request->policy_start_date != "NULL" ? $request->policy_start_date : NULL,
+                    'policy_end_date' => isset($request->policy_end_date) && $request->policy_end_date != "NULL" ? $request->policy_end_date : NULL,
+                    'visit_date' => isset($request->visit_date) && $request->visit_date != "NULL" ? $request->visit_date : NULL,
+                    'visit_time' => isset($request->visit_time) && $request->visit_time != "NULL" ? $request->visit_time : NULL,
+                    'last_verification_date' => isset($request->last_verification_date) && $request->last_verification_date != "NULL" ? $request->last_verification_date : NULL,
+                    'last_verification_time' => isset($request->last_verification_time) && $request->last_verification_time != "NULL" ? $request->last_verification_time : NULL,
+                    'eligibility_status' => isset($request->eligibility_status) && $request->eligibility_status != "NULL" ? $request->eligibility_status : NULL,
+                    'eligibility_response' => isset($request->eligibility_response) && $request->eligibility_response != "NULL" ? $request->eligibility_response : NULL,
+                    'submitter_name' => isset($request->submitter_name) && $request->submitter_name != "NULL" ? $request->submitter_name : NULL,
+                    'submitter_npi' => isset($request->submitter_npi) && $request->submitter_npi != "NULL" ? $request->submitter_npi : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
