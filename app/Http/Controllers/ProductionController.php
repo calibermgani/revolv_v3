@@ -33,6 +33,7 @@ use App\Models\ClaimHistoryUniqueColumn;
 
 
 ini_set('memory_limit', '1024M');
+ini_set('max_execution_time', 120);
 class ProductionController extends Controller
 {
     public function dashboard() {
@@ -2321,8 +2322,10 @@ class ProductionController extends Controller
     }
 
     public function clientExport(Request $request) {
+
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
             try {
+                
              
                 $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && 
                 Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
