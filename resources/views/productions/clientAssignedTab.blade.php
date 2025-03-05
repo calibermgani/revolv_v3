@@ -654,7 +654,7 @@ use Carbon\Carbon;
                                                                         );
                                                                         $inputType = $data->input_type;
                                                                         $options =
-                                                                            $data->options_name != null ? explode(',', $data->options_name) : null;
+                                                                        $data && $data->options_name != null ? explode(',', $data->options_name) : null;
                                                                         $associativeOptions = [];
                                                                         if ($options !== null) {
                                                                             foreach ($options as $option) {
