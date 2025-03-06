@@ -5278,20 +5278,19 @@ public function NexTrustBillingArDuplicates(Request $request)
     {
         try {
             $attributes = [
-                'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,  
+                 'c_id' => isset($request->c_id) && $request->c_id != "NULL" ? $request->c_id : NULL,  
                  'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
                  'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
-                'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt : NULL,
-                'invoke_date' => carbon::now()->format('Y-m-d')
+                 'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL
              ];          
 
             $duplicateRecordExisting  =  RocAr::where($attributes)->exists();
             if (!$duplicateRecordExisting) {
                 RocAr::insert([
-                    'record_scoring' => isset($request->record_scoring) && $request->record_scoring != "NULL" ? $request->record_scoring : NULL,  
                     'last_activity_type' => isset($request->last_activity_type) && $request->last_activity_type != "NULL" ? $request->last_activity_type : NULL,  
-                    'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,  
-                    'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL, 
+                    'days_to_appeal' => isset($request->days_to_appeal) && $request->days_to_appeal != "NULL" ? $request->days_to_appeal : NULL,  
+                    'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL, 
+                    'c_id' => isset($request->c_id) && $request->c_id != "NULL" ? $request->c_id : NULL, 
                     'claim_form_name' => isset($request->claim_form_name) && $request->claim_form_name != "NULL" ? $request->claim_form_name : NULL, 
                     'created' => isset($request->created) && $request->created != "NULL" ? $request->created : NULL, 
                     'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
@@ -5306,8 +5305,9 @@ public function NexTrustBillingArDuplicates(Request $request)
                     'subscriber_id' => isset($request->subscriber_id) && $request->subscriber_id != "NULL" ? $request->subscriber_id : NULL, 
                     'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
                     'tx_list' => isset($request->tx_list) && $request->tx_list != "NULL" ? $request->tx_list : NULL,
-                    'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt : NULL,
-                    'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL,
+                    'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+                    'outstanding_amount' => isset($request->outstanding_amount) && $request->outstanding_amount != "NULL" ? $request->outstanding_amount : NULL,
+                    'claim_status' => isset($request->claim_status) && $request->claim_status != "NULL" ? $request->claim_status : NULL,
                     'billing_prov_npi' => isset($request->billing_prov_npi) && $request->billing_prov_npi != "NULL" ? $request->billing_prov_npi : NULL,
                     'svc_prov_npi' => isset($request->svc_prov_npi) && $request->svc_prov_npi != "NULL" ? $request->svc_prov_npi : NULL,
                     'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
@@ -5321,7 +5321,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                     'days_in_wq' => isset($request->days_in_wq) && $request->days_in_wq != "NULL" ? $request->days_in_wq : NULL,
                     'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
                     'current_payer_icn' => isset($request->current_payer_icn) && $request->current_payer_icn != "NULL" ? $request->current_payer_icn : NULL,
-                    'suggested_initial_follow_up_date' => isset($request->suggested_initial_follow_up_date) && $request->suggested_initial_follow_up_date != "NULL" ? $request->suggested_initial_follow_up_date : NULL,
+                    'suggested_intial_follow_up_date' => isset($request->suggested_intial_follow_up_date) && $request->suggested_intial_follow_up_date != "NULL" ? $request->suggested_intial_follow_up_date : NULL,
                     'title' => isset($request->title) && $request->title != "NULL" ? $request->title : NULL,
                     'has_corr_mail' => isset($request->has_corr_mail) && $request->has_corr_mail != "NULL" ? $request->has_corr_mail : NULL,
                     'adj_denied' => isset($request->adj_denied) && $request->adj_denied != "NULL" ? $request->adj_denied : NULL,
@@ -5335,10 +5335,10 @@ public function NexTrustBillingArDuplicates(Request $request)
                 $duplicateRecord  =  RocAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
                 if ($duplicateRecord) {
                     $duplicateRecord->update([
-                        'record_scoring' => isset($request->record_scoring) && $request->record_scoring != "NULL" ? $request->record_scoring : NULL,  
                         'last_activity_type' => isset($request->last_activity_type) && $request->last_activity_type != "NULL" ? $request->last_activity_type : NULL,  
-                        'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,  
-                        'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL, 
+                        'days_to_appeal' => isset($request->days_to_appeal) && $request->days_to_appeal != "NULL" ? $request->days_to_appeal : NULL,  
+                        'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL, 
+                        'c_id' => isset($request->c_id) && $request->c_id != "NULL" ? $request->c_id : NULL, 
                         'claim_form_name' => isset($request->claim_form_name) && $request->claim_form_name != "NULL" ? $request->claim_form_name : NULL, 
                         'created' => isset($request->created) && $request->created != "NULL" ? $request->created : NULL, 
                         'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
@@ -5353,8 +5353,9 @@ public function NexTrustBillingArDuplicates(Request $request)
                         'subscriber_id' => isset($request->subscriber_id) && $request->subscriber_id != "NULL" ? $request->subscriber_id : NULL, 
                         'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
                         'tx_list' => isset($request->tx_list) && $request->tx_list != "NULL" ? $request->tx_list : NULL,
-                        'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt : NULL,
-                        'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL,
+                        'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+                        'outstanding_amount' => isset($request->outstanding_amount) && $request->outstanding_amount != "NULL" ? $request->outstanding_amount : NULL,
+                        'claim_status' => isset($request->claim_status) && $request->claim_status != "NULL" ? $request->claim_status : NULL,
                         'billing_prov_npi' => isset($request->billing_prov_npi) && $request->billing_prov_npi != "NULL" ? $request->billing_prov_npi : NULL,
                         'svc_prov_npi' => isset($request->svc_prov_npi) && $request->svc_prov_npi != "NULL" ? $request->svc_prov_npi : NULL,
                         'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
@@ -5368,7 +5369,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                         'days_in_wq' => isset($request->days_in_wq) && $request->days_in_wq != "NULL" ? $request->days_in_wq : NULL,
                         'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
                         'current_payer_icn' => isset($request->current_payer_icn) && $request->current_payer_icn != "NULL" ? $request->current_payer_icn : NULL,
-                        'suggested_initial_follow_up_date' => isset($request->suggested_initial_follow_up_date) && $request->suggested_initial_follow_up_date != "NULL" ? $request->suggested_initial_follow_up_date : NULL,
+                        'suggested_intial_follow_up_date' => isset($request->suggested_intial_follow_up_date) && $request->suggested_intial_follow_up_date != "NULL" ? $request->suggested_intial_follow_up_date : NULL,
                         'title' => isset($request->title) && $request->title != "NULL" ? $request->title : NULL,
                         'has_corr_mail' => isset($request->has_corr_mail) && $request->has_corr_mail != "NULL" ? $request->has_corr_mail : NULL,
                         'adj_denied' => isset($request->adj_denied) && $request->adj_denied != "NULL" ? $request->adj_denied : NULL,
@@ -5388,10 +5389,10 @@ public function NexTrustBillingArDuplicates(Request $request)
     {
         try {
             RocArDuplicates::insert([
-                    'record_scoring' => isset($request->record_scoring) && $request->record_scoring != "NULL" ? $request->record_scoring : NULL,  
                     'last_activity_type' => isset($request->last_activity_type) && $request->last_activity_type != "NULL" ? $request->last_activity_type : NULL,  
-                    'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,  
-                    'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL, 
+                    'days_to_appeal' => isset($request->days_to_appeal) && $request->days_to_appeal != "NULL" ? $request->days_to_appeal : NULL,  
+                    'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL, 
+                    'c_id' => isset($request->c_id) && $request->c_id != "NULL" ? $request->c_id : NULL, 
                     'claim_form_name' => isset($request->claim_form_name) && $request->claim_form_name != "NULL" ? $request->claim_form_name : NULL, 
                     'created' => isset($request->created) && $request->created != "NULL" ? $request->created : NULL, 
                     'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
@@ -5406,8 +5407,9 @@ public function NexTrustBillingArDuplicates(Request $request)
                     'subscriber_id' => isset($request->subscriber_id) && $request->subscriber_id != "NULL" ? $request->subscriber_id : NULL, 
                     'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
                     'tx_list' => isset($request->tx_list) && $request->tx_list != "NULL" ? $request->tx_list : NULL,
-                    'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt : NULL,
-                    'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL,
+                    'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+                    'outstanding_amount' => isset($request->outstanding_amount) && $request->outstanding_amount != "NULL" ? $request->outstanding_amount : NULL,
+                    'claim_status' => isset($request->claim_status) && $request->claim_status != "NULL" ? $request->claim_status : NULL,
                     'billing_prov_npi' => isset($request->billing_prov_npi) && $request->billing_prov_npi != "NULL" ? $request->billing_prov_npi : NULL,
                     'svc_prov_npi' => isset($request->svc_prov_npi) && $request->svc_prov_npi != "NULL" ? $request->svc_prov_npi : NULL,
                     'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
@@ -5421,7 +5423,7 @@ public function NexTrustBillingArDuplicates(Request $request)
                     'days_in_wq' => isset($request->days_in_wq) && $request->days_in_wq != "NULL" ? $request->days_in_wq : NULL,
                     'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
                     'current_payer_icn' => isset($request->current_payer_icn) && $request->current_payer_icn != "NULL" ? $request->current_payer_icn : NULL,
-                    'suggested_initial_follow_up_date' => isset($request->suggested_initial_follow_up_date) && $request->suggested_initial_follow_up_date != "NULL" ? $request->suggested_initial_follow_up_date : NULL,
+                    'suggested_intial_follow_up_date' => isset($request->suggested_intial_follow_up_date) && $request->suggested_intial_follow_up_date != "NULL" ? $request->suggested_intial_follow_up_date : NULL,
                     'title' => isset($request->title) && $request->title != "NULL" ? $request->title : NULL,
                     'has_corr_mail' => isset($request->has_corr_mail) && $request->has_corr_mail != "NULL" ? $request->has_corr_mail : NULL,
                     'adj_denied' => isset($request->adj_denied) && $request->adj_denied != "NULL" ? $request->adj_denied : NULL,
