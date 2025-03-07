@@ -987,7 +987,7 @@ class ProductionController extends Controller
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName.'Datas';
-                $originalModelClass = "App\\Models\\" . $modelName;
+                $originalModelClass = "App\\Models\\" . $modelName;dd($modelClass,$originalModelClass);
                 // $modelClass = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',ucfirst($decodedClientName).ucfirst($decodedsubProjectName)).'Datas';
                 $data = [];
                 foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
