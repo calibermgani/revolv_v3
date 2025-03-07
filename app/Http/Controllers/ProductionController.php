@@ -1000,8 +1000,8 @@ class ProductionController extends Controller
                 }
                 $data['invoke_date'] = date('Y-m-d',strtotime($data['invoke_date']));
                 $data['parent_id'] = $data['idValue'];//dd($modelClass::first(),$originalModelClass::first(),$data);
-                $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','desc')->first();dd($datasRecord);
-                $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->get();
+                $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','desc')->first();
+                $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->get();dd($coderCompletedRecords);
                 $coderCompletedRecordsCount = count($coderCompletedRecords); $data['coder_work_date'] = $data['ar_at'] = NULL;
                 $autoCloseRecords = $originalModelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->get();
                 $autoCloseRecordsCount = count($autoCloseRecords);
