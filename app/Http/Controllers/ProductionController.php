@@ -1126,8 +1126,8 @@ class ProductionController extends Controller
                             }
                         }
                     }
-                }dd($coderCompletedRecords);
-                $record = $originalModelClass::where('id', $data['parent_id'])->first();
+                }
+                $record = $originalModelClass::where('id', $data['parent_id'])->first();dd($record);
                 if($record != null) {
                 $qaData = $originalModelClass::where('id', $data['parent_id'])->first()->toArray();
                 $excludeKeys = ['id', 'created_at', 'updated_at', 'deleted_at'];
