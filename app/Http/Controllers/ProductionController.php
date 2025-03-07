@@ -987,7 +987,7 @@ class ProductionController extends Controller
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName.'Datas';
-                $originalModelClass = "App\\Models\\" . $modelName;dd($modelClass,$originalModelClass);
+                $originalModelClass = "App\\Models\\" . $modelName;
                 // $modelClass = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',ucfirst($decodedClientName).ucfirst($decodedsubProjectName)).'Datas';
                 $data = [];
                 foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
@@ -997,7 +997,7 @@ class ProductionController extends Controller
                     } else {
                         $data[$key] = $value;
                     }
-                }
+                }dd($modelClass,$originalModelClass,$data);
                 $data['invoke_date'] = date('Y-m-d',strtotime($data['invoke_date']));
                 $data['parent_id'] = $data['idValue'];dd($datasRecord);
                 $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','desc')->first();dd($datasRecord);
