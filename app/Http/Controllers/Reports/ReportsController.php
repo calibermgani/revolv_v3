@@ -18,6 +18,7 @@ use App\Jobs\GetUserNameByEmpId;
 use Illuminate\Support\Facades\Cache;
 use App\Models\projectInputSetting;
 use App\Jobs\getProjectResourceListJob;
+use App\Models\ProjectReason;
 class ReportsController extends Controller
 {
     public function reporstIndex(){
@@ -776,4 +777,71 @@ class ReportsController extends Controller
     //         return redirect('/');
     //     }
     // }
+
+    public function productionMgrUserReport(Request $request) {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
+            try {           
+                if ($request->work_date != null || $request->project_id!= null || $request->sub_project_id != null ) {           
+                    if($request->project_id) {
+                        $projectId = $request->project_id;
+                    } else {
+                        $projectId = null;
+                    }
+                    if($request->sub_project_id) {
+                        $subProjectId = $request->sub_project_id;
+                    }  else {
+                        $subProjectId = null;
+                    }
+                    if ($request->work_date) {
+                        $workDate = $request->work_date;
+                    } else {
+                        $workDate = '';
+                    }
+                    $work_date = $request->work_date;
+                    if (isset($request->work_date) && !empty($request->work_date)) {
+                        $work_date = explode(' - ', $request->work_date);
+                        $startTime = date('Y-m-d 17:00:00', strtotime($work_date[0]));
+                        $endTime = date('Y-m-d 09:00:00', strtotime($work_date[1] . ' +1 day'));
+                    }else{
+                        $startTime = "";
+                        $endTime = "";
+                    }
+                    $productionReasons = ProjectReason::where(function ($query) use ($startTime, $endTime,$projectId,$subProjectId) {
+                        if($projectId) {
+                            $query->where('project_id', $projectId);
+                        } else {
+                            $query;
+                        }
+                        if($subProjectId) {
+                            $query->where('sub_project_id', $subProjectId);
+                        } else {
+                            $query;
+                        }
+                        if (!empty($startTime) && !empty($endTime)) {
+                            $query->whereBetween('project_reasons.created_at', [$startTime, $endTime]);
+                        }else{
+                            $query;
+                        }
+                    }) ->groupBy('project_id','sub_project_id','manager_id','created_date')
+                      ->selectRaw('project_id, sub_project_id,manager_id,DATE(created_at) as created_date')->get(); 
+                    // $productionReasons = ProjectReason::when(!empty($startTime) && !empty($endTime), function ($query) use ($startTime, $endTime) {
+                    //     return $query->whereBetween('created_at', [$startTime, $endTime]);
+                    // })
+                    // ->groupBy('project_id','sub_project_id','manager_id','created_date')
+                    // ->selectRaw('project_id, sub_project_id,manager_id,DATE(created_at) as created_date') // Example aggregation
+                    // ->get();               
+                } else {      
+                    $productionReasons = [];
+                    $workDate = $startTime =$endTime='';
+                    $projectId = null;
+                    $subProjectId = null;
+                }
+                return view('reports.productionCommentsReport', compact('productionReasons','projectId','subProjectId','workDate','startTime','endTime'));                
+            } catch (\Exception $e) {
+                Log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
 }

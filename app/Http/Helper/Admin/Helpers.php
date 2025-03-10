@@ -31,7 +31,7 @@ use App\Models\ARStatusCodes;
 use App\Models\ARActionCodes;
 use App\Models\qaClassCatScope;
 use App\Models\ProjectReasonType;
-
+use App\Models\ProjectReason;
 
 class Helpers
 {
@@ -969,5 +969,25 @@ class Helpers
             return redirect('/');
         }
     }
+	public static function arReasonByPrjandSubPrjId($ProjectId,$subProjectId)
+	{
+		$data = ProjectReason::where('project_id', $ProjectId)->where('sub_project_id', $subProjectId)->first();
+		$ProjectReasonType =ProjectReasonType::where('id',$data->ar_reason)->first();
+			$arReasonName = $ProjectReasonType->reason_type;
+		// if($data->ar_reason == 8) {
+
+		// }
 	
+		$arReasonData = ['ar_reason' => $data->ar_reason,'ar_reason_name'=>$arReasonName];
+		return $arReasonData;
+	}
+
+	public static function qaReasonByPrjandSubPrjId($ProjectId,$subProjectId)
+	{
+		$data = ProjectReason::where('project_id', $ProjectId)->where('sub_project_id', $subProjectId)->first('qa_reason');
+		$ProjectReasonType =ProjectReasonType::where('id',$data->qa_reason)->first();
+		$qaReasonName = $ProjectReasonType->reason_type;
+		$qaReasonData = ['qa_reason' => $data->qa_reason,'qa_reason_name'=>$qaReasonName];
+		return $qaReasonData;
+	}
 }
