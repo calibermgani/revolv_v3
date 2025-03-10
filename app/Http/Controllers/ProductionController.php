@@ -982,7 +982,6 @@ class ProductionController extends Controller
                 $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
                 $decodedPracticeName =  $subProjectName == '--' ? NULL : Helpers::encodeAndDecodeID($subProjectName, 'decode');
                 $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
-                // $decodedsubProjectName = Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                 $decodedsubProjectName = $decodedPracticeName == NULL ? 'project':Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
@@ -1002,7 +1001,8 @@ class ProductionController extends Controller
                 $data['parent_id'] = $data['idValue'];
                 $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','desc')->first();
                 $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->get();
-                $coderCompletedRecordsCount = count($coderCompletedRecords); $data['coder_work_date'] = $data['ar_at'] = NULL;
+                $coderCompletedRecordsCount = count($coderCompletedRecords);
+                 $data['coder_work_date'] = $data['ar_at'] = NULL;
                 $autoCloseRecords = $originalModelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->get();
                 $autoCloseRecordsCount = count($autoCloseRecords);
                 $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
@@ -1040,33 +1040,82 @@ class ProductionController extends Controller
                             }
                         }
                     } else {
-                        // $qasamplingDetailsList  = QualitySampling::where('project_id',$decodedProjectName)->where('sub_project_id', $decodedPracticeName)->whereIn('coder_emp_id',[$loginEmpId,NULL])->orderBy('id','desc')->get();
-                        $qasamplingDetailsList = QualitySampling::where('project_id', $decodedProjectName)
+                        $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL; 
+                         $qasamplingDetailsList = QualitySampling::where('project_id', $decodedProjectName)
                                                 ->where('sub_project_id', $decodedPracticeName)
                                                 ->where(function($query) use ($loginEmpId) {
                                                     $query->where('coder_emp_id', $loginEmpId)
                                                         ->orWhereNull('coder_emp_id');
                                                 })->orderBy('id', 'desc')->get();
-                        // if( count($qasamplingDetailsList) == 0) {
-                        //     $qasamplingDetailsList = QualitySampling::where('project_id',$decodedProjectName)->where('sub_project_id',$decodedPracticeName)->orderBy('id','desc')->get();
-                        // }
-                        $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
-                        foreach ($qasamplingDetailsList as $qasamplingDetails) {
+                        $qasamplingDetailsPercentage = QualitySampling::where('project_id', $decodedProjectName)
+                            ->where('sub_project_id', $decodedPracticeName)
+                            ->where(function($query) use ($loginEmpId) {
+                                $query->where('coder_emp_id', $loginEmpId)
+                                    ->orWhereNull('coder_emp_id');
+                            })->sum('qa_percentage');                         
+                        foreach ($qasamplingDetailsList as $qKey => $qasamplingDetails) {
                             if($qasamplingDetails != null) {
-                                $qaPercentage = $qasamplingDetails["qa_percentage"];
-                                $qarecords = $coderCompletedRecordsCount*$qaPercentage/100;
-                                $samplingRecord = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])->where('qa_work_status','Sampling')->get();
-                                $samplingRecordCount =  count($samplingRecord);
-                                if($qarecords >= $samplingRecordCount ) {
+                                $allCompletedrecords = $coderCompletedRecordsCount*$qasamplingDetailsPercentage/100;
+                                $allCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId);
+                                $qaDynamicColumns =  $qasamplingDetails["qa_sample_column_name"];//office_keys,worklist,insurance_balance
+                                $qaDynamicValues =  $qasamplingDetails["qa_sample_column_value"];//off1,work2,ins2
+                              
+                                if($qaDynamicColumns != null && $qaDynamicValues != null) {
+                                    $qaDynamicColumns = explode(',', $qasamplingDetails["qa_sample_column_name"]); // Convert to array
+                                    $qaDynamicValues = explode(',', $qasamplingDetails["qa_sample_column_value"]); // Convert to array
+                                    if (count($qaDynamicColumns) === count($qaDynamicValues)) {
+                                        $mergedArray = array_combine($qaDynamicColumns, $qaDynamicValues);
+                                    } else {
+                                        $mergedArray = []; // Handle mismatched array lengths
+                                       
+                                    }
+                                    $allKeysExist = true;
+                                    $allValuesMatch = true;
+
+                                    foreach ($mergedArray as $key => $value) {
+                                        if (!array_key_exists($key, $data)) {
+                                            $allKeysExist = false;
+                                            break;
+                                        }                                        
+                                        if ($data[$key] !== $value) {
+                                            $allValuesMatch = false;
+                                        }
+                                    }
+                                    $samplingRecord = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])
+                                    ->where('qa_work_status','Sampling');
+                                    foreach ($qaDynamicColumns as $index => $column) {
+                                        $allCompletedRecords->where($column, $qaDynamicValues[$index] ?? null);
+                                        $samplingRecord->where($column, $qaDynamicValues[$index] ?? null);
+                                    }
+                                    $allCompletedRecords = $allCompletedRecords->get();
+                                    $samplingRecord = $samplingRecord->get();
+                                    $samplingRecordCount =  count($samplingRecord); 
+                                    $allCompletedRecordsCount = count($allCompletedRecords);
+                                    $qaPercentage = $qasamplingDetails["qa_percentage"];
+                                    $qarecords = $allCompletedrecords*(int)$qasamplingDetails["qa_percentage"]/80;
+                                }   else {
+                                    $allKeysExist = true;
+                                    $allValuesMatch = true;
+                                    $samplingRecord = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])
+                                    ->where('qa_work_status','Sampling');
+                                    $allCompletedRecords = $allCompletedRecords->get();
+                                    $samplingRecord = $samplingRecord->get();
+                                    $samplingRecordCount =  count($samplingRecord);   
+                                    $allCompletedRecordsCount = count($coderCompletedRecords);
+                                    $qaPercentage = $qasamplingDetails["qa_percentage"];
+                                    // $qarecords = $allCompletedRecordsCount*$qasamplingDetailsPercentage/100;
+                                    $qarecords = $allCompletedrecords;
+                                }                                                                       
+                                                 
+                                if($qarecords >= $samplingRecordCount && $allKeysExist && $allValuesMatch) {//dd($qarecords , $samplingRecordCount , $allKeysExist , $allValuesMatch,$data);
+                                    //dd($samplingRecord,$qarecords , $samplingRecordCount , $allKeysExist , $allValuesMatch,$data);          
                                     $data['QA_emp_id'] =  $qasamplingDetails["qa_emp_id"];
                                     $data['qa_work_status'] = "Sampling";
                                     $data['chart_status'] = "CE_Completed";
                                     break;
                                 } else {
-                                    //$data['QA_emp_id'] =  $qasamplingDetails["qa_emp_id"];
+                                    //dd($qarecords , $samplingRecordCount , $allKeysExist , $allValuesMatch,$data,'auto');
                                     $data['qa_work_status'] = "Auto_Close";
-                                    // $data['chart_status'] = "QA_Completed";
-
                                 }
                             }
                         }
@@ -1472,34 +1521,82 @@ class ProductionController extends Controller
                             }
                         }
                     } else {
+                        $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
                         $qasamplingDetailsList = QualitySampling::where('project_id', $decodedProjectName)
                                                 ->where('sub_project_id', $decodedPracticeName)
                                                 ->where(function($query) use ($loginEmpId) {
                                                     $query->where('coder_emp_id', $loginEmpId)
                                                         ->orWhereNull('coder_emp_id');
                                                 })->orderBy('id', 'desc')->get();
-                        // $qasamplingDetailsList = QualitySampling::where('project_id',$decodedProjectName)->where('sub_project_id',$decodedPracticeName)->where('coder_emp_id',$loginEmpId)->orderBy('id','desc')->get();
-                        // if( count($qasamplingDetailsList) == 0) {
-                        //     $qasamplingDetailsList = QualitySampling::where('project_id',$decodedProjectName)->where('sub_project_id',$decodedPracticeName)->orderBy('id','desc')->get();
-                        // }
-                        $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
-                        foreach ($qasamplingDetailsList as $qasamplingDetails) {
+                        $qasamplingDetailsPercentage = QualitySampling::where('project_id', $decodedProjectName)
+                        ->where('sub_project_id', $decodedPracticeName)
+                        ->where(function($query) use ($loginEmpId) {
+                            $query->where('coder_emp_id', $loginEmpId)
+                                ->orWhereNull('coder_emp_id');
+                        })->sum('qa_percentage');     
+                        foreach ($qasamplingDetailsList as $qKey => $qasamplingDetails) {
                             if($qasamplingDetails != null) {
-                                $qaPercentage = $qasamplingDetails["qa_percentage"];
-                                $qarecords = $coderCompletedRecordsCount*$qaPercentage/100;
-                                // $samplingRecord = $originalModelClass::where('chart_status','CE_Completed')->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])->where('qa_work_status','Sampling')->get();
-                                $samplingRecord = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])->where('qa_work_status','Sampling')->get();
-                                $samplingRecordCount =  count($samplingRecord);
-                                if($qarecords > $samplingRecordCount) {
+                                $allCompletedrecords = $coderCompletedRecordsCount*$qasamplingDetailsPercentage/100;
+                                $allCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId);
+                                $qaDynamicColumns =  $qasamplingDetails["qa_sample_column_name"];//office_keys,worklist,insurance_balance
+                                $qaDynamicValues =  $qasamplingDetails["qa_sample_column_value"];//off1,work2,ins2
+                              
+                                if($qaDynamicColumns != null && $qaDynamicValues != null) {
+                                    $qaDynamicColumns = explode(',', $qasamplingDetails["qa_sample_column_name"]); // Convert to array
+                                    $qaDynamicValues = explode(',', $qasamplingDetails["qa_sample_column_value"]); // Convert to array
+                                    if (count($qaDynamicColumns) === count($qaDynamicValues)) {
+                                        $mergedArray = array_combine($qaDynamicColumns, $qaDynamicValues);
+                                    } else {
+                                        $mergedArray = []; // Handle mismatched array lengths
+                                       
+                                    }
+                                    $allKeysExist = true;
+                                    $allValuesMatch = true;
+
+                                    foreach ($mergedArray as $key => $value) {
+                                        if (!array_key_exists($key, $data)) {
+                                            $allKeysExist = false;
+                                            break;
+                                        }                                        
+                                        if ($data[$key] !== $value) {
+                                            $allValuesMatch = false;
+                                        }
+                                    }
+                                    $samplingRecord = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])
+                                    ->where('qa_work_status','Sampling');
+                                    foreach ($qaDynamicColumns as $index => $column) {
+                                        $allCompletedRecords->where($column, $qaDynamicValues[$index] ?? null);
+                                        $samplingRecord->where($column, $qaDynamicValues[$index] ?? null);
+                                    }
+                                    $allCompletedRecords = $allCompletedRecords->get();
+                                    $samplingRecord = $samplingRecord->get();
+                                    $samplingRecordCount =  count($samplingRecord); 
+                                    $allCompletedRecordsCount = count($allCompletedRecords);
+                                    $qaPercentage = $qasamplingDetails["qa_percentage"];
+                                    $qarecords = $allCompletedrecords*(int)$qasamplingDetails["qa_percentage"]/80;
+                                }   else {
+                                    $allKeysExist = true;
+                                    $allValuesMatch = true;
+                                    $samplingRecord = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])
+                                    ->where('qa_work_status','Sampling');
+                                    $allCompletedRecords = $allCompletedRecords->get();
+                                    $samplingRecord = $samplingRecord->get();
+                                    $samplingRecordCount =  count($samplingRecord);   
+                                    $allCompletedRecordsCount = count($coderCompletedRecords);
+                                    $qaPercentage = $qasamplingDetails["qa_percentage"];
+                                    // $qarecords = $allCompletedRecordsCount*$qasamplingDetailsPercentage/100;
+                                    $qarecords = $allCompletedrecords;
+                                }                                                                       
+                                                 
+                                if($qarecords >= $samplingRecordCount && $allKeysExist && $allValuesMatch) {//dd($qarecords , $samplingRecordCount , $allKeysExist , $allValuesMatch,$data);
+                                    //dd($samplingRecord,$qarecords , $samplingRecordCount , $allKeysExist , $allValuesMatch,$data);          
                                     $data['QA_emp_id'] =  $qasamplingDetails["qa_emp_id"];
                                     $data['qa_work_status'] = "Sampling";
                                     $data['chart_status'] = "CE_Completed";
                                     break;
                                 } else {
-                                    //$data['QA_emp_id'] =  $qasamplingDetails["qa_emp_id"];
+                                    //dd($qarecords , $samplingRecordCount , $allKeysExist , $allValuesMatch,$data,'auto');
                                     $data['qa_work_status'] = "Auto_Close";
-                                    // $data['chart_status'] = "QA_Completed";
-
                                 }
                             }
                         }
@@ -2781,27 +2878,79 @@ class ProductionController extends Controller
                                 }
                             }
                         } else {
+                            $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL; 
                             $qasamplingDetailsList = QualitySampling::where('project_id', $decodedProjectName)
                                                     ->where('sub_project_id', $decodedPracticeName)
                                                     ->where(function($query) use ($loginEmpId) {
                                                         $query->where('coder_emp_id', $loginEmpId)
                                                             ->orWhereNull('coder_emp_id');
                                                     })->orderBy('id', 'desc')->get();
-                            $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
-                            foreach ($qasamplingDetailsList as $qasamplingDetails) {
+                            $qasamplingDetailsPercentage = QualitySampling::where('project_id', $decodedProjectName)
+                            ->where('sub_project_id', $decodedPracticeName)
+                            ->where(function($query) use ($loginEmpId) {
+                                $query->where('coder_emp_id', $loginEmpId)
+                                    ->orWhereNull('coder_emp_id');
+                            })->sum('qa_percentage');                    
+                            foreach ($qasamplingDetailsList as $qKey => $qasamplingDetails) {
                                 if($qasamplingDetails != null) {
-                                    $qaPercentage = $qasamplingDetails["qa_percentage"];
-                                    $qarecords = $coderCompletedRecordsCount*$qaPercentage/100;
-                                    $samplingRecord = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])->where('qa_work_status','Sampling')->get();
-                                    $samplingRecordCount =  count($samplingRecord);
-                                    if($qarecords >= $samplingRecordCount ) {
+                                    $allCompletedrecords = $coderCompletedRecordsCount*$qasamplingDetailsPercentage/100;
+                                    $allCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId);
+                                    $qaDynamicColumns =  $qasamplingDetails["qa_sample_column_name"];//office_keys,worklist,insurance_balance
+                                    $qaDynamicValues =  $qasamplingDetails["qa_sample_column_value"];//off1,work2,ins2
+                                  
+                                    if($qaDynamicColumns != null && $qaDynamicValues != null) {
+                                        $qaDynamicColumns = explode(',', $qasamplingDetails["qa_sample_column_name"]); // Convert to array
+                                        $qaDynamicValues = explode(',', $qasamplingDetails["qa_sample_column_value"]); // Convert to array
+                                        if (count($qaDynamicColumns) === count($qaDynamicValues)) {
+                                            $mergedArray = array_combine($qaDynamicColumns, $qaDynamicValues);
+                                        } else {
+                                            $mergedArray = []; // Handle mismatched array lengths
+                                           
+                                        }
+                                        $allKeysExist = true;
+                                        $allValuesMatch = true;
+    
+                                        foreach ($mergedArray as $key => $value) {
+                                            if (!array_key_exists($key, $data)) {
+                                                $allKeysExist = false;
+                                                break;
+                                            }                                        
+                                            if ($data[$key] !== $value) {
+                                                $allValuesMatch = false;
+                                            }
+                                        }
+                                        $samplingRecord = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])
+                                        ->where('qa_work_status','Sampling');
+                                        foreach ($qaDynamicColumns as $index => $column) {
+                                            $allCompletedRecords->where($column, $qaDynamicValues[$index] ?? null);
+                                            $samplingRecord->where($column, $qaDynamicValues[$index] ?? null);
+                                        }
+                                        $allCompletedRecords = $allCompletedRecords->get();
+                                        $samplingRecord = $samplingRecord->get();
+                                        $samplingRecordCount =  count($samplingRecord); 
+                                        $allCompletedRecordsCount = count($allCompletedRecords);
+                                        $qaPercentage = $qasamplingDetails["qa_percentage"];
+                                        $qarecords = $allCompletedrecords*(int)$qasamplingDetails["qa_percentage"]/80;
+                                    }   else {
+                                        $allKeysExist = true;
+                                        $allValuesMatch = true;
+                                        $samplingRecord = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])
+                                        ->where('qa_work_status','Sampling');
+                                        $allCompletedRecords = $allCompletedRecords->get();
+                                        $samplingRecord = $samplingRecord->get();
+                                        $samplingRecordCount =  count($samplingRecord);   
+                                        $allCompletedRecordsCount = count($coderCompletedRecords);
+                                        $qaPercentage = $qasamplingDetails["qa_percentage"];
+                                        $qarecords = $allCompletedrecords;
+                                    }                                                                       
+                                                     
+                                    if($qarecords >= $samplingRecordCount && $allKeysExist && $allValuesMatch) {//dd($qarecords , $samplingRecordCount , $allKeysExist , $allValuesMatch,$data);
                                         $data['QA_emp_id'] =  $qasamplingDetails["qa_emp_id"];
                                         $data['qa_work_status'] = "Sampling";
                                         $data['chart_status'] = "CE_Completed";
                                         break;
                                     } else {
-                                        $data['qa_work_status'] = "Auto_Close";
-                        
+                                         $data['qa_work_status'] = "Auto_Close";
                                     }
                                 }
                             }

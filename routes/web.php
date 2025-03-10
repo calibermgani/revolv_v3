@@ -87,6 +87,7 @@ Route::any('project_multi_store', 'App\Http\Controllers\ProductionController@cli
 Route::any('projects_auto_close/{clientName}/{subProjectName}', 'App\Http\Controllers\ProductionController@arAutoClose')->name('arAutoClose');
 Route::any('autoclose_status_update', 'App\Http\Controllers\ProductionController@autoCloseStatusUpdate');
 Route::any('get_claim_History', 'App\Http\Controllers\ProductionController@getClaimHistory');
+Route::any('projects_claim_find/{clientName}/{subProjectName}', 'App\Http\Controllers\ProductionController@prjClaimFind')->name('claimFind');
 
 Route::group(['prefix' => 'qa_production'], function () {
     Route::any('qa_clients', 'App\Http\Controllers\QA\QAProductionController@clients')->name('qaClients');
@@ -159,6 +160,7 @@ Route::group(['prefix' => 'qa_production'], function () {
         Route::any('team_performance_report', 'App\Http\Controllers\Reports\ReportsController@teamPerformanceReport');
         Route::any('production_reports', 'App\Http\Controllers\Reports\ReportsController@productionReports');
         Route::any('production_report_search', 'App\Http\Controllers\Reports\ReportsController@productionReportSearch');
+        Route::any('production_mgr_comments_report', 'App\Http\Controllers\Reports\ReportsController@productionMgrUserReport');
       
     });
     Route::group(['prefix' => 'production'], function () {
@@ -173,6 +175,7 @@ Route::group(['prefix' => 'qa_production'], function () {
         Route::get('project-ar-qa-counts/{projectId}/{yesterDayStartDate}/{yesterDayEndDate}/{rowProjectId}', 'App\Http\Controllers\ProjectController@getProjectCounts');
 
     });
+    Route::any('sampling_columns_list', 'App\Http\Controllers\SettingController@getSamplingColumnsList');
 Auth::routes();
 // });
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

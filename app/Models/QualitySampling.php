@@ -9,5 +9,5 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class QualitySampling extends Model
 {
     use SoftDeletes;
-    protected $fillable = ['project_id','sub_project_id','coder_emp_id','qa_emp_id','qa_percentage','claim_priority','added_by'];
+    protected $fillable = ['project_id','sub_project_id','coder_emp_id','qa_emp_id','qa_percentage','claim_priority','added_by','qa_sample_column_name','qa_sample_column_value'];
 }
