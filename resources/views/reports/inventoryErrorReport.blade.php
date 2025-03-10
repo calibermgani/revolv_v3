@@ -100,16 +100,17 @@
             var project_id = '';
             var sub_project_id = '';
             var error_date = $('#error_date').val();
-            errorList(project_id, sub_project_id, error_date);
-
-            function errorList(project_id, sub_project_id, error_date) {
-                console.log('p1', project_id, sub_project_id, error_date);
-                KTApp.block('#listData', {
+            KTApp.block('#listData', {
                         overlayColor: '#000000',
                         state: 'danger',
                         opacity: 0.1,
                         message: 'Fetching...',
                     });
+            errorList(project_id, sub_project_id, error_date);
+
+            function errorList(project_id, sub_project_id, error_date) {
+                console.log('p1', project_id, sub_project_id, error_date);
+               
                 $.ajax({
                     type: "POST",
                     url: "{{ url('report/inventory_error_report') }}",
