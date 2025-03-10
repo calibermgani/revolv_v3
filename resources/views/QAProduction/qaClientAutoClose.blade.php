@@ -86,7 +86,7 @@ use Carbon\Carbon;
                             strpos($empDesignation, 'Leader') !== false ||
                             strpos($empDesignation, 'Team Lead') !== false ||
                             strpos($empDesignation, 'CEO') !== false ||
-                            strpos($empDesignation, 'Vice') !== false)
+                            strpos($empDesignation, 'Vice') !== false|| strpos($empDesignation, 'Group Coordinator - AR') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)
                         <div class="wizard-step mb-0 five" data-wizard-type="done">
                             <div class="wizard-wrapper py-2">
                                 <div class="wizard-label p-2 mt-2">
@@ -147,7 +147,8 @@ use Carbon\Carbon;
                         strpos($empDesignation, 'Leader') !== false ||
                         strpos($empDesignation, 'Team Lead') !== false ||
                         strpos($empDesignation, 'CEO') !== false ||
-                        strpos($empDesignation, 'Vice') !== false)
+                        strpos($empDesignation, 'Vice') !== false ||
+                        strpos($empDesignation, 'Group Coordinator - AR') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)
                         <div class="wizard-step mb-0 eight" data-wizard-type="done">
                             <div class="wizard-wrapper py-2">
                                 <div class="wizard-label p-2 mt-2">
@@ -172,7 +173,7 @@ use Carbon\Carbon;
                                         </div>
                                     </div>
                                 </div> --}}
-                    {{-- @if ($loginEmpId == 'Admin' || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false)
+                    {{-- @if ($loginEmpId == 'Admin' || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)
                                     <div class="wizard-step mb-0 six" data-wizard-type="done">
                                         <div class="wizard-wrapper py-2">
                                             <div class="wizard-label p-2 mt-2">
