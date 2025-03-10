@@ -73,6 +73,12 @@
 @push('view.scripts')
     <script>
         $(document).ready(function() {
+            KTApp.block('#listData', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Fetching...',
+                    });
             var start = moment().startOf('day')
             var end = moment().endOf('day');
             console.log(start, end, 'start');
@@ -100,12 +106,6 @@
             var project_id = '';
             var sub_project_id = '';
             var error_date = $('#error_date').val();
-            KTApp.block('#listData', {
-                        overlayColor: '#000000',
-                        state: 'danger',
-                        opacity: 0.1,
-                        message: 'Fetching...',
-                    });
             errorList(project_id, sub_project_id, error_date);
 
             function errorList(project_id, sub_project_id, error_date) {
