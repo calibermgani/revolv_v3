@@ -104,7 +104,7 @@
 
             function errorList(project_id, sub_project_id, error_date) {
                 console.log('p1', project_id, sub_project_id, error_date);
-                KTApp.block('#reportTable', {
+                KTApp.block('#listData', {
                         overlayColor: '#000000',
                         state: 'danger',
                         opacity: 0.1,
@@ -141,7 +141,7 @@
                         } else {
                             console.error('Error fetching data');
                         }
-                        KTApp.unblock('#reportTable');
+                        KTApp.unblock('#listData');
                     },
                     error: function(xhr, status, error) {
                         console.error('AJAX Error:', error);
