@@ -99,7 +99,9 @@
                     </div>
                 </div>
             </div>
-        </div><br>
+        </div>
+        <div id="edit_sampling_container" class="row" style="margin-left: 1rem;display:none"></div>
+        <br>
 
         <div class="modal-footer">
             <button class="btn btn-light-danger" id="clear_submit" tabindex="10" type="button">

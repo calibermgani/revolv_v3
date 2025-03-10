@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Jobs\getQaArEmpList;
 use Illuminate\Support\Facades\Cache;
+use App\Models\QaSampleRandamizer;
+use Illuminate\Support\Facades\Schema;
 class SettingController extends Controller
 {
     public function qualitySampling(Request $request)
@@ -68,7 +70,35 @@ class SettingController extends Controller
             try {
                 $data =  $request->all();
                 $data['added_by'] = Session::get('loginDetails')['userInfo']['user_id'];
-                QualitySampling::create($data);
+                if($request['_token'] != null) {
+                    $filteredRequest = $request->except('_token', 'parent', 'child', 'page', 'project_id', 'sub_project_id', 'coder_emp_id', 'qa_emp_id', 'qa_percentage', 'claim_priority');
+                    // $allNullValues = empty(array_filter($filteredRequest, function ($value) {
+                    //     return $value !== null && $value !== '';
+                    // }));
+                
+                    // $data['qa_sample_column_name'] = $allNullValues ? null : implode(',', array_keys($filteredRequest));
+                    // $data['qa_sample_column_value'] = $allNullValues ? null : implode(',', array_values($filteredRequest));
+                    $filteredRequest = array_filter($filteredRequest, function ($value) {
+                        return $value !== null && $value !== '';
+                    });
+                    $data['qa_sample_column_name'] = empty($filteredRequest) ? null : implode(',', array_keys($filteredRequest));
+                    $data['qa_sample_column_value'] = empty($filteredRequest) ? null : implode(',', array_values($filteredRequest));
+                
+                }
+              //  dd($data);
+              $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('qa_emp_id',$data['qa_emp_id'])->sum('qa_percentage');
+               $totalQAPercentage = $samplingPercentage + $data['qa_percentage'];
+              if($totalQAPercentage <=  100) { 
+                   QualitySampling::create($data);
+              } else {
+                $allowPercentage = 100 - $samplingPercentage;
+                // return redirect('/sampling?parent=' . request('parent') . '&child=' . request('child'))
+                // ->with('error', 'Allowed percentage is up to '.$allowPercentage.', but you entered '.$data['qa_percentage'].'.');
+                //return back()->withErrors(['error' => 'Allowed percentage is up to ' . $allowPercentage . ', but you entered ' . $data['qa_percentage'] . '.']);
+                     session()->flash('error', 'Allowed percentage is up to ' . $allowPercentage . ', but you entered ' . $data['qa_percentage'] . '.');
+                return back();
+            
+              }
                 return redirect('/sampling' . '?parent=' . request()->parent . '&child=' . request()->child);
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
@@ -84,15 +114,34 @@ class SettingController extends Controller
             try {
                 $data =  $request->all();
                 $data['added_by'] = Session::get('loginDetails')['userInfo']['user_id'];
+                if($request['_token'] != null) {
+                    $filteredRequest = $request->except('_token', 'parent', 'child', 'page', 'project_id', 'sub_project_id', 'coder_emp_id', 'qa_emp_id', 'qa_percentage', 'claim_priority','record_id');
+                    $filteredRequest = array_filter($filteredRequest, function ($value) {
+                        return $value !== null && $value !== '';
+                    });
+                    $data['qa_sample_column_name'] = empty($filteredRequest) ? null : implode(',', array_keys($filteredRequest));
+                    $data['qa_sample_column_value'] = empty($filteredRequest) ? null : implode(',', array_values($filteredRequest));
+                
+                }
                 $existingRecord = QualitySampling::where('id', $data["record_id"])->first();
-                if ($existingRecord) { //dd($data,$existingRecord);//need to maintain history
-                    $historyRecord = $existingRecord->toArray();
-                    $historyRecord['quality_sampling_id'] = $historyRecord['id'];
-                    unset($historyRecord['id']);
-                    QualitySamplingHistory::create($historyRecord);
-                    $existingRecord->update($data);
+                $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('qa_emp_id',$data['qa_emp_id'])->sum('qa_percentage');
+                $recordPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('qa_emp_id',$data['qa_emp_id'])->where('id', $data["record_id"])->sum('qa_percentage');
+                $totalQAPercentage = ($samplingPercentage-$recordPercentage) + $data['qa_percentage'];
+               if($totalQAPercentage <=  100) { 
+                    if ($existingRecord) { 
+                        $historyRecord = $existingRecord->toArray();
+                        $historyRecord['quality_sampling_id'] = $historyRecord['id'];
+                        unset($historyRecord['id']);
+                        QualitySamplingHistory::create($historyRecord);
+                        $existingRecord->update($data);
+                    } else {
+                        QualitySampling::create($data);
+                    }
                 } else {
-                    QualitySampling::create($data);
+                    $allowPercentage = 100 - ($samplingPercentage-$recordPercentage);
+                    session()->flash('error', 'Allowed percentage is up to ' . $allowPercentage . ', but you entered ' . $data['qa_percentage'] . '.');
+                    return back();
+                
                 }
                 return redirect('/sampling' . '?parent=' . request()->parent . '&child=' . request()->child);
             } catch (\Exception $e) {
@@ -194,4 +243,96 @@ class SettingController extends Controller
             return redirect('/');
         }
     }
+
+    
+    // public function getSamplingColumnsList(Request $request)
+    // {
+    //     if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
+    //         try {               
+    //            //  $data = QaSampleRandamizer::where('project_id', $request->project_id)->where('sub_project_id', $request->sub_project_id)->get()->toArray();
+    //              $dataText = QaSampleRandamizer::where('project_id', $request->project_id)->where('sub_project_id', $request->sub_project_id)->where('sampling_column_input_type','text')
+    //              ->pluck('sampling_column_name')->toArray();
+    //              $dataSelect = QaSampleRandamizer::where('project_id', $request->project_id)->where('sub_project_id', $request->sub_project_id)->where('sampling_column_input_type','select')->select("sampling_column_name")->get();
+    //              $decodedClientName = Helpers::projectName($request->project_id)->project_name;
+    //              $decodedsubProjectName = $request->sub_project_id == '--' ? 'project' :Helpers::subProjectName($request->project_id,$request->sub_project_id);
+    //              if($decodedsubProjectName != null &&  $decodedsubProjectName != 'project') {
+    //               $decodedsubProjectName= $decodedsubProjectName->sub_project_name;
+    //              }
+    //              $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
+    //              $modelName = Str::studly($table_name);
+    //              $modelClass = "App\\Models\\" .  $modelName;
+    //              $dataSelectQuery = [];
+    //              if (class_exists($modelClass)) {
+    //               foreach($dataSelect as $sData) {                 
+    //                   $dataSelectQuery[$sData->sampling_column_name] = $modelClass::distinct()->pluck($sData->sampling_column_name)->toArray();
+    //               }
+    //              }
+    //              $samplingColumnsDetails = [];
+    //              $samplingColumnsDetails['column_data_type'] = 
+    //              $samplingColumnsDetails['column_name'] = 
+    //              $samplingColumnsDetails['column_options_values'] = 
+    //              return response()->json(["data_type_text" => $dataText,"data_type_select" => $dataSelectQuery]);
+    //             //  return response()->json(["sampling_column_name" => $data]);
+    //         } catch (\Exception $e) {
+    //             Log::debug($e->getMessage());
+    //         }
+    //     } else {
+    //         return redirect('/');
+    //     }
+    // }
+
+    public function getSamplingColumnsList(Request $request) {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
+            try {               
+                $dataText = QaSampleRandamizer::where('project_id', $request->project_id)
+                    ->where('sub_project_id', $request->sub_project_id)
+                    ->where('sampling_column_input_type', 'text')
+                    ->pluck('sampling_column_name')
+                    ->toArray();
+
+                $dataSelect = QaSampleRandamizer::where('project_id', $request->project_id)
+                    ->where('sub_project_id', $request->sub_project_id)
+                    ->where('sampling_column_input_type', 'select')
+                    ->select("sampling_column_name")
+                    ->get();
+
+                $decodedClientName = Helpers::projectName($request->project_id)->project_name;
+                $decodedsubProjectName = $request->sub_project_id == '--' ? 'project' : Helpers::subProjectName($request->project_id, $request->sub_project_id);
+                
+                if ($decodedsubProjectName != null && $decodedsubProjectName != 'project') {
+                    $decodedsubProjectName = $decodedsubProjectName->sub_project_name;
+                }
+
+                $table_name = Str::slug((Str::lower($decodedClientName) . '_' . Str::lower($decodedsubProjectName)), '_');
+                $modelName = Str::studly($table_name);
+                $modelClass = "App\\Models\\" . $modelName;
+                $samplingColumnsDetails = [];
+
+                if (class_exists($modelClass)) {
+                    foreach ($dataText as $textColumn) {
+                        $samplingColumnsDetails[] = [
+                            "sampling_column_name" => $textColumn,
+                            "sampling_column_input_type" => "text",
+                            "sampling_column_value" => null
+                        ];
+                    }
+
+                    foreach ($dataSelect as $sData) {
+                        $samplingColumnsDetails[] = [
+                            "sampling_column_name" => $sData->sampling_column_name,
+                            "sampling_column_input_type" => "select",
+                            "sampling_column_value" => $modelClass::distinct()->pluck($sData->sampling_column_name)->toArray()
+                        ];
+                    }
+                }
+                       
+                return response()->json(["sampling_column_name" => $samplingColumnsDetails]);
+            } catch (\Exception $e) {
+                Log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
+
 }

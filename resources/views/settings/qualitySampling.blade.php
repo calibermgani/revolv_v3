@@ -27,7 +27,7 @@ use App\Jobs\GetUserNameByEmpId;
                 'enctype' => 'multipart/form-data',
             ]) !!}
             @csrf
-            <div class="row mb-2 mt-2 mr-0 ml-0 align-items-center pt-4 pb-3" style="background-color: #F1F1F1;border-radius:0.42rem">
+            <div class="row  mt-2 mr-0 ml-0 align-items-center pt-4 pb-3" style="background-color: #F1F1F1;border-radius:0.42rem">
                 <div class="col-lg-2 mb-lg-0 mb-6">
                     <label class="required">Project</label>
                     @php $projectList = App\Http\Helper\Admin\Helpers::projectList(); @endphp
@@ -98,7 +98,9 @@ use App\Jobs\GetUserNameByEmpId;
                         ) !!}
                     </fieldset>
                 </div>
-
+            </div>
+            <div id="sampling_container" class="row mr-0 ml-0 align-items-center pt-4 pb-3" style="background-color: #F1F1F1;border-radius:0.42rem;display:none"></div>
+            <div class="row mb-2  mr-0 ml-0 align-items-center pt-4 pb-3" style="background-color: #F1F1F1;border-radius:0.42rem">
                 <div class="col-lg-2 mt-8">
                     <button class="btn btn-light-danger" id="clear_submit" tabindex="10" type="button">
                         <span>
@@ -124,6 +126,8 @@ use App\Jobs\GetUserNameByEmpId;
                             <th>QA</th>
                             <th>Percentage</th>
                             <th>Priority</th>
+                            <th>Column Name</th>
+                            <th>Column Value</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -188,6 +192,9 @@ use App\Jobs\GetUserNameByEmpId;
                                     <td><input type="hidden"
                                         value={{ $data['id'] }}>{{ $data['qa_percentage'] . '%' }}</td>
                                     <td>{{ isset($data['claim_priority']) ? $data['claim_priority'] : '--' }}</td>
+                                    <td>{{ isset($data['qa_sample_column_name']) ? ($data['qa_sample_column_name'] != NULL ? ucwords(str_replace(['_else_', '_'], ['/', ' '], $data['qa_sample_column_name'])) :'--'): '--' }}</td>
+                                    <td>{{ isset($data['qa_sample_column_value']) ? ($data['qa_sample_column_value'] != NULL ? $data['qa_sample_column_value'] : '--') : '--' }}</td>
+                               
                                 </tr>
                             @endforeach
                         @endif
@@ -215,6 +222,16 @@ use App\Jobs\GetUserNameByEmpId;
             </div>
         </div>
     @endsection
+    <style>
+        .kt_select2_value {
+            background-color: white !important; 
+        }
+        .select2-container--default .select2-selection--single {
+            background-color: white !important; 
+            border: 1px solid #ced4da; /* Optional: Match Bootstrap styling */
+            height: 38px; /* Adjust height if needed */
+        }
+    </style>
     @push('view.scripts')
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
@@ -283,7 +300,7 @@ use App\Jobs\GetUserNameByEmpId;
                         error: function(jqXHR, exception) {}
                     });
                 };
-                $(document).on('click', '.clickable-row td:not(:last-child)', function(e) {
+                $(document).on('click', '.clickable-row', function(e) {
 
                     var project_id = $(this).closest('tr').find('td:eq(0) input').val();
                     var subproject_id = $(this).closest('tr').find('td:eq(1) input').val();
@@ -292,6 +309,8 @@ use App\Jobs\GetUserNameByEmpId;
                     var qa_percentage = $(this).closest('tr').find('td:eq(4)').text();
                     var claim_priority = $(this).closest('tr').find('td:eq(5)').text();
                     var record_id = $(this).closest('tr').find('td:eq(4) input').val();
+                    var qa_sample_column_name = $(this).closest('tr').find('td:eq(6)').text();
+                    var qa_sample_column_val = $(this).closest('tr').find('td:eq(7)').text();
                     $('#qa_sampling').modal("show");
 
                     $('select[id="edit_project_id"]').val(project_id).trigger('change');
@@ -301,7 +320,92 @@ use App\Jobs\GetUserNameByEmpId;
                     $('input[id="edit_qa_percentage"]').val(qa_percentage.slice(0, -1));
                     $('select[id="edit_claim_priority"]').val(claim_priority).trigger('change');
                     $('input[name="record_id"]').val(record_id);
-                    subProjectNameList(project_id,subproject_id);
+                    subProjectNameList(project_id,subproject_id);console.log(qa_sample_column_name,'qa_sample_column_name',qa_sample_column_val);
+                    var editContainer = $('#edit_sampling_container');
+                    if(qa_sample_column_name != '--' && qa_sample_column_val != '--') {   
+                        $.ajaxSetup({
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            }
+                        });
+                        KTApp.block('#qa_sampling_update', {
+                            overlayColor: '#000000',
+                            state: 'danger',
+                            opacity: 0.1,
+                            message: 'Fetching...',
+                        });
+                        $.ajax({
+                            type: "GET",
+                            url: "{{ url('sampling_columns_list') }}",
+                            data: {
+                                project_id: project_id,
+                                sub_project_id: subproject_id
+                            },
+                            success: function(res) {                    
+                              
+                                editContainer.empty(); // Clear previous entries
+
+                                if (res.sampling_column_name.length > 0) {
+                                    editContainer.css('display', 'block');
+
+                                    var row = $('<div class="row mr-0 ml-0 align-items-center pt-4 pb-3"></div>'); // Create a new row
+                                    $.each(res.sampling_column_name, function(index, columnDetails) {
+                                        var labelName = columnDetails.sampling_column_name.replace(/_else_/g, '/').replace(/_/g, ' ').replace(/\b\w/g, function(l) {
+                                            return l.toUpperCase();
+                                        });
+                                        qaSampleColumnValArr = qa_sample_column_val.split(",").map(item => item.trim());
+                                        if(columnDetails.sampling_column_input_type == 'text') {
+                                            var inputTypeHtml = ` <input type="text" name="${columnDetails.sampling_column_name}" class="form-control" autocomplete="off" value="${qaSampleColumnValArr[index]}">`;
+                                        } else  {
+                                            // var optionValues = columnDetails.sampling_column_value.split(','); // Convert CSV string to array
+                                            // var optionsHtml = optionValues.map(value => `<option value="${value.trim()}">${value.trim()}</option>`).join('');
+                                            var optionValues = columnDetails.sampling_column_value; // Already an array
+
+                                            var optionsHtml = optionValues.map(value => 
+                                                `<option value="${value}" ${value === qaSampleColumnValArr[index] ? 'selected' : ''}>${value}</option>`
+                                            ).join('');
+
+                                            inputTypeHtml = `<select class="form-control kt_select2_value" name="${columnDetails.sampling_column_name}">
+                                                    <option value="">Select</option>
+                                                ${optionsHtml}</select>`;
+                                                setTimeout(() => {
+                                                    $('.kt_select2_value').select2({
+                                                        placeholder: "Select",
+                                                        allowClear: false
+                                                    }).next('.select2-container').css('background-color', 'white !important');
+                                                }, 100);
+                                        }
+
+                                        var fieldHTML = `<div class="col-md-6"><div class="form-group row row_mar_bm"><label class="col-md-12 col-form-label">${labelName}</label>
+                                            <div class="col-md-11">${inputTypeHtml}</div></div></div>`;
+
+                                        row.append(fieldHTML);
+
+                                        // If 6 columns are added, start a new row
+                                        if ((index + 1) % 6 === 0) {
+                                            editContainer.append(row);
+                                            row = $('<div class="row"></div>'); // Create a new row
+                                        }
+                                        KTApp.unblock('#qa_sampling_update');
+                                    });
+
+                                    // Append the last row if it has remaining columns
+                                    if (row.children().length > 0) {
+                                        editContainer.append(row);
+                                    }
+                                } else {
+                                    editContainer.css('display', 'none');
+                                }
+                            },
+                            error: function(jqXHR, exception) {
+                                console.error("Error fetching data", exception);
+                            }
+                        });                           
+                        
+                    } else {
+                        editContainer.css('display', 'none');
+                    }
+                    
                 });
                 $(document).on('click', '#form_submit', function(e) {
                     e.preventDefault();
@@ -340,9 +444,24 @@ use App\Jobs\GetUserNameByEmpId;
                             projectId = project_id.val() != '' ? project_id.val() : null;
                             subProjectId = sub_project_id.val() != '' ? sub_project_id.val() : null;
                             qaId = qa_id.val() != '' ? qa_id.val() : null;
-                            coderId = coder_id.val() != '' ? coder_id.val() : null;console.log(coderId,val.coder_emp_id);
-                            
-                            if (projectId == val.project_id && subProjectId == val.sub_project_id && qaId == val.qa_emp_id && coderId == val.coder_emp_id) {
+                            coderId = coder_id.val() != '' ? coder_id.val() : null;
+                            var storeFormData = $('#qa_sampling_form').serialize();
+                            var params = new URLSearchParams(storeFormData); 
+                            var excludeKeys = ["_token", "project_id", "sub_project_id", "coder_emp_id", "qa_emp_id", "qa_percentage", "claim_priority"];
+                            var qaSampleColumnNames = [];
+                            var qaSampleColumnValues = [];
+                            params.forEach((value, key) => {
+                                if (!excludeKeys.includes(key)) {
+                                    qaSampleColumnNames.push(key);
+                                    if(value) {
+                                       qaSampleColumnValues.push(value);
+                                    }
+                                }
+                            });
+                            qaSampleColumnNames = qaSampleColumnValues.length > 0 ? qaSampleColumnNames.join(',') : null;
+                            qaSampleColumnValues = qaSampleColumnValues.length > 0 ? qaSampleColumnValues.join(',') : null;
+                                                     
+                            if (projectId == val.project_id && subProjectId == val.sub_project_id && qaId == val.qa_emp_id && coderId == val.coder_emp_id && qaSampleColumnNames == val.qa_sample_column_name && qaSampleColumnValues == val.qa_sample_column_value) {
                                     js_notification('error', 'This Setting already exist!');
                                      inputTypeValue = 1;
                                     return false;
@@ -394,7 +513,23 @@ use App\Jobs\GetUserNameByEmpId;
                                 subProjectId = edit_sub_project_id.val() != '' ? edit_sub_project_id.val() : null;
                                 qaId = edit_qa_id.val() != '' ? edit_qa_id.val() : null;
                                 coderId = edit_coder_id.val() != '' ? edit_coder_id.val() : null;
-                                if (projectId == val.project_id && subProjectId == val.sub_project_id && qaId == val.qa_emp_id && coderId == val.coder_emp_id && record_id != val.id) {
+                                var storeFormData = $('#qa_sampling_update').serialize();
+                                var params = new URLSearchParams(storeFormData); 
+                                var excludeKeys = ["_token", "project_id", "sub_project_id", "coder_emp_id", "qa_emp_id", "qa_percentage", "claim_priority"];
+                                var qaSampleColumnNames = [];
+                                var qaSampleColumnValues = [];
+                                params.forEach((value, key) => {
+                                    if (!excludeKeys.includes(key)) {
+                                        qaSampleColumnNames.push(key);
+                                        if(value) {
+                                        qaSampleColumnValues.push(value);
+                                        }
+                                    }
+                                });
+                            qaSampleColumnNames = qaSampleColumnValues.length > 0 ? qaSampleColumnNames.join(',') : null;
+                            qaSampleColumnValues = qaSampleColumnValues.length > 0 ? qaSampleColumnValues.join(',') : null;console.log(val,'qaSampleColumnNames',qaSampleColumnNames,qaSampleColumnValues);
+                            
+                                if (projectId == val.project_id && subProjectId == val.sub_project_id && qaId == val.qa_emp_id && coderId == val.coder_emp_id && qaSampleColumnNames == val.qa_sample_column_name && qaSampleColumnValues == val.qa_sample_column_value) {
                                         js_notification('error', 'This Setting already exist!');
                                         inputTypeValue = 1;
                                         return false;
@@ -409,6 +544,100 @@ use App\Jobs\GetUserNameByEmpId;
                         }
 
                 });
+                $(document).on('change', '#sub_project_list', function() {
+                    var sam_project_id = $('#project_id').val();
+                    var sam_subproject_id = $(this).val();
+
+                    KTApp.block('#qa_sampling_form', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Fetching...',
+                    });
+
+                    samplingColumnsList(sam_project_id, sam_subproject_id);
+
+                    KTApp.unblock('#qa_sampling_form');
+                });
+
+                function samplingColumnsList(sam_project_id, sam_subproject_id) {
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ url('sampling_columns_list') }}",
+                        data: {
+                            project_id: sam_project_id,
+                            sub_project_id: sam_subproject_id
+                        },
+                        success: function(res) {
+                            var container = $('#sampling_container');
+                            container.empty(); // Clear previous entries
+
+                            if (res.sampling_column_name.length > 0) {
+                                container.css('display', 'block');
+
+                                var row = $('<div class="row mr-0 ml-0 align-items-center pt-4 pb-3"></div>'); // Create a new row
+                                $.each(res.sampling_column_name, function(index, columnDetails) {
+                                    var labelName = columnDetails.sampling_column_name.replace(/_else_/g, '/').replace(/_/g, ' ').replace(/\b\w/g, function(l) {
+                                        return l.toUpperCase();
+                                    });
+                               //     Var OptionValues = columnDetails.sampling_column_value;//ins1,ins2,ins3
+                                    if(columnDetails.sampling_column_input_type == 'text') {
+                                        var inputTypeHtml = ` <input type="text" name="${columnDetails.sampling_column_name}" class="form-control" autocomplete="off">`;
+                                    } else  {
+                                        // var optionValues = columnDetails.sampling_column_value.split(','); // Convert CSV string to array
+                                        // var optionsHtml = optionValues.map(value => `<option value="${value.trim()}">${value.trim()}</option>`).join('');
+                                        var optionValues = columnDetails.sampling_column_value; // Already an array
+
+                                        var optionsHtml = optionValues.map(value => 
+                                            `<option value="${value}">${value}</option>`
+                                        ).join('');
+
+                                        inputTypeHtml = `<select class="form-control kt_select2_value" name="${columnDetails.sampling_column_name}">
+                                                <option value="">Select</option>
+                                            ${optionsHtml}</select>`;
+                                            setTimeout(() => {
+                                                $('.kt_select2_value').select2({
+                                                    placeholder: "Select",
+                                                    allowClear: true
+                                                }).next('.select2-container').css('background-color', 'white !important');
+                                            }, 100);
+                                    }
+
+                                    var fieldHTML = `<div class="col-lg-2 mb-lg-0 mb-6"><label>${labelName}</label>${inputTypeHtml}</div>`;
+
+                                    row.append(fieldHTML);
+
+                                    // If 6 columns are added, start a new row
+                                    if ((index + 1) % 6 === 0) {
+                                        container.append(row);
+                                        row = $('<div class="row"></div>'); // Create a new row
+                                    }
+                                });
+
+                                // Append the last row if it has remaining columns
+                                if (row.children().length > 0) {
+                                    container.append(row);
+                                }
+                            } else {
+                                container.css('display', 'none');
+                            }
+                        },
+                        error: function(jqXHR, exception) {
+                            console.error("Error fetching data", exception);
+                        }
+                    });
+                }
+
+                $(document).on('click','#clear_submit',function(){
+                location.reload();
+            })
+
             });
         </script>
     @endpush
