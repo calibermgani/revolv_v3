@@ -242,7 +242,7 @@ use App\Jobs\GetUserNameByEmpId;
                 $('#qa_sampling_table').DataTable({
                     processing: true,
                     lengthChange: false,
-                    searching: false,
+                    searching: true,
                     pageLength: 20,
 
                 });
