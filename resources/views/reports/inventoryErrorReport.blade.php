@@ -1,6 +1,6 @@
 @extends('layouts.app3')
 @section('content')
-<div id="listDataFetching"></div>
+
     <div class="card card-custom custom-card" style="display: none" id="listData">
         <div class="card-body  px-4">
             <div class="card-header border-0 px-4">
@@ -70,6 +70,7 @@
             </div>
         </div>
     </div>
+    <div id="listDataFetching"></div>
 @endsection
 @push('view.scripts')
     <script>
