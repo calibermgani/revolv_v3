@@ -1,5 +1,6 @@
 @extends('layouts.app3')
 @section('content')
+<div id="listDataFetching"></div>
     <div class="card card-custom custom-card" style="display: none" id="listData">
         <div class="card-body  px-4">
             <div class="card-header border-0 px-4">
@@ -73,7 +74,7 @@
 @push('view.scripts')
     <script>
         $(document).ready(function() {
-            KTApp.block('#listData', {
+            KTApp.block('#listDataFetching', {
                         overlayColor: '#000000',
                         state: 'danger',
                         opacity: 0.1,
@@ -142,7 +143,7 @@
                         } else {
                             console.error('Error fetching data');
                         }
-                        KTApp.unblock('#listData');
+                        KTApp.unblock('#listDataFetching');
                     },
                     error: function(xhr, status, error) {
                         console.error('AJAX Error:', error);
