@@ -104,6 +104,12 @@
 
             function errorList(project_id, sub_project_id, error_date) {
                 console.log('p1', project_id, sub_project_id, error_date);
+                KTApp.block('#reportTable', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Fetching...',
+                    });
                 $.ajax({
                     type: "POST",
                     url: "{{ url('report/inventory_error_report') }}",
@@ -135,6 +141,7 @@
                         } else {
                             console.error('Error fetching data');
                         }
+                        KTApp.unblock('#reportTable');
                     },
                     error: function(xhr, status, error) {
                         console.error('AJAX Error:', error);
