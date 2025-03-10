@@ -187,7 +187,8 @@
                                 <tr>
                                     <td>{{ $projectName ? $projectName->aims_project_name : '--' }}</td>
                                     <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
-                                    <td>{{ App\Http\Helper\Admin\Helpers::getUserNameById($data->manager_id) }}</td>
+                                    <td>{{$$data->manager_id}}</td>
+                                    {{-- <td>{{ App\Http\Helper\Admin\Helpers::getUserNameById($data->manager_id) }}</td> --}}
                                     <td>{{ is_string($arReasonString) ? trim($arReasonString, ',') : implode(', ', (array) $arReasonString) }}
                                     </td>
                                     <td>{{ is_string($qaReasonString) ? trim($qaReasonString, ',') : implode(', ', (array) $qaReasonString) }}
