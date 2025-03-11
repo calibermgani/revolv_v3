@@ -842,7 +842,6 @@ class ReportsController extends Controller
                             $query;
                         }
                     }) ->groupBy('manager_id')
-                  //    ->selectRaw('manager_id')
                       ->pluck('manager_id')->toArray();
                     // $productionReasons = ProjectReason::when(!empty($startTime) && !empty($endTime), function ($query) use ($startTime, $endTime) {
                     //     return $query->whereBetween('created_at', [$startTime, $endTime]);

@@ -1,8 +1,4 @@
 @extends('layouts.app3')
-@php
-use Illuminate\Support\Facades\Cache;
-use App\Jobs\GetUserNameByEmpId;
-@endphp
 @section('content')
     <div class="card card-custom custom-card" id="quality_sampling">
         <div class="card-body pt-0 pb-2 pl-8" style="background-color: #ffffff !important">
@@ -113,9 +109,6 @@ use App\Jobs\GetUserNameByEmpId;
                 </div>
             </div>
             {!! Form::close() !!}
-            {{-- <div class="card card-custom" style="border-radius:0px 0px 10px 10px" id="page-loader">
-                <div class="card-body pt-4 pb-0 px-5">
-                    <div class="mb-0"> --}}
             <div class="table-responsive pb-4">
                 <table class="table table-separate table-head-custom no-footer dtr-column " id="qa_sampling_table">
                     <thead>
@@ -131,10 +124,22 @@ use App\Jobs\GetUserNameByEmpId;
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                        if(isset($qaSamplingCoders)&& !empty($qaSamplingCoders)) {
+                            $samplingCoders =  App\Http\Helper\Admin\Helpers::getUserNameListByEmpId($qaSamplingCoders);
+                        } else {
+                            $samplingCoders =  '--';
+                        }
+                        if(isset($qaSamplingQaEmpList)&& !empty($qaSamplingQaEmpList)) {
+                            $samplingQas =  App\Http\Helper\Admin\Helpers::getUserNameListByEmpId($qaSamplingQaEmpList);
+                        } else {
+                            $samplingQas =  '--';
+                        }
+                    @endphp
                         @if (isset($qaSamplingList))
                             @foreach ($qaSamplingList as $data)
                                 @php
-                                if ($data['project_id'] != null) {
+                                   if ($data['project_id'] != null) {
                                         $projectName = App\Models\project::where(
                                             'project_id',
                                             $data['project_id'],
@@ -152,30 +157,6 @@ use App\Jobs\GetUserNameByEmpId;
                                     } else {
                                         $subProjectName = '--';
                                     }
-                                    if (!is_null($data['coder_emp_id'])) {
-                                        GetUserNameByEmpId::dispatch($data['coder_emp_id'])->delay(now()->addSeconds(5));
-                                    }
-
-                                    if (!is_null($data['qa_emp_id'])) {
-                                        GetUserNameByEmpId::dispatch($data['qa_emp_id'])->delay(now()->addSeconds(5));
-                                    }
-                                    $cacheArKey = "emp_name_{$data['coder_emp_id']}";
-                                    $cacheQaKey = "emp_name_{$data['qa_emp_id']}";
-                                    $coderName = !is_null($data['coder_emp_id'])
-                                        ? (Cache::has($cacheArKey) ? Cache::get($cacheArKey) : '--')
-                                        : '--';
-
-                                    $qaName = !is_null($data['qa_emp_id'])
-                                        ? (Cache::has($cacheQaKey) ? Cache::get($cacheQaKey) : '--')
-                                        : '--';
-                                    // $coderName =
-                                    //     $data['coder_emp_id'] != null
-                                    //         ? App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['coder_emp_id'])
-                                    //         : '--';
-                                    // $qaName =
-                                    //     $data['qa_emp_id'] != null
-                                    //         ? App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['qa_emp_id'])
-                                    //         : '--';
                                 @endphp
                                 <tr class="clickable-row" data-toggle="modal" style="cursor:pointer">
                                     <td><input type="hidden"
@@ -184,11 +165,13 @@ use App\Jobs\GetUserNameByEmpId;
                                             value={{ $data['sub_project_id'] != null ? $data['sub_project_id'] : null }}>{{ ($subProjectName == '--' ||  $subProjectName == null) ? '--' : $subProjectName->sub_project_name }}
                                     </td>
                                     <td><input type="hidden"
-                                            value={{ $data['coder_emp_id'] != null ? $data['coder_emp_id'] : null }}>{{ $coderName == null ? '--' : $coderName }}
+                                            value={{ $data['coder_emp_id'] != null ? $data['coder_emp_id'] : null }}>
+                                            {{$samplingCoders != '--' && $data['coder_emp_id'] != null ? $samplingCoders[$data['coder_emp_id']] : '--'}}
                                     </td>
                                     <td><input type="hidden"
-                                            value={{ $data['qa_emp_id'] != null ? $data['qa_emp_id'] : null }}>{{ $qaName == null ? '--' : $qaName }}
-                                    </td>
+                                            value={{ $data['qa_emp_id'] != null ? $data['qa_emp_id'] : null }}>
+                                            {{$samplingQas != '--' && $data['qa_emp_id'] != null ? $samplingQas[$data['qa_emp_id']] : '--'}}
+                                     </td>
                                     <td><input type="hidden"
                                         value={{ $data['id'] }}>{{ $data['qa_percentage'] . '%' }}</td>
                                     <td>{{ isset($data['claim_priority']) ? $data['claim_priority'] : '--' }}</td>
@@ -201,9 +184,6 @@ use App\Jobs\GetUserNameByEmpId;
                     </tbody>
                 </table>
             </div>
-            {{-- </div>
-                </div>
-            </div> --}}
             <div class="modal fade" id="qa_sampling" role="dialog" data-backdrop="static">
                 <div class="modal-dialog">
                     <div class="modal-content">

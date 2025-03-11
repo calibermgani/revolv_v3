@@ -53,10 +53,11 @@ class SettingController extends Controller
                 // $qaList = $qaData['qaList'];
                 
                 $coderList = $prjQAArEmpList['coderList'];
-                $qaList = $prjQAArEmpList['qaList'];
+                $qaList = $prjQAArEmpList['qaList'];$qaSamplingCoders = $qaSamplingQaEmpList = [];
                 $qaSamplingList = QualitySampling::orderBy('id', 'desc')->get()->toArray();
-
-                return view('settings/qualitySampling', compact('coderList', 'qaList', 'qaSamplingList'));
+                $qaSamplingCoders = QualitySampling::groupBy('coder_emp_id')->pluck('coder_emp_id')->toArray();
+                $qaSamplingQaEmpList = QualitySampling::groupBy('qa_emp_id')->pluck('qa_emp_id','qa_emp_id')->toArray();
+                return view('settings/qualitySampling', compact('coderList', 'qaList', 'qaSamplingList','qaSamplingCoders','qaSamplingQaEmpList'));
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
             }

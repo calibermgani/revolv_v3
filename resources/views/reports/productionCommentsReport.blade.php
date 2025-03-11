@@ -6,7 +6,7 @@
                 <div class="col-6 mt-4 pt-0 pb-0 pl-0 pr-0">
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <a class="project_header" href="" style="margin-left:-1.7rem">
-                        
+
                         {{-- <span class="svg-icon svg-icon-primary svg-icon-lg mr-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="16" fill="currentColor"
                                 class="bi bi-arrow-left project_header_row" viewBox="0 0 16 16"
@@ -120,7 +120,7 @@
                     <tbody>
                         @php
                             if(isset($productionMgrs)&& !empty($productionReasons)) {
-                                $productionManagers =  App\Http\Helper\Admin\Helpers::getUserNameListByEmpId($productionMgrs);
+                                $productionManagers =  App\Http\Helper\Admin\Helpers::getUserNameListById($productionMgrs);
                             } else {
                                 $productionManagers =  '--';
                             }
