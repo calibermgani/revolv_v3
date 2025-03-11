@@ -6,14 +6,16 @@
                 <div class="col-6 mt-4 pt-0 pb-0 pl-0 pr-0">
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <a class="project_header" href="" style="margin-left:-1.7rem">
-                        <span class="svg-icon svg-icon-primary svg-icon-lg mr-2">
+                        
+                        {{-- <span class="svg-icon svg-icon-primary svg-icon-lg mr-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="16" fill="currentColor"
                                 class="bi bi-arrow-left project_header_row" viewBox="0 0 16 16"
                                 style="width: 1.05rem !important;color: #000000 !important;">
                                 <path fill-rule="evenodd"
                                     d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
                             </svg>
-                        </span>Production Reasons Report</a>
+                        </span> --}}
+                        Production Reasons Report</a>
                 </div>
             </div>
             {!! Form::open([
@@ -27,7 +29,7 @@
             <div class="row mb-2 mt-2 mr-0 ml-0 align-items-center pt-4 pb-3"
                 style="background-color: #F1F1F1;border-radius:0.42rem">
                 <div class="col-lg-2 mb-lg-0 mb-6">
-                    <label class="required">Project</label>
+                    <label>Project</label>
                     @php $projectList = App\Http\Helper\Admin\Helpers::resolvProjectList(); @endphp
                     <fieldset class="form-group mb-1">
                         {!! Form::select('project_id', $projectList, $projectId != 0 ? $projectId : null, [
@@ -70,6 +72,28 @@
                     </fieldset>
 
                 </div>
+                {{-- <div class="col-lg-2 mb-lg-0 mb-6">
+                    <label>Remarks</label>
+                     <fieldset class="form-group mb-1">
+                        @php $remarkStatus = [''=>'Select','with_remarks'=>'With Remarks','without_remarks'=>'Without Remarks']@endphp
+                        {!! Form::select('remarks_status', $remarkStatus, null, [
+                            'class' => 'form-control kt_select2_remarks',
+                            'id' => 'remarks_status',
+                            'style' => 'width: 100%;background-color: #F1F1F1;',
+                        ]) !!}
+                    </fieldset>
+                </div>
+                <div class="col-lg-2 mb-lg-0 mb-6">
+                    <label>Reason</label>
+                     <fieldset class="form-group mb-1">
+                        @php $remarkStatus = [''=>'Select','ar_reason'=>'AR Reason','qa_reason'=>'QA Reason']@endphp
+                        {!! Form::select('remarks_status', $remarkStatus, null, [
+                            'class' => 'form-control kt_select2_remarks',
+                            'id' => 'remarks_status',
+                            'style' => 'width: 100%;background-color: #F1F1F1;',
+                        ]) !!}
+                    </fieldset>
+                </div> --}}
                 <div class="col-lg-2 mt-8">
                     <button class="btn btn-light-danger" id="clear_submit" tabindex="10" type="button">
                         <span>
@@ -94,6 +118,13 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            if(isset($productionMgrs)&& !empty($productionReasons)) {
+                                $productionManagers =  App\Http\Helper\Admin\Helpers::getUserNameListByEmpId($productionMgrs);
+                            } else {
+                                $productionManagers =  '--';
+                            }
+                        @endphp
                         @if (isset($productionReasons) && !empty($productionReasons))
                             @foreach ($productionReasons as $data)
                                 @php
@@ -187,7 +218,7 @@
                                 <tr>
                                     <td>{{ $projectName ? $projectName->aims_project_name : '--' }}</td>
                                     <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
-                                    <td>{{$data->manager_id}}</td>
+                                    <td>{{$productionManagers != '--' ? $productionManagers[$data->manager_id] : '--'}}</td>
                                     {{-- <td>{{ App\Http\Helper\Admin\Helpers::getUserNameById($data->manager_id) }}</td> --}}
                                     <td>{{ is_string($arReasonString) ? trim($arReasonString, ',') : implode(', ', (array) $arReasonString) }}
                                     </td>

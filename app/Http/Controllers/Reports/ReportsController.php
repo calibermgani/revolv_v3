@@ -823,7 +823,27 @@ class ReportsController extends Controller
                             $query;
                         }
                     }) ->groupBy('project_id','sub_project_id','manager_id','created_date')
-                      ->selectRaw('project_id, sub_project_id,manager_id,DATE(created_at) as created_date')->get(); 
+                      ->selectRaw('project_id, sub_project_id,manager_id,DATE(created_at) as created_date')
+                      ->get(); 
+                      $productionMgrs = ProjectReason::where(function ($query) use ($startTime, $endTime,$projectId,$subProjectId) {
+                        if($projectId) {
+                            $query->where('project_id', $projectId);
+                        } else {
+                            $query;
+                        }
+                        if($subProjectId) {
+                            $query->where('sub_project_id', $subProjectId);
+                        } else {
+                            $query;
+                        }
+                        if (!empty($startTime) && !empty($endTime)) {
+                            $query->whereBetween('project_reasons.created_at', [$startTime, $endTime]);
+                        }else{
+                            $query;
+                        }
+                    }) ->groupBy('manager_id')
+                  //    ->selectRaw('manager_id')
+                      ->pluck('manager_id')->toArray();
                     // $productionReasons = ProjectReason::when(!empty($startTime) && !empty($endTime), function ($query) use ($startTime, $endTime) {
                     //     return $query->whereBetween('created_at', [$startTime, $endTime]);
                     // })
@@ -831,12 +851,12 @@ class ReportsController extends Controller
                     // ->selectRaw('project_id, sub_project_id,manager_id,DATE(created_at) as created_date') // Example aggregation
                     // ->get();               
                 } else {      
-                    $productionReasons = [];
-                    $workDate = $startTime =$endTime='';
+                    $productionReasons = $productionMgrs = [];
+                    $workDate = $startTime = $endTime = '';
                     $projectId = null;
                     $subProjectId = null;
                 }
-                return view('reports.productionCommentsReport', compact('productionReasons','projectId','subProjectId','workDate','startTime','endTime'));                
+                return view('reports.productionCommentsReport', compact('productionReasons','projectId','subProjectId','workDate','startTime','endTime','productionMgrs'));                
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
             }
