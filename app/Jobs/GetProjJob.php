@@ -33,37 +33,14 @@ class GetProjJob implements ShouldQueue
      */
     public function handle()
     {
-        // $cacheKey = 'clients_on_user' ;
-        // $data = Cache::remember($cacheKey, now()->addMinutes(2), function () {
-        //     return app()->call('App\Http\Helper\Admin\Helpers@getProjects', [      
-        //         'userId' => $this->userId  
-        //     ]); 
-        //  });
+        $cacheKey = 'clients_on_user' ;
+        $data = Cache::remember($cacheKey, now()->addMinutes(2), function () {
+            return app()->call('App\Http\Helper\Admin\Helpers@getProjects', [      
+                'userId' => $this->userId  
+            ]); 
+         });
      
-        // Cache::put($cacheKey, $data, now()->addMinutes(2));
- Log::info('prj job');
-        $cacheKey = 'clients_on_user';
-
-    $data = Cache::remember($cacheKey, now()->addMinutes(2), function () {
-        return app()->call('App\Http\Helper\Admin\Helpers@getProjects', [
-            'userId' => $this->userId  
-        ]); 
-    });
-
-    Cache::put($cacheKey, $data, now()->addMinutes(2));
-
-    // Define the folder path
-    $folderPath = storage_path('framework/cache/data');
-
-    // Check if the folder exists, if not, create it
-    if (!file_exists($folderPath)) {
-        mkdir($folderPath, 0777, true);
-    }
-    // $output = shell_exec("sudo chmod -R 777 " . escapeshellarg($folderPath) . " 2>&1");
-    $output = shell_exec("sudo chmod -R 777 storage 2>&1");
-    Log::info('Shell Output: ' . $output);
-    Log::info('Folder permission set to 777 for: ' . $folderPath);
-    
+        Cache::put($cacheKey, $data, now()->addMinutes(2));
   
     }
 }

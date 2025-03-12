@@ -279,7 +279,6 @@ class DashboardController extends Controller
                 // $endDate = Carbon::now()->endOfDay()->toDateString();
                 // $startDate = Carbon::now()->startOfWeek()->startOfDay()->toDateString();
                 // $endDate = Carbon::now()->endOfWeek()->endOfDay()->toDateString();
-                Log::info('mgr dashboard inside');
                 GetProjJob::dispatch($userId)->delay(now()->addSeconds(5));
                 $prjCacheKey = 'clients_on_user' ; 
                 $projects = Cache::get($prjCacheKey, 0);
