@@ -680,12 +680,12 @@ class ProjectController extends Controller
         try {
             Log::info('Executing Project Hourly Mail logic.');
 
-            $toMailId = ["anukishan@annexmed.com","elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com"];
-            $ccMailId = ['anbalagan@annexmed.net','dominic@annexmed.net','durga@annexmed.net','francis@annexmed.net','jaiganesh@annexmed.net','mohan@annexmed.com',
-            'nicson@annexmed.net','krajkumar@annexmed.net','athamim@annexmed.net','tikkaram@annexmed.net','vinodh@annexmed.net','sbishop@annexmed.net','karthikeyan@annexmed.net','vijaychandran@annexmed.net',
-            'hemanathan@annexmed.net','vigneshwaran@annexmed.net','mgani@caliberfocus.com','margaretmary@annexmed.net','vijayalaxmi@caliberfocus.com'];
-            // $toMailId = ["vijayalaxmi@caliberfocus.com"];
-            // $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+            // $toMailId = ["anukishan@annexmed.com","elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com"];
+            // $ccMailId = ['anbalagan@annexmed.net','dominic@annexmed.net','durga@annexmed.net','francis@annexmed.net','jaiganesh@annexmed.net','mohan@annexmed.com',
+            // 'nicson@annexmed.net','krajkumar@annexmed.net','athamim@annexmed.net','tikkaram@annexmed.net','vinodh@annexmed.net','sbishop@annexmed.net','karthikeyan@annexmed.net','vijaychandran@annexmed.net',
+            // 'hemanathan@annexmed.net','vigneshwaran@annexmed.net','mgani@caliberfocus.com','margaretmary@annexmed.net','vijayalaxmi@caliberfocus.com'];
+            $toMailId = ["vijayalaxmi@caliberfocus.com"];
+            $ccMailId = ["mgani@caliberfocus.com"];
           
             $mailHeader = "Resolv Project Hourly Report";
             $projects = collect($this->getProjects());
@@ -1129,13 +1129,6 @@ class ProjectController extends Controller
 
                             $hourlyCounts[] = $hourlyCount; 
                         }
-                        // getProjectSubProjectManager::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
-                        // getProjectSubProjectBillableFTE::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
-                        // $prjSLATarget = (int)$this->getProjectTotalSlaTarget($project['id'],$subKey)['projectSLATarget'];
-                    // $prjMgrCacheKey = 'project_'.$project['id'].$subKey.'Manager' ;
-                        // $prjBillableFTECacheKey = 'project_'.$project['id'].$subKey.'BillableFTE' ;
-                        // $prjMgrName = Cache::get($prjMgrCacheKey, 0);
-                        // $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
                         $mailBody[] = [
                             'project' => $project['client_name'] . '-' . $subProject,
                             'hourlyCount' => $hourlyCounts, // Full array of counts for all slots                        
