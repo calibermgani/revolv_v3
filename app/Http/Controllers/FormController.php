@@ -979,11 +979,11 @@ class FormController extends Controller
     {
         try {
             // Change file ownership
-            exec('sudo chown -R apache:apache /var/www/html/revolv_v3/storage/framework/cache/data 2>&1', $output1, $return1);
-            
+            exec('sudo /bin/chown -R apache:apache /var/www/html/revolv_v3/storage/framework/cache/data 2>&1', $output1, $return1);
+
             // Clear cache and optimize
-            exec('php artisan optimize:clear 2>&1', $output2, $return2);
-            exec('php artisan config:cache 2>&1', $output3, $return3);
+            exec('/usr/bin/php /var/www/html/revolv_v3/artisan optimize:clear 2>&1', $output2, $return2);
+            exec('/usr/bin/php /var/www/html/revolv_v3/artisan config:cache 2>&1', $output3, $return3);
 
             if ($return1 !== 0 || $return2 !== 0 || $return3 !== 0) {
                 return response()->json([
@@ -1005,4 +1005,5 @@ class FormController extends Controller
             ], 500);
         }
     }
+
 }
