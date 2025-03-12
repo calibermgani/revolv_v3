@@ -974,4 +974,35 @@ class FormController extends Controller
             return redirect('/');
         }
     }
+
+    public function runCommands()
+    {
+        try {
+            // Change file ownership
+            exec('sudo chown -R apache:apache /var/www/html/revolv_v3/storage/framework/cache/data 2>&1', $output1, $return1);
+            
+            // Clear cache and optimize
+            exec('php artisan optimize:clear 2>&1', $output2, $return2);
+            exec('php artisan config:cache 2>&1', $output3, $return3);
+
+            if ($return1 !== 0 || $return2 !== 0 || $return3 !== 0) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Failed to execute one or more commands.',
+                    'output' => [$output1, $output2, $output3]
+                ], 500);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Commands executed successfully!',
+                'output' => [$output1, $output2, $output3]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
