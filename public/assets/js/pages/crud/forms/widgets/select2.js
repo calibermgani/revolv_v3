@@ -99,6 +99,9 @@ var KTSelect2 = function() {
         $('.kt_select2_claim_type').select2({
             placeholder: "Select Claim Type"
         });
+        $('.kt_select2_remarks').select2({
+            placeholder: "Select"
+        });
         // loading data from array
         // var data = [{
         //     id: 0,

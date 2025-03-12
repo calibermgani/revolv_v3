@@ -72,28 +72,28 @@
                     </fieldset>
 
                 </div>
-                {{-- <div class="col-lg-2 mb-lg-0 mb-6">
+                <div class="col-lg-2 mb-lg-0 mb-6">
                     <label>Remarks</label>
                      <fieldset class="form-group mb-1">
                         @php $remarkStatus = [''=>'Select','with_remarks'=>'With Remarks','without_remarks'=>'Without Remarks']@endphp
-                        {!! Form::select('remarks_status', $remarkStatus, null, [
+                        {!! Form::select('remarks_status', $remarkStatus, $remarkStatusVal, [
                             'class' => 'form-control kt_select2_remarks',
                             'id' => 'remarks_status',
-                            'style' => 'width: 100%;background-color: #F1F1F1;',
+                            'style' => 'width: 100%;',
                         ]) !!}
                     </fieldset>
                 </div>
                 <div class="col-lg-2 mb-lg-0 mb-6">
                     <label>Reason</label>
                      <fieldset class="form-group mb-1">
-                        @php $remarkStatus = [''=>'Select','ar_reason'=>'AR Reason','qa_reason'=>'QA Reason']@endphp
-                        {!! Form::select('remarks_status', $remarkStatus, null, [
+                        @php $reasonType = [''=>'Select','ar_reason'=>'AR Reason','qa_reason'=>'QA Reason']@endphp
+                        {!! Form::select('reason_type', $reasonType, $reasonTypeVal, [
                             'class' => 'form-control kt_select2_remarks',
-                            'id' => 'remarks_status',
-                            'style' => 'width: 100%;background-color: #F1F1F1;',
+                            'id' => 'reason_type',
+                            'style' => 'width: 100%;',
                         ]) !!}
                     </fieldset>
-                </div> --}}
+                </div>
                 <div class="col-lg-2 mt-8">
                     <button class="btn btn-light-danger" id="clear_submit" tabindex="10" type="button">
                         <span>
@@ -119,7 +119,7 @@
                     </thead>
                     <tbody>
                         @php
-                            if(isset($productionMgrs)&& !empty($productionReasons)) {
+                            if(isset($productionMgrs)&& !empty($productionMgrs)) {
                                 $productionManagers =  App\Http\Helper\Admin\Helpers::getUserNameListById($productionMgrs);
                             } else {
                                 $productionManagers =  '--';
@@ -128,37 +128,43 @@
                         @if (isset($productionReasons) && !empty($productionReasons))
                             @foreach ($productionReasons as $data)
                                 @php
-                                    if ($data->project_id != null) {
+                          
+                                    if ($data['project_id'] != null) {
                                         $projectName = App\Models\project::where(
                                             'project_id',
-                                            $data->project_id,
+                                            $data['project_id'],
                                         )->first();
                                     } else {
                                         $projectName = '--';
                                     }
-                                    if ($data->sub_project_id != null && $data->project_id != null) {
-                                        $subProjectName = App\Models\subproject::where('project_id', $data->project_id)
-                                            ->where('sub_project_id', $data->sub_project_id)
+                                    if ($data['sub_project_id'] != null && $data['project_id'] != null) {
+                                        $subProjectName = App\Models\subproject::where('project_id', $data['project_id'])
+                                            ->where('sub_project_id', $data['sub_project_id'])
                                             ->first();
                                     } else {
                                         $subProjectName = '--';
                                     }
-                                    if ($data->sub_project_id != null && $data->project_id != null) {
-                                        $subProjectName = App\Models\subproject::where('project_id', $data->project_id)
-                                            ->where('sub_project_id', $data->sub_project_id)
+                                    if ($data['sub_project_id'] != null && $data['project_id'] != null) {
+                                        $subProjectName = App\Models\subproject::where('project_id', $data['project_id'])
+                                            ->where('sub_project_id', $data['sub_project_id'])
                                             ->first();
                                     } else {
                                         $subProjectName = '--';
                                     }
+                                    if(isset($productionMgrs)&& !empty($productionMgrs)) {
                                     $reasonList = App\Models\ProjectReason::with([
                                         'project_ar_reason_type',
                                         'project_qa_reason_type',
                                     ])
-                                        ->where('project_id', $data->project_id)
-                                        ->where('sub_project_id', $data->sub_project_id)
-                                        ->whereDate('created_at', $data->created_date)
-                                        ->whereBetween('updated_at', [$startTime, $endTime])
-                                        ->get();
+                                        ->where('project_id', $data['project_id'])
+                                        ->where('sub_project_id', $data['sub_project_id'])
+                                        ->whereDate('created_at', $data['created_date']);
+                                        if($startTime != "" && $endTime != ""){
+                                            $reasonList = $reasonList->whereBetween('updated_at', [$startTime, $endTime])
+                                            ->get();
+                                        } else {
+                                            $reasonList = $reasonList->get();
+                                        }
 
                                     $arReasons = $qaReasons = [];
                                     if (count($reasonList) > 0) {
@@ -213,12 +219,18 @@
                                         $arReasonString = '--';
                                         $qaReasons[] = '--';
                                         $qaReasonString = '--';
-                                    }
+                                    };
+                                }else {
+                                    $arReasons[] = '--';
+                                        $arReasonString = '--';
+                                        $qaReasons[] = '--';
+                                        $qaReasonString = '--';
+                                }
                                 @endphp
                                 <tr>
                                     <td>{{ $projectName ? $projectName->aims_project_name : '--' }}</td>
-                                    <td>{{ $subProjectName ? $subProjectName->sub_project_name : '--' }}</td>
-                                    <td>{{$productionManagers != '--' ? $productionManagers[$data->manager_id] : '--'}}</td>
+                                    <td>  {{ $subProjectName && $subProjectName != '--' ? $subProjectName->sub_project_name  :'--' }}</td>
+                                    <td>{{$productionManagers !== '--' ? $productionManagers[$data->manager_id] : $data['scope_manager']}}</td>
                                     {{-- <td>{{ App\Http\Helper\Admin\Helpers::getUserNameById($data->manager_id) }}</td> --}}
                                     <td>{{ is_string($arReasonString) ? trim($arReasonString, ',') : implode(', ', (array) $arReasonString) }}
                                     </td>
@@ -238,6 +250,12 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
         <script>
             $(document).ready(function() {
+                KTApp.block('#page-loader', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Fetching...',
+                    }); KTApp.unblock('#page-loader');
                 var start = moment().startOf('month');
                 var end = moment().endOf('month');
                 $('.daterange').attr("autocomplete", "off");
