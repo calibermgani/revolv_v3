@@ -267,6 +267,7 @@ class DashboardController extends Controller
 
     public function procodeManagerDashboard()
     {
+        Log::info('mgr dashboarc');
         if (Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
             try {
                
@@ -278,6 +279,7 @@ class DashboardController extends Controller
                 // $endDate = Carbon::now()->endOfDay()->toDateString();
                 // $startDate = Carbon::now()->startOfWeek()->startOfDay()->toDateString();
                 // $endDate = Carbon::now()->endOfWeek()->endOfDay()->toDateString();
+                Log::info('mgr dashboard inside');
                 GetProjJob::dispatch($userId)->delay(now()->addSeconds(5));
                 $prjCacheKey = 'clients_on_user' ; 
                 $projects = Cache::get($prjCacheKey, 0);
