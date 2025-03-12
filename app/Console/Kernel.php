@@ -26,7 +26,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('project:inventory')->everyFiveMinutes();
         // $schedule->command('project:hourlymail')->hourly();
         // $schedule->command('project:callchartworklogs')->dailyAt('09:00');
-        $schedule->exec('chmod -R 777 storage/framework/cache/data')->everyMinute();
+      
 
     }
 
