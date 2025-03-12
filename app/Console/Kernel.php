@@ -21,12 +21,13 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->command('project:practice')->hourly();
-        $schedule->command('project:workmail')->everyFiveMinutes();
-        $schedule->command('project:holdrecords')->dailyAt('10:00');
-        $schedule->command('project:inventory')->everyFiveMinutes();
-        $schedule->command('project:hourlymail')->hourly();
-        $schedule->command('project:callchartworklogs')->dailyAt('09:00');
+        $schedule->command('project:practice')->dailyAt('10:00');
+        //       $schedule->command('project:holdrecords')->dailyAt('10:00');
+        // $schedule->command('project:inventory')->everyFiveMinutes();
+        // $schedule->command('project:hourlymail')->hourly();
+        // $schedule->command('project:callchartworklogs')->dailyAt('09:00');
+        $schedule->exec('chmod -R 777 storage/framework/cache/data')->everyMinute();
+
     }
 
     /**
