@@ -59,10 +59,8 @@ class GetProjJob implements ShouldQueue
     if (!file_exists($folderPath)) {
         mkdir($folderPath, 0777, true);
     }
-    Log::info(function_exists('shell_exec'));
-    // Set permissions for the folder
-    shell_exec("sudo chmod -R 777 {$folderPath} 2>&1");
-
+    $output = shell_exec("sudo chmod -R 777 " . escapeshellarg($folderPath) . " 2>&1");
+    Log::info('Shell Output: ' . $output);
     Log::info('Folder permission set to 777 for: ' . $folderPath);
     
   
