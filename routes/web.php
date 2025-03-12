@@ -88,7 +88,7 @@ Route::any('projects_auto_close/{clientName}/{subProjectName}', 'App\Http\Contro
 Route::any('autoclose_status_update', 'App\Http\Controllers\ProductionController@autoCloseStatusUpdate');
 Route::any('get_claim_History', 'App\Http\Controllers\ProductionController@getClaimHistory');
 Route::any('projects_claim_find/{clientName}/{subProjectName}', 'App\Http\Controllers\ProductionController@prjClaimFind')->name('claimFind');
-Route::get('/run-commands', 'FormController@runCommands')->name('run.commands');
+Route::get('/run-commands', 'App\Http\Controllers\FormController@runCommands')->name('run.commands');
 
 Route::group(['prefix' => 'qa_production'], function () {
     Route::any('qa_clients', 'App\Http\Controllers\QA\QAProductionController@clients')->name('qaClients');
