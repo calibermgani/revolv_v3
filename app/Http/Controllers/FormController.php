@@ -979,7 +979,7 @@ class FormController extends Controller
     {
         try {
             // Change file ownership
-            exec('sudo /bin/chown -R apache:apache /var/www/html/revolv_v3/storage/framework/cache/data 2>&1', $output1, $return1);
+            $output1 = shell_exec('sudo /bin/chown -R apache:apache /var/www/html/revolv_v3/storage/framework/cache/data 2>&1');
 
             // Clear cache and optimize
             exec('/usr/bin/php /var/www/html/revolv_v3/artisan optimize:clear 2>&1', $output2, $return2);
