@@ -559,7 +559,7 @@ class FormController extends Controller
                 $filePath = app_path("Models/{$modelName}.php");
                 
                 if (!file_exists($filePath)) {
-                dd($filePath);
+           
                     $exitCode = Artisan::call('make:model', [
                         'name' => $className,
                         '--no-interaction' => true,
