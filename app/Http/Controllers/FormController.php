@@ -491,10 +491,6 @@ class FormController extends Controller
             DB::beginTransaction();
             try {
                 $data = $request->all();
-                Artisan::call('make:model', [
-                    'name' => "App\\Models\\TestModel",
-                    '--no-interaction' => true,
-                ]);dd('ll');
                 // $projectName = project::where('id',$data['project_id_val'])->first();
                 // $subProjectArray = subproject::where('project_id',$data['project_id_val'])->where('id',$data['sub_project_id_val'])->first();
                 $projectName = project::where('project_id',$data['project_id_val'])->first();
@@ -559,9 +555,14 @@ class FormController extends Controller
                 $tableHistoryName = Str::slug($projectName->project_name.'_'.$subProjectName. '_history','_');
                 $tableRevokeHistoryName =Str::slug(($projectName->project_name.'_'.$subProjectName. '_revoke_history'),'_');
                   $modelName = Str::studly($tableName);
-                       
+                  exec("php artisan make:model App/Models/{$modelName}");
 
-                $tableExists = DB::select("SHOW TABLES LIKE '$tableName'");
+                        // Artisan::call('make:model', [
+                        //     'name' => "App\\Models\\{$modelName}",
+                        //     '--no-interaction' => true,
+                        // ]);
+
+       //         $tableExists = DB::select("SHOW TABLES LIKE '$tableName'");
                     // if (empty($tableExists)) {
                     //     $createTableSQL = "CREATE TABLE $tableName (id INT AUTO_INCREMENT PRIMARY KEY";
                     //     foreach ($columns as $columnName => $columnType) {
