@@ -607,7 +607,7 @@ class FormController extends Controller
                         $dynamicModel = new DynamicModel($tableName);
                     } else {
                         $dynamicModel = new DynamicModel($tableName);
-                        $dynamicModel->refreshFillableFromTable();
+                        $dynamicModel->setFillableFromTable();
                         // $afterColumn = 'created_at';
                         // foreach ($columns as $columnName => $columnType) {
                         //     $columnExists = DB::select("
@@ -678,7 +678,7 @@ class FormController extends Controller
                     }  else {
                         $afterColumn = 'created_at';
                         $dynamicDuplicateModel = new DynamicModel($duplicateTableName);
-                        $dynamicDuplicateModel->refreshFillableFromTable();
+                        $dynamicDuplicateModel->setFillableFromTable();
                         // foreach ($columns as $columnName => $columnType) {
                         //     $columnExists = DB::select("
                         //         SELECT COLUMN_NAME
@@ -747,7 +747,7 @@ class FormController extends Controller
                     } else {
                         $afterColumn = 'created_at';
                         $dynamicModel = new DynamicModel($tableDataName);
-                        $dynamicModel->refreshFillableFromTable();
+                        $dynamicModel->setFillableFromTable();
                         // foreach ($columns as $columnName => $columnType) {
                         //     $columnExists = DB::select("
                         //         SELECT COLUMN_NAME
@@ -817,7 +817,7 @@ class FormController extends Controller
                     } else {
                         $afterColumn = 'created_at';
                         $dynamicModel = new DynamicModel($tableHistoryName);
-                        $dynamicModel->refreshFillableFromTable();
+                        $dynamicModel->setFillableFromTable();
                         // foreach ($columns as $columnName => $columnType) {
                         //     $columnExists = DB::select("
                         //         SELECT COLUMN_NAME
@@ -887,7 +887,7 @@ class FormController extends Controller
                     } else {
                         $afterColumn = 'created_at';
                         $dynamicModel = new DynamicModel($tableRevokeHistoryName);
-                        $dynamicModel->refreshFillableFromTable();
+                        $dynamicModel->setFillableFromTable();
                         // foreach ($columns as $columnName => $columnType) {
                         //     $columnExists = DB::select("
                         //         SELECT COLUMN_NAME
