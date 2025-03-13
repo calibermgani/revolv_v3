@@ -606,7 +606,12 @@ class FormController extends Controller
                         DB::statement($createTableSQL);
                         $dynamicModel = new DynamicModel($tableName);
                     } else {
-                       new DynamicModel($tableName);
+                        $modelName = Str::studly($tableName);
+                        Artisan::call('make:model', [
+                            'name' => "App\\Models\\{$modelName}",
+                            '--no-interaction' => true,
+                        ]);
+                      // new DynamicModel($tableName);
                        // $dynamicModel->setFillableFromTable();
                         // $afterColumn = 'created_at';
                         // foreach ($columns as $columnName => $columnType) {
