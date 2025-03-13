@@ -47,8 +47,8 @@ class DynamicModel extends Model
 
         // Save the modified template as the actual model file
       
-        require_once $modelFilePath;
-        dd($modelFilePath, $modelTemplate);
+        // require_once $modelFilePath;
+        // dd($modelFilePath, $modelTemplate);
         // require_once $modelFilePath;
         // Load the created model class
         // if (File::exists($modelFilePath)) {
