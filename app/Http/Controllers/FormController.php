@@ -554,7 +554,7 @@ class FormController extends Controller
                 $duplicateTableName = Str::slug($projectName->project_name . '_' . $subProjectName . '_duplicates','_');
                 $tableHistoryName = Str::slug($projectName->project_name.'_'.$subProjectName. '_history','_');
                 $tableRevokeHistoryName =Str::slug(($projectName->project_name.'_'.$subProjectName. '_revoke_history'),'_');
-                $modelName = Str::studly($tableName);
+                $modelName = Str::studly($tableName);dd( $modelName);
                 Artisan::call('make:model', [
                     'name' => "App\\Models\\{$modelName}",
                     '--no-interaction' => true,
