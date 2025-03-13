@@ -46,12 +46,7 @@ class DynamicModel extends Model
         $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);
 
         // Save the modified template as the actual model file
-        File::put($modelFilePath, $modelTemplate);
-
-        // Load the created model class
-        if (File::exists($modelFilePath)) {
-            require_once $modelFilePath;
-        }
+    
 
         // Run the Artisan command to make the model
         Artisan::call('make:model', [

@@ -488,7 +488,7 @@ class FormController extends Controller
 
     public static function formConfigurationUpdate(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userInfo'] && Session::get('loginDetails')['userInfo']['user_id'] !=null) {
-            DB::beginTransaction();
+        //    DB::beginTransaction();
             try {
                 $data = $request->all();
                 // $projectName = project::where('id',$data['project_id_val'])->first();
@@ -894,10 +894,10 @@ class FormController extends Controller
                             }
                         }
                     }
-                    DB::commit();
+               //     DB::commit();
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
             } catch (\Exception $e) {
-                DB::rollBack();
+              //  DB::rollBack();
                 return response()->json(['error' => $e->getMessage()], 500);
                 Log::debug($e->getMessage());
             }
