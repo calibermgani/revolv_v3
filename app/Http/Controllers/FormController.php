@@ -979,13 +979,7 @@ class FormController extends Controller
     public function runCommands()
     {
         try {
-            $output = shell_exec('sudo chmod -R 777 storage 2>&1');
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Permissions updated',
-                'output' => $output
-            ]);
+          return 'hi';
         
         
         } catch (\Exception $e) {
