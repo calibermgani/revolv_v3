@@ -979,6 +979,11 @@ class FormController extends Controller
     public function runCommands()
     {
         try {
+            $modelNamespace = "App\\Models\\TestModel";
+            Artisan::call('make:model', [
+                'name' => $modelNamespace,
+                '--no-interaction' => true,
+            ]);
           return 'hi';
         
         
