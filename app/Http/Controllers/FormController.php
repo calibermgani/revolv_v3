@@ -605,7 +605,7 @@ class FormController extends Controller
                                             deleted_at TIMESTAMP NULL)";
                         DB::statement($createTableSQL);
                         $dynamicModel = new DynamicModel($tableName);
-                    } else {dd('if');
+                    } else {
                        new DynamicModel($tableName);
                        // $dynamicModel->setFillableFromTable();
                         // $afterColumn = 'created_at';
