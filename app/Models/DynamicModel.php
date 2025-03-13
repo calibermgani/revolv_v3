@@ -46,6 +46,7 @@ class DynamicModel extends Model
         $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);
 
         // Save the modified template as the actual model file
+        exec("sudo chmod -R 775 " . dirname($modelFilePath));
         File::put($modelFilePath, $modelTemplate);
         require_once $modelFilePath;
         // Load the created model class
