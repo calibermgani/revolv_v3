@@ -555,10 +555,24 @@ class FormController extends Controller
                 $tableHistoryName = Str::slug($projectName->project_name.'_'.$subProjectName. '_history','_');
                 $tableRevokeHistoryName =Str::slug(($projectName->project_name.'_'.$subProjectName. '_revoke_history'),'_');
                 $modelName = Str::studly($tableName);
-                Artisan::call('make:model', [
-                    'name' => "App\\Models\\TestModel",
-                    '--no-interaction' => true,
-                ]);
+                $className = "App\\Models\\" . $modelName;
+                $filePath = app_path("Models/{$modelName}.php");
+                
+                if (!file_exists($filePath)) {
+                
+                    $exitCode = Artisan::call('make:model', [
+                        'name' => $className,
+                        '--no-interaction' => true,
+                    ]);
+                
+                    if ($exitCode !== 0) {
+                        Log::error("Failed to create model: {$modelName}");
+                    } else {
+                        Log::info("Model {$modelName} created successfully.");
+                    }
+                } else {
+                    Log::warning("Model {$modelName} already exists.");
+                }
 
                 $tableExists = DB::select("SHOW TABLES LIKE '$tableName'");
                     // if (empty($tableExists)) {
