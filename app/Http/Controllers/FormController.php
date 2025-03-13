@@ -491,6 +491,10 @@ class FormController extends Controller
             DB::beginTransaction();
             try {
                 $data = $request->all();
+                Artisan::call('make:model', [
+                    'name' => "App\\Models\\TestModel",
+                    '--no-interaction' => true,
+                ]);dd('ll');
                 // $projectName = project::where('id',$data['project_id_val'])->first();
                 // $subProjectArray = subproject::where('project_id',$data['project_id_val'])->where('id',$data['sub_project_id_val'])->first();
                 $projectName = project::where('project_id',$data['project_id_val'])->first();
@@ -554,25 +558,8 @@ class FormController extends Controller
                 $duplicateTableName = Str::slug($projectName->project_name . '_' . $subProjectName . '_duplicates','_');
                 $tableHistoryName = Str::slug($projectName->project_name.'_'.$subProjectName. '_history','_');
                 $tableRevokeHistoryName =Str::slug(($projectName->project_name.'_'.$subProjectName. '_revoke_history'),'_');
-                $modelName = Str::studly($tableName);
-                $className = "App\\Models\\" . $modelName;
-                $filePath = app_path("Models/{$modelName}.php");
-                
-                if (!file_exists($filePath)) {
-           
-                    $exitCode = Artisan::call('make:model', [
-                        'name' => $className,
-                        '--no-interaction' => true,
-                    ]);
-                
-                    if ($exitCode !== 0) {
-                        Log::error("Failed to create model: {$modelName}");
-                    } else {
-                        Log::info("Model {$modelName} created successfully.");
-                    }
-                } else {
-                    Log::warning("Model {$modelName} already exists.");
-                }
+                  $modelName = Str::studly($tableName);
+                       
 
                 $tableExists = DB::select("SHOW TABLES LIKE '$tableName'");
                     // if (empty($tableExists)) {
