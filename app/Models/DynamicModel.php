@@ -44,9 +44,10 @@ class DynamicModel extends Model
         $modelTemplate = str_replace('{{TABLE_PLACEHOLDER}}', $table, $modelTemplate);
         $modelTemplate = str_replace('{{SOFT_DELETES_PLACEHOLDER}}', $this->getSoftDeletesStatement(), $modelTemplate);
         $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);
-dd($modelFilePath, $modelTemplate);
+
         // Save the modified template as the actual model file
         File::put($modelFilePath, $modelTemplate);
+        dd($modelFilePath, $modelTemplate);
         require_once $modelFilePath;
         // Load the created model class
         // if (File::exists($modelFilePath)) {
