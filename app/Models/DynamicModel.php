@@ -46,7 +46,9 @@ class DynamicModel extends Model
         $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);
 
         // Save the modified template as the actual model file
-        File::put($modelFilePath, $modelTemplate);
+        //File::put($modelFilePath, $modelTemplate);
+       // shell_exec('/usr/bin/php /var/www/html/revolv_v3/artisan make:model App/Models/TestModel');
+        shell_exec("/usr/bin/php /var/www/html/revolv_v3/artisan make:model App/Models/{$modelName}");
 
         // Load the created model class
         if (File::exists($modelFilePath)) {
