@@ -34,40 +34,31 @@ class DynamicModel extends Model
     protected function createModelFile($table)
     {
         $modelName = Str::studly($table);
+        $modelNamespace = "App\\Models\\{$modelName}";
         $modelFilePath = app_path("Models/{$modelName}.php");
         $modelTemplatePath = base_path('stubs/model_template.stub');
+
+        // Replace placeholders in the template
+        $modelTemplate = File::get($modelTemplatePath);
+        $modelTemplate = str_replace('{{MODEL_NAME}}', $modelName, $modelTemplate);
+        $modelTemplate = str_replace('{{TABLE_PLACEHOLDER}}', $table, $modelTemplate);
+        $modelTemplate = str_replace('{{SOFT_DELETES_PLACEHOLDER}}', $this->getSoftDeletesStatement(), $modelTemplate);
+        $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);
+
+        // Save the modified template as the actual model file
+        File::put($modelFilePath, $modelTemplate);
+
+        // Load the created model class
+        if (File::exists($modelFilePath)) {
+            require_once $modelFilePath;
+        }
+
+        // Run the Artisan command to make the model
         Artisan::call('make:model', [
-            'name' => "App\\Models\\{$modelName}",
+            'name' => $modelNamespace,
             '--no-interaction' => true,
         ]);
-        // Ensure the "Models" directory exists and is writable
-        // if (!File::exists(app_path('Models'))) {
-        //     File::makeDirectory(app_path('Models'), 0777, true, true);
-        // }
-    
-        // // Check if file exists before trying to write
-        // if (File::exists($modelFilePath)) {
-        //     File::delete($modelFilePath); // Delete existing file
-        // }
-    
-        // if (File::exists($modelTemplatePath)) {
-        //     $modelTemplate = File::get($modelTemplatePath);
-        //     $modelTemplate = str_replace('{{MODEL_NAME}}', $modelName, $modelTemplate);
-        //     $modelTemplate = str_replace('{{TABLE_PLACEHOLDER}}', $table, $modelTemplate);
-        //     $modelTemplate = str_replace('{{SOFT_DELETES_PLACEHOLDER}}', $this->getSoftDeletesStatement(), $modelTemplate);
-        //     $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);
-    
-        //     // Save the modified template as the actual model file
-        //     File::put($modelFilePath, $modelTemplate);
-        // } else {
-        //     throw new \Exception("Model template file not found: $modelTemplatePath");
-        // }
-    
-        // Run the Artisan command to make the model
-       
     }
-    
-    
 
     // Override the create method to prevent the default record insertion
     public static function create(array $attributes = [])
