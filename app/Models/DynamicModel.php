@@ -45,14 +45,14 @@ class DynamicModel extends Model
         $modelTemplate = str_replace('{{TABLE_PLACEHOLDER}}', $table, $modelTemplate);
         $modelTemplate = str_replace('{{SOFT_DELETES_PLACEHOLDER}}', $this->getSoftDeletesStatement(), $modelTemplate);
         $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);
-     
-        Storage::put("Models/{$modelName}.php", $modelTemplate);
+        exec("php artisan make:model App/Models/{$modelName} --quiet");
+        /* File::put("Models/{$modelName}.php", $modelTemplate);
 
         // Run the Artisan command to make the model
         Artisan::call('make:model', [
             'name' => $modelNamespace,
             '--no-interaction' => true,
-        ]);
+        ]); */
     }
 
     // Override the create method to prevent the default record insertion
