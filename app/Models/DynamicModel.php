@@ -37,12 +37,16 @@ class DynamicModel extends Model
         $modelFilePath = app_path("Models/{$modelName}.php");
         $modelTemplatePath = base_path('stubs/model_template.stub');
     
-        // Ensure the "Models" directory exists
+        // Ensure the "Models" directory exists and is writable
         if (!File::exists(app_path('Models'))) {
-            File::makeDirectory(app_path('Models'), 0755, true, true);
+            File::makeDirectory(app_path('Models'), 0777, true, true);
         }
     
-        // Read and modify the template
+        // Check if file exists before trying to write
+        if (File::exists($modelFilePath)) {
+            File::delete($modelFilePath); // Delete existing file
+        }
+    
         if (File::exists($modelTemplatePath)) {
             $modelTemplate = File::get($modelTemplatePath);
             $modelTemplate = str_replace('{{MODEL_NAME}}', $modelName, $modelTemplate);
@@ -62,6 +66,7 @@ class DynamicModel extends Model
             '--no-interaction' => true,
         ]);
     }
+    
     
 
     // Override the create method to prevent the default record insertion
