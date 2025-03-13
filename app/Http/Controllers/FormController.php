@@ -556,7 +556,7 @@ class FormController extends Controller
                 $tableRevokeHistoryName =Str::slug(($projectName->project_name.'_'.$subProjectName. '_revoke_history'),'_');
                 $modelName = Str::studly($tableName);
                 Artisan::call('make:model', [
-                    'name' => "App\\Models\\{$modelName}",
+                    'name' => "App\\Models\\TestModel",
                     '--no-interaction' => true,
                 ]);
 
