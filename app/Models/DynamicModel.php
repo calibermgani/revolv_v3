@@ -34,34 +34,35 @@ class DynamicModel extends Model
     protected function createModelFile($table)
     {
         $modelName = Str::studly($table);
-        $modelNamespace = "App\\Models\\{$modelName}";
         $modelFilePath = app_path("Models/{$modelName}.php");
         $modelTemplatePath = base_path('stubs/model_template.stub');
-
-        // Replace placeholders in the template
-        $modelTemplate = File::get($modelTemplatePath);
-        $modelTemplate = str_replace('{{MODEL_NAME}}', $modelName, $modelTemplate);
-        $modelTemplate = str_replace('{{TABLE_PLACEHOLDER}}', $table, $modelTemplate);
-        $modelTemplate = str_replace('{{SOFT_DELETES_PLACEHOLDER}}', $this->getSoftDeletesStatement(), $modelTemplate);
-        $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);
-
-        // Save the modified template as the actual model file
-      
-        // require_once $modelFilePath;
-        // dd($modelFilePath, $modelTemplate);
-        // require_once $modelFilePath;
-        // Load the created model class
-        // if (File::exists($modelFilePath)) {
-        //     dd($modelFilePath, $modelTemplate);
-        //     require_once $modelFilePath;
-        // }
-
+    
+        // Ensure the "Models" directory exists
+        if (!File::exists(app_path('Models'))) {
+            File::makeDirectory(app_path('Models'), 0755, true, true);
+        }
+    
+        // Read and modify the template
+        if (File::exists($modelTemplatePath)) {
+            $modelTemplate = File::get($modelTemplatePath);
+            $modelTemplate = str_replace('{{MODEL_NAME}}', $modelName, $modelTemplate);
+            $modelTemplate = str_replace('{{TABLE_PLACEHOLDER}}', $table, $modelTemplate);
+            $modelTemplate = str_replace('{{SOFT_DELETES_PLACEHOLDER}}', $this->getSoftDeletesStatement(), $modelTemplate);
+            $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);
+    
+            // Save the modified template as the actual model file
+            File::put($modelFilePath, $modelTemplate);
+        } else {
+            throw new \Exception("Model template file not found: $modelTemplatePath");
+        }
+    
         // Run the Artisan command to make the model
         Artisan::call('make:model', [
-            'name' => $modelNamespace,
+            'name' => "App\\Models\\{$modelName}",
             '--no-interaction' => true,
         ]);
     }
+    
 
     // Override the create method to prevent the default record insertion
     public static function create(array $attributes = [])
