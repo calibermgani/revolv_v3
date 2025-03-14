@@ -114,13 +114,12 @@ class ProjectController extends Controller
     {
         try {
             Log::info('Executing ProjectWorkMail logic.');
-            $loginEmpId = Session::get('loginDetails')['userDetail']['emp_id'] ?? "";    
-            //$toMailId = ["mgani@caliberfocus.com"];
-            // $toMailId = ["elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","radhika@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com","devanathan@annexmed.net"];
-            // $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net"];
-            $toMailId = ["vijayalaxmi@caliberfocus.com"];
-            $ccMailId = ["vijayalaxmi@caliberfocus.com"];
-    
+            $loginEmpId = Session::get('loginDetails')['userDetail']['emp_id'] ?? "";
+            $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'resolv work to email')->first();
+            $toMailId = explode(",", $toMail->cc_emails);
+            $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'resolv work cc email')->first();
+            $ccMailId = explode(",", $ccMail->cc_emails);     
+
             // Set date ranges based on yesterday's date, skipping weekends.
             $yesterday = Carbon::yesterday();
             if ($yesterday->isSaturday()) {
@@ -252,8 +251,12 @@ class ProjectController extends Controller
             Log::info('Executing ProjectWorkMail logic.');
             //  $toMailId = ["britto@annexmed.com","anukishan@annexmed.com","elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com"];
             // $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net","vijayalaxmi@caliberfocus.com"];
-            $toMailId = ["mgani@caliberfocus.com"];
-            $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+            $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'resolv work to email')->first();
+            $toMailId = explode(",", $toMail->cc_emails);
+            $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'resolv work cc email')->first();
+            $ccMailId = explode(",", $ccMail->cc_emails);        
+            // $toMailId = ["mgani@caliberfocus.com"];
+            // $ccMailId = ["vijayalaxmi@caliberfocus.com"];
             $yesterday = Carbon::yesterday();
             if ($yesterday->isSaturday()) {
                 $yesterday = $yesterday->subDay(1); // Friday
@@ -481,7 +484,8 @@ class ProjectController extends Controller
             // }
             // $toMailId = $apiData['people_email'];
             // $reportingPerson = $apiData['reprting_person'];            
-            $toMailId = "resolvsupport@annexmed.net";
+            $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'project file not there to mail')->first();
+            $toMailId = explode(",", $toMail->cc_emails);
             $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'project file not there')->first();
             $ccMailId = explode(",", $ccMail->cc_emails);
             // $toMailId = ["mgani@caliberfocus.com"];
@@ -684,9 +688,13 @@ class ProjectController extends Controller
             // $ccMailId = ['anbalagan@annexmed.net','dominic@annexmed.net','durga@annexmed.net','francis@annexmed.net','jaiganesh@annexmed.net','mohan@annexmed.com',
             // 'nicson@annexmed.net','krajkumar@annexmed.net','athamim@annexmed.net','tikkaram@annexmed.net','vinodh@annexmed.net','sbishop@annexmed.net','karthikeyan@annexmed.net','vijaychandran@annexmed.net',
             // 'hemanathan@annexmed.net','vigneshwaran@annexmed.net','mgani@caliberfocus.com','margaretmary@annexmed.net','vijayalaxmi@caliberfocus.com'];
-            $toMailId = ["vijayalaxmi@caliberfocus.com"];
-            $ccMailId = ["mgani@caliberfocus.com"];
-          
+            $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'resolv hourly to email')->first();
+            $toMailId = explode(",", $toMail->cc_emails);
+            $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'resolv hourly cc email')->first();
+            $ccMailId = explode(",", $ccMail->cc_emails);                  
+            // $toMailId = ["vijayalaxmi@caliberfocus.com"];
+            // $ccMailId = ["mgani@caliberfocus.com"];
+         
             $mailHeader = "Resolv Project Hourly Report";
             $projects = collect($this->getProjects());
 
