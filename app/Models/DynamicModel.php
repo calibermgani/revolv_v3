@@ -48,12 +48,13 @@ class DynamicModel extends Model
         // Save the modified template as the actual model file
         //File::put($modelFilePath, $modelTemplate);
        // shell_exec('/usr/bin/php /var/www/html/revolv_v3/artisan make:model App/Models/TestModel');
-        shell_exec("/usr/bin/php /var/www/html/revolv_v3/artisan make:model App/Models/{$modelName}");
+     
 
         // Load the created model class
         if (File::exists($modelFilePath)) {
             require_once $modelFilePath;
         }
+        shell_exec("/usr/bin/php /var/www/html/revolv_v3/artisan make:model App/Models/{$modelName}");
 
         // Run the Artisan command to make the model
         Artisan::call('make:model', [
