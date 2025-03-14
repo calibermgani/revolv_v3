@@ -34,7 +34,8 @@ class DynamicModel extends Model
     protected function createModelFile($table)
     {
         $modelName = Str::studly($table);
-        $modelNamespace = "App\\Models\\{$modelName}";
+        //$modelNamespace = "App\\Models\\{$modelName}";
+        $modelNamespace = "App/Models/{$modelName}";
         $modelFilePath = app_path("Models/{$modelName}.php");
         $modelTemplatePath = base_path('stubs/model_template.stub');
 
@@ -54,7 +55,7 @@ class DynamicModel extends Model
         if (File::exists($modelFilePath)) {
             require_once $modelFilePath;
         }
-        shell_exec("/usr/bin/php /var/www/html/revolv_v3/artisan make:model App/Models/{$modelName}");
+        shell_exec("/usr/bin/php /var/www/html/revolv_v3/artisan make:model {$modelNamespace}");
 
         // Run the Artisan command to make the model
         // Artisan::call('make:model', [
