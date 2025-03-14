@@ -255,7 +255,7 @@ class DashboardController extends Controller
 
     public function procodeManagerDashboard()
     {
-        Log::info('mgr dashboarc');
+        //Log::info('mgr dashboarc');
         if (Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
             try {
                
