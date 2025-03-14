@@ -40,14 +40,14 @@ class ProjectHourMailCommand extends Command
         Log::info('Project Hourly Mail Cron started.');
         try {
             $currentHour = Carbon::now()->hour;
-            // if ($currentHour >= 17 || $currentHour < 6) {                
+            if ($currentHour >= 17 || $currentHour < 6) {                
                 Log::info("Hourly task running at " . Carbon::now());
                 $controller = app(\App\Http\Controllers\ProjectController::class);
                 $controller->projectHourlyMail();
                 Log::info('Project Hourly Mail Cron finished successfully.');
-            // } else {
-            //     Log::info("Hourly task skipped at " . Carbon::now());
-            // }
+            } else {
+                Log::info("Hourly task skipped at " . Carbon::now());
+            }
         } catch (\Exception $e) {
             Log::error('Project Hourly Mail Cron failed: ' . $e->getMessage());
         }
