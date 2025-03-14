@@ -25,12 +25,6 @@ class GetProjSubPrjJob implements ShouldQueue
    
     public function handle()
     {
-        // $data = app()->call('App\Http\Controllers\ProjectController@getProjectTotalDetailedInformationForHourlyWeb', [
-        //     'project_id' => $this->projectId,
-        //     'sub_project_id' => $this->subProjectId,
-        // ]);  
-        // $cacheKey = 'project_'.$this->projectId.$this->subProjectId.'totalDetails' ;
-        // Cache::put($cacheKey, $data, now()->addMinutes(30));
         $cacheKey = 'project_'.$this->projectId.$this->subProjectId.'totalDetails';
 
         $data = Cache::remember($cacheKey, now()->addMinutes(10), function () {

@@ -31,9 +31,10 @@ class ReportsController extends Controller
             // $user = Helpers::getprojectResourceList($request->project_id);
         
             if (!empty($request->project_id) && is_string($request->project_id)) {
-                getProjectResourceListJob::dispatch($request->project_id)->delay(now()->addSeconds(5));
-                $prjResourceCacheKey = 'project_'.$request->project_id.'prjResourceList' ;
-                $user = Cache::get($prjResourceCacheKey, 0);  
+                // getProjectResourceListJob::dispatch($request->project_id)->delay(now()->addSeconds(5));
+                // $prjResourceCacheKey = 'project_'.$request->project_id.'prjResourceList' ;
+                // $user = Cache::get($prjResourceCacheKey, 0); 
+                $user=Helpers::getprojectResourceList($request->project_id); 
             }  else {
                 $user = [];
             }           
@@ -542,6 +543,8 @@ class ReportsController extends Controller
     {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
             try {
+                $error = "Maintenance mode";
+                return view('errors.error_page',compact('error'));
                 // $payload = [
                 //     'token' => '1a32e71a46317b9cc6feb7388238c95d'
                 // ];

@@ -25,9 +25,7 @@ use Carbon\Carbon;
                                         @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator - AR') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)
                                         @php
                                            $clientId = App\Http\Helper\Admin\Helpers::encodeAndDecodeID($clientName, 'decode');
-                                             App\Jobs\GetArResourceName::dispatch($clientId)->delay(now()->addSeconds(5));
-                                            $prjTotalArListCacheKey = 'project_'.$clientId.'arResourceName';
-                                            $prjTotalArList = Cache::get($prjTotalArListCacheKey, 0); 
+                                            $prjTotalArList = App\Http\Helper\Admin\Helpers::getArResourceName($clientId);
                                         @endphp    
                                        
                        
