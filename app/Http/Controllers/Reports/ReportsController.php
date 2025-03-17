@@ -858,11 +858,6 @@ class ReportsController extends Controller
                         }else{
                             $query;
                         }
-                        if($subProjectId) {
-                            $query->where('sub_project_id', $subProjectId);
-                        } else {
-                            $query;
-                        }
                         if($reasonTypeVal == 'ar_reason') {
                             $query->whereNotNull('ar_reason');
                         } else if($reasonTypeVal == 'qa_reason') {
@@ -877,7 +872,7 @@ class ReportsController extends Controller
                       } else {
                         $productionReasons = $productionReasons->get();
                       }
-                      $productionMgrs = ProjectReason::where(function ($query) use ($startTime, $endTime,$projectId,$subProjectId) {
+                      $productionMgrs = ProjectReason::where(function ($query) use ($startTime, $endTime,$projectId,$subProjectId,$reasonTypeVal) {
                         if($projectId) {
                             $query->where('project_id', $projectId);
                         } else {
@@ -891,6 +886,13 @@ class ReportsController extends Controller
                         if (!empty($startTime) && !empty($endTime)) {
                             $query->whereBetween('project_reasons.created_at', [$startTime, $endTime]);
                         }else{
+                            $query;
+                        }
+                        if($reasonTypeVal == 'ar_reason') {
+                            $query->whereNotNull('ar_reason');
+                        } else if($reasonTypeVal == 'qa_reason') {
+                            $query->whereNotNull('qa_reason');
+                        } {
                             $query;
                         }
                     }) ->groupBy('manager_id');
