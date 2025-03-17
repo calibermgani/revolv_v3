@@ -102,6 +102,9 @@ var KTSelect2 = function() {
         $('.kt_select2_remarks').select2({
             placeholder: "Select"
         });
+        $('.kt_select2_manager').select2({
+            placeholder: "Select"
+        });
         // loading data from array
         // var data = [{
         //     id: 0,

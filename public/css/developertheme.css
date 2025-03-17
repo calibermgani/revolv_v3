@@ -720,7 +720,8 @@ span[aria-labelledby="select2-edit_coder_id-container"],
 span[aria-labelledby="select2-edit_qa_id-container"],
 span[aria-labelledby="select2-edit_claim_priority-container"],
 span[aria-labelledby="select2-remarks_status-container"],
-span[aria-labelledby="select2-reason_type-container"] {
+span[aria-labelledby="select2-reason_type-container"],
+span[aria-labelledby="select2-manager_name-container"]{
     color: #191C24 !important;
     background-color: #ffffff !important;
     /* border-color: #ffffff !important; */
