@@ -872,10 +872,10 @@ class ReportsController extends Controller
                         }
                     }) ->groupBy('project_id','sub_project_id','manager_id','created_date')
                       ->selectRaw('project_id, sub_project_id,manager_id,DATE(created_at) as created_date');
-                      if($remarkStatusVal == "with_remarks") {
-                          $productionReasons = $productionReasons->get();
-                      } else {
+                      if($remarkStatusVal == "without_remarks") {                       
                         $productionReasons =$list;
+                      } else {
+                        $productionReasons = $productionReasons->get();
                       }
                       $productionMgrs = ProjectReason::where(function ($query) use ($startTime, $endTime,$projectId,$subProjectId) {
                         if($projectId) {
@@ -894,10 +894,10 @@ class ReportsController extends Controller
                             $query;
                         }
                     }) ->groupBy('manager_id');
-                    if($remarkStatusVal == "with_remarks") {
+                    if($remarkStatusVal == "without_remarks") {
+                        $productionMgrs =[];
+                    } else {                     
                         $productionMgrs = $productionMgrs->pluck('manager_id')->toArray();
-                    } else {
-                      $productionMgrs =[];
                     }
                     
                     // $productionReasons = ProjectReason::when(!empty($startTime) && !empty($endTime), function ($query) use ($startTime, $endTime) {

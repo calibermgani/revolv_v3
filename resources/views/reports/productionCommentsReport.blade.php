@@ -158,6 +158,7 @@
                                     ])
                                         ->where('project_id', $data['project_id'])
                                         ->where('sub_project_id', $data['sub_project_id'])
+                                        ->where('manager_id', $data['manager_id'])
                                         ->whereDate('created_at', $data['created_date']);
                                         if($startTime != "" && $endTime != ""){
                                             $reasonList = $reasonList->whereBetween('updated_at', [$startTime, $endTime])
