@@ -94,19 +94,7 @@
                         ]) !!}
                     </fieldset>
                 </div>
-                <div class="col-lg-2 mb-lg-0 mb-6">
-                    <label>Manager</label>
-                     <fieldset class="form-group mb-1">
-                        @php $mgrList = App\Http\Helper\Admin\Helpers::getProjectSubPrjAboveTlLevel();
-                        $mgrList = ['' => 'Select'] + $mgrList;
-                        @endphp
-                        {!! Form::select('manager_name', $mgrList, null, [
-                            'class' => 'form-control kt_select2_manager',
-                            'id' => 'manager_name',
-                            'style' => 'width: 100%;',
-                        ]) !!}
-                    </fieldset>
-                </div>
+            
                 <div class="col-lg-2 mt-8">
                     <button class="btn btn-light-danger" id="clear_submit" tabindex="10" type="button">
                         <span>
@@ -128,7 +116,7 @@
                             <th>Manager Name</th>
                             <th>AR Reason</th>
                             <th>QA Reason</th>
-                            <th>Work Date</th>
+                           
                         </tr>
                     </thead>
                     <tbody>
@@ -251,7 +239,7 @@
                                     </td>
                                     <td>{{ is_string($qaReasonString) ? trim($qaReasonString, ',') : implode(', ', (array) $qaReasonString) }}
                                     </td>
-                                    <td>{{$data && isset($data['created_date']) ? date('m/d/Y',strtotime($data['created_date'])) : '--'}}</td>
+                                 
                                 </tr>
                             @endforeach
                         @endif
