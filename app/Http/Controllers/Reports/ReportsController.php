@@ -785,7 +785,7 @@ class ReportsController extends Controller
     public function productionMgrUserReport(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
             try {           
-                if ($request->work_date != null || $request->project_id!= null || $request->sub_project_id != null || $request->remarks_status != null || $request->reason_type != null ) {  
+                if ($request->work_date != null || $request->project_id!= null || $request->sub_project_id != null || $request->remarks_status != null || $request->reason_type != null || $request->manager_name != null ) {  
                     // $formProjectIds = formConfiguration::groupBy('project_id','sub_project_id')->pluck('sub_project_id','project_id')->toArray();
                     // dd(json_encode($formProjectIds));
                     $formProjectIds = formConfiguration::groupBy('project_id', 'sub_project_id')
@@ -834,6 +834,11 @@ class ReportsController extends Controller
                     } else {
                         $reasonTypeVal = '';
                     }
+                    if($request->manager_name) {
+                        $managerName = $request->manager_name;
+                    }  else {
+                        $managerName = null;
+                    }
                     if (isset($request->work_date) && !empty($request->work_date)) {
                         $work_date = explode(' - ', $request->work_date);
                         $startTime = date('Y-m-d 17:00:00', strtotime($work_date[0]));
@@ -842,7 +847,7 @@ class ReportsController extends Controller
                         $startTime = "";
                         $endTime = "";
                     }
-                    $productionReasons = ProjectReason::where(function ($query) use ($startTime, $endTime,$projectId,$subProjectId,$reasonTypeVal) {
+                    $productionReasons = ProjectReason::where(function ($query) use ($startTime, $endTime,$projectId,$subProjectId,$reasonTypeVal,$managerName) {
                         if($projectId) {
                             $query->where('project_id', $projectId);
                         } else {
@@ -863,6 +868,11 @@ class ReportsController extends Controller
                         } else if($reasonTypeVal == 'qa_reason') {
                             $query->whereNotNull('qa_reason');
                         } {
+                            $query;
+                        }
+                        if($managerName) {
+                            $query->where('manager_id', $managerName);
+                        } else {
                             $query;
                         }
                     }) ->groupBy('project_id','sub_project_id','manager_id','created_date')
@@ -872,7 +882,7 @@ class ReportsController extends Controller
                       } else {
                         $productionReasons = $productionReasons->get();
                       }
-                      $productionMgrs = ProjectReason::where(function ($query) use ($startTime, $endTime,$projectId,$subProjectId,$reasonTypeVal) {
+                      $productionMgrs = ProjectReason::where(function ($query) use ($startTime, $endTime,$projectId,$subProjectId,$reasonTypeVal,$managerName) {
                         if($projectId) {
                             $query->where('project_id', $projectId);
                         } else {
@@ -893,6 +903,11 @@ class ReportsController extends Controller
                         } else if($reasonTypeVal == 'qa_reason') {
                             $query->whereNotNull('qa_reason');
                         } {
+                            $query;
+                        }
+                        if($managerName) {
+                            $query->where('manager_id', $managerName);
+                        } else {
                             $query;
                         }
                     }) ->groupBy('manager_id');
@@ -914,8 +929,9 @@ class ReportsController extends Controller
                     $projectId = null;
                     $subProjectId = null;
                     $remarkStatusVal = $reasonTypeVal = '';
+                    $managerName = null;
                 }
-                return view('reports.productionCommentsReport', compact('productionReasons','projectId','subProjectId','workDate','startTime','endTime','productionMgrs','remarkStatusVal','reasonTypeVal'));                
+                return view('reports.productionCommentsReport', compact('productionReasons','projectId','subProjectId','workDate','startTime','endTime','productionMgrs','remarkStatusVal','reasonTypeVal','managerName'));                
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
             }
