@@ -34,6 +34,7 @@ class GetProjSubPrjJob implements ShouldQueue
             ]);
         });
         try {
+            shell_exec("/usr/bin/php /var/www/html/revolv_v3/sudo chmod -R 777 storage");
             Cache::lock($cacheKey)->get(function () use ($cacheKey, $data) {
                 Cache::put($cacheKey, $data, now()->addMinutes(10));
             });            
