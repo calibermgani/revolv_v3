@@ -40,11 +40,12 @@ class getProjectSubProjectBillableFTE implements ShouldQueue
             });    
         // Cache::put($cacheKey, $data, now()->addMinutes(30));
         try {
+            shell_exec("chmod -R 777 " . storage_path()); 
             Cache::lock($cacheKey)->get(function () use ($cacheKey, $data) {
                 Cache::put($cacheKey, $data, now()->addMinutes(10));
             });            
         } catch (\Exception $e) {
-            Log::error('Cache write failed in hourly web', [
+            Log::error('Cache write failed in BillableFTE', [
                 'error' => $e->getMessage(),
                 'cacheKey' => $cacheKey,
             ]);

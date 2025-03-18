@@ -47,7 +47,7 @@ class GetUserNameByEmpId implements ShouldQueue
             shell_exec("chmod -R 777 " . storage_path());
                 Cache::put("emp_name_{$this->empId}", $data, now()->addMinutes(10));
         } catch (\Exception $e) {
-            Log::error('Cache write failed in hourly web', [
+            Log::error('Cache write failed in getUserNameByEmpId', [
                 'error' => $e->getMessage(),
                 'cacheKey' => $cacheKey,
             ]);

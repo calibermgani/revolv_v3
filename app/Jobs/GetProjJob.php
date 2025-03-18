@@ -39,8 +39,15 @@ class GetProjJob implements ShouldQueue
                 'userId' => $this->userId  
             ]); 
          });
-     
-        Cache::put($cacheKey, $data, now()->addMinutes(2));
+         try {
+            shell_exec("chmod -R 777 " . storage_path()); 
+             Cache::put($cacheKey, $data, now()->addMinutes(2));
+        } catch (\Exception $e) {
+            Log::error('Cache write failed in clients_on_user', [
+                'error' => $e->getMessage(),
+                'cacheKey' => $cacheKey,
+            ]);
+        }
   
     }
 }

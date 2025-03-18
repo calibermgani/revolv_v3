@@ -33,8 +33,16 @@ class getProjectResourceListJob implements ShouldQueue
             return app()->call('App\Http\Helper\Admin\Helpers@getprojectResourceList', [
             'clientId' => $this->projectId
             ]);      
-        });       
-        Cache::put($cacheKey, $data, now()->addMinutes(10));
+        });      
+        try {
+            shell_exec("chmod -R 777 " . storage_path()); 
+           Cache::put($cacheKey, $data, now()->addMinutes(10));
+        } catch (\Exception $e) {
+            Log::error('Cache write failed in prjResourceList', [
+                'error' => $e->getMessage(),
+                'cacheKey' => $cacheKey,
+            ]);
+        }
   
     }
 }

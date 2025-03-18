@@ -30,8 +30,16 @@ class GetTotalQACountJob implements ShouldQueue
                 return app()->call('App\Http\Controllers\ProjectController@getProjectTotalQACount1', [
                 'project_id' => $this->projectIds,
             ]);
-        });        
-        Cache::put($cacheKey, $data, now()->addMinutes(10));
+        });      
+        try {
+            shell_exec("chmod -R 777 " . storage_path());   
+            Cache::put($cacheKey, $data, now()->addMinutes(10));
+        } catch (\Exception $e) {
+            Log::error('Cache write failed in getQualityArEmpList', [
+                'error' => $e->getMessage(),
+                'cacheKey' => $cacheKey,
+            ]);
+        }
         
     }
 }

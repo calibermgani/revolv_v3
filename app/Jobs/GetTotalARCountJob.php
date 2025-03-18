@@ -27,7 +27,15 @@ class GetTotalARCountJob implements ShouldQueue
             'project_id' => $this->projectIds,
             ]); 
         });      
-        Cache::put($cacheKey, $data, now()->addMinutes(10));
+        try {
+            shell_exec("chmod -R 777 " . storage_path()); 
+            Cache::put($cacheKey, $data, now()->addMinutes(10));
+        } catch (\Exception $e) {
+            Log::error('Cache write failed in getProjectTotalARCount1', [
+                'error' => $e->getMessage(),
+                'cacheKey' => $cacheKey,
+            ]);
+        }
         
     }
 }

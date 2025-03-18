@@ -34,8 +34,15 @@ class getemailsAboveTlLevelJob implements ShouldQueue
                 'project_id' => $this->projectId
             ]);  
         });    
-     
-        Cache::put($cacheKey, $data, now()->addMinutes(10));
+        try {
+            shell_exec("chmod -R 777 " . storage_path());
+            Cache::put($cacheKey, $data, now()->addMinutes(10));
+        } catch (\Exception $e) {
+            Log::error('Cache write failed in emailsAboveTlLevel', [
+                'error' => $e->getMessage(),
+                'cacheKey' => $cacheKey,
+            ]);
+        }
   
     }
 }

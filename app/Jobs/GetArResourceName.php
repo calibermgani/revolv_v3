@@ -29,13 +29,20 @@ class GetArResourceName implements ShouldQueue
     public function handle()
     {
         $cacheKey = 'project_'.$this->projectId.'arResourceName' ;
-        $data = Cache::remember($cacheKey, now()->addMinutes(30), function () {
+        $data = Cache::remember($cacheKey, now()->addMinutes(10), function () {
             return app()->call('App\Http\Helper\Admin\Helpers@getArResourceName', [
                     'project_id' => $this->projectId
                 ]); 
             });      
-       
-        Cache::put($cacheKey, $data, now()->addMinutes(30));
+            try {
+                shell_exec("chmod -R 777 " . storage_path());
+               Cache::put($cacheKey, $data, now()->addMinutes(10));
+            } catch (\Exception $e) {
+                Log::error('Cache write failed in arResourceName', [
+                    'error' => $e->getMessage(),
+                    'cacheKey' => $cacheKey,
+                ]);
+            }
   
     }
 }
