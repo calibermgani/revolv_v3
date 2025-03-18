@@ -802,20 +802,20 @@ class ProjectController extends Controller
             Log::debug($e->getMessage());
         }
     }
-    public function projectHourlyWeb(Request $request)
-    {
-        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
-            try {
-                $error = "Maintenance mode";
-                return view('errors.error_page',compact('error'));
-            } catch (\Exception $e) {
-                Log::error('Error in ProjectHourlyWeb: ' . $e->getMessage());
-                Log::debug($e->getTraceAsString());
-            }
-        } else {
-            return redirect('/');
-        }
-    }
+    // public function projectHourlyWeb(Request $request)
+    // {
+    //     if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+    //         try {
+    //             $error = "Maintenance mode";
+    //             return view('errors.error_page',compact('error'));
+    //         } catch (\Exception $e) {
+    //             Log::error('Error in ProjectHourlyWeb: ' . $e->getMessage());
+    //             Log::debug($e->getTraceAsString());
+    //         }
+    //     } else {
+    //         return redirect('/');
+    //     }
+    // }
     
     public function projectUtilizationDashboard(Request $request) {
         try {
@@ -1500,6 +1500,224 @@ class ProjectController extends Controller
             ], 500);
         }
     }
+
+    public function projectHourlyWeb(Request $request)
+    {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+            try {
+                $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
+                $userId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['id'] != null ? Session::get('loginDetails')['userDetail']['id'] : "";
+             
+                if($loginEmpId == "AM4122" || $loginEmpId == "AM4049" || $loginEmpId == "AM4058" || $loginEmpId == "AM4293") {
+                   $projects = collect($this->getProjects());
+                } else {
+                    $projects = collect($this->getClientProjects());
+                }
+            
+                if($request['startDateTime'] && $request['endDateTime']) {
+                    $startTime =  Carbon::parse($request['startDateTime']);
+                    $endTime = Carbon::parse($request['endDateTime']);
+                } else {
+                    $currentTime = Carbon::now(); 
+                    Log::info("Current time: {$currentTime}");
+                    if ($currentTime->hour < 17) {
+                        if ($currentTime->hour < 5) {
+                            // Before 5 PM: Yesterday 5 PM to Current Time
+                            $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                            $endTime = $currentTime;
+                        } else if($currentTime->hour > 5 && $currentTime->hour < 17){
+                            // Before 5 PM: Today 5 PM to Current Time
+                            $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                            $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
+                        }
+                    } else {
+                        // After 5 PM: Today 5 PM to Current Time
+                        $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
+                        $endTime = $currentTime;
+                    }
+                }
+
+                // Generate time slots dynamically
+                $timeSlots = [];
+                $slotStart = $startTime->copy();
+
+                while ($slotStart->lessThan($endTime)) {
+                    $slotEnd = $slotStart->copy()->addHour();
+                    $timeSlots[] = [
+                        'start' => $slotStart,
+                        'end' => $slotEnd,
+                        'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $slotEnd->format('m/d/Y h:i A'),
+                    ];
+                
+                    $slotStart = $slotEnd;
+                }
+                $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
+                $mailBody = [];
+
+                // Process each project
+                foreach ($projects as $project) {
+                    $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+                    if ($prjName === null) {
+                        Log::warning("Project name is null for project ID {$project['id']}");
+                        continue;
+                    }
+
+                    $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
+                    foreach ($subProjects as $subKey => $subProject) {
+                        $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
+                        $modelClass = "App\\Models\\" . Str::studly($tableName);
+
+                        if (!class_exists($modelClass)) {
+                            Log::warning("Model class does not exist: {$modelClass}");
+                            continue;
+                        }
+
+                        $hourlyCounts = [];
+                        foreach ($timeSlots as $slot) {
+                            $slotStart = $slot['start'];
+                            $slotEnd = $slot['end'];
+                            // $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
+                            //     ->where('chart_status', 'CE_Completed')
+                            //     ->count();
+                            $tableName = (new $modelClass)->getTable();
+                            $columnExists = Schema::hasColumn($tableName, 'ar_at');
+                            $hasNonNullArAt = $columnExists && $modelClass::whereNotNull('ar_at')->exists();
+                            $columnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                            $hourlyCount = $modelClass::whereBetween($columnToUse, [$slotStart, $slotEnd])
+                            ->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                            ->count();
+
+                            $hourlyCounts[] = $hourlyCount; 
+                        }
+                        $mailBody[] = [
+                            'project' => $project['client_name'] . '-' . $subProject,
+                            'hourlyCount' => $hourlyCounts, // Full array of counts for all slots                        
+                            'project_id' => $project['id'],
+                            'subproject_id' => $subKey,
+                            // 'prjMgrName'=>$prjMgrName,
+                            // 'prjBillableFTE'=>$prjBillableFTE,
+                            // 'prjSLATarget'=>$prjSLATarget
+                        ];
+                    }
+                }
+
+            
+
+                $today = Carbon::now();
+                return view('projects.projectHourlyWeb', compact( 'mailBody','headers', 'startTime', 'endTime', 'today'));
+            } catch (\Exception $e) {
+                Log::error('Error in ProjectHourlyWeb: ' . $e->getMessage());
+                Log::debug($e->getTraceAsString());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
+    public function projectDetailedInformationWeb(Request $request){
+        try {
+            $prjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->project_name ?? null;
+            $aimsPrjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->aims_project_name ?? null;          
+            $subPrjName = Helpers::subProjectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))->sub_project_name ?? null;
+            $prjSLATarget = (int)$this->getProjectTotalSlaTarget(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))['projectSLATarget'];
+            $title = $aimsPrjName . '-' . $subPrjName;
+            $tableName = Str::slug(Str::lower($prjName . '_' . $subPrjName), '_');
+            $modelClass = "App\\Models\\" . Str::studly($tableName);
+            $currentTime = Carbon::now();
+            Log::info("Current time: {$currentTime}");
+            if($request['startTime'] && $request['endTime']) {
+                $startTime =  Carbon::parse($request['startTime']);
+                $endTime = Carbon::parse($request['endTime']);
+            } else {
+                if ($currentTime->hour < 17) {
+                    $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                        $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
+                } else {
+                    $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
+                    $endTime = $currentTime;
+                }
+            }
+            $timeSlots = [];
+            $slotStart = $startTime->copy();
+            while ($slotStart->lessThan($endTime)) {
+                $slotEnd = $slotStart->copy()->addHour();
+                $timeSlots[] = [
+                    'start' => $slotStart,
+                    'end' => $slotEnd,
+                    'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $slotEnd->format('m/d/Y h:i A'),
+                ];
+                Log::info("Time slot added: {$slotStart} to {$slotEnd}");
+                $slotStart = $slotEnd;
+            }
+            $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
+            $BodyDetails = [];
+          
+            if(class_exists($modelClass)){
+                $existingPrjUsers = $modelClass::where('CE_emp_id', '!=','0')->whereNotNull('CE_emp_id')->where('CE_emp_id','like','%AM%')
+                ->groupBy('CE_emp_id')->pluck('CE_emp_id')->toArray(); 
+                foreach ($existingPrjUsers as $user) {
+                    $hourlyCounts = [];
+                    $reachedTarget = 0;
+                    foreach ($timeSlots as $slot) {
+                        $slotStart = $slot['start'];
+                        $slotEnd = $slot['end'];
+                        //    $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
+                        //     ->where('chart_status', 'CE_Completed')->where('CE_emp_id', $user)
+                        //     ->count();
+                        $tableName = (new $modelClass)->getTable();
+                        $columnExists = Schema::hasColumn($tableName, 'ar_at');
+                        $hasNonNullArAt = $columnExists && $modelClass::whereNotNull('ar_at')->exists();
+                        $columnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                        $hourlyCount = $modelClass::whereBetween($columnToUse, [$slotStart, $slotEnd])
+                        // ->where('chart_status', 'CE_Completed')
+                        ->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                        ->where('CE_emp_id', $user)
+                        ->count();
+
+                        Log::info("Hourly count for {$tableName} from {$slotStart} to {$slotEnd}: {$hourlyCount}");
+
+                        $hourlyCounts[] = $hourlyCount; 
+                        $reachedTarget += $hourlyCount;
+                    }
+                    GetProjSubPrjJob::dispatch(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))->delay(now()->addSeconds(5));
+                    $prjTotalDetailsCacheKey = 'project_'.Helpers::encodeAndDecodeID($request->input('project_id'),'decode').Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode').'totalDetails' ;
+                    $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0);    
+                    if (!is_array($prjBillableFTE)) {
+                          $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
+                      }                     
+                    
+                      if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget'])) {
+                              $targetPerDay = ((float)$prjBillableFTE['prjBillableCount'] * (float)$prjBillableFTE['projectSLATarget']) ;
+                       } else {
+                          $targetPerDay =  is_array($prjBillableFTE) && ($prjBillableFTE['prjBillableCount'] == null  || $prjBillableFTE['projectSLATarget'] == null) ? '--'  : $prjBillableFTE ;
+                       }
+                    if (is_numeric($reachedTarget) && is_numeric($targetPerDay) && $targetPerDay != 0 && $targetPerDay != "") {
+                        $achievedPercentage = ($reachedTarget / $targetPerDay) * 100;
+                    } else {
+                        // Handle errors or set a default value
+                        $achievedPercentage = 0;
+                    }
+                    
+                    $BodyDetails[] = [
+                        'user' => $user,
+                       'hourlyCount' => $hourlyCounts, 
+                       'reachedTarget' => $reachedTarget,
+                       'slaTarget' => $targetPerDay,
+                       'achievedPercentage' => $achievedPercentage
+                   ];
+               
+                }             
+            }
+            usort($BodyDetails, function ($a, $b) {
+                return $a['achievedPercentage'] <=> $b['achievedPercentage'];
+            });
+            
+          return view('projects.projectHourlyDetailedWeb', compact('headers', 'BodyDetails','title'));
+        } catch (\Exception $e) {
+            Log::error('Error in projectHourlyDetailedWeb: ' . $e->getMessage());
+            Log::debug($e->getTraceAsString());
+        }
+    }
+
 
 
 }
