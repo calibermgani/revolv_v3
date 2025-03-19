@@ -1513,7 +1513,7 @@ class ProjectController extends Controller
                    $projects = collect($this->getProjects());
                 } else {
                     $projects = collect($this->getClientProjects());
-                }
+                }dd($projects);
             
                 if($request['startDateTime'] && $request['endDateTime']) {
                     $startTime =  Carbon::parse($request['startDateTime']);
