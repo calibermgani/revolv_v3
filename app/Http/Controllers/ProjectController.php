@@ -1850,8 +1850,8 @@ class ProjectController extends Controller
                 $toMailId = $toMail != null ? explode(",", $toMail->cc_emails) : null;
                 $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'resolv work cc email')->first();
                 $ccMailId = $ccMail != null ? explode(",", $ccMail->cc_emails) : null;      
-                // $toMailId = ["mgani@caliberfocus.com"];
-                // $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+                $toMailId = ["prasad@caliberfocus.com"];
+                $ccMailId = ["prasad@caliberfocus.com"];
                 $yesterday = Carbon::yesterday();
                 if ($yesterday->isSaturday()) {
                     $yesterday = $yesterday->subDay(1); // Friday
