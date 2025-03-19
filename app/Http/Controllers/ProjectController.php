@@ -1733,7 +1733,7 @@ class ProjectController extends Controller
                 $clientName['subprject_name'] =  $clientData->project_id != null ? subproject::where('project_id', $clientData->project_id)->pluck('sub_project_name', 'sub_project_id')->toArray(): [];
                 $clientDetails[] = $clientName;
             }
-            dd($clientDetails);
+                 
            return $clientDetails;
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
