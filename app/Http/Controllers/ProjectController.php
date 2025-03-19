@@ -576,9 +576,9 @@ class ProjectController extends Controller
             // 'nicson@annexmed.net','krajkumar@annexmed.net','athamim@annexmed.net','tikkaram@annexmed.net','vinodh@annexmed.net','sbishop@annexmed.net','karthikeyan@annexmed.net','vijaychandran@annexmed.net',
             // 'hemanathan@annexmed.net','vigneshwaran@annexmed.net','mgani@caliberfocus.com','margaretmary@annexmed.net','vijayalaxmi@caliberfocus.com'];
             $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'resolv hourly to email')->first();
-            $toMailId = explode(",", $toMail->cc_emails);
+            $toMailId = $toMail != null ? explode(",", $toMail->cc_emails) : null;
             $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'resolv hourly cc email')->first();
-            $ccMailId = explode(",", $ccMail->cc_emails);                  
+            $ccMailId = $ccMail != null ? explode(",", $ccMail->cc_emails) : null;
             // $toMailId = ["vijayalaxmi@caliberfocus.com"];
             // $ccMailId = ["mgani@caliberfocus.com"];
          
@@ -685,7 +685,9 @@ class ProjectController extends Controller
             $today = Carbon::now();
 
             // Send mail
-            Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $headers, $today,$startTime,$endTime));
+            if($toMailId != null && $ccMailId != null) {    
+                Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $headers, $today,$startTime,$endTime));
+            }
             Log::info('ProjectHourlyMail executed successfully.');
         } catch (\Exception $e) {
             Log::error('Error in ProjectHourlyMail: ' . $e->getMessage());
@@ -1839,6 +1841,249 @@ class ProjectController extends Controller
                 Log::debug($e->getMessage());
             }
         }    
-
-
+        public function projectWorkMail() {
+            try {
+                Log::info('Executing ProjectWorkMail logic.');
+                //  $toMailId = ["britto@annexmed.com","anukishan@annexmed.com","elanchezhian@annexmed.net", "fabian@annexmed.com", "prabu@annexmed.com","serdeen@annexmed.com","Neel@annexmed.com","Manoj.Achuthan@annexmed.com","Gavin@annexmed.com","hemanathan@annexmed.net","vani@annexmed.com"];
+                // $ccMailId = ["mgani@caliberfocus.com","margaretmary@annexmed.net","vijayalaxmi@caliberfocus.com"];
+                $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'resolv work to email')->first();
+                $toMailId = $toMail != null ? explode(",", $toMail->cc_emails) : null;
+                $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'resolv work cc email')->first();
+                $ccMailId = $ccMail != null ? explode(",", $ccMail->cc_emails) : null;      
+                // $toMailId = ["mgani@caliberfocus.com"];
+                // $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+                $yesterday = Carbon::yesterday();
+                if ($yesterday->isSaturday()) {
+                    $yesterday = $yesterday->subDay(1); // Friday
+                } elseif ($yesterday->isSunday()) {
+                    $yesterday = $yesterday->subDay(2); // Friday
+                }
+                
+                $today = Carbon::today();
+                $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y');
+                $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
+                $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
+                $projects = collect($this->getProjects());
+                $projectsPending = []; 
+                $projectIds = [];
+                $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$projectsPending, &$projectIds) {
+                    $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+    
+                    if ($prjName !== null) {
+                        $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
+    
+                        foreach ($subProjects as $subProject) {
+                            $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
+                            $modelClass = "App\\Models\\" . Str::studly($tableName);
+                            
+                            if (class_exists($modelClass)) {
+                                $tableName = (new $modelClass)->getTable();
+                                
+                                $arColumnExists = Schema::hasColumn($tableName, 'ar_at');
+                                $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
+                                $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+    
+                                $qaColumnExists = Schema::hasColumn($tableName, 'qa_at');
+                                $hasNonNullQaAt = $qaColumnExists && $modelClass::whereNotNull('qa_at')->exists();
+                                $qaColumnToUse = $hasNonNullQaAt ? 'qa_at' : 'updated_at';
+                                
+                                $aCount = $modelClass::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                ->where('chart_status', 'CE_Assigned')->count();
+                                $cCount = $modelClass::whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
+                                            // ->where('chart_status', 'CE_Completed')
+                                            ->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                                            ->count();
+                                $qCount = $modelClass::whereBetween($qaColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
+                                            ->where('chart_status', 'QA_Completed')->count();
+                                $productionARCount = $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today, $arColumnToUse) {
+                                    $query->where(function ($subQuery) use ($yesterDayStartDate, $yesterDayEndDate, $arColumnToUse) {
+                                        $subQuery->whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
+                                                    ->whereIn('chart_status', [
+                                                        'CE_Inprocess',
+                                                        'CE_Pending',
+                                                        'CE_Completed',
+                                                        'CE_Clarification',
+                                                        'CE_Hold',
+                                                        'AR_non_workable',
+                                                        'Revoke'
+                                                    ]);
+                                    })
+                                    ->orWhere(function ($subQuery) use ($yesterday, $today) {
+                                        $subQuery->where('chart_status', 'QA_Completed')
+                                                    ->where(function ($nestedQuery) use ($yesterday, $today) {
+                                                        $nestedQuery->whereDate('coder_work_date', $yesterday)
+                                                                    ->orWhereDate('coder_work_date', $today);
+                                                    });
+                                    });
+                                })
+                                ->groupBy('CE_emp_id')
+                                ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate])
+                                ->select('CE_emp_id')
+                                ->get()
+                                ->count();
+                                        
+                            $productionQACount = $modelClass::whereBetween($qaColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
+                                ->whereIn('chart_status', ['QA_Assigned', 'QA_Inprocess', 'QA_Pending', 'QA_Completed', 'QA_Clarification', 'QA_Hold'])
+                                ->whereNotNull('QA_emp_id')
+                                ->distinct('QA_emp_id')
+                                ->count('QA_emp_id'); 
+    
+                                $projectsPending[] = [
+                                    'project' => $project['client_name'] . '-' . $subProject,
+                                    'Chats' => $aCount,
+                                    'Coder' => $cCount,
+                                    'QA' => $qCount,
+                                    'prodcution_ar' => $productionARCount,
+                                    'prodcution_qa' => $productionQACount,
+                                    'project_id' => $project['id'], // Store project ID
+                                    'yesterDayStartDate' => $yesterDayStartDate,
+                                    'yesterDayEndDate' => $yesterDayEndDate
+                                ];
+                                $projectIds[] = $project['id'];
+                            }
+                        }
+                    }
+                    // return ['data' => $projectData, 'ids' => $project_id];
+                });
+                GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
+                GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
+                $mailBody = $projectsPending;
+                if($toMailId != null && $ccMailId != null) {                   
+                    Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday,$projectIds));
+                }
+        
+                Log::info('ProjectWorkMail executed successfully.');
+            } catch (\Exception $e) {
+                Log::error('Error in ProjectWorkMail: ' . $e->getMessage());
+                Log::debug($e->getMessage());
+            }
+        } 
+        public function projectDetailedInformation(Request $request){
+            try {
+                $prjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->project_name ?? null;
+                $aimsPrjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->aims_project_name ?? null;          
+                $subPrjName = Helpers::subProjectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))->sub_project_name ?? null;
+                $prjSLATarget = (int)$this->getProjectTotalSlaTarget(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))['projectSLATarget'];
+          
+                $title = $aimsPrjName . '-' . $subPrjName;
+                $tableName = Str::slug(Str::lower($prjName . '_' . $subPrjName), '_');
+                $modelClass = "App\\Models\\" . Str::studly($tableName);
+                $currentTime = Carbon::now();
+                Log::info("Current time: {$currentTime}");
+                if ($request->input('requested_date')) {
+                    $requestedDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('requested_date'));
+                    $currentDate = $currentTime->format('Y-m-d');
+                    $inputDate = $requestedDate->format('Y-m-d');     
+                    if ($inputDate !== $currentDate) {
+                        if ($requestedDate->hour < 5) {
+                           $startTime = $requestedDate->copy()->subDay()->setHour(17)->setMinute(0)->setSecond(0);
+                            $endTime = $requestedDate->copy()->setHour(5)->setMinute(0)->setSecond(0);
+                        } else {
+                            $startTime = $requestedDate->copy()->setHour(17)->setMinute(0)->setSecond(0);
+                            $endTime = $requestedDate->copy()->addDay()->setHour(5)->setMinute(0)->setSecond(0);
+                        }
+                    } else {
+                        if ($currentTime->hour < 17) {
+                            $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                                $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
+                        } else {
+                            $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
+                            $endTime = $currentTime;
+                        }
+                    }
+                } else {
+                    if ($currentTime->hour < 17) {
+                        $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                            $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
+                    } else {
+                        $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
+                        $endTime = $currentTime;
+                    }
+                }
+                $timeSlots = [];
+                $slotStart = $startTime->copy();
+                while ($slotStart->lessThan($endTime)) {
+                    $slotEnd = $slotStart->copy()->addHour();
+                    $timeSlots[] = [
+                        'start' => $slotStart,
+                        'end' => $slotEnd,
+                        'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $slotEnd->format('m/d/Y h:i A'),
+                    ];
+                    Log::info("Time slot added: {$slotStart} to {$slotEnd}");
+                    $slotStart = $slotEnd;
+                }
+                $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
+                $BodyDetails = [];
+              
+                if(class_exists($modelClass)){
+                    $existingPrjUsers = $modelClass::where('CE_emp_id', '!=','0')->whereNotNull('CE_emp_id')->where('CE_emp_id','like','%AM%')
+                    ->groupBy('CE_emp_id')->pluck('CE_emp_id')->toArray(); 
+                    foreach ($existingPrjUsers as $user) {
+                        $hourlyCounts = [];
+                        $reachedTarget = 0;
+                        foreach ($timeSlots as $slot) {
+                            $slotStart = $slot['start'];
+                            $slotEnd = $slot['end'];
+                            //    $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
+                            //     ->where('chart_status', 'CE_Completed')->where('CE_emp_id', $user)
+                            //     ->count();
+                            $tableName = (new $modelClass)->getTable();
+                            $columnExists = Schema::hasColumn($tableName, 'ar_at');
+                            $hasNonNullArAt = $columnExists && $modelClass::whereNotNull('ar_at')->exists();
+                            $columnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                            $hourlyCount = $modelClass::whereBetween($columnToUse, [$slotStart, $slotEnd])
+                            // ->where('chart_status', 'CE_Completed')
+                            ->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                            ->where('CE_emp_id', $user)
+                            ->count();
+    
+                            Log::info("Hourly count for {$tableName} from {$slotStart} to {$slotEnd}: {$hourlyCount}");
+    
+                            $hourlyCounts[] = $hourlyCount; 
+                            $reachedTarget += $hourlyCount;
+                        }
+                        GetProjSubPrjJob::dispatch(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))->delay(now()->addSeconds(5));
+                        $prjTotalDetailsCacheKey = 'project_'.Helpers::encodeAndDecodeID($request->input('project_id'),'decode').Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode').'totalDetails' ;
+                        $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0);    
+                        if (!is_array($prjBillableFTE)) {
+                              $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
+                          }                     
+                        
+                          if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget'])) {
+                                  $targetPerDay = ((float)$prjBillableFTE['prjBillableCount'] * (float)$prjBillableFTE['projectSLATarget']) ;
+                           } else {
+                              $targetPerDay =  is_array($prjBillableFTE) && ($prjBillableFTE['prjBillableCount'] == null  || $prjBillableFTE['projectSLATarget'] == null) ? '--'  : $prjBillableFTE ;
+                           }
+                        if (is_numeric($reachedTarget) && is_numeric($targetPerDay) && $targetPerDay != 0 && $targetPerDay != "") {
+                            $achievedPercentage = ($reachedTarget / $targetPerDay) * 100;
+                        } else {
+                            // Handle errors or set a default value
+                            $achievedPercentage = 0;
+                        }
+                        // if (is_numeric($reachedTarget) && is_numeric($prjSLATarget) && $prjSLATarget != 0 && $prjSLATarget != "") {
+                        //     $achievedPercentage = ($reachedTarget / $prjSLATarget) * 100;
+                        // } else {
+                        //     // Handle errors or set a default value
+                        //     $achievedPercentage = 0;
+                        // }
+                        $BodyDetails[] = [
+                            'user' => $user,
+                           'hourlyCount' => $hourlyCounts, 
+                           'reachedTarget' => $reachedTarget,
+                           'slaTarget' => $targetPerDay,
+                           'achievedPercentage' => $achievedPercentage
+                       ];
+                   
+                    }             
+                }  
+                usort($BodyDetails, function ($a, $b) {
+                    return $a['achievedPercentage'] <=> $b['achievedPercentage'];
+                });
+              return view('emails.projectDetailedInformationWeb', compact('headers', 'BodyDetails','title'));
+            } catch (\Exception $e) {
+                Log::error('Error in projectDetailedInformationWeb: ' . $e->getMessage());
+                Log::debug($e->getTraceAsString());
+            }
+        }
+    
 }
