@@ -1510,7 +1510,7 @@ class ProjectController extends Controller
                 $userId = Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['id'] != null ? Session::get('loginDetails')['userDetail']['id'] : "";
              
                 if($loginEmpId == "AM4122" || $loginEmpId == "AM4049" || $loginEmpId == "AM4058" || $loginEmpId == "AM4293") {
-                   $projects = collect($this->getProjects());dd($projects);
+                   $projects = collect($this->getProjects());
                 } else {
                     $projects = collect($this->getClientProjects());
                 }
@@ -1733,7 +1733,7 @@ class ProjectController extends Controller
                 $clientName['subprject_name'] =  $clientData->project_id != null ? subproject::where('project_id', $clientData->project_id)->pluck('sub_project_name', 'sub_project_id')->toArray(): [];
                 $clientDetails[] = $clientName;
             }
-                 
+            dd($clientDetails);
            return $clientDetails;
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
