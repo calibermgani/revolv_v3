@@ -32,6 +32,7 @@ use App\Models\ARActionCodes;
 use App\Models\qaClassCatScope;
 use App\Models\ProjectReasonType;
 use App\Models\ProjectReason;
+use Illuminate\Support\Facades\Cache;
 
 class Helpers
 {
@@ -1113,4 +1114,81 @@ class Helpers
             return null;
         }
     }
+	public static function getProjectInformationForHourlyWeb($prjArray)
+    {
+	
+            try {
+                $payload = [
+                    'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                    'projectIds' => $prjArray,
+                    
+                ];	  
+				$data = retry(3, function () use ($payload) {
+					$client = new Client(['verify' => false]);
+					$response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_information', [
+						'json' => $payload,
+					]);
+				   // dd($response);
+					if ($response->getStatusCode() == 200) {
+				
+						$responseData = json_decode($response->getBody(), true);	
+						if (isset($responseData)) {
+							return $responseData['prjDetailsList'];
+						} else {
+							throw new \Exception('prjList not found in the API response');
+						}
+					} elseif ($response->getStatusCode() == 429) {
+						$retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
+						sleep($retryAfter);
+						throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
+					} else {
+						throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+					}
+				}, 4000);           
+				return $data;
+			} catch (\Exception $e) {
+				Log::error('Error in prjDetailedList: ' . $e->getMessage());
+				return null;
+			}    
+        
+    }
+
+	// public static function getProjectInformationForHourlyWeb($prjArray)
+    // {
+  
+	// 	    $cacheKey ='project_' . implode('_', $prjArray) . '_detailed_info';
+    //     return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($prjArray) {
+    //         try {
+    //             $payload = [
+    //                 'token' => '1a32e71a46317b9cc6feb7388238c95d',
+    //                 'prjArray' => $prjArray,
+    //             ];
+    
+    //             return retry(3, function () use ($payload) {
+    //                 $client = new Client(['verify' => false]);
+    //                 $response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_resolv_project_information', [
+    //                     'json' => $payload,
+    //                 ]);
+    
+    //                 if ($response->getStatusCode() == 200) {
+    //                     $responseData = json_decode($response->getBody(), true);
+    //                     if (isset($responseData)) {
+	// 						return $responseData['prjDetailsList'];
+	// 					} else {
+	// 						throw new \Exception('prjList not found in the API response');
+	// 					}
+    //                 } elseif ($response->getStatusCode() == 429) {
+    //                     $retryAfter = $response->getHeader('Retry-After')[0] ?? 60;
+    //                     sleep($retryAfter);
+    //                     throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
+    //                 } else {
+    //                     throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+    //                 }
+    //             }, 4000);
+    //         } catch (\Exception $e) {
+    //             Log::error('Error in getprjDetailedInfHoulryWeb: ' . $e->getMessage());
+    //             return null;
+    //         }
+    //     });
+    // }
 }

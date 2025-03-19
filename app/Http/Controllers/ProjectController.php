@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\Schema;
 use App\Models\ManualProjectDuplicate;
 use App\Jobs\GetProjSubPrjJob;
 use App\Models\QualitySampling;
+use App\Models\formConfiguration;
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
@@ -1099,7 +1100,7 @@ class ProjectController extends Controller
         });
     }
 
-    public function getProjects()
+    public function getProjects1()
     {
            $cacheKey = 'project_list';
         return Cache::remember($cacheKey, now()->addMinutes(30), function ()  {
@@ -1552,7 +1553,7 @@ class ProjectController extends Controller
                     $slotStart = $slotEnd;
                 }
                 $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
-                $mailBody = [];
+                $mailBody = $projectIds = $subProjectIds = [];
 
                 // Process each project
                 foreach ($projects as $project) {
@@ -1598,13 +1599,15 @@ class ProjectController extends Controller
                             // 'prjBillableFTE'=>$prjBillableFTE,
                             // 'prjSLATarget'=>$prjSLATarget
                         ];
+                        $projectIds[$project['id']] = $subKey;
+                        $subProjectIds[] = $subKey;
                     }
                 }
 
             
 
                 $today = Carbon::now();
-                return view('projects.projectHourlyWeb', compact( 'mailBody','headers', 'startTime', 'endTime', 'today'));
+                return view('projects.projectHourlyWeb', compact( 'mailBody','headers', 'startTime', 'endTime', 'today','projectIds','subProjectIds'));
             } catch (\Exception $e) {
                 Log::error('Error in ProjectHourlyWeb: ' . $e->getMessage());
                 Log::debug($e->getTraceAsString());
@@ -1717,6 +1720,24 @@ class ProjectController extends Controller
             Log::debug($e->getTraceAsString());
         }
     }
+    public function getProjects()
+        {
+            try {
+               $clientList = formConfiguration::groupBy('project_id')->selectRaw('project_id')->get();
+               $clientName = array();
+               $clientDetails = array();
+               foreach ($clientList as $clientData) {
+                $clientName['id'] = $clientData->project_id;
+                $clientName['client_name'] = Helpers::projectName($clientData->project_id)->aims_project_name;
+                $clientName['subprject_name'] =  $clientData->project_id != null ? subproject::where('project_id', $clientData->project_id)->pluck('sub_project_name', 'sub_project_id')->toArray(): [];
+                $clientDetails[] = $clientName;
+            }
+                 
+           return $clientDetails;
+            } catch (\Exception $e) {
+                Log::debug($e->getMessage());
+            }
+        }
 
 
 

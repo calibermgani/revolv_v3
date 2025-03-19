@@ -88,7 +88,10 @@
                         <tbody>
 
                             @if (isset($mailBody) && count($mailBody) > 0)
-                                @foreach ($mailBody as $data)
+                            @php
+                               $prjDetailsList = App\Http\Helper\Admin\Helpers::getProjectInformationForHourlyWeb($projectIds);                           
+                            @endphp
+                                @foreach ($mailBody as $dKey => $data)
                                 @php                              
                                     $reasonList = App\Models\ProjectReason::with(['project_ar_reason_type','project_qa_reason_type'])->where('project_id',$data['project_id'])->where('sub_project_id',$data['subproject_id'])->whereBetween('updated_at', [$startTime, $endTime])->get();
                                     $arReasons = $qaReasons = []; 
@@ -115,9 +118,10 @@
                                         $qaReasons[] = '--'; 
                                         $qaReasonString = '--';
                                     }
-                                      App\Jobs\GetProjSubPrjJob::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
-                                      $prjTotalDetailsCacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'totalDetails' ;
-                                      $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0);    
+                                    //   App\Jobs\GetProjSubPrjJob::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
+                                    //   $prjTotalDetailsCacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'totalDetails' ;
+                                    //   $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0);  dd($prjBillableFTE);  
+                                      $prjBillableFTE = $prjDetailsList[$dKey];
                                       if (!is_array($prjBillableFTE)) {
                                             $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
                                         }                     
