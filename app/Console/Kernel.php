@@ -22,10 +22,11 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('project:practice')->dailyAt('10:00');
-        //       $schedule->command('project:holdrecords')->dailyAt('10:00');
-        // $schedule->command('project:inventory')->everyFiveMinutes();
-        // $schedule->command('project:hourlymail')->hourly();
-        // $schedule->command('project:callchartworklogs')->dailyAt('09:00');
+        $schedule->command('project:holdrecords')->dailyAt('10:00');
+        $schedule->command('project:inventory')->hourly();
+        $schedule->command('project:hourlymail')->hourly();
+        $schedule->command('project:callchartworklogs')->dailyAt('09:00');
+        $schedule->command('project:workmail')->dailyAt('09:00');
       
 
     }
