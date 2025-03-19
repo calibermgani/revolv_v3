@@ -1599,7 +1599,8 @@ class ProjectController extends Controller
                             // 'prjBillableFTE'=>$prjBillableFTE,
                             // 'prjSLATarget'=>$prjSLATarget
                         ];
-                        $projectIds[$project['id']] = $subKey;
+                        //$projectIds[$project['id']] = $subKey;
+                        $projectIds[] = $project['id'];
                         $subProjectIds[] = $subKey;
                     }
                 }
