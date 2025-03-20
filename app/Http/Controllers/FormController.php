@@ -62,6 +62,7 @@ class FormController extends Controller
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userInfo'] && Session::get('loginDetails')['userInfo']['user_id'] !=null) {
            // DB::beginTransaction();
             try {
+                DB::beginTransaction();
                 $data = $request->all();
                 // $projectName = project::where('id',$data['project_id'])->first();
                 // $subProjectArray = subproject::where('project_id',$data['project_id'])->where('id',$data['sub_project_id'])->first();
@@ -448,8 +449,9 @@ class FormController extends Controller
                     }
                     //DB::commit();
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
+                    DB::commit();
             } catch (\Exception $e) {
-                //DB::rollBack();
+                DB::rollBack();
                 return response()->json(['error' => $e->getMessage()], 500);
                 Log::debug($e->getMessage());
             }
