@@ -899,8 +899,9 @@ class FormController extends Controller
                             }
                         }
                     }
-                    DB::commit();
+                
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
+                    DB::commit();
             } catch (\Exception $e) {
                 DB::rollBack();
                 return response()->json(['error' => $e->getMessage()], 500);
