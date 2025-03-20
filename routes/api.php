@@ -168,6 +168,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('smhc_ev_vob_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@smhcEvVobDuplicates');
     Route::any('lasts_charge_entry', 'App\Http\Controllers\ProjectAuthAutomationController@lastsChargeEntry');
     Route::any('lasts_charge_entry_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@lastsChargeEntryDuplicates');
+    Route::any('mosi_ar', 'App\Http\Controllers\ProjectAuthAutomationController@medValueOffshoreSolutionsIncAr');
+    Route::any('mosi_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@medValueOffshoreSolutionsIncArDuplicates');
 
     
     Route::any('production_auto_close', 'App\Http\Controllers\ProjectController@productionAutoClose');

@@ -26,6 +26,8 @@ use App\Models\SmhcEvVob;
 use App\Models\smhcEvVobDuplicates;
 use App\Models\LastsChargeEntry;
 use App\Models\LastsChargeEntryDuplicates;
+use App\Models\MosiAr;
+use App\Models\MosiArDuplicates;
 class ProjectAuthAutomationController extends Controller
 {
     public function aopsPreAuthVerification(Request $request)
@@ -1008,6 +1010,80 @@ class ProjectAuthAutomationController extends Controller
                     'units' => isset($request->units) && $request->units != "NULL" ? $request->units : NULL,
                     'loc' => isset($request->loc) && $request->loc != "NULL" ? $request->loc : NULL,
                     'rate' => isset($request->rate) && $request->rate != "NULL" ? $request->rate : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+    public function medValueOffshoreSolutionsIncAr(Request $request)
+    {
+        try {
+            $attributes = [
+                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                 'responsible_payer' => isset($request->responsible_payer) && $request->responsible_payer != "NULL" ? $request->responsible_payer : NULL,
+                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                 'total_balance' => isset($request->total_balance) && $request->total_balance != "NULL" ? $request->total_balance : NULL,
+                 'charge_amount' => isset($request->charge_amount) && $request->charge_amount != "NULL" ? $request->charge_amount : NULL,
+                 'primary_claim_id' => isset($request->primary_claim_id) && $request->primary_claim_id != "NULL" ? $request->primary_claim_id : NULL,
+                 'secondary_claim_id' => isset($request->secondary_claim_id) && $request->secondary_claim_id != "NULL" ? $request->secondary_claim_id : NULL,
+             ];         
+
+            $duplicateRecordExisting  =  MosiAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                    MosiAr::insert([
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'responsible_payer' => isset($request->responsible_payer) && $request->responsible_payer != "NULL" ? $request->responsible_payer : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'total_balance' => isset($request->total_balance) && $request->total_balance != "NULL" ? $request->total_balance : NULL,
+                        'charge_amount' => isset($request->charge_amount) && $request->charge_amount != "NULL" ? $request->charge_amount : NULL,
+                        'primary_claim_id' => isset($request->primary_claim_id) && $request->primary_claim_id != "NULL" ? $request->primary_claim_id : NULL,
+                        'secondary_claim_id' => isset($request->secondary_claim_id) && $request->secondary_claim_id != "NULL" ? $request->secondary_claim_id : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecord  =  MosiAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
+                if ($duplicateRecord) {
+                    $duplicateRecord->update([
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'responsible_payer' => isset($request->responsible_payer) && $request->responsible_payer != "NULL" ? $request->responsible_payer : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'total_balance' => isset($request->total_balance) && $request->total_balance != "NULL" ? $request->total_balance : NULL,
+                        'charge_amount' => isset($request->charge_amount) && $request->charge_amount != "NULL" ? $request->charge_amount : NULL,
+                        'primary_claim_id' => isset($request->primary_claim_id) && $request->primary_claim_id != "NULL" ? $request->primary_claim_id : NULL,
+                        'secondary_claim_id' => isset($request->secondary_claim_id) && $request->secondary_claim_id != "NULL" ? $request->secondary_claim_id : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function medValueOffshoreSolutionsIncArDuplicates(Request $request)
+    {
+        try {
+                MosiArDuplicates::insert([
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'responsible_payer' => isset($request->responsible_payer) && $request->responsible_payer != "NULL" ? $request->responsible_payer : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'total_balance' => isset($request->total_balance) && $request->total_balance != "NULL" ? $request->total_balance : NULL,
+                    'charge_amount' => isset($request->charge_amount) && $request->charge_amount != "NULL" ? $request->charge_amount : NULL,
+                    'primary_claim_id' => isset($request->primary_claim_id) && $request->primary_claim_id != "NULL" ? $request->primary_claim_id : NULL,
+                    'secondary_claim_id' => isset($request->secondary_claim_id) && $request->secondary_claim_id != "NULL" ? $request->secondary_claim_id : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
