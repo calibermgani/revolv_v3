@@ -84,7 +84,7 @@
                                     $prjDetailsList = '--';
                                 }            
                             @endphp
-                                @foreach ($projectsPending as $data)
+                                @foreach ($projectsPending as $key => $data)
                                     <tr data-project-id="{{ $data['project_id'] }}">
                                         <td>{{ $data['project'] }}</td>
                                         <td>{{ $data['Chats'] == 0 ? 'No' : 'Yes' }}</td>
@@ -93,8 +93,7 @@
                                         <td class="logged_resolv_ar"></td>
                                         <td>{{ $data['prodcution_ar'] }}</td>
                                         <td>{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder'] }}</td>
-                                        <td>{{ isset($prjDetailsList['aims_count']) ? $prjDetailsList['aims_count'] : json_encode($prjDetailsList) }}</td>
-
+                                        <td>{{  $prjDetailsList != '--' &&  $prjDetailsList != null ? $prjDetailsList[$key]['aims_count'] :  $prjDetailsList}}</td>
                                         {{-- <td>{{ $data['logged_resolv_qa'] }}</td> --}}
                                         <td class="logged_resolv_qa"></td>
                                         <td>{{ $data['prodcution_qa'] }}</td>
