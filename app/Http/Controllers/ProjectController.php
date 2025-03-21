@@ -1762,7 +1762,7 @@ class ProjectController extends Controller
     
                     if ($prjName !== null) {
                         $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
-    
+    dd($subProjects);
                         foreach ($subProjects as $subKey => $subProject) {
                             $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
                             $modelClass = "App\\Models\\" . Str::studly($tableName);
