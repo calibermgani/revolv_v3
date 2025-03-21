@@ -1452,12 +1452,12 @@ use Carbon\Carbon;
     .modal-right .modal-content {
         border-radius: 5px;
     }
-nav{
-    float: right !important;
-}
-#history_tab {
-    pointer-events: auto !important;
-}
+    nav{
+        float: right !important;
+    }
+    #history_tab {
+        pointer-events: auto !important;
+    }
 
 
 </style>
@@ -1480,7 +1480,7 @@ nav{
         var startTime_db;
         $(document).ready(function() {
             var indvidualSearchFieldsCount = Object.keys(@json($projectColSearchFields)).length;
-            var resourceName = @json($resourceName);console.log('resourceName',resourceName);
+            var resourceName = @json($resourceName);
             $("#expandButton").click(function() {
                  var modalContent = $(".modal-content");
                 if (modalContent.width() === 800) {
@@ -2298,8 +2298,19 @@ nav{
                 formData += '&clientName=' + clientName;
                 formData += '&subProjectName=' + subProjectName;
                 formData += '&selectedRecords=' + clearId;
-                swal.fire({
-                    text: selectId == "none" && clearId == "none" ?  recordText : allRecordText ,
+                var arNonWorkableReasons = @json($arNonWorkableReasonList);
+                var selectElement = '<select name="non_workable_reason"  class="form-control" id="swal-dropdown">';
+                    selectElement += '<option value="">-- Select --</option>';
+                    $.each(arNonWorkableReasons, function(index, reason) {                        
+                        selectElement += reason != '-- Select --' ? '<option value="' + index + '">' +
+                            reason + '</option>' : '<option value="">' + reason + '</option>';
+                    });
+                    selectElement += '</select>';
+                Swal.fire({
+                    html: `
+                        <p style="font-size:1rem">${selectId == "none" && clearId == "none" ? recordText : allRecordText}</p>
+                        ${selectElement}
+                    `,
                     icon: "success",
                     buttonsStyling: false,
                     showCancelButton: true,
@@ -2307,11 +2318,21 @@ nav{
                     cancelButtonText: "No",
                     customClass: {
                         confirmButton: "btn font-weight-bold btn-white-black",
-                        cancelButton: "btn font-weight-bold  btn-light-danger",
+                        cancelButton: "btn font-weight-bold btn-light-danger",
+                    },
+                    preConfirm: () => {
+                        const dropdownValue = document.getElementById("swal-dropdown").value;
+                        if (!dropdownValue) {
+                            Swal.showValidationMessage("Please select a value before proceeding.");
+                            return false; // Prevent closing the modal
+                        }
+                        return dropdownValue; // Pass selected value to `then()`
                     }
-
-                }).then(function(result) {
-                    if (result.value == true) {
+                }).then((result) => {
+                    
+                    if (result.dismiss !== 'cancel') {
+                        selectedValue = result.value;
+                        formData += '&selectedValue=' + selectedValue;
                         $.ajax({
                             url: "{{ url('nonworkable_status_update') }}",
                             method: 'POST',

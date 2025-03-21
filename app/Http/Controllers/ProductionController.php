@@ -331,7 +331,8 @@ class ProductionController extends Controller
                             }
                         }
                 $popupMulineFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('field_type_3','popup_visible')->where('field_type','editable')->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->get();
-               return view('productions/clientAssignedTab',compact('assignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','assignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','searchData','resourceName','projectTypeSettings','existingCallerChartsWorkLogsInprocess','attributes','popupMulineFields','arAutoCloseCount','claimHistoryAttributes'));
+                $arNonWorkableReasonList = Helpers::getArNonWorkableReasonList();
+                return view('productions/clientAssignedTab',compact('assignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','assignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','searchData','resourceName','projectTypeSettings','existingCallerChartsWorkLogsInprocess','attributes','popupMulineFields','arAutoCloseCount','claimHistoryAttributes','arNonWorkableReasonList'));
            } catch (\Exception $e) {
                log::debug($e->getMessage());
            }
@@ -2674,16 +2675,40 @@ class ProductionController extends Controller
                 $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
                 $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                 $checkedValues = json_decode($request->input('checkedRowValues'), true);
+                $column_value = $request['selectedValue'];
+                $columns = Schema::getColumnListing($table_name);
+                $possibleColumns = ['ar_notes', 'notes', 'remarks', 'comments'];
+                $columnToUpdate = null;
+                foreach ($possibleColumns as $column) {
+                    if (in_array($column, $columns)) {
+                        $columnToUpdate = $column;
+                        break; // Stop at the first found column
+                    }
+                }
                 if($request['selectedRecords'] == "none") {
                    if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator - AR') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)) {
                         foreach($checkedValues as $data) {
                             $existingRecord = $modelClass::where('id',$data['value'])->where('chart_status','CE_Assigned')->first();
-                            $existingRecord->update(['chart_status' => 'AR_non_workable']);
+                           // $existingRecord->update(['chart_status' => 'AR_non_workable']);
+                           if ($existingRecord) {
+                                $updateData = ['chart_status' => 'AR_non_workable'];                            
+                                if ($columnToUpdate) {
+                                    $updateData[$columnToUpdate] = $column_value;
+                                }                            
+                              $existingRecord->update($updateData);
+                           }
                         }
                     } else {
                         foreach($checkedValues as $data) {
                             $existingRecord = $modelClass::where('id',$data['value'])->where('CE_emp_id',$loginEmpId)->where('chart_status','CE_Assigned')->first();
-                            $existingRecord->update(['chart_status' => 'AR_non_workable']);
+                            //$existingRecord->update(['chart_status' => 'AR_non_workable']);
+                            if ($existingRecord) {
+                                $updateData = ['chart_status' => 'AR_non_workable'];                            
+                                if ($columnToUpdate) {
+                                    $updateData[$columnToUpdate] = $column_value;
+                                }                            
+                              $existingRecord->update($updateData);
+                           }
                         }
                     }   
                 } else {
@@ -2704,10 +2729,26 @@ class ProductionController extends Controller
                         }
                     }
                    if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator - AR') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)) {
-                        $query->where('chart_status', 'CE_Assigned')->update(['chart_status' => 'AR_non_workable']);
+                        //$query->where('chart_status', 'CE_Assigned')->update(['chart_status' => 'AR_non_workable']);
+                        $existingRecord =$query->where('chart_status', 'CE_Assigned')->first();
+                        if ($existingRecord) {
+                            $updateData = ['chart_status' => 'AR_non_workable'];                            
+                            if ($columnToUpdate) {
+                                $updateData[$columnToUpdate] = $column_value;
+                            }                            
+                           $existingRecord->update($updateData);
+                       }
 
                     } else {
-                       $query->where('CE_emp_id',$loginEmpId)->where('chart_status','CE_Assigned')->update(['chart_status' => 'AR_non_workable']);
+                      // $query->where('CE_emp_id',$loginEmpId)->where('chart_status','CE_Assigned')->update(['chart_status' => 'AR_non_workable']);
+                        $existingRecord =$query->where('chart_status', 'CE_Assigned')->first();
+                        if ($existingRecord) {
+                            $updateData = ['chart_status' => 'AR_non_workable'];                            
+                            if ($columnToUpdate) {
+                                $updateData[$columnToUpdate] = $column_value;
+                            }                            
+                            $existingRecord->update($updateData);
+                        }
                     }
                 }
                 return response()->json(['success' => true]);

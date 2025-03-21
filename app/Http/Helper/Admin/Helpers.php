@@ -33,6 +33,7 @@ use App\Models\qaClassCatScope;
 use App\Models\ProjectReasonType;
 use App\Models\ProjectReason;
 use Illuminate\Support\Facades\Cache;
+use App\Models\NonWorkableReason;
 
 class Helpers
 {
@@ -1192,4 +1193,16 @@ class Helpers
     //         }
     //     });
     // }
+
+	public static function getArNonWorkableReasonList()
+	{
+		$data = NonWorkableReason::where('status', 'Active')->pluck('reason_type', 'id')->toArray();
+		return $data;
+	}
+	public static function nonWorkableReasonName($id)
+	{
+		// $data = project::where('status', 'Active')->where('id',$id)->first();
+		$data = NonWorkableReason::where('status', 'Active')->where('id', $id)->first('reason_type');
+		return $data;
+	}
 }

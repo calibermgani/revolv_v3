@@ -459,6 +459,15 @@ use Carbon\Carbon;
                                                                     {{-- @if (str_contains($columnValue, '-') && strtotime($columnValue)) --}}
                                                                     @if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $columnValue))
                                                                         {{ date('m/d/Y', strtotime($columnValue)) }}
+                                                                    @elseif ($columnName == 'ar_notes' || $columnName == 'notes' || $columnName == 'remarks' || $columnName =='comments')
+                                                                        @php
+                                                                            if($columnValue != null) {
+                                                                               $nonWorkableReason = App\Http\Helper\Admin\Helpers::nonWorkableReasonName($columnValue);
+                                                                            } else {
+                                                                                $nonWorkableReason = '';
+                                                                            }
+                                                                         @endphp
+                                                                            {{ $columnValue == null ? $columnValue : $nonWorkableReason['reason_type'] }}
                                                                     @else
                                                                         @if ($columnName == 'chart_status' && str_contains($columnValue, 'AR_'))
                                                                           Non Workable
@@ -477,6 +486,15 @@ use Carbon\Carbon;
                                                                     {{-- @if (str_contains($columnValue, '-') && strtotime($columnValue)) --}}
                                                                     @if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $columnValue))
                                                                         {{ date('m/d/Y', strtotime($columnValue)) }}
+                                                                    @elseif ($columnName == 'ar_notes' || $columnName == 'notes' || $columnName == 'remarks' || $columnName =='comments')
+                                                                        @php
+                                                                            if($columnValue != null) {
+                                                                                $nonWorkableReason = App\Http\Helper\Admin\Helpers::nonWorkableReasonName($columnValue);
+                                                                            } else {
+                                                                                $nonWorkableReason = '';
+                                                                            }
+                                                                        @endphp
+                                                                        {{ $columnValue == null ? $columnValue : $nonWorkableReason['reason_type'] }}
                                                                     @elseif ($columnName == 'aging')                                                                                  
                                                                         {{ $agingCount }}
                                                                     @elseif ($columnName == 'aging_range')
