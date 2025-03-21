@@ -1828,13 +1828,13 @@ class ProjectController extends Controller
                                     'prodcution_qa' => $productionQACount,
                                     'project_id' => $project['id'], // Store project ID
                                 ];
-                                $projectIds[] = $project['id'];
+                                $projectIds[] = $subKey;
                                 $subProjectIds[] = $subKey;
                             }
                         }
                     }
                     // return ['data' => $projectData, 'ids' => $project_id];
-                });dd($subProjectIds);
+                });dd($subProjectIds,$projectIds);
                 GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
                 GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
                 return view('projects.projectUtilizationWeb', compact('projectsPending', 'yesterday','yesterDayStartDate','yesterDayEndDate','projectIds','subProjectIds'));
