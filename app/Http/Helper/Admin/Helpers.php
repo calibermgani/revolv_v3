@@ -1215,7 +1215,7 @@ class Helpers
 					'subProjectIds' => $subPrjArray,
 					'workDate' => $workDate,
                     
-                ];	  
+                ];	  dd($payload);
 				$data = retry(3, function () use ($payload) {
 					$client = new Client(['verify' => false]);
 					$response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_aims_production_entry_count', [
@@ -1226,7 +1226,6 @@ class Helpers
 				
 						$responseData = json_decode($response->getBody(), true);	
 						if (isset($responseData)) {
-							dd($responseData,$prjArray,$subPrjArray,$workDate);
 							//return $responseData['prjDetailsList'];
 						} else {
 							throw new \Exception('prjList not found in the API response');
