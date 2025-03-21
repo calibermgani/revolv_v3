@@ -68,7 +68,7 @@
                                 <th>Logged Resolv - AR</th>
                                 <th>Production Users - AR</th>
                                 <th>AR</th>
-                                <th>Aims Production</th>
+                                <th>AIMS Production</th>
                                 <th>Logged Resolv - QA</th>
                                 <th>Production - QA</th>
                                 <th>QA</th>
