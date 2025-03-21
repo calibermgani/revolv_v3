@@ -1226,7 +1226,8 @@ class Helpers
 				
 						$responseData = json_decode($response->getBody(), true);	
 						if (isset($responseData)) {
-							return $responseData['prjDetailsList'];
+							dd($responseData,$prjArray,$subPrjArray,$workDate);
+							//return $responseData['prjDetailsList'];
 						} else {
 							throw new \Exception('prjList not found in the API response');
 						}
@@ -1238,7 +1239,7 @@ class Helpers
 						throw new \Exception('API request failed with status: ' . $response->getStatusCode());
 					}
 				}, 4000);           
-				return $data;
+				//return $data;
 			} catch (\Exception $e) {
 				Log::error('Error in prjDetailedList: ' . $e->getMessage());
 				return null;
