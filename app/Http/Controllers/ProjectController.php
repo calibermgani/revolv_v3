@@ -1757,12 +1757,12 @@ class ProjectController extends Controller
                 $projects = collect($this->getProjects());
                 $projectsPending = []; 
                 $projectIds = $subProjectIds = [];
-                $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$projectsPending, &$projectIds) {
+                $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$projectsPending, &$projectIds, &$subProjectIds) {
                     $prjName = Helpers::projectName($project['id'])->project_name ?? null;
     
                     if ($prjName !== null) {
                         $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
-
+    
                         foreach ($subProjects as $subKey => $subProject) {
                             $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
                             $modelClass = "App\\Models\\" . Str::studly($tableName);
@@ -1828,13 +1828,13 @@ class ProjectController extends Controller
                                     'prodcution_qa' => $productionQACount,
                                     'project_id' => $project['id'], // Store project ID
                                 ];
-                                $projectIds[] = $subKey;
+                                $projectIds[] = $project['id'];
                                 $subProjectIds[] = $subKey;
                             }
                         }
                     }
                     // return ['data' => $projectData, 'ids' => $project_id];
-                });dd($subProjectIds,$projectIds);
+                });
                 GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
                 GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
                 return view('projects.projectUtilizationWeb', compact('projectsPending', 'yesterday','yesterDayStartDate','yesterDayEndDate','projectIds','subProjectIds'));
