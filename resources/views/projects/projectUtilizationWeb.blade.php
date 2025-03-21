@@ -68,6 +68,7 @@
                                 <th>Logged Resolv - AR</th>
                                 <th>Production Users - AR</th>
                                 <th>AR</th>
+                                <th>Aims Production</th>
                                 <th>Logged Resolv - QA</th>
                                 <th>Production - QA</th>
                                 <th>QA</th>
@@ -76,6 +77,13 @@
                         <tbody>
 
                             @if (isset($projectsPending) && count($projectsPending) > 0)
+                            @php
+                                if ( isset($yesterday) && !empty($yesterday)) {
+                                   $prjDetailsList = App\Http\Helper\Admin\Helpers::getAimsProductionEntryCount($projectIds,$subProjectIds,$yesterday);  
+                                } else {
+                                    $prjDetailsList = '--';
+                                }                  
+                            @endphp
                                 @foreach ($projectsPending as $data)
                                     <tr data-project-id="{{ $data['project_id'] }}">
                                         <td>{{ $data['project'] }}</td>
@@ -85,6 +93,7 @@
                                         <td class="logged_resolv_ar"></td>
                                         <td>{{ $data['prodcution_ar'] }}</td>
                                         <td>{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder'] }}</td>
+                                        <td>{{  $prjDetailsList != '--' ? $prjDetailsList['aims_count'] :  $prjDetailsList}}</td>
                                         {{-- <td>{{ $data['logged_resolv_qa'] }}</td> --}}
                                         <td class="logged_resolv_qa"></td>
                                         <td>{{ $data['prodcution_qa'] }}</td>

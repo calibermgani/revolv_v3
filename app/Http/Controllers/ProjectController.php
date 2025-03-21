@@ -1756,14 +1756,14 @@ class ProjectController extends Controller
                 $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
                 $projects = collect($this->getProjects());
                 $projectsPending = []; 
-                $projectIds = [];
+                $projectIds = $subProjectIds = [];
                 $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$projectsPending, &$projectIds) {
                     $prjName = Helpers::projectName($project['id'])->project_name ?? null;
     
                     if ($prjName !== null) {
                         $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
     
-                        foreach ($subProjects as $subProject) {
+                        foreach ($subProjects as $subKey => $subProject) {
                             $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
                             $modelClass = "App\\Models\\" . Str::studly($tableName);
                             
@@ -1829,6 +1829,7 @@ class ProjectController extends Controller
                                     'project_id' => $project['id'], // Store project ID
                                 ];
                                 $projectIds[] = $project['id'];
+                                $subProjectIds[] = $subKey;
                             }
                         }
                     }
@@ -1836,7 +1837,7 @@ class ProjectController extends Controller
                 });
                 GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
                 GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
-                return view('projects.projectUtilizationWeb', compact('projectsPending', 'yesterday','yesterDayStartDate','yesterDayEndDate','projectIds'));
+                return view('projects.projectUtilizationWeb', compact('projectsPending', 'yesterday','yesterDayStartDate','yesterDayEndDate','projectIds','subProjectIds'));
             } catch (\Exception $e) {
                 Log::error('Error in ProjectWorkWeb: ' . $e->getMessage());
                 Log::debug($e->getMessage());
