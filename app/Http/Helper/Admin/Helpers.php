@@ -1215,7 +1215,7 @@ class Helpers
 					'subProjectIds' => $subPrjArray,
 					'workDate' => $workDate,
                     
-                ];	  dd($payload);
+                ];	  
 				$data = retry(3, function () use ($payload) {
 					$client = new Client(['verify' => false]);
 					$response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_aims_production_entry_count', [
@@ -1226,7 +1226,7 @@ class Helpers
 				
 						$responseData = json_decode($response->getBody(), true);	
 						if (isset($responseData)) {
-							//return $responseData['prjDetailsList'];
+							return $responseData['prjDetailsList'];
 						} else {
 							throw new \Exception('prjList not found in the API response');
 						}
@@ -1238,7 +1238,7 @@ class Helpers
 						throw new \Exception('API request failed with status: ' . $response->getStatusCode());
 					}
 				}, 4000);           
-				//return $data;
+				return $data;
 			} catch (\Exception $e) {
 				Log::error('Error in prjDetailedList: ' . $e->getMessage());
 				return null;

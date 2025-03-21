@@ -79,8 +79,7 @@
                             @if (isset($projectsPending) && count($projectsPending) > 0)
                             @php
                                 if ( isset($yesterday) && !empty($yesterday)) {
-                                    $workDate = $yesterday;
-                                   $prjDetailsList = App\Http\Helper\Admin\Helpers::getAimsProductionEntryCount($projectIds,$subProjectIds,$workDate);  
+                                   $prjDetailsList = App\Http\Helper\Admin\Helpers::getAimsProductionEntryCount($projectIds,$subProjectIds,$yesterday);  
                                 } else {
                                     $prjDetailsList = '--';
                                 }                  
