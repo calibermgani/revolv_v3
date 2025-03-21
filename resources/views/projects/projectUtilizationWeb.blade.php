@@ -82,7 +82,7 @@
                                    $prjDetailsList = App\Http\Helper\Admin\Helpers::getAimsProductionEntryCount($projectIds,$subProjectIds,$yesterday);  
                                 } else {
                                     $prjDetailsList = '--';
-                                }            
+                                }     dd($yesterday,$projectsPending,$prjDetailsList);       
                             @endphp
                                 @foreach ($projectsPending as $key => $data)
                                     <tr data-project-id="{{ $data['project_id'] }}">
