@@ -1764,7 +1764,6 @@ class ProjectController extends Controller
                         $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
 
                         foreach ($subProjects as $subKey => $subProject) {
-                            dd($subKey,$subProject);
                             $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
                             $modelClass = "App\\Models\\" . Str::studly($tableName);
                             
@@ -1835,7 +1834,7 @@ class ProjectController extends Controller
                         }
                     }
                     // return ['data' => $projectData, 'ids' => $project_id];
-                });
+                });dd($subProjectIds);
                 GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
                 GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
                 return view('projects.projectUtilizationWeb', compact('projectsPending', 'yesterday','yesterDayStartDate','yesterDayEndDate','projectIds','subProjectIds'));
