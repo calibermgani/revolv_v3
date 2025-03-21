@@ -79,10 +79,10 @@
                             @if (isset($projectsPending) && count($projectsPending) > 0)
                             @php
                                 if ( isset($yesterday) && !empty($yesterday)) {
-                                   $prjDetailsList = App\Http\Helper\Admin\Helpers::getAimsProductionEntryCount($projectIds,$subProjectIds,$yesterday);  
+                                   $prjDetailsList = App\Http\Helper\Admin\Helpers::getAimsProductionEntryCount($projectIds,$subProjectIds,date('Y-m-d',strtotime($yesterday)));  
                                 } else {
                                     $prjDetailsList = '--';
-                                }     dd($yesterday,$projectsPending,$prjDetailsList);       
+                                }            
                             @endphp
                                 @foreach ($projectsPending as $key => $data)
                                     <tr data-project-id="{{ $data['project_id'] }}">
