@@ -1691,11 +1691,12 @@ class ProjectController extends Controller
                           $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
                       }                     
                     
-                      if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget'])) {
-                              $targetPerDay = ((float)$prjBillableFTE['prjBillableCount'] * (float)$prjBillableFTE['projectSLATarget']) ;
-                       } else {
-                          $targetPerDay =  is_array($prjBillableFTE) && ($prjBillableFTE['prjBillableCount'] == null  || $prjBillableFTE['projectSLATarget'] == null) ? '--'  : $prjBillableFTE ;
-                       }
+                    //   if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget'])) {
+                    //           $targetPerDay = ((float)$prjBillableFTE['prjBillableCount'] * (float)$prjBillableFTE['projectSLATarget']) ;
+                    //    } else {
+                    //       $targetPerDay =  is_array($prjBillableFTE) && ($prjBillableFTE['prjBillableCount'] == null  || $prjBillableFTE['projectSLATarget'] == null) ? '--'  : $prjBillableFTE ;
+                    //    }
+                    $targetPerDay = (float)$prjBillableFTE['projectSLATarget'] ;
                     if (is_numeric($reachedTarget) && is_numeric($targetPerDay) && $targetPerDay != 0 && $targetPerDay != "") {
                         $achievedPercentage = ($reachedTarget / $targetPerDay) * 100;
                     } else {
