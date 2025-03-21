@@ -93,7 +93,8 @@
                                         <td class="logged_resolv_ar"></td>
                                         <td>{{ $data['prodcution_ar'] }}</td>
                                         <td>{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder'] }}</td>
-                                        <td>{{  $prjDetailsList != '--' &&  $prjDetailsList != null && isset($prjDetailsList['aims_count']) ? $prjDetailsList['aims_count'] :  $prjDetailsList}}</td>
+                                        <td>{{ isset($prjDetailsList['aims_count']) ? $prjDetailsList['aims_count'] : json_encode($prjDetailsList) }}</td>
+
                                         {{-- <td>{{ $data['logged_resolv_qa'] }}</td> --}}
                                         <td class="logged_resolv_qa"></td>
                                         <td>{{ $data['prodcution_qa'] }}</td>
