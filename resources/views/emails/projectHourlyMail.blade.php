@@ -59,7 +59,10 @@
             <tbody>
 
                 @if (isset($mailBody) && count($mailBody) > 0)
-                    @foreach ($mailBody as $data)
+                @php
+                    $prjDetailsList = App\Http\Helper\Admin\Helpers::getProjectInformationForHourlyWeb($projectIds,$subProjectIds);                     
+                @endphp
+                    @foreach ($mailBody as $dKey => $data)
                     @php                              
                         $reasonList = App\Models\ProjectReason::with(['project_ar_reason_type','project_qa_reason_type'])->where('project_id',$data['project_id'])->where('sub_project_id',$data['subproject_id'])->whereBetween('updated_at', [$startTime, $endTime])->get();
                         $arReasons = $qaReasons = []; 
@@ -86,9 +89,10 @@
                             $qaReasons[] = '--'; 
                             $qaReasonString = '--';
                         }
-                        App\Jobs\getProjectSubProjectBillableFTE::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
-                        $prjBillableFTECacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'BillableFTE' ;
-                        $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
+                        // App\Jobs\getProjectSubProjectBillableFTE::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
+                        // $prjBillableFTECacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'BillableFTE' ;
+                        // $prjBillableFTE = Cache::get($prjBillableFTECacheKey, 0);
+                        $prjBillableFTE = $prjDetailsList[$dKey];
                         if (!is_array($prjBillableFTE)) {
                             $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
                         }            

@@ -627,7 +627,7 @@ class ProjectController extends Controller
 
             // Initialize headers and mail body
             $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
-            $mailBody = [];
+            $mailBody = $projectIds = $subProjectIds = [];
           //  $toMailId=[];
             // Process each project
             foreach ($projects as $project) {
@@ -677,6 +677,8 @@ class ProjectController extends Controller
                         'subproject_id' => $subKey,
                     ];
                     //$toMailId[] = $project['scope_manager_email'][$subKey];
+                    $projectIds[] = $project['id'];
+                    $subProjectIds[] = $subKey;
                 }
             }
 
@@ -686,7 +688,7 @@ class ProjectController extends Controller
 
             // Send mail
             if($toMailId != null && $ccMailId != null) {    
-                Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $headers, $today,$startTime,$endTime));
+                Mail::to($toMailId)->cc($ccMailId)->send(new ProjectHourlyMail($mailHeader, $mailBody, $headers, $today,$startTime,$endTime,$projectIds,$subProjectIds));
             }
             Log::info('ProjectHourlyMail executed successfully.');
         } catch (\Exception $e) {
