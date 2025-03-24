@@ -575,12 +575,12 @@ class ProjectController extends Controller
             // $ccMailId = ['anbalagan@annexmed.net','dominic@annexmed.net','durga@annexmed.net','francis@annexmed.net','jaiganesh@annexmed.net','mohan@annexmed.com',
             // 'nicson@annexmed.net','krajkumar@annexmed.net','athamim@annexmed.net','tikkaram@annexmed.net','vinodh@annexmed.net','sbishop@annexmed.net','karthikeyan@annexmed.net','vijaychandran@annexmed.net',
             // 'hemanathan@annexmed.net','vigneshwaran@annexmed.net','mgani@caliberfocus.com','margaretmary@annexmed.net','vijayalaxmi@caliberfocus.com'];
-            // $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'resolv hourly to email')->first();
-            // $toMailId = $toMail != null ? explode(",", $toMail->cc_emails) : null;
-            // $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'resolv hourly cc email')->first();
-            // $ccMailId = $ccMail != null ? explode(",", $ccMail->cc_emails) : null;
-            $toMailId = ["vijayalaxmi@caliberfocus.com"];
-            $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+            $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'resolv hourly to email')->first();
+            $toMailId = $toMail != null ? explode(",", $toMail->cc_emails) : null;
+            $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'resolv hourly cc email')->first();
+            $ccMailId = $ccMail != null ? explode(",", $ccMail->cc_emails) : null;
+            // $toMailId = ["vijayalaxmi@caliberfocus.com"];
+            // $ccMailId = ["vijayalaxmi@caliberfocus.com"];
          
             $mailHeader = "Resolv Project Hourly Report";
             $projects = collect($this->getProjects());
