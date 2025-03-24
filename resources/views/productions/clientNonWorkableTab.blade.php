@@ -491,10 +491,10 @@ use Carbon\Carbon;
                                                                             if($columnValue != null) {
                                                                                 $nonWorkableReason = App\Http\Helper\Admin\Helpers::nonWorkableReasonName($columnValue);
                                                                             } else {
-                                                                                $nonWorkableReason = '';
+                                                                                $nonWorkableReason = null;
                                                                             }
                                                                         @endphp
-                                                                        {{ $columnValue == null ? $columnValue : $nonWorkableReason['reason_type'] }}
+                                                                         {{ $nonWorkableReason != null ? $nonWorkableReason['reason_type'] : $columnValue }}
                                                                     @elseif ($columnName == 'aging')                                                                                  
                                                                         {{ $agingCount }}
                                                                     @elseif ($columnName == 'aging_range')
