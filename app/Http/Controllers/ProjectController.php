@@ -1854,7 +1854,7 @@ class ProjectController extends Controller
                 // $toMailId = $toMail != null ? explode(",", $toMail->cc_emails) : null;
                 // $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'resolv work cc email')->first();
                 // $ccMailId = $ccMail != null ? explode(",", $ccMail->cc_emails) : null;    
-                $toMailId = ["mgani@caliberfocus.com"];
+                $toMailId = ["vijayalaxmi@caliberfocus.com"];
                 $ccMailId = ["vijayalaxmi@caliberfocus.com"];
                 $yesterday = Carbon::yesterday();
                 if ($yesterday->isSaturday()) {
@@ -1952,7 +1952,7 @@ class ProjectController extends Controller
                 });
                 GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
                 GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
-                $mailBody = $projectsPending;
+                $mailBody = $projectsPending;dd($subProjectIds);
                 if($toMailId != null && $ccMailId != null) {                   
                     Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday,$projectIds,$subProjectIds));
                 }
