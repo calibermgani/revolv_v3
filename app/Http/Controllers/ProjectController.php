@@ -1854,7 +1854,7 @@ class ProjectController extends Controller
                 // $toMailId = $toMail != null ? explode(",", $toMail->cc_emails) : null;
                 // $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'resolv work cc email')->first();
                 // $ccMailId = $ccMail != null ? explode(",", $ccMail->cc_emails) : null;    
-                $toMailId = ["vijayalaxmi@caliberfocus.com"];
+                $toMailId = ["mgani@caliberfocus.com"];
                 $ccMailId = ["vijayalaxmi@caliberfocus.com"];
                 $yesterday = Carbon::yesterday();
                 if ($yesterday->isSaturday()) {
@@ -1870,7 +1870,7 @@ class ProjectController extends Controller
                 $projects = collect($this->getProjects());
                 $projectsPending = []; 
                 $projectIds = $subProjectIds = [];
-                $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$projectsPending, &$projectIds) {
+                $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$projectsPending, &$projectIds, &$subProjectIds) {
                     $prjName = Helpers::projectName($project['id'])->project_name ?? null;
     
                     if ($prjName !== null) {
