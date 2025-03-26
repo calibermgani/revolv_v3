@@ -65,7 +65,7 @@ use Carbon\Carbon;
                                             strpos($empDesignation, 'Leader') !== false ||
                                             strpos($empDesignation, 'Team Lead') !== false ||
                                             strpos($empDesignation, 'CEO') !== false ||
-                                            strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator - AR') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)
+                                            strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)
                                         <div class="wizard-step mb-0 five" data-wizard-type="done">
                                             <div class="wizard-wrapper py-2">
                                                 <div class="wizard-label p-2 mt-2">
@@ -129,7 +129,7 @@ use Carbon\Carbon;
                                             </div>
                                         </div>
                                     </div> --}}
-                                    {{-- @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator - AR') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)
+                                    {{-- @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)
                                         <div class="wizard-step mb-0 six" data-wizard-type="done">
                                             <div class="wizard-wrapper py-2">
                                                 <div class="wizard-label p-2 mt-2">
@@ -148,7 +148,7 @@ use Carbon\Carbon;
                                         strpos($empDesignation, 'Leader') !== false ||
                                         strpos($empDesignation, 'Team Lead') !== false ||
                                         strpos($empDesignation, 'CEO') !== false ||
-                                        strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator - AR') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)
+                                        strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)
                                         <div class="wizard-step mb-0 eight" data-wizard-type="step">
                                             <div class="wizard-wrapper py-2">
                                                 <div class="wizard-label p-2 mt-2">
@@ -333,7 +333,7 @@ use Carbon\Carbon;
                                                     <tr
                                                         style="{{ $data->invoke_date == 125 ? 'background-color: #f77a7a;' : '' }}">
                                                         <td>
-                                                               @if (($loginEmpId !== "Admin" || strpos($empDesignation, 'Manager') !== true || strpos($empDesignation, 'VP') !== true || strpos($empDesignation, 'Leader') !== true || strpos($empDesignation, 'Team Lead') !== true || strpos($empDesignation, 'CEO') !== true || strpos($empDesignation, 'Vice') !== true || strpos($empDesignation, 'Group Coordinator - AR') !== true || strpos($empDesignation, 'Subject Matter Expert') !== true) && $loginEmpId != $data->QA_emp_id)
+                                                               @if (($loginEmpId !== "Admin" || strpos($empDesignation, 'Manager') !== true || strpos($empDesignation, 'VP') !== true || strpos($empDesignation, 'Leader') !== true || strpos($empDesignation, 'Team Lead') !== true || strpos($empDesignation, 'CEO') !== true || strpos($empDesignation, 'Vice') !== true || strpos($empDesignation, 'Group Coordinator') !== true || strpos($empDesignation, 'Subject Matter Expert') !== true) && $loginEmpId != $data->QA_emp_id)
                                                                 @else
                                                                 @if (empty($existingCallerChartsWorkLogs))
                                                                     <button class="task-start clickable-row start"
