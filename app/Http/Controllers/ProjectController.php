@@ -1952,7 +1952,7 @@ class ProjectController extends Controller
                 });
                 GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
                 GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
-                $mailBody = $projectsPending;dd($subProjectIds);
+                $mailBody = $projectsPending;
                 if($toMailId != null && $ccMailId != null) {                   
                     Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday,$projectIds,$subProjectIds));
                 }
