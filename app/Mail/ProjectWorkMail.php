@@ -14,17 +14,19 @@ class ProjectWorkMail extends Mailable
     public $mailBody;
     public $yesterday;
     public $projectIds;
+    public $subProjectIds;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($mailHeader, $mailBody, $yesterday, $projectIds)
+    public function __construct($mailHeader, $mailBody, $yesterday, $projectIds, $subProjectIds)
     {
         $this->mailHeader = $mailHeader;
         $this->mailBody = $mailBody;
         $this->yesterday = $yesterday;
         $this->projectIds =  $projectIds;
+        $this->subProjectIds = $subProjectIds;
     }
 
     /**

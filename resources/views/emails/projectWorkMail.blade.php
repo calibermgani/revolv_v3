@@ -50,6 +50,7 @@
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Logged Resolv - AR</th>
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Production Users - AR</th>
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Production Count - AR</th>
+                    <th>AIMS Production</th>
                     {{-- <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Total QA</th> --}}
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Logged Resolv - QA</th>
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Production Users - QA</th>
@@ -60,6 +61,13 @@
             <tbody>
 
                 @if (isset($mailBody) && count($mailBody) > 0)
+                    @php
+                        if ( isset($yesterday) && !empty($yesterday)) {
+                        $prjDetailsList = App\Http\Helper\Admin\Helpers::getAimsProductionEntryCount($projectIds,$subProjectIds,date('Y-m-d',strtotime($yesterday)));  
+                        } else {
+                            $prjDetailsList = '--';
+                        }            
+                    @endphp
                     @foreach ($mailBody as $data)
                     @php
                     $projectIdsString = implode(",",$projectIds);
@@ -96,6 +104,8 @@
                             <td style="text-align: center;padding: 5px;">{{ $loggedResolvAR}}</td>
                             <td style="text-align: center;padding: 5px;">{{$data['prodcution_ar']}}</td>
                             <td style="text-align: center;padding: 5px;">{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder']}}</td>
+                            <td style="text-align: center; padding: 5px; {{ $prjDetailsList != '--' &&  $prjDetailsList != null ? ($data['Coder'] != 0 && $data['Coder'] == $prjDetailsList[$key]['aims_count'] ? 'color:green' : 'color:red') : 'color:red' }}">
+                                {{  $prjDetailsList != '--' &&  $prjDetailsList != null ? $prjDetailsList[$key]['aims_count'] :  $prjDetailsList}}</td>
                             {{-- <td style="text-align: center;padding: 5px;">{{$data['total_qa']}}</td> --}}
                             <td style="text-align: center;padding: 5px;">{{ $loggedResolvQA}}</td>
                             <td style="text-align: center;padding: 5px;">{{$data['prodcution_qa']}}</td>

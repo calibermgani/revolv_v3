@@ -1867,14 +1867,14 @@ class ProjectController extends Controller
                 $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
                 $projects = collect($this->getProjects());
                 $projectsPending = []; 
-                $projectIds = [];
+                $projectIds = $subProjectIds = [];
                 $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$projectsPending, &$projectIds) {
                     $prjName = Helpers::projectName($project['id'])->project_name ?? null;
     
                     if ($prjName !== null) {
                         $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
     
-                        foreach ($subProjects as $subProject) {
+                        foreach ($subProjects as $subKey => $subProject) {
                             $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
                             $modelClass = "App\\Models\\" . Str::studly($tableName);
                             
@@ -1942,6 +1942,7 @@ class ProjectController extends Controller
                                     'yesterDayEndDate' => $yesterDayEndDate
                                 ];
                                 $projectIds[] = $project['id'];
+                                $subProjectIds[] = $subKey;
                             }
                         }
                     }
@@ -1951,7 +1952,7 @@ class ProjectController extends Controller
                 GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
                 $mailBody = $projectsPending;
                 if($toMailId != null && $ccMailId != null) {                   
-                    Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday,$projectIds));
+                    Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday,$projectIds,$subProjectIds));
                 }
         
                 Log::info('ProjectWorkMail executed successfully.');
