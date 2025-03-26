@@ -66,9 +66,9 @@
                         $prjDetailsList = App\Http\Helper\Admin\Helpers::getAimsProductionEntryCount($projectIds,$subProjectIds,date('Y-m-d',strtotime($yesterday)));  
                         } else {
                             $prjDetailsList = '--';
-                        }      dd($prjDetailsList,$projectIds,$subProjectIds);      
+                        }            
                     @endphp
-                    @foreach ($mailBody as $data)
+                    @foreach ($mailBody as $key => $data)
                     @php
                     $projectIdsString = implode(",",$projectIds);
                     $rowProjectId = $data['project_id'];
