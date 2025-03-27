@@ -1681,7 +1681,7 @@ class ProjectController extends Controller
                         ->where('CE_emp_id', $user)
                         ->count();
 
-                        Log::info("Hourly count for {$tableName} from {$slotStart} to {$slotEnd}: {$hourlyCount}");
+                        //Log::info("Hourly count for {$tableName} from {$slotStart} to {$slotEnd}: {$hourlyCount}");
 
                         $hourlyCounts[] = $hourlyCount; 
                         $reachedTarget += $hourlyCount;
@@ -2040,7 +2040,7 @@ class ProjectController extends Controller
                             ->where('CE_emp_id', $user)
                             ->count();
     
-                            Log::info("Hourly count for {$tableName} from {$slotStart} to {$slotEnd}: {$hourlyCount}");
+                            //Log::info("Hourly count for {$tableName} from {$slotStart} to {$slotEnd}: {$hourlyCount}");
     
                             $hourlyCounts[] = $hourlyCount; 
                             $reachedTarget += $hourlyCount;
