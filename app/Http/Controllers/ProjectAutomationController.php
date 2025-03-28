@@ -3935,23 +3935,25 @@ public function MissoulaBoneANDJointSurgeryCenterLLCModmedAR(Request $request)
                 ]);
                     return response()->json(['message' => 'Record Inserted Successfully']);
         } else {
-            $duplicateRecord  =  MbjsclMbjModmed::where($attributes)->where('chart_status',"CE_Assigned")->first();
-            if ($duplicateRecord) {
-                $duplicateRecord->update([
-                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
-                    'primary_provider' => isset($request->primary_provider) && $request->primary_provider != "NULL" ? $request->primary_provider : NULL, 
-                    'primary_provider_npi' => isset($request->primary_provider_npi) && $request->primary_provider_npi != "NULL" ? $request->primary_provider_npi : NULL,                      
-                    'responsible_party' => isset($request->responsible_party) && $request->responsible_party != "NULL" ? $request->responsible_party : NULL,  
-                    'bill_id' => isset($request->bill_id) && $request->bill_id != "NULL" ? $request->bill_id : NULL,  
-                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
-                    'patient_dob' => isset($request->patient_dob) && $request->patient_dob != "NULL" ? $request->patient_dob : NULL,
-                    'payer_policy_number' => isset($request->payer_policy_number) && $request->payer_policy_number != "NULL" ? $request->payer_policy_number : NULL,
-                    'total_ar_aging' => isset($request->total_ar_aging) && $request->total_ar_aging != "NULL" ? $request->total_ar_aging : NULL,               
-                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
-                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
-                    'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
-                ]);
-                return response()->json(['message' => 'Existing Record Updated Successfully']);
+            $duplicateRecords = MbjsclMbjModmed::where($attributes)->where('chart_status', "CE_Assigned")->get();
+            if ($duplicateRecords->isNotEmpty()) {
+                foreach ($duplicateRecords as $duplicateRecord) {
+                    $duplicateRecord->update([
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
+                        'primary_provider' => isset($request->primary_provider) && $request->primary_provider != "NULL" ? $request->primary_provider : NULL, 
+                        'primary_provider_npi' => isset($request->primary_provider_npi) && $request->primary_provider_npi != "NULL" ? $request->primary_provider_npi : NULL,                      
+                        'responsible_party' => isset($request->responsible_party) && $request->responsible_party != "NULL" ? $request->responsible_party : NULL,  
+                        'bill_id' => isset($request->bill_id) && $request->bill_id != "NULL" ? $request->bill_id : NULL,  
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
+                        'patient_dob' => isset($request->patient_dob) && $request->patient_dob != "NULL" ? $request->patient_dob : NULL,
+                        'payer_policy_number' => isset($request->payer_policy_number) && $request->payer_policy_number != "NULL" ? $request->payer_policy_number : NULL,
+                        'total_ar_aging' => isset($request->total_ar_aging) && $request->total_ar_aging != "NULL" ? $request->total_ar_aging : NULL,               
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                    ]);
+                }
+                return response()->json(['message' => 'Existing Records Updated Successfully']);
             } else {
                   MbjsclMbjModmed::insert([
                     'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
@@ -3967,9 +3969,10 @@ public function MissoulaBoneANDJointSurgeryCenterLLCModmedAR(Request $request)
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
                     'chart_status' => "CE_Assigned",
-                     ]);
-                     return response()->json(['message' => 'Existing Record reinserted Successfully']);
+                ]);
+                return response()->json(['message' => 'Existing Record reinserted Successfully']);
             }
+            
            
         }
     } catch (\Exception $e) {
