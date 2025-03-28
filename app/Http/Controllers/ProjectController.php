@@ -379,7 +379,7 @@ class ProjectController extends Controller
             if (isset($toMailId) && !empty($toMailId)) {
                 // Mail::to($toMailId)->cc($ccMailId)->send(new ProcodeProjectFile($mailHeader, $fileStatus));//stopped file not there mail for exceeding mails check
             }
-            Log::info('ProjectFileNotThere executed successfully.');
+           // Log::info('ProjectFileNotThere executed successfully.');
             return response()->json([
                 "message" => "file is not there"
             ]);
@@ -473,7 +473,7 @@ class ProjectController extends Controller
                     //Mail::to($toMailId)->cc($ccMailId)->send(new ProcodeProjectError($mailHeader, $fileStatus, $error_description));//stopped error description mail for exceeding mails check
                 }
             
-            Log::info('Project Error Mail Send Successfully.');
+            //Log::info('Project Error Mail Send Successfully.');
            //Log::info('Project Error Details: ' . print_r($project_information, true));
             }
         }
@@ -619,7 +619,7 @@ class ProjectController extends Controller
                     'end' => $slotEnd,
                     'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $slotEnd->format('m/d/Y h:i A'),
                 ];
-                Log::info("Time slot added: {$slotStart} to {$slotEnd}");
+               // Log::info("Time slot added: {$slotStart} to {$slotEnd}");
                 $slotStart = $slotEnd;
             }
 
@@ -1653,7 +1653,7 @@ class ProjectController extends Controller
                     'end' => $slotEnd,
                     'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $slotEnd->format('m/d/Y h:i A'),
                 ];
-                Log::info("Time slot added: {$slotStart} to {$slotEnd}");
+                //Log::info("Time slot added: {$slotStart} to {$slotEnd}");
                 $slotStart = $slotEnd;
             }
             $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
@@ -2012,7 +2012,7 @@ class ProjectController extends Controller
                         'end' => $slotEnd,
                         'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $slotEnd->format('m/d/Y h:i A'),
                     ];
-                    Log::info("Time slot added: {$slotStart} to {$slotEnd}");
+                    //Log::info("Time slot added: {$slotStart} to {$slotEnd}");
                     $slotStart = $slotEnd;
                 }
                 $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
