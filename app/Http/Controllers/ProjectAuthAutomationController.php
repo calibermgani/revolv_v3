@@ -1101,19 +1101,7 @@ class ProjectAuthAutomationController extends Controller
     {
         try {
             $attributes = [
-                 'visitid' => isset($request->visitid) && $request->visitid != "NULL" ? $request->visitid : NULL,
-                 'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
-                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                 'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
-                 'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL,
-                 'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
-                 '1_to_30' => isset($request->onetothirty) && $request->onetothirty != "NULL" ? $request->onetothirty : NULL,
-                 '31_to_60' => isset($request->thirtytosixty) && $request->thirtytosixty != "NULL" ? $request->thirtytosixty : NULL,
-                 '61_to_90' => isset($request->sixtytoninty) && $request->sixtytoninty != "NULL" ? $request->sixtytoninty : NULL,
-                 'greater_than_90' => isset($request->greaterthanninty) && $request->greaterthanninty != "NULL" ? $request->greaterthanninty : NULL,
-                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
-                 'value_bucket' => isset($request->value_bucket) && $request->value_bucket != "NULL" ? $request->value_bucket : NULL,
-                 'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->date_touched : NULL
+                 'visitid' => isset($request->visitid) && $request->visitid != "NULL" ? $request->visitid : NULL
              ];         
 
             $duplicateRecordExisting  =  RlmgAr::where($attributes)->exists();
