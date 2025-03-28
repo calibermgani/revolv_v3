@@ -1179,7 +1179,7 @@ class ProjectAuthAutomationController extends Controller
             $e->getMessage();
         }
     }
-    public function rossLegacyMedicalGroupArDuplicates(Request $request)
+    public function rossLegacyMedicalGroupArArDuplicates(Request $request)
     {
         try {
                 RlmgArDuplicates::insert([
