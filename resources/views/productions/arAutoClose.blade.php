@@ -228,7 +228,7 @@
                                 $decodedClientName = App\Http\Helper\Admin\Helpers::projectName($data->project_id)
                                     ->project_name;
                                 $decodedsubProjectName =
-                                    $data->sub_project_i == null
+                                    $data->sub_project_id == null
                                         ? 'project'
                                         : App\Http\Helper\Admin\Helpers::subProjectName(
                                             $data->project_id,

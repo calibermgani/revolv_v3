@@ -28,6 +28,8 @@ use App\Models\LastsChargeEntry;
 use App\Models\LastsChargeEntryDuplicates;
 use App\Models\MosiAr;
 use App\Models\MosiArDuplicates;
+use App\Models\RlmgAr;
+use App\Models\RlmgArDuplicates;
 class ProjectAuthAutomationController extends Controller
 {
     public function aopsPreAuthVerification(Request $request)
@@ -1084,6 +1086,128 @@ class ProjectAuthAutomationController extends Controller
                     'charge_amount' => isset($request->charge_amount) && $request->charge_amount != "NULL" ? $request->charge_amount : NULL,
                     'primary_claim_id' => isset($request->primary_claim_id) && $request->primary_claim_id != "NULL" ? $request->primary_claim_id : NULL,
                     'secondary_claim_id' => isset($request->secondary_claim_id) && $request->secondary_claim_id != "NULL" ? $request->secondary_claim_id : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+    public function rossLegacyMedicalGroupAr(Request $request)
+    {
+        try {
+            $attributes = [
+                 'visitid' => isset($request->visitid) && $request->visitid != "NULL" ? $request->visitid : NULL,
+                 'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                 'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                 'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL,
+                 'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
+                 '1_to_30' => isset($request->onetothirty) && $request->onetothirty != "NULL" ? $request->onetothirty : NULL,
+                 '31_to_60' => isset($request->thirtytosixty) && $request->thirtytosixty != "NULL" ? $request->thirtytosixty : NULL,
+                 '61_to_90' => isset($request->sixtytoninty) && $request->sixtytoninty != "NULL" ? $request->sixtytoninty : NULL,
+                 'greater_than_90' => isset($request->greaterthanninty) && $request->greaterthanninty != "NULL" ? $request->greaterthanninty : NULL,
+                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                 'value_bucket' => isset($request->value_bucket) && $request->value_bucket != "NULL" ? $request->value_bucket : NULL,
+                 'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->date_touched : NULL
+             ];         
+
+            $duplicateRecordExisting  =  RlmgAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                    RlmgAr::insert([
+                        'visitid' => isset($request->visitid) && $request->visitid != "NULL" ? $request->visitid : NULL,
+                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                        'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL,
+                        'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
+                        '1_to_30' => isset($request->onetothirty) && $request->onetothirty != "NULL" ? $request->onetothirty : NULL,
+                        '31_to_60' => isset($request->thirtytosixty) && $request->thirtytosixty != "NULL" ? $request->thirtytosixty : NULL,
+                        '61_to_90' => isset($request->sixtytoninty) && $request->sixtytoninty != "NULL" ? $request->sixtytoninty : NULL,
+                        'greater_than_90' => isset($request->greaterthanninty) && $request->greaterthanninty != "NULL" ? $request->greaterthanninty : NULL,
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                        'value_bucket' => isset($request->value_bucket) && $request->value_bucket != "NULL" ? $request->value_bucket : NULL,
+                        'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->date_touched : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords  =  RlmgAr::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'visitid' => isset($request->visitid) && $request->visitid != "NULL" ? $request->visitid : NULL,
+                            'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                            'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL,
+                            'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
+                            '1_to_30' => isset($request->onetothirty) && $request->onetothirty != "NULL" ? $request->onetothirty : NULL,
+                            '31_to_60' => isset($request->thirtytosixty) && $request->thirtytosixty != "NULL" ? $request->thirtytosixty : NULL,
+                            '61_to_90' => isset($request->sixtytoninty) && $request->sixtytoninty != "NULL" ? $request->sixtytoninty : NULL,
+                            'greater_than_90' => isset($request->greaterthanninty) && $request->greaterthanninty != "NULL" ? $request->greaterthanninty : NULL,
+                            'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                            'value_bucket' => isset($request->value_bucket) && $request->value_bucket != "NULL" ? $request->value_bucket : NULL,
+                            'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->date_touched : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                     RlmgAr::insert([
+                        'visitid' => isset($request->visitid) && $request->visitid != "NULL" ? $request->visitid : NULL,
+                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                        'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL,
+                        'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
+                        '1_to_30' => isset($request->onetothirty) && $request->onetothirty != "NULL" ? $request->onetothirty : NULL,
+                        '31_to_60' => isset($request->thirtytosixty) && $request->thirtytosixty != "NULL" ? $request->thirtytosixty : NULL,
+                        '61_to_90' => isset($request->sixtytoninty) && $request->sixtytoninty != "NULL" ? $request->sixtytoninty : NULL,
+                        'greater_than_90' => isset($request->greaterthanninty) && $request->greaterthanninty != "NULL" ? $request->greaterthanninty : NULL,
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                        'value_bucket' => isset($request->value_bucket) && $request->value_bucket != "NULL" ? $request->value_bucket : NULL,
+                        'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->date_touched : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record reinserted Successfully']);
+                }
+                
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function rossLegacyMedicalGroupArDuplicates(Request $request)
+    {
+        try {
+                RlmgArDuplicates::insert([
+                    'visitid' => isset($request->visitid) && $request->visitid != "NULL" ? $request->visitid : NULL,
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                    'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL,
+                    'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
+                    '1_to_30' => isset($request->onetothirty) && $request->onetothirty != "NULL" ? $request->onetothirty : NULL,
+                    '31_to_60' => isset($request->thirtytosixty) && $request->thirtytosixty != "NULL" ? $request->thirtytosixty : NULL,
+                    '61_to_90' => isset($request->sixtytoninty) && $request->sixtytoninty != "NULL" ? $request->sixtytoninty : NULL,
+                    'greater_than_90' => isset($request->greaterthanninty) && $request->greaterthanninty != "NULL" ? $request->greaterthanninty : NULL,
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                    'value_bucket' => isset($request->value_bucket) && $request->value_bucket != "NULL" ? $request->value_bucket : NULL,
+                    'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->date_touched : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
