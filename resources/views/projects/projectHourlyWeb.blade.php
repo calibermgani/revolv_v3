@@ -89,7 +89,6 @@
 
                             @if (isset($mailBody) && count($mailBody) > 0)
                             @php
-                            dd($projectIds,$subProjectIds);
                                $prjDetailsList = App\Http\Helper\Admin\Helpers::getProjectInformationForHourlyWeb($projectIds,$subProjectIds);                     
                             @endphp
                                 @foreach ($mailBody as $dKey => $data)
