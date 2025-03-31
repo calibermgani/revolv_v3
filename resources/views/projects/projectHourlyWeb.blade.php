@@ -118,10 +118,10 @@
                                         $qaReasons[] = '--'; 
                                         $qaReasonString = '--';
                                     }
-                                      App\Jobs\GetProjSubPrjJob::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
-                                      $prjTotalDetailsCacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'totalDetails' ;
-                                      $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0);  //dd($prjBillableFTE);  
-                                   //   $prjBillableFTE = $prjDetailsList[$dKey];
+                                    //   App\Jobs\GetProjSubPrjJob::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
+                                    //   $prjTotalDetailsCacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'totalDetails' ;
+                                    //   $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0);  dd($prjBillableFTE);  
+                                      $prjBillableFTE = $prjDetailsList[$dKey];
                                       if (!is_array($prjBillableFTE)) {
                                             $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
                                         }                     
