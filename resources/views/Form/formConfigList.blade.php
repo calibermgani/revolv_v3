@@ -1,6 +1,6 @@
 @extends('layouts.app3')
 @section('content')
-    <div class="card card-custom mb-5 custom-card">
+    <div class="card card-custom mb-5 custom-card" id="formConfigDiv">
         <div class="card-body pb-4 mt-2">
             <div class="mb-0">
                 <div>
@@ -18,7 +18,7 @@
                     <div 
                         class="d-flex flex-row justify-content-between align-items-center float-right ml-2">
 
-                        <a class="btn btn-white-black font-weight-bolder btn-sm mr-1"
+                        <a id="navigate-btn" class="btn btn-white-black font-weight-bolder btn-sm mr-1"
                             href="{{ url('form_creation') }}?parent={{ request()->parent }}&child={{ request()->child }}"><i
                                 class="fa fa-plus" style="font-size:13px;color:#ffffff"></i>&nbsp;&nbsp;Add</a>
 
@@ -157,6 +157,15 @@
                         });
                      console.log('project delete',projectId,subProjectId);
                 });
+                $('#navigate-btn').on('click', function () {
+                    KTApp.block('#formConfigDiv', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Fetching...',
+                    });
+                });
+                
         });
     </script>
 @endpush
