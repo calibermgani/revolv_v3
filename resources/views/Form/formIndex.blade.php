@@ -22,7 +22,7 @@
         'enctype' => 'multipart/form-data',
     ]) !!}
     @csrf
-    <div class="card card-custom mb-5 custom-card">
+    <div class="card card-custom mb-5 custom-card" id="formConfigAddDiv">
         <div class="card-body pt-0 pb-2 pl-0 mr-2">
             <div class="row">
                 <div class="col-6 mt-4">
@@ -314,6 +314,12 @@
 
             $(document).on('change', '#project_list', function() {
                 var project_id = $(this).val();
+                KTApp.block('#formConfigAddDiv', {
+                    overlayColor: '#000000',
+                    state: 'danger',
+                    opacity: 0.1,
+                    message: 'Fetching...',
+                });
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -338,6 +344,7 @@
                         });
                         $("#sub_project_id").html(sla_options);
                         $('select[name="sub_project_id"]').html(sla_options);
+                        KTApp.unblock('#formConfigAddDiv');
                     },
                     error: function(jqXHR, exception) {}
                 });
@@ -473,6 +480,12 @@
 
                         }).then(function(result) {
                             if (result.value == true) {
+                                KTApp.block('#formConfigAddDiv', {
+                                    overlayColor: '#000000',
+                                    state: 'danger',
+                                    opacity: 0.1,
+                                    message: 'Fetching...',
+                                });
                                 // If the user clicks "OK" in the SweetAlert dialog, submit the form
                                 document.querySelector('#formConfiguration').submit();
 

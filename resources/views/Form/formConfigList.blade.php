@@ -124,6 +124,12 @@
                             }
                         }).then(function(result) {
                             if (result.value == true) {
+                                KTApp.block('#formConfigDiv', {
+                                    overlayColor: '#000000',
+                                    state: 'danger',
+                                    opacity: 0.1,
+                                    message: 'Fetching...',
+                                });
                                 $.ajaxSetup({
                                     headers: {
                                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
@@ -146,6 +152,7 @@
                                             setTimeout(function() {
                                                     location.reload();
                                             }, 2000);
+                                            KTApp.unblock('#formConfigDiv');
                                         } else {
                                             js_notification('error', 'We can not delete the project because it contains data.');
                                         }
