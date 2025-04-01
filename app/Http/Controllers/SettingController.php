@@ -89,13 +89,16 @@ class SettingController extends Controller
               if($totalQAPercentage <=  100) { 
                    QualitySampling::create($data);
               } else {
-                $allowPercentage = 100 - $samplingPercentage;
-                // return redirect('/sampling?parent=' . request('parent') . '&child=' . request('child'))
-                // ->with('error', 'Allowed percentage is up to '.$allowPercentage.', but you entered '.$data['qa_percentage'].'.');
-                //return back()->withErrors(['error' => 'Allowed percentage is up to ' . $allowPercentage . ', but you entered ' . $data['qa_percentage'] . '.']);
+                if($samplingPercentage < 100) {
+                    $allowPercentage = 100 - $samplingPercentage;
+                    // return redirect('/sampling?parent=' . request('parent') . '&child=' . request('child'))
+                    // ->with('error', 'Allowed percentage is up to '.$allowPercentage.', but you entered '.$data['qa_percentage'].'.');
+                    //return back()->withErrors(['error' => 'Allowed percentage is up to ' . $allowPercentage . ', but you entered ' . $data['qa_percentage'] . '.']);
                      session()->flash('error', 'Allowed percentage is up to ' . $allowPercentage . ', but you entered ' . $data['qa_percentage'] . '.');
+                } else {
+                    session()->flash('error', 'This QA already has' . $samplingPercentage . 'percentage.');
+                }
                 return back();
-            
               }
                 return redirect('/sampling' . '?parent=' . request()->parent . '&child=' . request()->child);
             } catch (\Exception $e) {
