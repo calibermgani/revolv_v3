@@ -129,7 +129,12 @@ class SettingController extends Controller
                 
                 }
                 $existingRecord = QualitySampling::where('id', $data["record_id"])->first();
-                $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('qa_emp_id',$data['qa_emp_id'])->sum('qa_percentage');
+                if($data['coder_emp_id'] == null) {
+                    $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('qa_emp_id',$data['qa_emp_id'])->sum('qa_percentage');
+                } else {
+                    $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('coder_emp_id',$data['coder_emp_id'])->where('qa_emp_id',$data['qa_emp_id'])->sum('qa_percentage');
+                }
+                //$samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('qa_emp_id',$data['qa_emp_id'])->sum('qa_percentage');
                 $recordPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('qa_emp_id',$data['qa_emp_id'])->where('id', $data["record_id"])->sum('qa_percentage');
                 $totalQAPercentage = ($samplingPercentage-$recordPercentage) + $data['qa_percentage'];
                if($totalQAPercentage <=  100) { 
