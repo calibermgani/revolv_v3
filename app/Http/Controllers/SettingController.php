@@ -90,7 +90,7 @@ class SettingController extends Controller
                   $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('coder_emp_id',$data['coder_emp_id'])->where('qa_emp_id',$data['qa_emp_id'])->sum('qa_percentage');
               }
                $totalQAPercentage = $samplingPercentage + $data['qa_percentage'];
-              if($totalQAPercentage <=  100) { dd($totalQAPercentage);
+              if($totalQAPercentage <=  100) { dd($totalQAPercentage,$samplingPercentage,$data);
                    QualitySampling::create($data);
               } else {
                 if($samplingPercentage < 100) {
