@@ -96,7 +96,7 @@ class SettingController extends Controller
                     //return back()->withErrors(['error' => 'Allowed percentage is up to ' . $allowPercentage . ', but you entered ' . $data['qa_percentage'] . '.']);
                      session()->flash('error', 'Allowed percentage is up to ' . $allowPercentage . ', but you entered ' . $data['qa_percentage'] . '.');
                 } else {
-                    session()->flash('error', 'This QA already has' . $samplingPercentage . 'percentage.');
+                    session()->flash('error', 'This QA already has ' . $samplingPercentage . ' percentage.');
                 }
                 return back();
               }
