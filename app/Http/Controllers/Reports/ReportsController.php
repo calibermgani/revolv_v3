@@ -431,7 +431,7 @@ class ReportsController extends Controller
                     
                 $body_info = '<table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter" id="report_list"><thead><tr>';
                 $body_info .= '<th>Date</th>';
-                $body_info .= '<th>Project Name</th>';
+        //        $body_info .= '<th>Project Name</th>';
                 $body_info .= '<th>Sub Project Name</th>';
                 $body_info .= '<th>Description</th>';
                 $body_info .= '<th>Status Code</th>';
@@ -439,7 +439,7 @@ class ReportsController extends Controller
 
                 foreach ($error_data as $data) {
                     $decodedClientName = Helpers::projectName($data->project_id)->aims_project_name;
-                     $decodedsubProjectName = $data->sub_project_id == NULL ? '--' : (Helpers::subProjectName($data->project_id, $data->sub_project_id) != null ?Helpers::subProjectName($data->project_id, $data->sub_project_id)->sub_project_name : null);
+                //     $decodedsubProjectName = $data->sub_project_id == NULL ? '--' : (Helpers::subProjectName($data->project_id, $data->sub_project_id) != null ?Helpers::subProjectName($data->project_id, $data->sub_project_id)->sub_project_name : null);
                     // $decodedsubProjectName = $request->sub_project_id == null ? 'project' :($request->project_id != null ? (Helpers::subProjectName($request->project_id, $request->sub_project_id) != null ?Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name : null) : null);
                     $errorStatusCode = $data->error_status_code != NULL ? $data->error_status_code : '--';
                     $errorDate =  $data->error_date != NULL ? date('m/d/Y g:i A', strtotime($data->error_date)) : '--';
@@ -448,7 +448,7 @@ class ReportsController extends Controller
                     $body_info .= '<tr>';
                     $body_info .= '<td>' . $errorDate . '</td>';
                     $body_info .= '<td>' . $decodedClientName . '</td>';
-                    $body_info .= '<td>' . $decodedsubProjectName . '</td>';
+                   // $body_info .= '<td>' . $decodedsubProjectName . '</td>';
                     $body_info .= '<td>' . $errorDescription . '</td>';
                     $body_info .= '<td>' . $errorStatusCode . '</td>';
                     $body_info .= '</tr>';
