@@ -427,7 +427,7 @@ class ReportsController extends Controller
                         }
                     })
                     ->orderBy('id', 'desc')
-                    ->get();
+                    ->get();dd($error_data);
                     
                 $body_info = '<table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter" id="report_list"><thead><tr>';
                 $body_info .= '<th>Date</th>';
