@@ -451,8 +451,16 @@
 
                         });
                     }
-                     if(inputTypeValue == 0) {
-                         document.querySelector('#qa_sampling_form').submit();
+                        if(inputTypeValue == 0) {
+                            KTApp.block('#qa_sampling_form', {
+                            overlayColor: '#000000',
+                            state: 'danger',
+                            opacity: 0.1,
+                            message: 'Fetching...',
+                        });
+                          document.querySelector('#qa_sampling_form').submit();
+                         KTApp.unblock('#qa_sampling_form');
+
                      }
                 });
                 $('#qa_sampling_update').submit(function(e) {
