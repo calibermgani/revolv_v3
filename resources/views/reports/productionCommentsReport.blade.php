@@ -140,120 +140,161 @@
                             }
                         @endphp
                         @if (isset($productionReasons) && !empty($productionReasons))
-                            @foreach ($productionReasons as $data)
-                                @php
-                          
-                                    if ($data['project_id'] != null) {
-                                        $projectName = App\Models\project::where(
-                                            'project_id',
-                                            $data['project_id'],
-                                        )->first();
-                                    } else {
-                                        $projectName = '--';
-                                    }
-                                    if ($data['sub_project_id'] != null && $data['project_id'] != null) {
-                                        $subProjectName = App\Models\subproject::where('project_id', $data['project_id'])
-                                            ->where('sub_project_id', $data['sub_project_id'])
-                                            ->first();
-                                    } else {
-                                        $subProjectName = '--';
-                                    }
-                                    if ($data['sub_project_id'] != null && $data['project_id'] != null) {
-                                        $subProjectName = App\Models\subproject::where('project_id', $data['project_id'])
-                                            ->where('sub_project_id', $data['sub_project_id'])
-                                            ->first();
-                                    } else {
-                                        $subProjectName = '--';
-                                    }
-                                    if(isset($productionMgrs)&& !empty($productionMgrs)) {
-                                    $reasonList = App\Models\ProjectReason::with([
-                                        'project_ar_reason_type',
-                                        'project_qa_reason_type',
-                                    ])
-                                        ->where('project_id', $data['project_id'])
-                                        ->where('sub_project_id', $data['sub_project_id'])
-                                        ->where('manager_id', $data['manager_id'])
-                                        ->whereDate('created_at', $data['created_date']);
-                                        if($startTime != "" && $endTime != ""){
-                                            $reasonList = $reasonList->whereBetween('updated_at', [$startTime, $endTime])
-                                            ->get();
+                            @if($remarkStatusVal !== "without_remarks")
+                                @foreach ($productionReasons as $data)
+                                    @php
+                            
+                                        if ($data['project_id'] != null) {
+                                            $projectName = App\Models\project::where(
+                                                'project_id',
+                                                $data['project_id'],
+                                            )->first();
                                         } else {
-                                            $reasonList = $reasonList->get();
+                                            $projectName = '--';
                                         }
+                                        if ($data['sub_project_id'] != null && $data['project_id'] != null) {
+                                            $subProjectName = App\Models\subproject::where('project_id', $data['project_id'])
+                                                ->where('sub_project_id', $data['sub_project_id'])
+                                                ->first();
+                                        } else {
+                                            $subProjectName = '--';
+                                        }
+                                        if ($data['sub_project_id'] != null && $data['project_id'] != null) {
+                                            $subProjectName = App\Models\subproject::where('project_id', $data['project_id'])
+                                                ->where('sub_project_id', $data['sub_project_id'])
+                                                ->first();
+                                        } else {
+                                            $subProjectName = '--';
+                                        }
+                                        if(isset($productionMgrs)&& !empty($productionMgrs)) {
+                                        $reasonList = App\Models\ProjectReason::with([
+                                            'project_ar_reason_type',
+                                            'project_qa_reason_type',
+                                        ])
+                                            ->where('project_id', $data['project_id'])
+                                            ->where('sub_project_id', $data['sub_project_id'])
+                                            ->where('manager_id', $data['manager_id'])
+                                            ->whereDate('created_at', $data['created_date']);
+                                            if($startTime != "" && $endTime != ""){
+                                                $reasonList = $reasonList->whereBetween('updated_at', [$startTime, $endTime])
+                                                ->get();
+                                            } else {
+                                                $reasonList = $reasonList->get();
+                                            }
 
-                                    $arReasons = $qaReasons = [];
-                                    if (count($reasonList) > 0) {
-                                        foreach ($reasonList as $reasonData) {
-                                            $arReason =
-                                                isset($reasonData) && isset($reasonData->project_ar_reason_type)
-                                                    ? $reasonData->project_ar_reason_type->reason_type
-                                                    : '--';
-                                            if ($reasonData->ar_others_comments != null) {
-                                                $arReasons[] =
-                                                    $arReason .
-                                                    ' - ' .
-                                                    $reasonData->ar_others_comments .
-                                                    '(' .
-                                                    date('m/d/Y h:i A', strtotime($reasonData->updated_at)) .
-                                                    ')';
-                                            } else {
-                                                $arReasons[] =
-                                                    $arReason != '--'
-                                                        ? $arReason .
-                                                            '(' .
-                                                            date('m/d/Y h:i A', strtotime($reasonData->updated_at)) .
-                                                            ')'
-                                                        : '';
+                                        $arReasons = $qaReasons = [];
+                                        if (count($reasonList) > 0) {
+                                            foreach ($reasonList as $reasonData) {
+                                                $arReason =
+                                                    isset($reasonData) && isset($reasonData->project_ar_reason_type)
+                                                        ? $reasonData->project_ar_reason_type->reason_type
+                                                        : '--';
+                                                if ($reasonData->ar_others_comments != null) {
+                                                    $arReasons[] =
+                                                        $arReason .
+                                                        ' - ' .
+                                                        $reasonData->ar_others_comments .
+                                                        '(' .
+                                                        date('m/d/Y h:i A', strtotime($reasonData->updated_at)) .
+                                                        ')';
+                                                } else {
+                                                    $arReasons[] =
+                                                        $arReason != '--'
+                                                            ? $arReason .
+                                                                '(' .
+                                                                date('m/d/Y h:i A', strtotime($reasonData->updated_at)) .
+                                                                ')'
+                                                            : '';
+                                                }
+                                                $qaReason =
+                                                    isset($reasonData) && isset($reasonData->project_qa_reason_type)
+                                                        ? $reasonData->project_qa_reason_type->reason_type
+                                                        : '--';
+                                                if ($reasonData->qa_others_comments != null) {
+                                                    $qaReasons[] =
+                                                        $qaReason .
+                                                        ' - ' .
+                                                        $reasonData->qa_others_comments .
+                                                        '(' .
+                                                        date('m/d/Y h:i A', strtotime($reasonData->updated_at)) .
+                                                        ')';
+                                                } else {
+                                                    $qaReasons[] =
+                                                        $qaReason != '--'
+                                                            ? $qaReason .
+                                                                '(' .
+                                                                date('m/d/Y h:i A', strtotime($reasonData->updated_at)) .
+                                                                ')'
+                                                            : '';
+                                                }
                                             }
-                                            $qaReason =
-                                                isset($reasonData) && isset($reasonData->project_qa_reason_type)
-                                                    ? $reasonData->project_qa_reason_type->reason_type
-                                                    : '--';
-                                            if ($reasonData->qa_others_comments != null) {
-                                                $qaReasons[] =
-                                                    $qaReason .
-                                                    ' - ' .
-                                                    $reasonData->qa_others_comments .
-                                                    '(' .
-                                                    date('m/d/Y h:i A', strtotime($reasonData->updated_at)) .
-                                                    ')';
+                                            $arReasonString = implode(', ', array_filter($arReasons));
+                                            $qaReasonString = implode(', ', array_filter($qaReasons));
+                                        } else {
+                                            $arReasons[] = '--';
+                                            $arReasonString = '--';
+                                            $qaReasons[] = '--';
+                                            $qaReasonString = '--';
+                                        };
+                                    }else {
+                                            $arReasons[] = '--';
+                                            $arReasonString = '--';
+                                            $qaReasons[] = '--';
+                                            $qaReasonString = '--';
+                                    }
+                                    @endphp
+                                    <tr>
+                                        <td>{{ $projectName ? $projectName->aims_project_name : '--' }}</td>
+                                        <td>  {{ $subProjectName && $subProjectName != '--' ? $subProjectName->sub_project_name  :'--' }}</td>
+                                        <td>{{$productionManagers !== '--' ? $productionManagers[$data->manager_id] : $data['scope_manager']}}</td>
+                                        {{-- <td>{{ App\Http\Helper\Admin\Helpers::getUserNameById($data->manager_id) }}</td> --}}
+                                        <td>{{ is_string($arReasonString) ? trim($arReasonString, ',') : implode(', ', (array) $arReasonString) }}
+                                        </td>
+                                        <td>{{ is_string($qaReasonString) ? trim($qaReasonString, ',') : implode(', ', (array) $qaReasonString) }}
+                                        </td>
+                                        <td>{{$data && isset($data['created_date']) ? date('m/d/Y',strtotime($data['created_date'])) : '--'}}</td>
+                                    </tr>
+                                @endforeach
+                            @else 
+                                @foreach ($productionReasons as $reasonData)
+                                    @foreach ($reasonData as $data)
+                                        @php
+                                
+                                            if ($data['project_id'] != null) {
+                                                $projectName = App\Models\project::where(
+                                                    'project_id',
+                                                    $data['project_id'],
+                                                )->first();
                                             } else {
-                                                $qaReasons[] =
-                                                    $qaReason != '--'
-                                                        ? $qaReason .
-                                                            '(' .
-                                                            date('m/d/Y h:i A', strtotime($reasonData->updated_at)) .
-                                                            ')'
-                                                        : '';
+                                                $projectName = '--';
                                             }
-                                        }
-                                        $arReasonString = implode(', ', array_filter($arReasons));
-                                        $qaReasonString = implode(', ', array_filter($qaReasons));
-                                    } else {
-                                        $arReasons[] = '--';
-                                        $arReasonString = '--';
-                                        $qaReasons[] = '--';
-                                        $qaReasonString = '--';
-                                    };
-                                }else {
-                                    $arReasons[] = '--';
-                                        $arReasonString = '--';
-                                        $qaReasons[] = '--';
-                                        $qaReasonString = '--';
-                                }
-                                @endphp
-                                <tr>
-                                    <td>{{ $projectName ? $projectName->aims_project_name : '--' }}</td>
-                                    <td>  {{ $subProjectName && $subProjectName != '--' ? $subProjectName->sub_project_name  :'--' }}</td>
-                                    <td>{{$productionManagers !== '--' ? $productionManagers[$data->manager_id] : $data['scope_manager']}}</td>
-                                    {{-- <td>{{ App\Http\Helper\Admin\Helpers::getUserNameById($data->manager_id) }}</td> --}}
-                                    <td>{{ is_string($arReasonString) ? trim($arReasonString, ',') : implode(', ', (array) $arReasonString) }}
-                                    </td>
-                                    <td>{{ is_string($qaReasonString) ? trim($qaReasonString, ',') : implode(', ', (array) $qaReasonString) }}
-                                    </td>
-                                    <td>{{$data && isset($data['created_date']) ? date('m/d/Y',strtotime($data['created_date'])) : '--'}}</td>
-                                </tr>
-                            @endforeach
+                                            if ($data['sub_project_id'] != null && $data['project_id'] != null) {
+                                                $subProjectName = App\Models\subproject::where('project_id', $data['project_id'])
+                                                    ->where('sub_project_id', $data['sub_project_id'])
+                                                    ->first();
+                                            } else {
+                                                $subProjectName = '--';
+                                            }
+                                            if ($data['sub_project_id'] != null && $data['project_id'] != null) {
+                                                $subProjectName = App\Models\subproject::where('project_id', $data['project_id'])
+                                                    ->where('sub_project_id', $data['sub_project_id'])
+                                                    ->first();
+                                            } else {
+                                                $subProjectName = '--';
+                                            }
+                                            
+                                        @endphp
+                                        <tr>
+                                            <td>{{ $projectName ? $projectName->aims_project_name : '--' }}</td>
+                                            <td>  {{ $subProjectName && $subProjectName != '--' ? $subProjectName->sub_project_name  :'--' }}</td>
+                                            <td>{{$data['scope_manager']}}</td>
+                                            <td>--</td>
+                                            <td>--</td>
+                                            <td>{{$data && isset($data['created_date']) ? date('m/d/Y',strtotime($data['created_date'])) : '--'}}</td>
+                                        </tr>
+                                    @endforeach
+                                @endforeach
+                            @endif
                         @endif
                     </tbody>
                 </table>
@@ -396,6 +437,12 @@
                     });
                 });
                 $(document).on('click', '#clear_submit', function(e) {
+                    KTApp.block('#page-loader', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Generating Report...',
+                    });
                     project_id = 0;
                     sub_project_id = 0;
                     work_date = 0;

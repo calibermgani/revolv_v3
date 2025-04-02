@@ -784,31 +784,232 @@ class ReportsController extends Controller
 
     public function productionMgrUserReport(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
+            
+            try {         
+                if ($request->work_date != null || $request->project_id!= null || $request->sub_project_id != null || $request->remarks_status != null || $request->reason_type != null || $request->manager_name != null ) {  
+                  $formProjectIds = formConfiguration::groupBy('project_id', 'sub_project_id')->pluck('project_id')->toArray();
+                  $formSubProjectIds = formConfiguration::groupBy('project_id', 'sub_project_id')->pluck('sub_project_id')->toArray();                 
+                  $unique_client_ids = array_unique($formProjectIds);
+                   $grouped_sub_prj_ids = [];
+                    foreach ($unique_client_ids as $client_id) {
+                            $grouped_sub_prj_ids[] = array_values(array_filter($formSubProjectIds, function($sub_prj_id, $key) use ($formProjectIds, $client_id) {
+                                return $formProjectIds[$key] == $client_id;
+                            }, ARRAY_FILTER_USE_BOTH));
+                    }
+                    $clientIds = array_values($unique_client_ids);
+                    $subPrjIds = $grouped_sub_prj_ids;                    
+                    $list = Helpers::getProjectSubPrjManagerList($clientIds,$subPrjIds);            
+                    if($request->project_id) {
+                        $projectId = $request->project_id;
+                    } else {
+                        $projectId = null;
+                    }
+                    if($request->sub_project_id) {
+                        $subProjectId = $request->sub_project_id;
+                    }  else {
+                        $subProjectId = null;
+                    }
+                    if ($request->work_date) {
+                        $workDate = $request->work_date;
+                    } else {
+                        $workDate = '';
+                    }
+                    if ($request->remarks_status) {
+                        $remarkStatusVal = $request->remarks_status;
+                    } else {
+                        $remarkStatusVal = '';
+                    }
+                    if ($request->reason_type) {
+                        $reasonTypeVal = $request->reason_type;
+                    } else {
+                        $reasonTypeVal = '';
+                    }
+                    if($request->manager_name) {
+                        $managerName = $request->manager_name;
+                    }  else {
+                        $managerName = null;
+                    }
+                    if (isset($request->work_date) && !empty($request->work_date)) {
+                        $work_date = explode(' - ', $request->work_date);
+                        $startTime = date('Y-m-d 17:00:00', strtotime($work_date[0]));
+                        $endTime = date('Y-m-d 09:00:00', strtotime($work_date[1] . ' +1 day'));
+                        $endDate = Carbon::parse($work_date[1]);
+                        $startDate1 = Carbon::parse($work_date[0]);
+                    } else {
+                        $startTime = "";
+                        $endTime = "";
+                        $endDate = "";
+                        $startDate1 = "";
+                        $work_date = "";
+                    }
+                    $allDates = [];                   
+                    $withOutRemarksList = [];
+                    if($remarkStatusVal == "without_remarks" && $work_date != "") {
+                        while ($startDate1->lte($endDate)) {
+                            $allDates[] = $startDate1->toDateString();
+                            $startDate1->addDay();
+                        }
+                        foreach ($allDates as $dateVal) {
+                            $currentDate = Date('Y-m-d 17:00:00', strtotime($dateVal));
+                            $toDate = date('Y-m-d 09:00:00', strtotime($dateVal . ' +1 day'));
+                            $date = Carbon::createFromDate($currentDate);
+                            $worList = [];
+                            if (!$date->isWeekend()) {
+                                foreach ($list as $key => $lData) {
+                                    $prjReasons = ProjectReason::select('project_id','sub_project_id','manager_id',DB::raw("DATE(created_at) as createdDate"))
+                                         ->where('project_id', $lData['project_id'])
+                                        ->where('sub_project_id', $lData['sub_project_id'])
+                                        ->whereBetween('created_at', [$currentDate, $toDate])
+                                        ->whereNull('deleted_at')
+                                        ->first();
+                                        if($prjReasons == null) {
+                                          
+                                           if($projectId != null && $projectId == $lData['project_id'] && $subProjectId == null && $managerName == null) {
+                                           
+                                                $worList[] = [
+                                                            'project_id' => $lData['project_id'],
+                                                            'sub_project_id' => $lData['sub_project_id'],
+                                                            'scope_manager' => $lData['scope_manager'],
+                                                            'created_date' => $dateVal
+                                                        ];
+                                            }else if($projectId != null && $projectId == $lData['project_id'] && $subProjectId != null && $subProjectId == $lData['sub_project_id'] && $managerName == null) {
+                                                 $worList[] = [
+                                                            'project_id' => $lData['project_id'],
+                                                            'sub_project_id' => $lData['sub_project_id'],
+                                                            'scope_manager' => $lData['scope_manager'],
+                                                            'created_date' => $dateVal
+                                                        ];
+                                            }else if($projectId != null && $projectId == $lData['project_id'] && $subProjectId != null && $subProjectId == $lData['sub_project_id'] && $managerName != null && $managerName == $lData['scope_manager_id']) {
+                                                $worList[] = [
+                                                    'project_id' => $lData['project_id'],
+                                                    'sub_project_id' => $lData['sub_project_id'],
+                                                    'scope_manager' => $lData['scope_manager'],
+                                                    'created_date' => $dateVal
+                                                ];
+                                            }else if($managerName != null && $managerName == $lData['scope_manager_id'] && $projectId == null && $subProjectId == null) {
+                                                $worList[] = [
+                                                    'project_id' => $lData['project_id'],
+                                                    'sub_project_id' => $lData['sub_project_id'],
+                                                    'scope_manager' => $lData['scope_manager'],
+                                                    'created_date' => $dateVal
+                                                ];
+                                            } else if($projectId == null && $subProjectId == null  && $managerName == null) {
+                                                $worList[] = [
+                                                    'project_id' => $lData['project_id'],
+                                                    'sub_project_id' => $lData['sub_project_id'],
+                                                    'scope_manager' => $lData['scope_manager'],
+                                                    'created_date' => $dateVal
+                                                ];
+                                            }
+                                        }
+                                }     
+                            }
+                            if (!empty($worList)) {
+                                $withOutRemarksList[$dateVal] = $worList;
+                            }
+                        
+                        }  
+                     } else if($remarkStatusVal == "without_remarks") {
+                        session()->flash('error', 'Could you please select Work Date for Without Remarks');
+                        return back();
+                     }
+                 
+                    $productionReasons = ProjectReason::where(function ($query) use ($startTime, $endTime,$projectId,$subProjectId,$reasonTypeVal,$managerName) {
+                        if($projectId) {
+                            $query->where('project_id', $projectId);
+                        } else {
+                            $query;
+                        }
+                        if($subProjectId) {
+                            $query->where('sub_project_id', $subProjectId);
+                        } else {
+                            $query;
+                        }
+                        if (!empty($startTime) && !empty($endTime)) {
+                            $query->whereBetween('project_reasons.created_at', [$startTime, $endTime]);
+                        }else{
+                            $query;
+                        }
+                        if($reasonTypeVal == 'ar_reason') {
+                            $query->whereNotNull('ar_reason');
+                        } else if($reasonTypeVal == 'qa_reason') {
+                            $query->whereNotNull('qa_reason');
+                        } {
+                            $query;
+                        }
+                        if($managerName) {
+                            $query->where('manager_id', $managerName);
+                        } else {
+                            $query;
+                        }
+                    }) ->groupBy('project_id','sub_project_id','manager_id','created_date')
+                      ->selectRaw('project_id, sub_project_id,manager_id,DATE(created_at) as created_date');
+                      if($remarkStatusVal == "without_remarks") { 
+                        $productionReasons = $withOutRemarksList;   
+                      } else {
+                        $productionReasons = $productionReasons->get();
+                      }
+                      $productionMgrs = ProjectReason::where(function ($query) use ($startTime, $endTime,$projectId,$subProjectId,$reasonTypeVal,$managerName) {
+                        if($projectId) {
+                            $query->where('project_id', $projectId);
+                        } else {
+                            $query;
+                        }
+                        if($subProjectId) {
+                            $query->where('sub_project_id', $subProjectId);
+                        } else {
+                            $query;
+                        }
+                        if (!empty($startTime) && !empty($endTime)) {
+                            $query->whereBetween('project_reasons.created_at', [$startTime, $endTime]);
+                        }else{
+                            $query;
+                        }
+                        if($reasonTypeVal == 'ar_reason') {
+                            $query->whereNotNull('ar_reason');
+                        } else if($reasonTypeVal == 'qa_reason') {
+                            $query->whereNotNull('qa_reason');
+                        } {
+                            $query;
+                        }
+                        if($managerName) {
+                            $query->where('manager_id', $managerName);
+                        } else {
+                            $query;
+                        }
+                    }) ->groupBy('manager_id');
+                    if($remarkStatusVal == "without_remarks") {
+                        $productionMgrs =[];
+                    } else {                     
+                        $productionMgrs = $productionMgrs->pluck('manager_id')->toArray();
+                    }     
+                } else {      
+                    $productionReasons = $productionMgrs = $withOutRemarksList = [];
+                    $workDate = $startTime = $endTime = '';
+                    $projectId = null;
+                    $subProjectId = null;
+                    $remarkStatusVal = $reasonTypeVal = '';
+                    $managerName = null;
+                }
+                return view('reports.productionCommentsReport', compact('productionReasons','projectId','subProjectId','workDate','startTime','endTime','productionMgrs','remarkStatusVal','reasonTypeVal','managerName','withOutRemarksList'));                
+            } catch (\Exception $e) {
+                Log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
+
+    public function productionMgrUserReport1(Request $request) {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
             try {           
                 if ($request->work_date != null || $request->project_id!= null || $request->sub_project_id != null || $request->remarks_status != null || $request->reason_type != null || $request->manager_name != null ) {  
-                    // $formProjectIds = formConfiguration::groupBy('project_id','sub_project_id')->pluck('sub_project_id','project_id')->toArray();
-                    // dd(json_encode($formProjectIds));
                     $formProjectIds = formConfiguration::groupBy('project_id', 'sub_project_id')
                         ->pluck('sub_project_id', 'project_id')
                         ->toArray();
                         $clientIds = array_keys($formProjectIds);
                         $subPrjIds = array_values($formProjectIds);
                         $list = Helpers::getProjectSubPrjManagerList($clientIds,$subPrjIds);
-          
-            // $formattedData = [];
-
-            // foreach ($formProjectIds as $projectId => $subProjectIds) {
-                
-            //     $formattedData[] = [
-            //         "client_id" => $projectId, // Assuming the client_id is static; modify as needed
-            //         "sub_project_id" => array_values((array) $subProjectIds) // Ensure it's an array
-            //     ];
-            // }
-            // $ids= json_encode($formattedData);
-          
-           
-// Output JSON
-
                     if($request->project_id) {
                         $projectId = $request->project_id;
                     } else {
@@ -939,4 +1140,5 @@ class ReportsController extends Controller
             return redirect('/');
         }
     }
+
 }
