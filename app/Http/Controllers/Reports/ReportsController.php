@@ -457,7 +457,7 @@ class ReportsController extends Controller
 
                 $body_info .= '</tbody></table>';
 
-                dd($body_info);
+               
                 return response()->json([
                     'success' => true,
                     'body_info' => $body_info,
