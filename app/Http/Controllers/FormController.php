@@ -60,10 +60,9 @@ class FormController extends Controller
 
     public static function formConfigurationStore(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userInfo'] && Session::get('loginDetails')['userInfo']['user_id'] !=null) {
-           // DB::beginTransaction();
+            DB::beginTransaction();
             try {
-                DB::beginTransaction();
-                $data = $request->all();
+                 $data = $request->all();
                 // $projectName = project::where('id',$data['project_id'])->first();
                 // $subProjectArray = subproject::where('project_id',$data['project_id'])->where('id',$data['sub_project_id'])->first();
                 $projectName = project::where('project_id',$data['project_id'])->first();
@@ -490,9 +489,8 @@ class FormController extends Controller
 
     public static function formConfigurationUpdate(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userInfo'] && Session::get('loginDetails')['userInfo']['user_id'] !=null) {
-      
+            DB::beginTransaction();
             try {
-                DB::beginTransaction();
                 $data = $request->all();
                 // $projectName = project::where('id',$data['project_id_val'])->first();
                 // $subProjectArray = subproject::where('project_id',$data['project_id_val'])->where('id',$data['sub_project_id_val'])->first();
