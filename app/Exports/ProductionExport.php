@@ -51,10 +51,13 @@ class ProductionExport implements FromCollection, WithHeadings
                     $agingCount = '--';
                     $agingRange = '--';
                 }
-
-                if (str_contains($record->{$field}, '-') && strtotime($record->{$field})) {
+                $empId = "CE_emp_id";
+                // if (str_contains($record->{$field}, '-') && strtotime($record->{$field})) {
+                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $record->{$field})) {
                     $exportRow[$headerField] = date('m/d/Y', strtotime($record->{$field}));
-                } else if ($field == 'chart_status' && str_contains($record->{$field}, 'CE_')) {
+                } else if ($field == 'chart_status' && str_contains($record->{$field}, 'CE_') && is_null($record->{$empId})) {
+                    $exportRow[$headerField] = 'Un '.str_replace('CE_', '', $record->{$field});
+                } else if ($field == 'chart_status' && str_contains($record->{$field}, 'CE_') && !is_null($record->{$empId})) {
                     $exportRow[$headerField] = 'AR '.str_replace('CE_', '', $record->{$field});
                 } else if ($field == 'chart_status' && str_contains($record->{$field}, 'QA_')) {
                     $exportRow[$headerField] = 'QA '.str_replace('QA_', '', $record->{$field});
