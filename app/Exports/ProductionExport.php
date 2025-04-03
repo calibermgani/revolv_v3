@@ -51,7 +51,7 @@ class ProductionExport implements FromCollection, WithHeadings
                     $agingCount = '--';
                     $agingRange = '--';
                 }
-                $empId = "CE_emp_id";dd($record->{$empId});
+                $empId = "CE_emp_id";
                 // if (str_contains($record->{$field}, '-') && strtotime($record->{$field})) {
                 if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $record->{$field})) {
                     $exportRow[$headerField] = date('m/d/Y', strtotime($record->{$field}));
