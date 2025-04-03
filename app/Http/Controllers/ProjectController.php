@@ -1784,7 +1784,7 @@ class ProjectController extends Controller
                                 ->where('chart_status', 'CE_Assigned')->count();
                                 $cCount = $modelClass::whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                             // ->where('chart_status', 'CE_Completed')
-                                            ->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                                            ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','AR_non_workable','Revoke','CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
                                             ->count();
                                 $qCount = $modelClass::whereBetween($qaColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                             ->where('chart_status', 'QA_Completed')->count();
@@ -1826,7 +1826,7 @@ class ProjectController extends Controller
                                     'Chats' => $aCount,
                                     'Coder' => $cCount,
                                     'QA' => $qCount,
-                                    'prodcution_ar' => $productionARCount,
+                                    'prodcution_ar' => $productionARCount,//production ar login
                                     'prodcution_qa' => $productionQACount,
                                     'project_id' => $project['id'], // Store project ID
                                 ];
@@ -1893,7 +1893,8 @@ class ProjectController extends Controller
                                 ->where('chart_status', 'CE_Assigned')->count();
                                 $cCount = $modelClass::whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                             // ->where('chart_status', 'CE_Completed')
-                                            ->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                                            //->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                                            ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','AR_non_workable','Revoke','CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
                                             ->count();
                                 $qCount = $modelClass::whereBetween($qaColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                             ->where('chart_status', 'QA_Completed')->count();
