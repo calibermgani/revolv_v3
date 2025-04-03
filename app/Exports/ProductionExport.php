@@ -54,7 +54,7 @@ class ProductionExport implements FromCollection, WithHeadings
                 $empId = "CE_emp_id";
                 // if (str_contains($record->{$field}, '-') && strtotime($record->{$field})) {
                 if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $record->{$field})) {
-                    $exportRow[$headerField] = date('m-d-Y', strtotime($record->{$field}));
+                    $exportRow[$headerField] = date('m/d/Y', strtotime($record->{$field}));
                 } else if ($field == 'chart_status' && str_contains($record->{$field}, 'CE_') && is_null($record->{$empId})) {
                     $exportRow[$headerField] = 'Un '.str_replace('CE_', '', $record->{$field});
                 } else if ($field == 'chart_status' && str_contains($record->{$field}, 'CE_') && !is_null($record->{$empId})) {
