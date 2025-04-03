@@ -123,6 +123,8 @@ use App\Models\SmbArEvolution;
 use App\Models\SmbArEvolutionDuplicates;
 use App\Models\SmbArProactive;
 use App\Models\SmbArProactiveDuplicates;
+use App\Models\formConfiguration;
+use App\Models\project;
 class ProjectAutomationController extends Controller
 {
 
@@ -141,7 +143,14 @@ class ProjectAutomationController extends Controller
                 'sub_project_id' => isset($request->sub_project_id) && $request->sub_project_id != "NULL" ? $request->sub_project_id : NULL,
                 'file_name' => isset($request->file_name) ? $request->file_name : NULL
             ];
+            $prjwhereAttributes = [
+                'project_id' => isset($request->project_id) ? $request->project_id : NULL
+            ];
+
+            $formExists = formConfiguration::where($prjwhereAttributes)->exists();
+            $prjExists = project::where($prjwhereAttributes)->exists();
             $exists = InventoryExeFile::where($whereAttributes)->whereDate('exe_date', now()->format('Y-m-d'))->exists();
+            if ($prjExists && $formExists) {
             // if (!$exists) {
                 $currentDate = Carbon::now()->format('Y-m-d');
                 if (isset($request->project_id)) {
@@ -214,6 +223,7 @@ class ProjectAutomationController extends Controller
             // } else {
             //     return response()->json(['message' => 'Inventory File already exists']);
             // }
+            }
         } catch (\Exception $e) {
             $e->getMessage();
         }
