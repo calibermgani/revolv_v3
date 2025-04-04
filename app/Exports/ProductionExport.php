@@ -5,7 +5,7 @@ namespace App\Exports;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Carbon\Carbon;
-
+use App\Http\Helper\Admin\Helpers as Helpers;
 class ProductionExport implements FromCollection, WithHeadings
 {
     protected $exportResult;
@@ -52,6 +52,7 @@ class ProductionExport implements FromCollection, WithHeadings
                     $agingRange = '--';
                 }
                 $empId = "CE_emp_id";
+                $chartStatus = 'chart_status';
                 // if (str_contains($record->{$field}, '-') && strtotime($record->{$field})) {
                 if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $record->{$field})) {
                     $exportRow[$headerField] = date('m/d/Y', strtotime($record->{$field}));
@@ -63,7 +64,14 @@ class ProductionExport implements FromCollection, WithHeadings
                     $exportRow[$headerField] = 'QA '.str_replace('QA_', '', $record->{$field});
                 } else if ($field == 'chart_status' && str_contains($record->{$field}, 'AR_non_workable')) {
                     $exportRow[$headerField] = 'Non Workable';
-                }else if ($field == 'aging') {
+                } else if(($record->{$chartStatus} == 'AR_non_workable') && ($field == 'ar_notes' || $field == 'notes' || $field == 'remarks' || $field =='comments')){
+                    if($record->{$field} != null) {
+                        $exportRow[$headerField] = Helpers::nonWorkableReasonName($record->{$field})->reason_type;
+                    } else {
+                        $exportRow[$headerField]= '';
+                    }
+                }
+                else if ($field == 'aging') {
                     $exportRow[$headerField] = $agingCount;
                 } elseif ($field == 'aging_range') {
                     $exportRow[$headerField] =  $agingRange;
