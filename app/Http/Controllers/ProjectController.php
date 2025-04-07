@@ -1729,7 +1729,7 @@ class ProjectController extends Controller
     public function getProjects()
         {
             try {
-               $clientList = formConfiguration::groupBy('project_id','sub_project_id')->selectRaw('project_id,sub_project_id')->get(); dd($clientList);
+               $clientList = formConfiguration::groupBy('project_id','sub_project_id')->selectRaw('project_id,sub_project_id')->get(); 
                $clientName = array();
                $clientDetails = array();
                foreach ($clientList as $clientData) {
@@ -1738,7 +1738,7 @@ class ProjectController extends Controller
                 $clientName['subprject_name'] =  $clientData->project_id != null ? subproject::where('project_id', $clientData->project_id)->where('sub_project_id', $clientData->sub_project_id)->pluck('sub_project_name', 'sub_project_id')->toArray(): [];
                 $clientDetails[] = $clientName;
             }
-              
+            dd($clientDetails);
            return $clientDetails;
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
