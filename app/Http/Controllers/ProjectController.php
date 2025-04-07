@@ -1729,7 +1729,7 @@ class ProjectController extends Controller
     public function getProjects()
         {
             try {
-               $clientList = formConfiguration::groupBy('project_id','sub_project_id')->selectRaw('project_id,sub_project_id')->get(); 
+               $clientList = formConfiguration::groupBy('project_id','sub_project_id')->selectRaw('project_id,sub_project_id')->get(); dd($clientList);
                $clientName = array();
                $clientDetails = array();
                foreach ($clientList as $clientData) {
