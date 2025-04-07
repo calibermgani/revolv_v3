@@ -1838,7 +1838,7 @@ class ProjectController extends Controller
                     // return ['data' => $projectData, 'ids' => $project_id];
                 });
                 GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
-                GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
+                GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));dd($projectsPending);
                 return view('projects.projectUtilizationWeb', compact('projectsPending', 'yesterday','yesterDayStartDate','yesterDayEndDate','projectIds','subProjectIds'));
             } catch (\Exception $e) {
                 Log::error('Error in ProjectWorkWeb: ' . $e->getMessage());
