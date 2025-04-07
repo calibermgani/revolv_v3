@@ -142,8 +142,7 @@
                     "exportOptions": {
                         "columns": ':not(.notexport)', // Exclude first two columns
                         format: {
-                            body: function(data, row, column, node) {
-                                
+                            body: function(data, row, column, node) {                                
                                 return $(node).text();
                             }
                         }
@@ -179,7 +178,6 @@
             //     }
             // });
             function processAllRows() {
-                console.log(table);
                 
                 var rows = table.rows().nodes(); // Fetch all rows across all pages
                 $(rows).each(function() {
@@ -188,7 +186,7 @@
                     var projectId = @json($projectIds);
                     var yesterDayStartDate = @json($yesterDayStartDate);
                     var yesterDayEndDate = @json($yesterDayEndDate);
-console.log(yesterDayStartDate,'yesterDay',yesterDayEndDate,'projectId',projectId);
+                    //console.log(yesterDayStartDate,'yesterDay',yesterDayEndDate,'projectId',projectId);
 
                     if (projectId) {
                         fetch(`project-ar-qa-counts/` + projectId +
