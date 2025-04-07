@@ -97,7 +97,7 @@ class ProductionController extends Controller
           //  $subprojects = subproject::with(['clientName'])->where('project_id',$request->project_id)->where('status','Active')->get();
             $subProjectsWithCount = [];
             foreach ($subprojects as $key => $data) {
-                $paProject = Helpers::projectName($clientDetails['projectId']);
+                $paProject = Helpers::projectName($clientDetails['id']);
                 $paProjectName = $paProject ? $paProject->project_name : null;
                 $subProjectsWithCount[$key]['client_id'] =$clientDetails['id'];
                 // $subProjectsWithCount[$key]['client_name'] = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
