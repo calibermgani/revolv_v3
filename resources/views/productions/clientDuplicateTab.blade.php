@@ -535,6 +535,8 @@ use Carbon\Carbon;
             table.buttons().container()
                 .appendTo('.outside');
                 $('.dataTables_filter').addClass('pull-left');
+                var clientName = $('#clientName').val();
+                var subProjectName = $('#subProjectName').val();
                 $(document).on('click', '#filter_clear', function(e) {
                     window.location.href = baseUrl + 'projects_duplicate/' + clientName + '/' + subProjectName +
                         "?parent=" +
@@ -543,8 +545,7 @@ use Carbon\Carbon;
                         "&child=" + getUrlVars()["child"];
                 })
             // var encodedProjectId = $('#encodeddbConnection').val();
-            var clientName = $('#clientName').val();
-            var subProjectName = $('#subProjectName').val();
+           
 
             $(document).on('click', '.one', function() {
                 window.location.href = baseUrl + 'projects_assigned/' + clientName + '/' + subProjectName +
