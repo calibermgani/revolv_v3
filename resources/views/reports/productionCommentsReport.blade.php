@@ -321,6 +321,7 @@
                     startDate: start,
                     endDate: end,
                     showDropdowns: true,
+                    maxDate: moment(),
                     ranges: {
                         'Today': [moment(), moment()],
                         'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1,
