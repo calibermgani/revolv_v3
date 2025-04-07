@@ -322,6 +322,10 @@
                     endDate: end,
                     showDropdowns: true,
                     maxDate: moment(),
+                    isInvalidDate: function(date) {
+                        // Disable Sundays (0 = Sunday)
+                        return date.day() === 0;
+                    },
                     ranges: {
                         'Today': [moment(), moment()],
                         'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1,
