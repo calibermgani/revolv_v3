@@ -1734,8 +1734,8 @@ class ProjectController extends Controller
                $clientDetails = array();
                foreach ($clientList as $clientData) {
                 $clientName['id'] = $clientData->project_id;
-                $clientName['client_name'] = $clientData->project_id != null ? Helpers::projectName($clientData->project_id)->aims_project_name : null;
-                $clientName['subprject_name'] =  $clientData->project_id != null ? subproject::where('project_id', $clientData->project_id)->where('sub_project_id', $clientData->sub_project_id)->pluck('sub_project_name', 'sub_project_id')->toArray(): [];
+                $clientName['client_name'] = $clientData != null && $clientData->project_id != null ? Helpers::projectName($clientData->project_id)->aims_project_name : null;
+                $clientName['subprject_name'] =  $clientData != null && $clientData->project_id != null ? subproject::where('project_id', $clientData->project_id)->where('sub_project_id', $clientData->sub_project_id)->pluck('sub_project_name', 'sub_project_id')->toArray(): [];
                 $clientDetails[] = $clientName;    
             }
             dd($clientDetails);
