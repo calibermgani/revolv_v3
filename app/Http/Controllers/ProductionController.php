@@ -2371,7 +2371,7 @@ class ProductionController extends Controller
                        $modelClassDuplcates = "App\\Models\\" .$modelName.'Duplicates';
                        $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                        $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
-                       $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','desc')->pluck('record_id')->toArray();
+                       $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','desc')->pluck('record_id')->toArray();
                        $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                    }
                 } else if ($loginEmpId) {
@@ -2390,6 +2390,7 @@ class ProductionController extends Controller
                                     $query->whereNull('ar_manager_rebuttal_status')
                                         ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
                             })->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                    $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','desc')->pluck('record_id')->toArray();
                     $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                    }
                  }
