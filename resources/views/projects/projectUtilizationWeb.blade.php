@@ -68,7 +68,7 @@
                                 <th>Logged Resolv - AR</th>
                                 <th>Production Users - AR</th>
                                 <th>AR</th>
-                                {{-- <th>AIMS Production</th> --}}
+                                <th>AIMS Production</th>
                                 <th>Logged Resolv - QA</th>
                                 <th>Production - QA</th>
                                 <th>QA</th>
@@ -93,7 +93,7 @@
                                         <td class="logged_resolv_ar"></td>
                                         <td>{{ $data['prodcution_ar'] }}</td>
                                         <td>{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder'] }}</td>
-                                        {{-- <td style={{$prjDetailsList != '--' &&  $prjDetailsList != null ? ($data['Coder'] !=0 && $data['Coder'] == $prjDetailsList[$key]['aims_count'] ? "color:green" : "color:red") : "color:red"}}>{{  $prjDetailsList != '--' &&  $prjDetailsList != null ? $prjDetailsList[$key]['aims_count'] :  $prjDetailsList}}</td> --}}
+                                        <td style={{$prjDetailsList != '--' &&  $prjDetailsList != null ? ($data['Coder'] !=0 && $data['Coder'] == $prjDetailsList[$key]['aims_count'] ? "color:green" : "color:red") : "color:red"}}>{{  $prjDetailsList != '--' &&  $prjDetailsList != null ? $prjDetailsList[$key]['aims_count'] :  $prjDetailsList}}</td>
                                         {{-- <td>{{ $data['logged_resolv_qa'] }}</td> --}}
                                         <td class="logged_resolv_qa"></td>
                                         <td>{{ $data['prodcution_qa'] }}</td>
@@ -102,7 +102,7 @@
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="9" style="text-align: center; padding: 5px;">--No Records--</td>
+                                    <td colspan="10" style="text-align: center; padding: 5px;">--No Records--</td>
                                 </tr>
                             @endif
                         </tbody>
@@ -185,7 +185,7 @@
                     var projectId = @json($projectIds);
                     var yesterDayStartDate = @json($yesterDayStartDate);
                     var yesterDayEndDate = @json($yesterDayEndDate);
-console.log(yesterDayStartDate,'yesterDay',yesterDayEndDate);
+console.log(yesterDayStartDate,'yesterDay',yesterDayEndDate,'projectId',projectId);
 
                     if (projectId) {
                         fetch(`project-ar-qa-counts/` + projectId +
@@ -198,8 +198,10 @@ console.log(yesterDayStartDate,'yesterDay',yesterDayEndDate);
                                     row.find(".logged_resolv_qa").text(data.logged_resolv_qa);
                                     KTApp.unblock('#project_utilization');
                                 }
-                            })
+                            }) 
                             .catch(error => console.error("Error fetching AR/QA counts:", error));
+                    } else {
+                        KTApp.unblock('#project_utilization');
                     }
                 });
             }
