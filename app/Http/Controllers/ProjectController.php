@@ -1571,9 +1571,9 @@ class ProjectController extends Controller
                 $mailBody = $projectIds = $subProjectIds = [];
 
                 // Process each project
-                foreach ($projects as $project) {dd($project);
+                foreach ($projects as $project) {
                     //$prjName = Helpers::projectName($project['id'])->project_name ?? null;
-                    $prjDetails = $request->project_id != null ? Helpers::projectName($project['id']) : null;dd($prjDetails);
+                    $prjDetails = $project['id'] != null ? Helpers::projectName($project['id']) : null;
                     $prjName = $prjDetails && $prjDetails != null ? $prjDetails->project_name : null;
                     if ($prjName === null) {
                         Log::warning("Project name is null for project ID {$project['id']}");
