@@ -536,7 +536,7 @@ use Carbon\Carbon;
                 .appendTo('.outside');
                 $('.dataTables_filter').addClass('pull-left');
                 var clientName = $('#clientName').val();
-                var subProjectName = $('#subProjectName').val();
+                var subProjectName = $('#subProjectName').val(); 
                 $(document).on('click', '#filter_clear', function(e) {
                     window.location.href = baseUrl + 'projects_duplicate/' + clientName + '/' + subProjectName +
                         "?parent=" +
