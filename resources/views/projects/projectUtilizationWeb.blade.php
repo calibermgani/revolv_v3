@@ -62,7 +62,7 @@
                         id="project_utilization_table">
                         <thead>
                             <tr>
-                                <th>Project</th>
+                                <th>Projectt</th>
                                 <th>Inventory Uploaded</th>
                                 <th>Total Users - AR</th>
                                 <th>Logged Resolv - AR</th>
