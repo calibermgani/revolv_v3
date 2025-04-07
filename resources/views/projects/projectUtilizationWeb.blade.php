@@ -143,6 +143,8 @@
                         "columns": ':not(.notexport)', // Exclude first two columns
                         format: {
                             body: function(data, row, column, node) {
+                                console.log(node,'node');
+                                
                                 return $(node).text();
                             }
                         }
