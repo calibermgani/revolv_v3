@@ -300,7 +300,9 @@
                                                                 'user_hrdetails'
                                                             ]['current_designation']
                                                             : '';
-                                                            $projectName = App\Http\Helper\Admin\Helpers::projectName($data["id"])->project_name;// $data['client_name'];
+                                                           // $projectName = App\Http\Helper\Admin\Helpers::projectName($data["id"])->project_name;// $data['client_name'];
+                                                           $paProject =App\Http\Helper\Admin\Helpers::projectName($data["id"]);
+                                                           $projectName = $paProject ? $paProject->project_name : null;
                                                     if (
                                                         isset($data['subprject_name']) &&
                                                         !empty($data['subprject_name'])

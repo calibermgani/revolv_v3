@@ -249,7 +249,9 @@ use Carbon\Carbon;
                                         @php $count = 0; @endphp
                                         @foreach ($projectColSearchFields as $key => $data)
                                             @php
-                                            $decodedClientName = App\Http\Helper\Admin\Helpers::projectName($data->project_id)->project_name;
+                                            //$decodedClientName = App\Http\Helper\Admin\Helpers::projectName($data->project_id)->project_name;
+                                            $paProject =App\Http\Helper\Admin\Helpers::projectName($data->project_id);
+                                            $decodedClientName = $paProject ? $paProject->project_name : null;
                                             $decodedsubProjectName = $data->sub_project_id == NULL ? 'project' :App\Http\Helper\Admin\Helpers::subProjectName($data->project_id,$data->sub_project_id);
                                                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                                                 $modelName = Str::studly($table_name);
@@ -536,6 +538,7 @@ use Carbon\Carbon;
                                                     $clientName = App\Http\Helper\Admin\Helpers::projectName(
                                                         $popUpHeader->project_id,
                                                     );
+                                                    
                                                     if($popUpHeader->sub_project_id != NULL) {
                                                         $practiceName = App\Http\Helper\Admin\Helpers::subProjectName(
                                                             $popUpHeader->project_id,
@@ -955,6 +958,7 @@ use Carbon\Carbon;
                                                 $clientName = App\Http\Helper\Admin\Helpers::projectName(
                                                     $popUpHeader->project_id,
                                                 );
+                                               
                                                 $projectName = App\Http\Helper\Admin\Helpers::encodeAndDecodeID(
                                                     $popUpHeader->project_id,
                                                     'encode',
@@ -1108,6 +1112,7 @@ use Carbon\Carbon;
                                                             $clientName = App\Http\Helper\Admin\Helpers::projectName(
                                                                 $popUpHeader->project_id,
                                                             );
+                                                       
                                                             // $pdfName =  preg_replace('/[^A-Za-z0-9]/', '_',$clientName->project_name);
                                                             $sopDetails = App\Models\SopDoc::where('project_id',$popUpHeader->project_id)->where('sub_project_id',$popUpHeader->sub_project_id)->latest()->first('sop_path');
                                                     @endphp
@@ -1143,6 +1148,7 @@ use Carbon\Carbon;
                                                 $clientName = App\Http\Helper\Admin\Helpers::projectName(
                                                     $popUpHeader->project_id,
                                                 );
+                                               
                                                 if ($popUpHeader->sub_project_id != NULL) {
                                                     $practiceName = App\Http\Helper\Admin\Helpers::subProjectName(
                                                         $popUpHeader->project_id,

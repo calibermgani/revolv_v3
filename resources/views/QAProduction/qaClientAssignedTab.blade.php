@@ -220,7 +220,9 @@ use Carbon\Carbon;
                             @php $count = 0; @endphp
                             @foreach ($projectColSearchFields as $key => $data)
                                 @php
-                                $decodedClientName = App\Http\Helper\Admin\Helpers::projectName($data->project_id)->project_name;
+                               // $decodedClientName = App\Http\Helper\Admin\Helpers::projectName($data->project_id)->project_name;
+                               $paProject =App\Http\Helper\Admin\Helpers::projectName($data->project_id);
+                               $decodedClientName = $paProject ? $paProject->project_name : null;
                                 $decodedsubProjectName = $data->sub_project_id == NULL ? 'project' :App\Http\Helper\Admin\Helpers::subProjectName($data->project_id,$data->sub_project_id);
                                     $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                                     $modelName = Str::studly($table_name);

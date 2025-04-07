@@ -225,8 +225,10 @@
                         @php $count = 0; @endphp
                         @foreach ($projectColSearchFields as $key => $data)
                             @php
-                                $decodedClientName = App\Http\Helper\Admin\Helpers::projectName($data->project_id)
-                                    ->project_name;
+                                // $decodedClientName = App\Http\Helper\Admin\Helpers::projectName($data->project_id)
+                                //     ->project_name;
+                                    $paProject =App\Http\Helper\Admin\Helpers::projectName($data->project_id);
+                                    $decodedClientName = $paProject ? $paProject->project_name : null;
                                 $decodedsubProjectName =
                                     $data->sub_project_id == null
                                         ? 'project'
@@ -725,7 +727,7 @@
             <div class="modal-content">
                 @if ($popUpHeader != null)
                     @php
-                        $clientName = App\Http\Helper\Admin\Helpers::projectName($popUpHeader->project_id);
+                       $clientName = App\Http\Helper\Admin\Helpers::projectName($popUpHeader->project_id);
                         $sopDetails = App\Models\SopDoc::where('project_id', $popUpHeader->project_id)
                             ->where('sub_project_id', $popUpHeader->sub_project_id)
                             ->latest()

@@ -36,7 +36,9 @@
                             @php
                                 $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
                                 $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
-                                    $projectName = App\Http\Helper\Admin\Helpers::projectName($data["id"])->project_name;//$data["client_name"];
+                                   // $projectName = App\Http\Helper\Admin\Helpers::projectName($data["id"])->project_name;//$data["client_name"];
+                                    $paProject =App\Http\Helper\Admin\Helpers::projectName($data["id"]);
+                                    $projectName = $paProject ? $paProject->project_name : null;
                                   //   $subproject_name = App\Models\subproject::where('project_id',$data['id'])->pluck('sub_project_name')->toArray();
                                             if (isset($data["subprject_name"]) && !empty($data["subprject_name"])) {
                                                 $subproject_name = $data["subprject_name"];
