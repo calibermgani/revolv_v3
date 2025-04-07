@@ -531,11 +531,10 @@ use Carbon\Carbon;
                         @if ($popUpHeader != null)
                             <div class="modal-dialog">
                                 @php
-                                    // $clientName = App\Http\Helper\Admin\Helpers::projectName(
-                                    //     $popUpHeader->project_id,
-                                    // );
-                                    $paProject =App\Http\Helper\Admin\Helpers::projectName($popUpHeader->project_id);
-                                    $clientName = $paProject ? $paProject->project_name : null;
+                                    $clientName = App\Http\Helper\Admin\Helpers::projectName(
+                                        $popUpHeader->project_id,
+                                    );
+                               
                                     $projectName = App\Http\Helper\Admin\Helpers::encodeAndDecodeID(
                                         $popUpHeader->project_id,
                                         'encode',
