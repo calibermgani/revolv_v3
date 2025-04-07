@@ -178,6 +178,8 @@
             //     }
             // });
             function processAllRows() {
+                console.log(table);
+                
                 var rows = table.rows().nodes(); // Fetch all rows across all pages
                 $(rows).each(function() {
                     var row = $(this);
