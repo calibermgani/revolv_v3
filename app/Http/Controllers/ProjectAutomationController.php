@@ -155,13 +155,20 @@ class ProjectAutomationController extends Controller
                 $currentDate = Carbon::now()->format('Y-m-d');
                 if (isset($request->project_id)) {
                     $projectId = $request->project_id;
-                    $clientName = Helpers::projectName($projectId)->project_name;
-                    $aimsClientName = Helpers::projectName($projectId)->aims_project_name;
+                   // $clientName = Helpers::projectName($projectId)->project_name;
+                    // $aimsClientName = Helpers::projectName($projectId)->aims_project_name;
+                    $prjDetails = Helpers::projectName($projectId);
+                    $clientName = $prjDetails ? $prjDetails->project_name : null;
+                    $aimsClientName = $prjDetails ? $prjDetails->aims_project_name : null;
                     if (isset($request->sub_project_id) && $request->sub_project_id != "NULL" && $request->sub_project_id != NULL) {
-                        $subProjectId = $request->sub_project_id;
-                        $subProjectName = Helpers::subProjectName($projectId, $subProjectId)->sub_project_name;
-                        $table_name = Str::slug((Str::lower($clientName) . '_' . Str::lower($subProjectName)), '_');
-                        $prjoectName = $aimsClientName . ' - ' . $subProjectName;
+                        if($clientName != NULL && $aimsClientName != NULL) {
+                            $subProjectId = $request->sub_project_id;
+                            $subProjectName = Helpers::subProjectName($projectId, $subProjectId)->sub_project_name;
+                            $table_name = Str::slug((Str::lower($clientName) . '_' . Str::lower($subProjectName)), '_');
+                            $prjoectName = $aimsClientName . ' - ' . $subProjectName;
+                        } else {
+                            $projectId = $table_name = NULL;
+                        }
                     } else {
                         $subProjectId = NULL;
                         $subProjectText = "project";
@@ -169,57 +176,60 @@ class ProjectAutomationController extends Controller
                         $prjoectName = $aimsClientName;
                     }
                 } else {
-                    $projectId = NULL;
+                    $projectId = $table_name = NULL;
                 }
-
-                $modelName = Str::studly($table_name);
-                $modelClass = "App\\Models\\" . $modelName;
-                $modelClassDuplicate = "App\\Models\\" . $modelName . 'Duplicates';
-                $currentCount = 0;
-                if (class_exists($modelClass)) {
-                    $currentCount =  isset($request->inventory_count) ? $request->inventory_count : $modelClass::where('invoke_date', $currentDate)->where('chart_status', 'CE_Assigned')->count();
-                    $duplicateCount = $modelClassDuplicate::where('invoke_date', $currentDate)->where('chart_status', 'CE_Assigned')->count();
-                    // $assignedCount = $modelClass::where('invoke_date', $currentDate)->where('chart_status', 'CE_Assigned')->whereNotNull('CE_emp_id')->count();
-                    // $unAssignedCount = $modelClass::where('invoke_date', $currentDate)->where('chart_status', 'CE_Assigned')->whereNull('CE_emp_id')->count();
-                    $assignedCount = isset($request->assign_count) ? $request->assign_count : $modelClass::where('invoke_date', $currentDate)->where('chart_status', 'CE_Assigned')->whereNotNull('CE_emp_id')->count();
-                    $unAssignedCount = isset($request->unassign_count) ? $request->unassign_count : $modelClass::where('invoke_date', $currentDate)->where('chart_status', 'CE_Assigned')->whereNull('CE_emp_id')->count();
-                }
-                $procodeProjectsCurrent = [];
-                Log::info($prjoectName . " count is " . $currentCount);
-                if ($currentCount> 0) {
-                    $procodeProjectsCurrent['project'] = $prjoectName;
-                    $procodeProjectsCurrent['currentCount'] = $currentCount;
-                    $procodeProjectsCurrent['duplicateCount'] = $duplicateCount;
-                    $procodeProjectsCurrent['assignedCount'] = $assignedCount;
-                    $procodeProjectsCurrent['unAssignedCount'] = $unAssignedCount;
-                    $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'inventory exe file to mail id')->first();
-                    $toMailId = explode(",", $toMail->cc_emails);
-                    // $toMailId = "mgani@caliberfocus.com";
-                    // $ccMailId = "vijayalaxmi@caliberfocus.com";
-                    $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'inventory exe file')->first();
-                    $ccMailId = explode(",", $ccMail->cc_emails);
-
-                    $mailDate = Carbon::now()->format('m/d/Y');
-                    $mailHeader = $prjoectName . " - Inventory Upload Successful - " . $mailDate;
-                    $project_information["project_id"] = $attributes["project_id"];
-                    $project_information["sub_project_id"] = $attributes["sub_project_id"];
-                    $project_information["error_description"] = "Default Assigned Count: " . $procodeProjectsCurrent['assignedCount'] . PHP_EOL . " Inventory Uploaded Time: " . now()->format('m/d/Y g:i A');
-                    $project_information["error_status_code"] = 200;
-                    $project_information["error_date"] = now()->format('Y-m-d H:i:s');
-                    $attributes["inventory_count"] = $currentCount;
-                    InventoryExeFile::create($attributes);
-                    InventoryErrorLogs::create($project_information);
-                    if (isset($toMailId) && !empty($toMailId)) {
-                        try {
-                            Mail::to($toMailId)->cc($ccMailId)->send(new ProcodeInventoryExeFile($mailHeader, $procodeProjectsCurrent));
-                            Log::info($prjoectName . "mail sent ");
-                        } catch (\Exception $e) {
-                            Log::error('Mail sending failed: ' . $e->getMessage());
-                        }
+                if($table_name != null) {
+                    $modelName = Str::studly($table_name);
+                    $modelClass = "App\\Models\\" . $modelName;
+                    $modelClassDuplicate = "App\\Models\\" . $modelName . 'Duplicates';
+                    $currentCount = 0;
+                    if (class_exists($modelClass)) {
+                        $currentCount =  isset($request->inventory_count) ? $request->inventory_count : $modelClass::where('invoke_date', $currentDate)->where('chart_status', 'CE_Assigned')->count();
+                        $duplicateCount = $modelClassDuplicate::where('invoke_date', $currentDate)->where('chart_status', 'CE_Assigned')->count();
+                        // $assignedCount = $modelClass::where('invoke_date', $currentDate)->where('chart_status', 'CE_Assigned')->whereNotNull('CE_emp_id')->count();
+                        // $unAssignedCount = $modelClass::where('invoke_date', $currentDate)->where('chart_status', 'CE_Assigned')->whereNull('CE_emp_id')->count();
+                        $assignedCount = isset($request->assign_count) ? $request->assign_count : $modelClass::where('invoke_date', $currentDate)->where('chart_status', 'CE_Assigned')->whereNotNull('CE_emp_id')->count();
+                        $unAssignedCount = isset($request->unassign_count) ? $request->unassign_count : $modelClass::where('invoke_date', $currentDate)->where('chart_status', 'CE_Assigned')->whereNull('CE_emp_id')->count();
                     }
-                    return response()->json(['message' => 'Inventory File Inserted Successfully']);
+                    $procodeProjectsCurrent = [];
+                    Log::info($prjoectName . " count is " . $currentCount);
+                    if ($currentCount> 0) {
+                        $procodeProjectsCurrent['project'] = $prjoectName;
+                        $procodeProjectsCurrent['currentCount'] = $currentCount;
+                        $procodeProjectsCurrent['duplicateCount'] = $duplicateCount;
+                        $procodeProjectsCurrent['assignedCount'] = $assignedCount;
+                        $procodeProjectsCurrent['unAssignedCount'] = $unAssignedCount;
+                        $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'inventory exe file to mail id')->first();
+                        $toMailId = explode(",", $toMail->cc_emails);
+                        // $toMailId = "mgani@caliberfocus.com";
+                        // $ccMailId = "vijayalaxmi@caliberfocus.com";
+                        $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'inventory exe file')->first();
+                        $ccMailId = explode(",", $ccMail->cc_emails);
+
+                        $mailDate = Carbon::now()->format('m/d/Y');
+                        $mailHeader = $prjoectName . " - Inventory Upload Successful - " . $mailDate;
+                        $project_information["project_id"] = $attributes["project_id"];
+                        $project_information["sub_project_id"] = $attributes["sub_project_id"];
+                        $project_information["error_description"] = "Default Assigned Count: " . $procodeProjectsCurrent['assignedCount'] . PHP_EOL . " Inventory Uploaded Time: " . now()->format('m/d/Y g:i A');
+                        $project_information["error_status_code"] = 200;
+                        $project_information["error_date"] = now()->format('Y-m-d H:i:s');
+                        $attributes["inventory_count"] = $currentCount;
+                        InventoryExeFile::create($attributes);
+                        InventoryErrorLogs::create($project_information);
+                        if (isset($toMailId) && !empty($toMailId)) {
+                            try {
+                                Mail::to($toMailId)->cc($ccMailId)->send(new ProcodeInventoryExeFile($mailHeader, $procodeProjectsCurrent));
+                                Log::info($prjoectName . "mail sent ");
+                            } catch (\Exception $e) {
+                                Log::error('Mail sending failed: ' . $e->getMessage());
+                            }
+                        }
+                        return response()->json(['message' => 'Inventory File Inserted Successfully']);
+                    }
+                    return response()->json(['message' => 'Inventory mail was not sent because the count is zero']);
+                } else {
+                    return response()->json(['message' => 'table does not exist']);
                 }
-                return response()->json(['message' => 'Inventory mail was not sent because the count is zero']);
             // } else {
             //     return response()->json(['message' => 'Inventory File already exists']);
             // }

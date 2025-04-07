@@ -142,7 +142,9 @@ class ProjectController extends Controller
             // Prepare batch data collection.
             $prjoectsPending = $projects->flatMap(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday) {
                 $projectData = [];
-                $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+                //$prjName = Helpers::projectName($project['id'])->project_name ?? null;
+                $prjDetails = Helpers::projectName($project['id']);
+                $prjName = $prjDetails ? $prjDetails->project_name : null;
     
                 if ($prjName !== null) {
                     $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
@@ -280,7 +282,9 @@ class ProjectController extends Controller
             $mailHeader = "Resolv - Project Hold Charges reminder";
             $projects = $this->getProjects();
             foreach ($projects as $project) {
-                $prjName =  Helpers::projectName($project["id"]) != null ? Helpers::projectName($project["id"])->project_name : null;//dd($prjName);
+               // $prjName =  Helpers::projectName($project["id"]) != null ? Helpers::projectName($project["id"])->project_name : null;//dd($prjName);
+                $prjDetails = $project["id"] != null ? Helpers::projectName($project["id"]) : null;
+                $prjName = $prjDetails && $prjDetails != null ? $prjDetails->project_name : null;
                     if ($prjName !== null) {
                         if (count($project["subprject_name"]) > 0) {
                             foreach ($project["subprject_name"] as $key => $subProject) {
@@ -631,7 +635,9 @@ class ProjectController extends Controller
           //  $toMailId=[];
             // Process each project
             foreach ($projects as $project) {
-                $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+               // $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+                $prjDetails = $project["id"] != null ? Helpers::projectName($project["id"]) : null;
+                $prjName = $prjDetails && $prjDetails != null ? $prjDetails->project_name : null;
                 if ($prjName === null) {
                     Log::warning("Project name is null for project ID {$project['id']}");
                     continue;
@@ -720,8 +726,9 @@ class ProjectController extends Controller
             $projects = collect($this->getProjects());
             $prjoectsPending = $projects->flatMap(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday) {
                 $projectData = [];
-                $prjName = Helpers::projectName($project['id'])->project_name ?? null;
-    
+               // $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+                $prjDetails = $project["id"] != null ? Helpers::projectName($project["id"]) : null;
+                $prjName = $prjDetails && $prjDetails != null ? $prjDetails->project_name : null;
                 if ($prjName !== null) {
                     $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
     
@@ -1351,7 +1358,9 @@ class ProjectController extends Controller
     public function alterTableChartStatusColumn(Request $request) {
         try {
             // Get client and sub-project names
-            $decodedClientName = Helpers::projectName($request->project_id)->project_name;
+           // $decodedClientName = Helpers::projectName($request->project_id)->project_name;
+           $prjDetails = $request->project_id != null ? Helpers::projectName($request->project_id) : null;
+           $decodedClientName = $prjDetails && $prjDetails != null ? $prjDetails->project_name : null;
             $decodedSubProjectName = $request->sub_project_id
                 ? Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name
                 : 'project';
@@ -1404,7 +1413,9 @@ class ProjectController extends Controller
     }
     public function productionAutoClose(Request $request) {
         try {
-            $decodedClientName = Helpers::projectName($request->project_id)->project_name;
+           // $decodedClientName = Helpers::projectName($request->project_id)->project_name;
+            $prjDetails = $request->project_id != null ? Helpers::projectName($request->project_id) : null;
+            $decodedClientName = $prjDetails && $prjDetails != null ? $prjDetails->project_name : null;
             $decodedSubProjectName = $request->sub_project_id == NULL
                 ? 'project'
                 : Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
@@ -1561,7 +1572,9 @@ class ProjectController extends Controller
 
                 // Process each project
                 foreach ($projects as $project) {
-                    $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+                    //$prjName = Helpers::projectName($project['id'])->project_name ?? null;
+                    $prjDetails = $request->project_id != null ? Helpers::projectName($project['id']) : null;
+                    $prjName = $prjDetails && $prjDetails != null ? $prjDetails->project_name : null;
                     if ($prjName === null) {
                         Log::warning("Project name is null for project ID {$project['id']}");
                         continue;
@@ -1623,8 +1636,11 @@ class ProjectController extends Controller
     }
     public function projectDetailedInformationWeb(Request $request){
         try {
-            $prjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->project_name ?? null;
-            $aimsPrjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->aims_project_name ?? null;          
+           // $prjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->project_name ?? null;
+            $prjDetails = $request->project_id != null ? Helpers::encodeAndDecodeID($request->input('project_id'),'decode') : null;
+            $prjName = $prjDetails && $prjDetails != null ? $prjDetails->project_name : null;
+            $aimsPrjName = $prjDetails && $prjDetails != null ? $prjDetails->aims_project_name : null;
+           // $aimsPrjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->aims_project_name ?? null;          
             $subPrjName = Helpers::subProjectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))->sub_project_name ?? null;
             $prjSLATarget = (int)$this->getProjectTotalSlaTarget(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))['projectSLATarget'];
             $title = $aimsPrjName . '-' . $subPrjName;
@@ -1762,8 +1778,9 @@ class ProjectController extends Controller
                 $projectsPending = []; 
                 $projectIds = $subProjectIds = [];
                 $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$projectsPending, &$projectIds, &$subProjectIds) {
-                    $prjName = Helpers::projectName($project['id'])->project_name ?? null;
-    
+                   // $prjName = Helpers::projectName($project['id'])->project_name ?? null;
+                    $prjDetails = Helpers::projectName($project['id']);
+                    $prjName = $prjDetails ? $prjDetails->project_name : null;
                     if ($prjName !== null) {
                         $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
     
@@ -1871,8 +1888,9 @@ class ProjectController extends Controller
                 $projectsPending = []; 
                 $projectIds = $subProjectIds = [];
                 $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$projectsPending, &$projectIds, &$subProjectIds) {
-                    $prjName = Helpers::projectName($project['id'])->project_name ?? null;
-    
+                    //$prjName = Helpers::projectName($project['id'])->project_name ?? null;
+                    $prjDetails = Helpers::projectName($project['id']);
+                    $prjName = $prjDetails ? $prjDetails->project_name : null;
                     if ($prjName !== null) {
                         $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
     
@@ -1966,8 +1984,11 @@ class ProjectController extends Controller
         } 
         public function projectDetailedInformation(Request $request){
             try {
-                $prjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->project_name ?? null;
-                $aimsPrjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->aims_project_name ?? null;          
+                //$prjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->project_name ?? null;
+                $prjDetails = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'));
+                $prjName = $prjDetails ? $prjDetails->project_name : null;
+                $aimsPrjName = $prjDetails ? $prjDetails->aims_project_name : null;
+                //$aimsPrjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->aims_project_name ?? null;          
                 $subPrjName = Helpers::subProjectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))->sub_project_name ?? null;
                 $prjSLATarget = (int)$this->getProjectTotalSlaTarget(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))['projectSLATarget'];
           
