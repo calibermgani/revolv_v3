@@ -1740,7 +1740,7 @@ class ProjectController extends Controller
                 $clientName['subprject_name'] =  $clientData != null && $clientData->project_id != null ? subproject::where('project_id', $clientData->project_id)->where('sub_project_id', $clientData->sub_project_id)->pluck('sub_project_name', 'sub_project_id')->toArray(): [];
                 $clientDetails[] = $clientName;    
             }
-            dd($clientDetails);
+           
            return $clientDetails;
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
@@ -1758,7 +1758,7 @@ class ProjectController extends Controller
                 $today = $request['request_date'] ? Carbon::createFromFormat('Y-m-d', $request->input('request_date'))->copy()->addDay() : Carbon::today();
                 $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
                 $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
-                $projects = collect($this->getProjects());dd($projects);
+                $projects = collect($this->getProjects());
                 $projectsPending = []; 
                 $projectIds = $subProjectIds = [];
                 $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$projectsPending, &$projectIds, &$subProjectIds) {
