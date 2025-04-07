@@ -1756,7 +1756,7 @@ class ProjectController extends Controller
                 $today = $request['request_date'] ? Carbon::createFromFormat('Y-m-d', $request->input('request_date'))->copy()->addDay() : Carbon::today();
                 $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
                 $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
-                $projects = collect($this->getProjects());
+                $projects = collect($this->getProjects());dd($projects);
                 $projectsPending = []; 
                 $projectIds = $subProjectIds = [];
                 $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$projectsPending, &$projectIds, &$subProjectIds) {
