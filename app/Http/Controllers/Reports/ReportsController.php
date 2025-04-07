@@ -118,7 +118,9 @@ class ReportsController extends Controller
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
             $client = new Client(['verify' => false]);
             try {
-                $decodedClientName = Helpers::projectName($request->project_id)->project_name;
+                $paProject = Helpers::projectName($request->project_id);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
+                //$decodedClientName = Helpers::projectName($request->project_id)->project_name;
                // $decodedsubProjectName = $request->sub_project_id == null ? 'project' :Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
                 $decodedsubProjectName = $request->sub_project_id == null ? 'project' :($request->project_id != null ? (Helpers::subProjectName($request->project_id, $request->sub_project_id) != null ?Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name : null) : null);
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)).'_datas','_');
@@ -493,7 +495,7 @@ class ReportsController extends Controller
                     $start_month_number = date('Y-m-01');
                     $end_month_number = date('Y-m-d');
                 }
-                $decodedClientName = $request->project_id != '' ? Helpers::projectName($request->project_id)->aims_project_name : 'Project';
+                $decodedClientName = $request->project_id != '' && Helpers::projectName($request->project_id) != null  ? Helpers::projectName($request->project_id)->aims_project_name : 'Project';
                 $decodedsubProjectName = $request->sub_project_id == '' ? '--' : Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
                 $user = $request->user == '' ? '--' : $request->user;
                 $datediff = strtotime($end_month_number) - strtotime($start_month_number);
@@ -590,7 +592,9 @@ class ReportsController extends Controller
                 }
                 $productionReportList = collect(); $productionReportArray =[]; $excel_name = 'Resolv';
                 if ($request->project_id && $request->sub_project_id) {
-                    $decodedClientName = Helpers::projectName($request->project_id)->project_name;
+                    $paProject = Helpers::projectName($request->project_id);
+                    $decodedClientName = $paProject ? $paProject->project_name : null;
+                    //$decodedClientName = Helpers::projectName($request->project_id)->project_name;
                     $decodedSubProjectName = $request->sub_project_id == null ? 'project' : Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
                     $excel_name = $decodedClientName.'-'.$decodedSubProjectName;
                     $tableName = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName), '_');

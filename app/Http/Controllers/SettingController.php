@@ -306,7 +306,9 @@ class SettingController extends Controller
                     ->select("sampling_column_name")
                     ->get();
 
-                $decodedClientName = Helpers::projectName($request->project_id)->project_name;
+               // $decodedClientName = Helpers::projectName($request->project_id)->project_name;
+               $paProject = Helpers::projectName($request->project_id);
+               $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $request->sub_project_id == '--' ? 'project' : Helpers::subProjectName($request->project_id, $request->sub_project_id);
                 
                 if ($decodedsubProjectName != null && $decodedsubProjectName != 'project') {
