@@ -544,6 +544,7 @@ class ProductionController extends Controller
                                         $query->whereNull('ar_manager_rebuttal_status')
                                             ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
                                 })->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                                $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
                         } else {
                             // $holdProjectDetails = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','ASC')->get();
                             $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','CE_Hold')->orderBy('id','desc')->pluck('record_id')->toArray();
