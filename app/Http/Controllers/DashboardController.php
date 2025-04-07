@@ -63,7 +63,9 @@ class DashboardController extends Controller
                 $models = [];
                 $projectIds = [];
                 foreach ($projects as $project) {
-                    $project["client_name"] = Helpers::projectName($project["id"])->project_name;
+                    //$project["client_name"] = Helpers::projectName($project["id"])->project_name;
+                    $daProject = Helpers::projectName($project["id"]);
+                    $project["client_name"] = $daProject ? $daProject->project_name : null;     
                     if (count($project["subprject_name"]) > 0) {
                         foreach ($project["subprject_name"] as $key => $subProject) {
                             $table_name = Str::slug((Str::lower($project["client_name"]) . '_' . Str::lower($subProject)), '_');
@@ -204,8 +206,11 @@ class DashboardController extends Controller
             $subProjectsWithCount = [];
             $calendarId = $request->CalendarId;
             foreach ($subprojects as $key => $data) {
+                $daProject = Helpers::projectName($clientDetails["id"]);
+                $daPrjName = $daProject ? $daProject->project_name : null;   
                 $subProjectsWithCount[$key]['client_id'] = $clientDetails['id'];
-                $subProjectsWithCount[$key]['client_name'] = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
+                // $subProjectsWithCount[$key]['client_name'] = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
+                $subProjectsWithCount[$key]['client_name'] =$daPrjName;
                 $subProjectsWithCount[$key]['sub_project_id'] = $data['id'];
                 $subProjectsWithCount[$key]['sub_project_name'] = $data['name'];
                 $projectName = $subProjectsWithCount[$key]['client_name'];
@@ -269,7 +274,9 @@ class DashboardController extends Controller
                 $endDate = Carbon::now()->endOfWeek()->endOfDay()->toDateString();
                 $models = $projectIds = [];
                 foreach ($projects as $project) {
-                    $project["client_name"] = Helpers::projectName($project["id"])->project_name;
+                    // $project["client_name"] = Helpers::projectName($project["id"])->project_name;
+                    $daProject = Helpers::projectName($project["id"]);
+                    $project["client_name"]  = $daProject ? $daProject->project_name : null;   
                     if (count($project["subprject_name"]) > 0) {
                         foreach ($project["subprject_name"] as $key => $subProject) {
                             $table_name = Str::slug((Str::lower($project["client_name"]) . '_' . Str::lower($subProject)), '_');
@@ -439,7 +446,9 @@ class DashboardController extends Controller
             $subProjectsWithCount = [];
             if (count($subprojects) > 0) {
                 foreach ($subprojects as $key => $data) {
-                    $projectName = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
+                   // $projectName = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
+                    $daProject = Helpers::projectName($clientDetails["id"]);
+                    $projectName  = $daProject ? $daProject->project_name : null;   
                     $table_name = Str::slug((Str::lower($projectName) . '_' . Str::lower($data['name'])), '_');
                     $modelName = Str::studly($table_name);
                     $modelClass = "App\\Models\\" . $modelName;
@@ -462,8 +471,11 @@ class DashboardController extends Controller
                     if (class_exists($modelClass)) {
                         $resourceData = $modelClass::whereIn('CE_emp_id', $resourceList)->select('CE_emp_id')->groupBy('CE_emp_id')->get()->toArray();
                         foreach ($resourceData as $resourceKey => $resourceDataVal) {
+                            $daProject = Helpers::projectName($clientDetails["id"]);
+                            $daProjectName  = $daProject ? $daProject->project_name : null;
                             $subProjectsWithCount[$key][$resourceKey]['client_id'] = $clientDetails['id'];
-                            $subProjectsWithCount[$key][$resourceKey]['client_name'] = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
+                            // $subProjectsWithCount[$key][$resourceKey]['client_name'] = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
+                            $subProjectsWithCount[$key][$resourceKey]['client_name'] = $daProjectName;
                             $subProjectsWithCount[$key][$resourceKey]['sub_project_id'] = $data['id'];
                             $subProjectsWithCount[$key][$resourceKey]['sub_project_name'] = $data['name'];
                             $subProjectsWithCount[$key][$resourceKey]['resource_emp_id'] = $resourceDataVal["CE_emp_id"];
@@ -480,8 +492,11 @@ class DashboardController extends Controller
                                 })->count();
                         }
                     } else {
+                        $daProject = Helpers::projectName($clientDetails["id"]);
+                        $daProjectName  = $daProject ? $daProject->project_name : null;
                         $subProjectsWithCount[$key][0]['client_id'] = $clientDetails['id'];
-                        $subProjectsWithCount[$key][0]['client_name'] = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
+                        // $subProjectsWithCount[$key][0]['client_name'] = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
+                        $subProjectsWithCount[$key][0]['client_name'] = $daProjectName;
                         $subProjectsWithCount[$key][0]['sub_project_id'] = $data['id'];
                         $subProjectsWithCount[$key][0]['sub_project_name'] = $data['name'];
                         $subProjectsWithCount[$key][0]['assignedCount'] = '--';
@@ -492,7 +507,9 @@ class DashboardController extends Controller
                     }
                 }
             } else {
-                $projectName = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
+               // $projectName = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
+                $daProject = Helpers::projectName($clientDetails["id"]);
+                $projectName  = $daProject ? $daProject->project_name : null;
                 $table_name = Str::slug((Str::lower($projectName) . '_' . 'project'), '_');
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName;
@@ -516,8 +533,11 @@ class DashboardController extends Controller
                     $key = 0;
                     $resourceData = $modelClass::whereIn('CE_emp_id', $resourceList)->select('CE_emp_id')->groupBy('CE_emp_id')->get()->toArray();
                     foreach ($resourceData as $resourceKey => $resourceDataVal) {
+                        $daProject = Helpers::projectName($clientDetails["id"]);
+                        $daProjectName  = $daProject ? $daProject->project_name : null;
                         $subProjectsWithCount[$key][$resourceKey]['client_id'] = $clientDetails['id'];
-                        $subProjectsWithCount[$key][$resourceKey]['client_name'] = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
+                       // $subProjectsWithCount[$key][$resourceKey]['client_name'] = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
+                        $subProjectsWithCount[$key][$resourceKey]['client_name'] = $daProjectName;//$clientDetails['client_name'];
                         $subProjectsWithCount[$key][$resourceKey]['sub_project_id'] = '--';
                         $subProjectsWithCount[$key][$resourceKey]['sub_project_name'] = '--';
                         $subProjectsWithCount[$key][$resourceKey]['resource_emp_id'] = $resourceDataVal["CE_emp_id"];
@@ -534,9 +554,12 @@ class DashboardController extends Controller
                             })->count();
                     }
                 } else {
+                    $daProject = Helpers::projectName($clientDetails["id"]);
+                    $daProjectName  = $daProject ? $daProject->project_name : null;
                     $key = 0;
                     $subProjectsWithCount[$key][0]['client_id'] = $clientDetails['id'];
-                    $subProjectsWithCount[$key][0]['client_name'] = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
+                    // $subProjectsWithCount[$key][0]['client_name'] = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
+                    $subProjectsWithCount[$key][0]['client_name'] = $daProjectName;//$clientDetails['client_name'];
                     $subProjectsWithCount[$key][0]['sub_project_id'] = '--';
                     $subProjectsWithCount[$key][0]['sub_project_name'] = '--';
                     $subProjectsWithCount[$key][0]['assignedCount'] = '--';
@@ -583,7 +606,9 @@ class DashboardController extends Controller
                 $models = [];
                  $projects = $this->getProjects();
                 foreach ($projects as $project) {
-                    $project["client_name"] = Helpers::projectName($project["id"])->project_name;
+                   // $project["client_name"] = Helpers::projectName($project["id"])->project_name;
+                    $daProject = Helpers::projectName($project["id"]);
+                    $project["client_name"] = $daProject ? $daProject->project_name : null;
                     if (count($project["subprject_name"]) > 0) {
                         foreach ($project["subprject_name"] as $key => $subProject) {
                             $table_name = Str::slug((Str::lower($project["client_name"]) . '_' . Str::lower($subProject)), '_');
@@ -725,7 +750,9 @@ class DashboardController extends Controller
                             Session::get('loginDetails')['userDetail']['emp_id'] != null
                             ? Session::get('loginDetails')['userDetail']['emp_id']
                             : '';
-                        $projectName = Helpers::projectName($data["id"])->project_name;//$data['client_name'];
+                        // $projectName = Helpers::projectName($data["id"])->project_name;//$data['client_name'];
+                        $daProject = Helpers::projectName($data["id"]);
+                        $projectName = $daProject ? $daProject->project_name : null;
                         if (isset($data['subprject_name']) && !empty($data['subprject_name'])) {
                             $subproject_name = $data['subprject_name'];
                             $model_name = collect($subproject_name)
@@ -858,7 +885,9 @@ class DashboardController extends Controller
                 <tbody>';
                 if (isset($projects) && count($projects) > 0) {
                     foreach ($projects as $data) {
-                        $projectName = Helpers::projectName($data["id"])->project_name;//$data['client_name'];
+                        $daProject = Helpers::projectName($data["id"]);
+                        $projectName = $daProject ? $daProject->project_name : null;
+                        //$projectName = Helpers::projectName($data["id"])->project_name;//$data['client_name'];
                         if (isset($data['subprject_name']) && !empty($data['subprject_name'])) {
                             $subproject_name = $data['subprject_name'];
                             $model_name = collect($subproject_name)
@@ -998,7 +1027,9 @@ class DashboardController extends Controller
                             </thead><tbody>';
 
                 foreach ($client_data as $data) {
-                    $projectName = Helpers::projectName($data->project_id)->aims_project_name;//dd($data->sub_project_id != null);
+                    $daProject = Helpers::projectName($data->project_id);
+                    $projectName = $daProject ? $daProject->aims_project_name : null;
+                  //  $projectName = Helpers::projectName($data->project_id)->aims_project_name;//dd($data->sub_project_id != null);
                     $subProjectName = $data->sub_project_id != null ?  (Helpers::subProjectName($data->project_id,$data->sub_project_id) != null ? Helpers::subProjectName($data->project_id,$data->sub_project_id)->sub_project_name : '--'): '--';
                     $inventoryCount =  $data->inventory_count !=null ? $data->inventory_count : '--';
                     $body_info .= '<tr>';           
