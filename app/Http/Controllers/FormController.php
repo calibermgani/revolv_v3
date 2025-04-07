@@ -916,7 +916,9 @@ class FormController extends Controller
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
               try {
                     $data = $request->all();
-                    $projectName =  Helpers::projectName($data['projectId'])->project_name;
+                  //  $projectName =  Helpers::projectName($data['projectId'])->project_name;
+                    $faProject = Helpers::projectName($data['projectId']);
+                    $projectName = $faProject ? $faProject->project_name : null;
                     $subProjectName = $data['subProjectId'] != null ? Helpers::subProjectName($data['projectId'],$data['subProjectId'])->sub_project_name : 'project';
                     // $subProjectName = $data['subProjectId'] == null ? Helpers::projectName($data['projectId'])->project_name :Helpers::subProjectName($data['projectId'],$data['subProjectId'])->sub_project_name;
                     $table_name= Str::slug((Str::lower($projectName).'_'.Str::lower($subProjectName)),'_');
