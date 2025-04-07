@@ -97,8 +97,11 @@ class ProductionController extends Controller
           //  $subprojects = subproject::with(['clientName'])->where('project_id',$request->project_id)->where('status','Active')->get();
             $subProjectsWithCount = [];
             foreach ($subprojects as $key => $data) {
+                $paProject = Helpers::projectName($clientDetails['projectId']);
+                $paProjectName = $paProject ? $paProject->project_name : null;
                 $subProjectsWithCount[$key]['client_id'] =$clientDetails['id'];
-                $subProjectsWithCount[$key]['client_name'] = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
+                // $subProjectsWithCount[$key]['client_name'] = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
+                $subProjectsWithCount[$key]['client_name'] = $paProjectName;//$clientDetails['client_name'];
                 $subProjectsWithCount[$key]['sub_project_id'] =$data['id'];
                 $subProjectsWithCount[$key]['sub_project_name'] = $data['name'];
                 $projectName = $subProjectsWithCount[$key]['client_name'];
@@ -166,7 +169,9 @@ class ProductionController extends Controller
                $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
                $decodedPracticeName = $subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($subProjectName, 'decode');
-               $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+              // $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               $paProject = Helpers::projectName($decodedProjectName);
+               $decodedClientName = $paProject ? $paProject->project_name : null;
                $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName);
                if($decodedsubProjectName != null &&  $decodedsubProjectName != 'project') {
                 $decodedsubProjectName= $decodedsubProjectName->sub_project_name;
@@ -348,7 +353,9 @@ class ProductionController extends Controller
                $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
                $decodedPracticeName = $subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($subProjectName, 'decode');
-               $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               $paProject = Helpers::projectName($decodedProjectName);
+               $decodedClientName = $paProject ? $paProject->project_name : null;
                $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                $columnsHeader=[];
@@ -469,7 +476,9 @@ class ProductionController extends Controller
                $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
                $decodedPracticeName = $subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($subProjectName, 'decode');
-               $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+              // $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+              $paProject = Helpers::projectName($decodedProjectName);
+              $decodedClientName = $paProject ? $paProject->project_name : null;
                $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                $columnsHeader=[];
@@ -611,7 +620,9 @@ class ProductionController extends Controller
                $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
                $decodedPracticeName = $subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($subProjectName, 'decode');
-               $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               $paProject = Helpers::projectName($decodedProjectName);
+               $decodedClientName = $paProject ? $paProject->project_name : null;
                $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                $columnsHeader=[];
@@ -718,7 +729,9 @@ class ProductionController extends Controller
                $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
                $decodedPracticeName = $subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($subProjectName, 'decode');
-               $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               $paProject = Helpers::projectName($decodedProjectName);
+               $decodedClientName = $paProject ? $paProject->project_name : null;
                $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                $columnsHeader=[];
@@ -840,7 +853,9 @@ class ProductionController extends Controller
                $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
                $decodedPracticeName = $subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($subProjectName, 'decode');
-               $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+              // $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+              $paProject = Helpers::projectName($decodedProjectName);
+              $decodedClientName = $paProject ? $paProject->project_name : null;
                $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                $columnsHeader=[];
@@ -935,7 +950,9 @@ class ProductionController extends Controller
                 $decodedProjectName = Helpers::encodeAndDecodeID($request['clientName'], 'decode');
                 // $decodedPracticeName = Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
                 $decodedPracticeName = $request['subProjectName'] == '--' ? NULL : Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
-                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               // $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               $paProject = Helpers::projectName($decodedProjectName);
+               $decodedClientName = $paProject ? $paProject->project_name : null;
                 // $decodedsubProjectName = Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                 $decodedsubProjectName = $decodedPracticeName == NULL ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
@@ -975,7 +992,9 @@ class ProductionController extends Controller
                 $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
                 $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
                 $decodedPracticeName =  $subProjectName == '--' ? NULL : Helpers::encodeAndDecodeID($subProjectName, 'decode');
-                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               // $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               $paProject = Helpers::projectName($decodedProjectName);
+               $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $decodedPracticeName == NULL ? 'project':Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
@@ -1337,7 +1356,9 @@ class ProductionController extends Controller
                 $decodedProjectName = Helpers::encodeAndDecodeID($request['clientName'], 'decode');
                 // $decodedPracticeName = Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
                 $decodedPracticeName = $request['subProjectName'] == '--' ? '--' : Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
-                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               // $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               $paProject = Helpers::projectName($decodedProjectName);
+               $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
@@ -1371,7 +1392,9 @@ class ProductionController extends Controller
                 $data['emp_id'] = Session::get('loginDetails')['userDetail']['emp_id'];
                 $data['project_id'] = Helpers::encodeAndDecodeID($request['clientName'], 'decode');
                 $data['sub_project_id'] = $data['subProjectName'] == '--' ? NULL : Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
-                $decodedClientName = Helpers::projectName($data['project_id'])->project_name;
+               // $decodedClientName = Helpers::projectName($data['project_id'])->project_name;
+               $paProject = Helpers::projectName($data['project_id']);
+               $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $data['sub_project_id'] == NULL ? 'project' :Helpers::subProjectName($data['project_id'] ,$data['sub_project_id'])->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
@@ -1415,7 +1438,9 @@ class ProductionController extends Controller
                 $data['emp_id'] = Session::get('loginDetails')['userDetail']['emp_id'];
                 $data['project_id'] = Helpers::encodeAndDecodeID($request['clientName'], 'decode');
                 $data['sub_project_id'] = $data['subProjectName'] == '--' ? NULL : Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
-                $decodedClientName = Helpers::projectName($data['project_id'])->project_name;
+               // $decodedClientName = Helpers::projectName($data['project_id'])->project_name;
+                $paProject = Helpers::projectName($data['project_id']);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $data['sub_project_id'] == NULL ? 'project' :Helpers::subProjectName($data['project_id'] ,$data['sub_project_id'])->sub_project_name;
                 $data['start_time'] = $currentTime->format('Y-m-d H:i:s');
                 $data['record_status'] = $data['urlDynamicValue'] == "Revoke" ? "Revoke" : 'CE_'.ucwords($data['urlDynamicValue']) ;//dd($data['urlDynamicValue'],$data['record_status']);
@@ -1458,7 +1483,9 @@ class ProductionController extends Controller
                  $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
                 $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
                 $decodedPracticeName =  $subProjectName == '--' ? NULL : Helpers::encodeAndDecodeID($subProjectName, 'decode');
-                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               // $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $paProject = Helpers::projectName($decodedProjectName);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $decodedPracticeName == NULL ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
@@ -1744,7 +1771,9 @@ class ProductionController extends Controller
                 $data =  $request->all();
                 $decodedProjectName = Helpers::encodeAndDecodeID($data['clientName'], 'decode');
                 $decodedPracticeName = $data['subProjectName'] == '--' ? '--' : Helpers::encodeAndDecodeID($data['subProjectName'], 'decode');
-                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $paProject = Helpers::projectName($decodedProjectName);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
@@ -1777,7 +1806,9 @@ class ProductionController extends Controller
                 $data['emp_id'] = Session::get('loginDetails')['userDetail']['emp_id'];
                 $data['project_id'] = Helpers::encodeAndDecodeID($request['clientName'], 'decode');
                 $data['sub_project_id'] = $data['subProjectName'] == '--' ? NULL : Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
-                $decodedClientName = Helpers::projectName($data['project_id'])->project_name;
+                //$decodedClientName = Helpers::projectName($data['project_id'])->project_name;
+                $paProject = Helpers::projectName($data['project_id']);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $data['sub_project_id'] == NULL ? 'project' :Helpers::subProjectName($data['project_id'] ,$data['sub_project_id'])->sub_project_name;
                 $data['start_time'] = $currentTime->format('Y-m-d H:i:s');
                 $data['record_status'] = $data['urlDynamicValue'] == "Revoke" ? "Revoke" : 'CE_'.ucwords($data['urlDynamicValue']) ;//dd($data['urlDynamicValue'],$data['record_status']);
@@ -1883,7 +1914,9 @@ class ProductionController extends Controller
                  $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
                 $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
                 $decodedPracticeName =  $subProjectName == '--' ? NULL : Helpers::encodeAndDecodeID($subProjectName, 'decode');
-                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $paProject = Helpers::projectName($decodedProjectName);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $decodedPracticeName == NULL ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
@@ -1999,7 +2032,9 @@ class ProductionController extends Controller
                $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
                $decodedPracticeName = $subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($subProjectName, 'decode');
-               $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               $paProject = Helpers::projectName($decodedProjectName);
+               $decodedClientName = $paProject ? $paProject->project_name : null;
                $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                $columnsHeader=[];
@@ -2167,7 +2202,9 @@ class ProductionController extends Controller
                $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
                $decodedPracticeName = $subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($subProjectName, 'decode');
-               $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               $paProject = Helpers::projectName($decodedProjectName);
+               $decodedClientName = $paProject ? $paProject->project_name : null;
                $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                $columnsHeader=[];
@@ -2274,7 +2311,9 @@ class ProductionController extends Controller
                $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
                $decodedPracticeName = $subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($subProjectName, 'decode');
-               $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               $paProject = Helpers::projectName($decodedProjectName);
+               $decodedClientName = $paProject ? $paProject->project_name : null;
                $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                $columnsHeader=[];
@@ -2385,7 +2424,9 @@ class ProductionController extends Controller
             try {
                 $decodedProjectName = Helpers::encodeAndDecodeID($request->clientName, 'decode');
                 $decodedPracticeName =  $request->subProjectName == '--' ? NULL : Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
-                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $paProject = Helpers::projectName($decodedProjectName);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $decodedPracticeName == NULL ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
@@ -2423,7 +2464,9 @@ class ProductionController extends Controller
                 $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                 $decodedProjectName = Helpers::encodeAndDecodeID($request->clientName, 'decode');
                 $decodedPracticeName = $request->subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
-                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $paProject = Helpers::projectName($decodedProjectName);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName);
                 if($decodedsubProjectName != null &&  $decodedsubProjectName != 'project') {
                     $decodedsubProjectName= $decodedsubProjectName->sub_project_name;
@@ -2534,7 +2577,9 @@ class ProductionController extends Controller
                 $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                 $decodedProjectName = Helpers::encodeAndDecodeID($request->clientName, 'decode');
                 $decodedPracticeName = $request->subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
-                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $paProject = Helpers::projectName($decodedProjectName);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName);
                 if($decodedsubProjectName != null &&  $decodedsubProjectName != 'project') {
                     $decodedsubProjectName= $decodedsubProjectName->sub_project_name;
@@ -2633,7 +2678,9 @@ class ProductionController extends Controller
                 $data =  $request->all();
                 $decodedProjectName = Helpers::encodeAndDecodeID($request->clientName, 'decode');
                 $decodedPracticeName =  $request->subProjectName == '--' ? NULL : Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
-                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $paProject = Helpers::projectName($decodedProjectName);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $decodedPracticeName == NULL ? 'project':Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
@@ -2667,7 +2714,9 @@ class ProductionController extends Controller
             try {
                 $decodedProjectName = Helpers::encodeAndDecodeID($request['clientName'], 'decode');
                 $decodedPracticeName = $request['subProjectName'] == '--' ? '--' : Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
-                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $paProject = Helpers::projectName($decodedProjectName);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
@@ -2765,7 +2814,9 @@ class ProductionController extends Controller
             try {
                 $decodedProjectName = Helpers::encodeAndDecodeID($request['clientName'], 'decode');
                 $decodedPracticeName = $request['subProjectName'] == '--' ? '--' : Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
-                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $paProject = Helpers::projectName($decodedProjectName);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
@@ -2853,7 +2904,9 @@ class ProductionController extends Controller
                 $checkedValues = json_decode($request->input('checkedRowValues'), true);            
                 $decodedProjectName = Helpers::encodeAndDecodeID($request->clientName, 'decode');
                 $decodedPracticeName =  $request->subProjectName == '--' ? NULL : Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
-                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $paProject = Helpers::projectName($decodedProjectName);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $decodedPracticeName == NULL ? 'project':Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
@@ -3100,7 +3153,9 @@ class ProductionController extends Controller
                $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
                $decodedPracticeName = $subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($subProjectName, 'decode');
-               $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+               $paProject = Helpers::projectName($decodedProjectName);
+               $decodedClientName = $paProject ? $paProject->project_name : null;
                $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                $columnsHeader=[];
@@ -3206,7 +3261,9 @@ class ProductionController extends Controller
             try {
                 $decodedProjectName = Helpers::encodeAndDecodeID($request['clientName'], 'decode');
                 $decodedPracticeName = $request['subProjectName'] == '--' ? '--' : Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
-                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $paProject = Helpers::projectName($decodedProjectName);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
@@ -3293,7 +3350,9 @@ class ProductionController extends Controller
                 $subProjectName=$uniqueColumnData['subProjectName'];
                 $decodedProjectName = Helpers::encodeAndDecodeID($uniqueColumnData['clientName'], 'decode');
                 $decodedPracticeName = $uniqueColumnData['subProjectName'] == '--' ? '--' :Helpers::encodeAndDecodeID($uniqueColumnData['subProjectName'], 'decode');
-                $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
+                $paProject = Helpers::projectName($decodedProjectName);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $columnsHeader=[];
