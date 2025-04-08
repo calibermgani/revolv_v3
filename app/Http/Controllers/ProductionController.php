@@ -2792,7 +2792,7 @@ class ProductionController extends Controller
 
                     } else {
                       // $query->where('CE_emp_id',$loginEmpId)->where('chart_status','CE_Assigned')->update(['chart_status' => 'AR_non_workable']);
-                        $existingRecord =$query->where('chart_status', 'CE_Assigned')->first();
+                        $existingRecord =$query->where('CE_emp_id',$loginEmpId)->where('chart_status', 'CE_Assigned')->first();
                         if ($existingRecord) {
                             $updateData = ['chart_status' => 'AR_non_workable'];                            
                             if ($columnToUpdate) {
@@ -2823,43 +2823,94 @@ class ProductionController extends Controller
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName;
+                $datasModelClass =  "App\\Models\\" . $modelName.'Datas';
                 $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
                 $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                 $checkedValues = json_decode($request->input('checkedRowValues'), true);
+                $columns = Schema::getColumnListing($table_name);
+                $possibleColumns = ['ar_notes', 'notes', 'remarks', 'comments'];
+                $columnToUpdate = null;
+                foreach ($possibleColumns as $column) {
+                    if (in_array($column, $columns)) {
+                        $columnToUpdate = $column;
+                        break; // Stop at the first found column
+                    }
+                }
                 if($request['selectedRecords'] == "none") {
                    if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)) {
                         foreach($checkedValues as $data) {
                             $existingRecord = $modelClass::where('id',$data['value'])->where('chart_status','AR_non_workable')->first();
-                            $existingRecord->update(['chart_status' => 'CE_Assigned']);
+                            $updateData = ['chart_status' => 'CE_Assigned'];                            
+                            if ($columnToUpdate) {
+                                $updateData[$columnToUpdate] = NULL;
+                            }            
+                            // $existingRecord->update(['chart_status' => 'CE_Assigned']);
+                            $existingRecord->update($updateData);
+                            $datasExistingRecord = $datasModelClass::where('parent_id',$data['value'])->where('chart_status','AR_non_workable')->first();
+                            if ($datasExistingRecord) {
+                                $datasExistingRecord->forceDelete();
+                            }
                         }
                     } else {
                         foreach($checkedValues as $data) {
                             $existingRecord = $modelClass::where('id',$data['value'])->where('CE_emp_id',$loginEmpId)->where('chart_status','AR_non_workable')->first();
-                            $existingRecord->update(['chart_status' => 'CE_Assigned']);
+                            $updateData = ['chart_status' => 'CE_Assigned'];                            
+                            if ($columnToUpdate) {
+                                $updateData[$columnToUpdate] = NULL;
+                            }  
+                            //$existingRecord->update(['chart_status' => 'CE_Assigned']);
+                            $existingRecord->update($updateData);
+                            $datasExistingRecord = $datasModelClass::where('parent_id',$data['value'])->where('CE_emp_id',$loginEmpId)->where('chart_status','AR_non_workable')->first();
+                            if ($datasExistingRecord) {
+                                $datasExistingRecord->forceDelete();
+                            }
                         }
                     }   
                 } else {
                     $query = $modelClass::query();
+                    $dataQuery = $datasModelClass::query();
                     $searchData = []; 
                     foreach ($request->except('_token', 'checkedRowValues', 'clientName','subProjectName','selectedRecords') as $key => $value) {
                         $searchData[$key] = $value;
                         if (is_numeric($value) || is_bool($value)) {
                             $query->where($key, $value);  
+                            $dataQuery->where($key, $value);  
                         } elseif ($this->isDate($value)) {  
                             $query->whereDate($key, '=', $value);  
+                            $dataQuery->whereDate($key, '=', $value);  
                         } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); 
+                            $dataQuery->where($key, $value);  
                         } else {
                             if($value != null) {
                             $query->where($key, 'like', '%' . $value . '%'); 
+                            $dataQuery->where($key, 'like', '%' . $value . '%'); 
                             }
                         }
                     }
                    if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)) {
-                        $query->where('chart_status', 'AR_non_workable')->update(['chart_status' => 'CE_Assigned']);
+                            $updateData = ['chart_status' => 'CE_Assigned'];                            
+                            if ($columnToUpdate) {
+                                $updateData[$columnToUpdate] = NULL;
+                            }  
+                            // $query->where('chart_status', 'AR_non_workable')->update(['chart_status' => 'CE_Assigned']);
+                            $query->where('chart_status', 'AR_non_workable')->update($updateData);
+                            $datasExistingRecord = $dataQuery->where('chart_status','AR_non_workable')->first();
+                            if ($datasExistingRecord) {
+                                $datasExistingRecord->forceDelete();
+                            }
 
                     } else {
-                        $query->where('CE_emp_id',$loginEmpId)->where('chart_status','AR_non_workable')->update(['chart_status' => 'CE_Assigned']);
+                        $updateData = ['chart_status' => 'CE_Assigned'];                            
+                        if ($columnToUpdate) {
+                            $updateData[$columnToUpdate] = NULL;
+                        }  
+                        //$query->where('CE_emp_id',$loginEmpId)->where('chart_status','AR_non_workable')->update(['chart_status' => 'CE_Assigned']);
+                        $query->where('CE_emp_id',$loginEmpId)->where('chart_status','AR_non_workable')->update($updateData);
+                        $datasExistingRecord = $dataQuery->where('CE_emp_id',$loginEmpId)->where('chart_status','AR_non_workable')->first();
+                        if ($datasExistingRecord) {
+                            $datasExistingRecord->forceDelete();
+                        }
                     }
                 }
                 return response()->json(['success' => true]);
