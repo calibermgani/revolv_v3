@@ -619,7 +619,7 @@ class QAProductionController extends Controller
                 $subProjectId = $subProjectName == '--' ? null : $decodedPracticeName;$startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString();
                if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)) {
                     if (class_exists($modelClass)) {
-                        $completedProjectDetails = $query->where('chart_status', 'QA_Completed')->orderBy('id', 'ASC')->whereBetween('updated_at',[$startDate,$endDate])->paginate(50);
+                        $completedProjectDetails = $query->where('chart_status', 'QA_Completed')->orderBy('id', 'DESC')->whereBetween('updated_at',[$startDate,$endDate])->paginate(50);
                         $assignedCount = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess','Auto_Close'])->where('qa_work_status','Sampling')->count();
                         $completedCount = $modelClass::where('chart_status', 'QA_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $pendingCount = $modelClass::where('chart_status', 'QA_Pending')->whereBetween('updated_at',[$startDate,$endDate])->count();
@@ -633,7 +633,7 @@ class QAProductionController extends Controller
                     }
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
-                        $completedProjectDetails = $query->where('chart_status', 'QA_Completed')->orderBy('id', 'ASC')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->paginate(50);
+                        $completedProjectDetails = $query->where('chart_status', 'QA_Completed')->orderBy('id', 'DESC')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->paginate(50);
                         $assignedCount = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess','Auto_Close'])->where('qa_work_status','Sampling')->where('QA_emp_id', $loginEmpId)->count();
                         $completedCount = $modelClass::where('chart_status', 'QA_Completed')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $pendingCount = $modelClass::where('chart_status', 'QA_Pending')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
