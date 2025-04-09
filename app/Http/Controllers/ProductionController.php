@@ -225,8 +225,8 @@ class ProductionController extends Controller
                     if (class_exists($modelClass)) {
                        $modelClassDuplcates = "App\\Models\\" . $modelName.'Duplicates';
                            if($resourceName != null) {
-                                    $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','CE_Inprocess')->orderBy('id','desc')->pluck('record_id')->toArray();
-                                    $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','desc')->pluck('record_id')->toArray();
+                                    $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','CE_Inprocess')->orderBy('id','DESC')->pluck('record_id')->toArray();
+                                    $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','DESC')->pluck('record_id')->toArray();
                                     $assignedProjectDetails = $query->whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$resourceName);
                                     if (!empty($existingCallerChartsWorkLogs) && $existingCallerChartsWorkLogs[0] != null) {
                                         $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
@@ -251,8 +251,8 @@ class ProductionController extends Controller
                                                                                     })->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
                                     $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();                                                
                                } else {
-                                    $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','CE_Inprocess')->orderBy('id','desc')->pluck('record_id')->toArray();
-                                    $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','desc')->pluck('record_id')->toArray();
+                                    $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','CE_Inprocess')->orderBy('id','DESC')->pluck('record_id')->toArray();
+                                    $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','DESC')->pluck('record_id')->toArray();
                                     $assignedProjectDetails = $query->whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->whereNotNull('CE_emp_id');                        
                                     if (!empty($existingCallerChartsWorkLogs) && $existingCallerChartsWorkLogs[0] != null) {
                                             $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
@@ -283,8 +283,8 @@ class ProductionController extends Controller
                    }
                } elseif ($loginEmpId) {
                    if (class_exists($modelClass)) {
-                       $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','CE_Inprocess')->orderBy('id','desc')->pluck('record_id')->toArray();
-                       $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','desc')->pluck('record_id')->toArray();
+                       $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','CE_Inprocess')->orderBy('id','DESC')->pluck('record_id')->toArray();
+                       $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','DESC')->pluck('record_id')->toArray();
                        $assignedProjectDetails = $query->whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId);
                         if (!empty($existingCallerChartsWorkLogs) && $existingCallerChartsWorkLogs[0] != null) {
                             $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
@@ -400,7 +400,7 @@ class ProductionController extends Controller
               if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)) {
                    if (class_exists($modelClass)) {
                     //    $pendingProjectDetails = $modelClass::where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','ASC')->get();
-                       $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','CE_Pending')->orderBy('id','desc')->pluck('record_id')->toArray();
+                       $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','CE_Pending')->orderBy('id','DESC')->pluck('record_id')->toArray();
                        $pendingProjectDetails = $query->where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate]);
                             if (!empty($existingCallerChartsWorkLogs)) {
                                 $pendingProjectDetails = $pendingProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
@@ -426,7 +426,7 @@ class ProductionController extends Controller
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
                     //   $pendingProjectDetails = $modelClass::where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate])->where('CE_emp_id',$loginEmpId)->orderBy('id','ASC')->get();
-                      $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','CE_Pending')->orderBy('id','desc')->pluck('record_id')->toArray();
+                      $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','CE_Pending')->orderBy('id','DESC')->pluck('record_id')->toArray();
                       $pendingProjectDetails = $query->where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate])->where('CE_emp_id',$loginEmpId);
                       if (!empty($existingCallerChartsWorkLogs)) {
                           $pendingProjectDetails = $pendingProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
@@ -523,7 +523,7 @@ class ProductionController extends Controller
               if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)) {
                    if (class_exists($modelClass)) {
                         if($resourceName != null) {
-                            $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','CE_Hold')->orderBy('id','desc')->pluck('record_id')->toArray();
+                            $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','CE_Hold')->orderBy('id','DESC')->pluck('record_id')->toArray();
                             // $holdProjectDetails = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','ASC')->get();
                             $holdProjectDetails = $query->where('chart_status','CE_Hold')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate]);
                             if (!empty($existingCallerChartsWorkLogs)) {
@@ -547,7 +547,7 @@ class ProductionController extends Controller
                                 $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
                         } else {
                             // $holdProjectDetails = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','ASC')->get();
-                            $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','CE_Hold')->orderBy('id','desc')->pluck('record_id')->toArray();
+                            $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','CE_Hold')->orderBy('id','DESC')->pluck('record_id')->toArray();
                             $holdProjectDetails = $query->where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate]);
                             if (!empty($existingCallerChartsWorkLogs)) {
                                 $holdProjectDetails = $holdProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
@@ -573,7 +573,7 @@ class ProductionController extends Controller
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
                       //   $holdProjectDetails = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->where('CE_emp_id',$loginEmpId)->orderBy('id','ASC')->get();
-                      $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','CE_Hold')->orderBy('id','desc')->pluck('record_id')->toArray();
+                      $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','CE_Hold')->orderBy('id','DESC')->pluck('record_id')->toArray();
                       $holdProjectDetails = $query->where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->where('CE_emp_id',$loginEmpId);
                       if (!empty($existingCallerChartsWorkLogs)) {
                           $holdProjectDetails = $holdProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
@@ -777,7 +777,7 @@ class ProductionController extends Controller
               if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)) {
                    if (class_exists($modelClass)) {
                     //    $revokeProjectDetails = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','ASC')->paginate(50);
-                       $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','desc')->pluck('record_id')->toArray();
+                       $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','DESC')->pluck('record_id')->toArray();
                        $revokeProjectDetails = $query->where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate]);
                         if (!empty($existingCallerChartsWorkLogs)) {
                             $revokeProjectDetails = $revokeProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
@@ -801,7 +801,7 @@ class ProductionController extends Controller
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
                      //   $revokeProjectDetails = $modelClass::where('chart_status','Revoke')->whereNull('tl_error_count')->where('CE_emp_id',$loginEmpId)->orderBy('id','ASC')->paginate(50);
-                      $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','desc')->pluck('record_id')->toArray();
+                      $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','DESC')->pluck('record_id')->toArray();
                       $revokeProjectDetails = $query->where('chart_status','Revoke')->whereNull('tl_error_count')->where('CE_emp_id',$loginEmpId);
                       if (!empty($existingCallerChartsWorkLogs)) {
                           $revokeProjectDetails = $revokeProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
@@ -897,7 +897,7 @@ class ProductionController extends Controller
                $duplicateProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
               if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)) {
                    if (class_exists($modelClassDuplcates)) {
-                        //   $duplicateProjectDetails =  $modelClass::whereNotIn('status',['agree','dis_agree'])->orderBy('id','desc')->get();
+                        //   $duplicateProjectDetails =  $modelClass::whereNotIn('status',['agree','dis_agree'])->orderBy('id','DESC')->get();
                         // $duplicateProjectDetails = $query->orderBy('id','ASC')->whereBetween('created_at',[$startDate,$endDate])->paginate(50);
                         $duplicateProjectDetails = $query->whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->orderBy('id','ASC')->paginate(50);
                         $assignedCount =  $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->whereNotNull('CE_emp_id')->count();
@@ -1013,7 +1013,7 @@ class ProductionController extends Controller
                 }
                 $data['invoke_date'] = date('Y-m-d',strtotime($data['invoke_date']));
                 $data['parent_id'] = $data['idValue'];//dd($modelClass::first(),$originalModelClass::first(),$data);
-                $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','desc')->first();
+                $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','DESC')->first();
                 $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->get();
                 $coderCompletedRecordsCount = count($coderCompletedRecords);
                  $data['coder_work_date'] = $data['ar_at'] = NULL;
@@ -1027,10 +1027,10 @@ class ProductionController extends Controller
                          ->where(function($query) use ($loginEmpId) {
                             $query->where('coder_emp_id', $loginEmpId)
                                 ->orWhereNull('coder_emp_id');
-                        })->orderBy('id', 'desc')->get();
-                        // $qasamplingDetailsList  = QualitySampling::where('project_id',$decodedProjectName)->whereIn('coder_emp_id',[$loginEmpId,NULL])->orderBy('id','desc')->get();
+                        })->orderBy('id', 'DESC')->get();
+                        // $qasamplingDetailsList  = QualitySampling::where('project_id',$decodedProjectName)->whereIn('coder_emp_id',[$loginEmpId,NULL])->orderBy('id','DESC')->get();
                         // if( count($qasamplingDetailsList) == 0) {
-                        //     $qasamplingDetailsList  = QualitySampling::where('project_id',$decodedProjectName)->orderBy('id','desc')->get();
+                        //     $qasamplingDetailsList  = QualitySampling::where('project_id',$decodedProjectName)->orderBy('id','DESC')->get();
                         // }
                         $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
                         foreach ($qasamplingDetailsList as $qasamplingDetails) {
@@ -1060,7 +1060,7 @@ class ProductionController extends Controller
                                                 ->where(function($query) use ($loginEmpId) {
                                                     $query->where('coder_emp_id', $loginEmpId)
                                                         ->orWhereNull('coder_emp_id');
-                                                })->orderBy('id', 'desc')->get();
+                                                })->orderBy('id', 'DESC')->get();
                         $qasamplingDetailsPercentage = QualitySampling::where('project_id', $decodedProjectName)
                             ->where('sub_project_id', $decodedPracticeName)
                             ->where(function($query) use ($loginEmpId) {
@@ -1143,7 +1143,7 @@ class ProductionController extends Controller
                          ->where(function($query) use ($loginEmpId) {
                             $query->where('coder_emp_id', $loginEmpId)
                                 ->orWhereNull('coder_emp_id');
-                        })->orderBy('id', 'desc')->get();
+                        })->orderBy('id', 'DESC')->get();
                         $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
                         foreach ($qasamplingDetailsList as $qasamplingDetails) {
                             if($qasamplingDetails != null) {
@@ -1169,7 +1169,7 @@ class ProductionController extends Controller
                                                 ->where(function($query) use ($loginEmpId) {
                                                     $query->where('coder_emp_id', $loginEmpId)
                                                         ->orWhereNull('coder_emp_id');
-                                                })->orderBy('id', 'desc')->get();
+                                                })->orderBy('id', 'DESC')->get();
                           $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
                         foreach ($qasamplingDetailsList as $qasamplingDetails) {
                             if($qasamplingDetails != null) {
@@ -1459,7 +1459,7 @@ class ProductionController extends Controller
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName;
                 $modelClassDatas = "App\\Models\\" . $modelName.'Datas';
-                $clientData = $modelClassDatas::where('parent_id',$data['record_id'])->orderBy('id','desc')->first();
+                $clientData = $modelClassDatas::where('parent_id',$data['record_id'])->orderBy('id','DESC')->first();
                 if($clientData != null) {
                     $clientData = $clientData->toArray();
                 } else {
@@ -1503,7 +1503,7 @@ class ProductionController extends Controller
                 }
                 $data['invoke_date'] = date('Y-m-d',strtotime($data['invoke_date']));
                 $data['parent_id'] = $data['parentId'];
-                $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','desc')->first();
+                $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','DESC')->first();
                 // $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->get();
                 $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->get();
                 $coderCompletedRecordsCount = count($coderCompletedRecords); $data['coder_work_date'] = $data['ar_at'] = NULL;
@@ -1517,10 +1517,10 @@ class ProductionController extends Controller
                                                 ->where(function($query) use ($loginEmpId) {
                                                     $query->where('coder_emp_id', $loginEmpId)
                                                         ->orWhereNull('coder_emp_id');
-                                                })->orderBy('id', 'desc')->get();
-                        // $qasamplingDetailsList = QualitySampling::where('project_id',$decodedProjectName)->where('coder_emp_id',$loginEmpId)->orderBy('id','desc')->get();
+                                                })->orderBy('id', 'DESC')->get();
+                        // $qasamplingDetailsList = QualitySampling::where('project_id',$decodedProjectName)->where('coder_emp_id',$loginEmpId)->orderBy('id','DESC')->get();
                         // if(count($qasamplingDetailsList) == 0) {
-                        //     $qasamplingDetailsList = QualitySampling::where('project_id',$decodedProjectName)->orderBy('id','desc')->get();
+                        //     $qasamplingDetailsList = QualitySampling::where('project_id',$decodedProjectName)->orderBy('id','DESC')->get();
                         // }
                         $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
                         foreach ($qasamplingDetailsList as $qasamplingDetails) {
@@ -1550,7 +1550,7 @@ class ProductionController extends Controller
                                                 ->where(function($query) use ($loginEmpId) {
                                                     $query->where('coder_emp_id', $loginEmpId)
                                                         ->orWhereNull('coder_emp_id');
-                                                })->orderBy('id', 'desc')->get();
+                                                })->orderBy('id', 'DESC')->get();
                         $qasamplingDetailsPercentage = QualitySampling::where('project_id', $decodedProjectName)
                         ->where('sub_project_id', $decodedPracticeName)
                         ->where(function($query) use ($loginEmpId) {
@@ -1631,7 +1631,7 @@ class ProductionController extends Controller
                                                 ->where(function($query) use ($loginEmpId) {
                                                     $query->where('coder_emp_id', $loginEmpId)
                                                         ->orWhereNull('coder_emp_id');
-                                                })->orderBy('id', 'desc')->get();
+                                                })->orderBy('id', 'DESC')->get();
                          $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
                         foreach ($qasamplingDetailsList as $qasamplingDetails) {
                             if($qasamplingDetails != null) {
@@ -1658,7 +1658,7 @@ class ProductionController extends Controller
                                                 ->where(function($query) use ($loginEmpId) {
                                                     $query->where('coder_emp_id', $loginEmpId)
                                                         ->orWhereNull('coder_emp_id');
-                                                })->orderBy('id', 'desc')->get();
+                                                })->orderBy('id', 'DESC')->get();
                         $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
                         foreach ($qasamplingDetailsList as $qasamplingDetails) {
                             if($qasamplingDetails != null) {
@@ -1781,7 +1781,7 @@ class ProductionController extends Controller
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName;
                 $modelClassDatas = "App\\Models\\" . $modelName.'Datas';
-                $clientData = $modelClassDatas::where('parent_id',$data['record_id'])->orderBy('id','desc')->first();
+                $clientData = $modelClassDatas::where('parent_id',$data['record_id'])->orderBy('id','DESC')->first();
                 if($clientData != null) {
                     $clientData = $clientData->toArray();
                 } else {
@@ -1820,7 +1820,7 @@ class ProductionController extends Controller
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName;
                 $modelClassDatas = "App\\Models\\" . $modelName.'Datas';
-                $clientData = $modelClassDatas::where('parent_id',$data['record_id'])->orderBy('id','desc')->first();
+                $clientData = $modelClassDatas::where('parent_id',$data['record_id'])->orderBy('id','DESC')->first();
                 if($clientData != null) {
                     $clientData = $clientData->toArray();
                 } else {
@@ -1862,7 +1862,7 @@ class ProductionController extends Controller
     //             }
 
     //             $data['parent_id'] = $data['parentId'];
-    //             $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','desc')->first();
+    //             $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','DESC')->first();
     //             $record = $originalModelClass::where('id', $data['parent_id'])->first();
     //             $qaData = $originalModelClass::where('id', $data['parent_id'])->first()->toArray();
     //             $excludeKeys = ['id', 'created_at', 'updated_at', 'deleted_at'];
@@ -1935,7 +1935,7 @@ class ProductionController extends Controller
                 }
                 $data['invoke_date'] = date('Y-m-d',strtotime($data['invoke_date']));
                 $data['parent_id'] = $data['parentId'];
-                $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','desc')->first();
+                $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','DESC')->first();
                 $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->get();
                 $coderCompletedRecordsCount = count($coderCompletedRecords); $data['coder_work_date'] = $data['ar_at'] = NULL;
                 $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
@@ -2083,7 +2083,7 @@ class ProductionController extends Controller
                     if (class_exists($modelClass)) {
                        $modelClassDuplcates = "App\\Models\\" . $modelName.'Duplicates';
                        $unAssignedProjectDetails = $query->where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->orderBy('id','ASC')->paginate(50);
-                       $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','desc')->pluck('record_id')->toArray();
+                       $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','DESC')->pluck('record_id')->toArray();
                     //    $assignedDropDownIds = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->select('CE_emp_id')->groupBy('CE_emp_id')->pluck('CE_emp_id')->toArray();
                        $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->whereNotNull('CE_emp_id')->count();
                        $completedCount = $modelClass::where('chart_status','CE_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
@@ -2119,7 +2119,7 @@ class ProductionController extends Controller
                } elseif ($loginEmpId) {
                    if (class_exists($modelClass)) {
                        $unAssignedProjectDetails = $query->whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->orderBy('id','ASC')->paginate(50);
-                       $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','desc')->pluck('record_id')->toArray();
+                       $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','DESC')->pluck('record_id')->toArray();
                        $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->count();
                        $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
@@ -2372,7 +2372,7 @@ class ProductionController extends Controller
                        $modelClassDuplcates = "App\\Models\\" .$modelName.'Duplicates';
                        $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                        $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
-                       $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','desc')->pluck('record_id')->toArray();
+                       $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','DESC')->pluck('record_id')->toArray();
                        $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                    }
                 } else if ($loginEmpId) {
@@ -2391,7 +2391,7 @@ class ProductionController extends Controller
                                     $query->whereNull('ar_manager_rebuttal_status')
                                         ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
                             })->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                    $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','desc')->pluck('record_id')->toArray();
+                    $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','DESC')->pluck('record_id')->toArray();
                     $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                    }
                  }
@@ -2435,7 +2435,7 @@ class ProductionController extends Controller
                 $modelName = Str::studly($table_name);
                 $originalModelClass = "App\\Models\\" . $modelName;
                 $modelClass = "App\\Models\\" . $modelName.'Datas';
-                $datasRecord = $modelClass::where('parent_id', $request->parentId)->orderBy('id','desc')->first();
+                $datasRecord = $modelClass::where('parent_id', $request->parentId)->orderBy('id','DESC')->first();
                 $record = $originalModelClass::where('id', $request->parentId)->first();                
                 if($request->ar_manager_rebuttal_status == 'agree') {
                     $chargeStatus  =  $request->chargeStatus;
@@ -2987,7 +2987,7 @@ class ProductionController extends Controller
                     $data = array_merge($originData,$originDataArray);
                    // dd($originDataArray,$data,$checkedValues);
                     $loginEmpId = $originalModelClass::where('id',$data['parent_id'])->first()->CE_emp_id;
-                    $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','desc')->first();
+                    $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','DESC')->first();
                     $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->get();
                     $coderCompletedRecordsCount = count($coderCompletedRecords); $data['coder_work_date'] = $data['ar_at'] = NULL;
                     $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
@@ -3000,7 +3000,7 @@ class ProductionController extends Controller
                             ->where(function($query) use ($loginEmpId) {
                                 $query->where('coder_emp_id', $loginEmpId)
                                     ->orWhereNull('coder_emp_id');
-                            })->orderBy('id', 'desc')->get();
+                            })->orderBy('id', 'DESC')->get();
                             $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
                             foreach ($qasamplingDetailsList as $qasamplingDetails) {
                                 if($qasamplingDetails != null) {
@@ -3025,7 +3025,7 @@ class ProductionController extends Controller
                                                     ->where(function($query) use ($loginEmpId) {
                                                         $query->where('coder_emp_id', $loginEmpId)
                                                             ->orWhereNull('coder_emp_id');
-                                                    })->orderBy('id', 'desc')->get();
+                                                    })->orderBy('id', 'DESC')->get();
                             $qasamplingDetailsPercentage = QualitySampling::where('project_id', $decodedProjectName)
                             ->where('sub_project_id', $decodedPracticeName)
                             ->where(function($query) use ($loginEmpId) {
@@ -3104,7 +3104,7 @@ class ProductionController extends Controller
                             ->where(function($query) use ($loginEmpId) {
                                 $query->where('coder_emp_id', $loginEmpId)
                                     ->orWhereNull('coder_emp_id');
-                            })->orderBy('id', 'desc')->get();
+                            })->orderBy('id', 'DESC')->get();
                             $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
                             foreach ($qasamplingDetailsList as $qasamplingDetails) {
                                 if($qasamplingDetails != null) {
@@ -3129,7 +3129,7 @@ class ProductionController extends Controller
                                                     ->where(function($query) use ($loginEmpId) {
                                                         $query->where('coder_emp_id', $loginEmpId)
                                                             ->orWhereNull('coder_emp_id');
-                                                    })->orderBy('id', 'desc')->get();
+                                                    })->orderBy('id', 'DESC')->get();
                             $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
                             foreach ($qasamplingDetailsList as $qasamplingDetails) {
                                 if($qasamplingDetails != null) {
