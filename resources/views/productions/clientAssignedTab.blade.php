@@ -2084,7 +2084,7 @@ use Carbon\Carbon;
                                         message: 'Fetching...',
                                     });
                                     document.querySelector('#formConfiguration').submit();
-                                    KTApp.unblock('#myModal_status');
+                                 //   KTApp.unblock('#myModal_status');
 
                                 } else {
 
