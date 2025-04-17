@@ -19,7 +19,8 @@ class CreateQaSampleRandamizersTable extends Migration
             $table->string('sub_project_id')->nullable();
             $table->text('sampling_column_input_type')->nullable();
             $table->text('sampling_column_name')->nullable();
-            $table->text('sampling_column_value')->nullable();
+            $table->text('sampling_column_data_type')->nullable();
+            $table->text('sampling_column_condition')->nullable();
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->timestamps();

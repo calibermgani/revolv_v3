@@ -10,5 +10,5 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class QaSampleRandamizer extends Model
 {
     use HasFactory,SoftDeletes;
-    protected $fillable = ['project_id','sub_project_id','sampling_column_name','created_by','updated_by'];
+    protected $fillable = ['project_id','sub_project_id','sampling_column_name','sampling_column_data_type','sampling_column_condition','created_by','updated_by'];
 }

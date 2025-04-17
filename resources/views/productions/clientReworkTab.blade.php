@@ -2522,7 +2522,7 @@ use Carbon\Carbon;
                                     message: 'Fetching...',
                                 });
                             document.querySelector('#revokeFormConfiguration').submit();
-                                KTApp.unblock('#myModal_status');
+                                //KTApp.unblock('#myModal_status');
 
                             } else {
                                 //   location.reload();
