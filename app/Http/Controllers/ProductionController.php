@@ -2788,7 +2788,7 @@ class ProductionController extends Controller
                 } else {
                     $query = $modelClass::query();
                     $searchData = []; 
-                    foreach ($request->except('_token', 'checkedRowValues', 'clientName','subProjectName','selectedRecords') as $key => $value) {
+                    foreach ($request->except('_token', 'checkedRowValues', 'clientName','subProjectName','selectedRecords','selectedValue') as $key => $value) {
                         $searchData[$key] = $value;
                         if (is_numeric($value) || is_bool($value)) {
                             $query->where($key, $value);  
