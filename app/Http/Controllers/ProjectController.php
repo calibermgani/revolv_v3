@@ -1529,7 +1529,6 @@ class ProjectController extends Controller
                 } else {
                     $projects = collect($this->getClientProjects());
                 }
-            
                 if($request['startDateTime'] && $request['endDateTime']) {
                     $startTime =  Carbon::parse($request['startDateTime']);
                     $endTime = Carbon::parse($request['endDateTime']);
@@ -1624,8 +1623,8 @@ class ProjectController extends Controller
 
             
 
-                $today = Carbon::now();
-                return view('projects.projectHourlyWeb', compact( 'mailBody','headers', 'startTime', 'endTime', 'today','projectIds','subProjectIds'));
+                $today = Carbon::now();$targetType = $request && $request['target_type'] ? $request['target_type'] : "sla_target";
+                return view('projects.projectHourlyWeb', compact( 'mailBody','headers', 'startTime', 'endTime', 'today','projectIds','subProjectIds','targetType'));
             } catch (\Exception $e) {
                 Log::error('Error in ProjectHourlyWeb: ' . $e->getMessage());
                 Log::debug($e->getTraceAsString());
