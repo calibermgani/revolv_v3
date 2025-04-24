@@ -27,7 +27,7 @@
                 @csrf
 
                 <div class="row mr-0 ml-0">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group row row_mar_bm">
                             <div class="col-md-10">
                                 <input type="datetime-local" id="startDateTime" name="startDateTime" class="form-control"
@@ -35,7 +35,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group row row_mar_bm">
                             <div class="col-md-10">
                                 <input type="datetime-local" id="endDateTime" name="endDateTime" class="form-control"
@@ -43,7 +43,20 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2" style="max-width: 12%">
+                        <div class="form-group radio-inline d-flex flex-column">
+                            <label class="radio mb-2">
+                                <input type="radio" name="target_type" id="sla_targt" value="sla_target" autocomplete="off" {{ $targetType == 'sla_target' ? 'checked' : '' }}>
+                                <span></span>SLA TARGET</label>
+                            <label class="radio">
+                                <input type="radio" name="target_type" id="internal_targt" value="internal_target" autocomplete="off" {{ $targetType == 'internal_target' ? 'checked' : '' }}>
+                                <span></span>INTERNAL TARGET</label>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                    <div class="col-md-2">
                         <div class="form-group row">
 
                             <div class="col-md-10">
@@ -74,12 +87,15 @@
                                 <th>Project</th>
                                 <th>Manager Name</th>
                                 <th>Billable FTE</th>
+                                @if ($targetType == 'sla_target')
                                 <th>SLA Target</th>
                                 <th>SLA Target/Day</th>
                                 <th>SLA Target/Hour</th>
+                                @elseif ($targetType == 'internal_target')
                                 <th>Internal Target</th>
                                 <th>Internal Target/Day</th>
                                 <th>Internal Target/Hour</th>
+                                @endif
                                 @foreach ($headers as $timeSlot)
                                     <th> {{ $timeSlot }}</th>
                                 @endforeach                             
@@ -121,9 +137,6 @@
                                         $qaReasons[] = '--'; 
                                         $qaReasonString = '--';
                                     }
-                                    //   App\Jobs\GetProjSubPrjJob::dispatch($data['project_id'],$data['subproject_id'])->delay(now()->addSeconds(5));
-                                    //   $prjTotalDetailsCacheKey = 'project_'.$data['project_id'].$data['subproject_id'].'totalDetails' ;
-                                    //   $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0);  dd($prjBillableFTE);  
                                       $prjBillableFTE = $prjDetailsList[$dKey];
                                       if (!is_array($prjBillableFTE)) {
                                             $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
@@ -137,11 +150,6 @@
                                                 {{ $data['project'] }}
                                             </a>
                                         </td>
-                                        {{-- <td>{{ucwords(strtolower($prjBillableFTE['prjMgrName'])) ?? $prjBillableFTE}}</td>
-                                        <td>{{$prjBillableFTE['prjBillableCount'] ?? $prjBillableFTE}}</td>
-                                        <td>{{$prjBillableFTE['projectSLATarget'] ?? $prjBillableFTE}}</td>
-                                        <td>{{(round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'])) ?? $prjBillableFTE}}</td>
-                                        <td>{{(round((int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget']/8)) ?? $prjBillableFTE}}</td> --}}
                                         <td>
                                             @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjMgrName']))
                                                 {{ ucwords(strtolower($prjBillableFTE['prjMgrName'])) }}
@@ -152,6 +160,7 @@
                                         <td>
                                             {{ is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount']) ? $prjBillableFTE['prjBillableCount'] : (is_array($prjBillableFTE) && $prjBillableFTE['prjBillableCount']  == null ? '--' : $prjBillableFTE) }}
                                         </td>
+                                        @if ($targetType == 'sla_target')
                                         <td>
                                             {{ is_array($prjBillableFTE) && isset($prjBillableFTE['projectSLATarget']) ? $prjBillableFTE['projectSLATarget'] : (is_array($prjBillableFTE) && $prjBillableFTE['projectSLATarget'] == null ? '--' : $prjBillableFTE) }}
                                         </td>
@@ -168,7 +177,8 @@
                                             @else
                                                 {{ is_array($prjBillableFTE) && ($prjBillableFTE['prjBillableCount'] == null  || $prjBillableFTE['projectSLATarget'] == null) ? '--' : $prjBillableFTE }}
                                             @endif
-                                        </td>         
+                                        </td> 
+                                        @elseif ($targetType == 'internal_target')        
                                         <td>
                                             {{ is_array($prjBillableFTE) && isset($prjBillableFTE['projectInternalTarget']) ? $prjBillableFTE['projectInternalTarget'] : (is_array($prjBillableFTE) && $prjBillableFTE['projectInternalTarget'] == null ? '--' : $prjBillableFTE) }}
                                         </td>
@@ -185,7 +195,8 @@
                                             @else
                                                 {{ is_array($prjBillableFTE) && ($prjBillableFTE['prjBillableCount'] == null  || $prjBillableFTE['projectInternalTarget'] == null) ? '--' : $prjBillableFTE }}
                                             @endif
-                                        </td>                                        
+                                        </td>    
+                                        @endif                                    
                                         {{-- @foreach ($data['hourlyCount'] as $count)
                                             @if($prjBillableFTE != '--')
                                                 <td style="color: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8 ? 'red' : 'black' }}; font-weight: {{ $count < (int)$prjBillableFTE['prjBillableCount'] * (int)$prjBillableFTE['projectSLATarget'] / 8 ? 'bold' : 'normal' }};">
@@ -207,7 +218,7 @@
                                                 <td style="color: red !important;">{{ $count }}</td>
                                             @endif
                                         @endforeach --}}
-                                        @foreach ($data['hourlyCount'] as $count)
+                                        {{-- @foreach ($data['hourlyCount'] as $count)
                                             @if (is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectInternalTarget']) && $prjBillableFTE['projectInternalTarget'] != "--")
                                                 @php
                                                     $targetValue = (float)$prjBillableFTE['prjBillableCount'] * (float)$prjBillableFTE['projectInternalTarget'] / 8;
@@ -216,6 +227,29 @@
                                                     {{ is_scalar($count) ? $count : json_encode($count) }}
                                                 </td>
                                             @elseif (is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']))
+                                                @php
+                                                    $targetValue = (float)$prjBillableFTE['prjBillableCount'] * (float)$prjBillableFTE['projectSLATarget'] / 8;
+                                                @endphp
+                                                <td style="color: {{ $count < $targetValue ? 'red' : 'black' }}; font-weight: {{ $count < $targetValue ? 'bold' : 'normal' }};">
+                                                    {{ is_scalar($count) ? $count : json_encode($count) }}
+                                                </td>
+                                            @else
+                                                <td style="color: red !important;">{{ is_scalar($count) ? $count : json_encode($count) }}</td>
+                                            @endif
+                                        @endforeach --}}
+                                        @foreach ($data['hourlyCount'] as $count)
+                                           @if($targetType == 'internal_target')
+                                                    @if (is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectInternalTarget']) && $prjBillableFTE['projectInternalTarget'] != "--")
+                                                        @php
+                                                            $targetValue = (float)$prjBillableFTE['prjBillableCount'] * (float)$prjBillableFTE['projectInternalTarget'] / 8;
+                                                        @endphp
+                                                        <td style="color: {{ $count < $targetValue ? 'red' : 'black' }}; font-weight: {{ $count < $targetValue ? 'bold' : 'normal' }};">
+                                                            {{ is_scalar($count) ? $count : json_encode($count) }}
+                                                        </td>
+                                                    @else
+                                                       <td style="color: black !important;">{{ is_scalar($count) ? $count : json_encode($count) }}</td>
+                                                    @endif
+                                            @elseif (is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget']) && $targetType == 'sla_target')
                                                 @php
                                                     $targetValue = (float)$prjBillableFTE['prjBillableCount'] * (float)$prjBillableFTE['projectSLATarget'] / 8;
                                                 @endphp
@@ -264,6 +298,9 @@
                 pageLength: 20,
                 scrollCollapse: true,
                 scrollX: true,
+                "initComplete": function(settings, json) {
+                    $('body').find('.dataTables_scrollBody').addClass("scrollbar");
+                },
                 buttons: [{
                     "extend": 'excel',
                     "text": `<span data-dismiss="modal" data-toggle="tooltip" data-placement="left" data-original-title="Export" style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
@@ -281,7 +318,9 @@
                 .appendTo('.outside');
                 
             $(document).on('click', '#filter_clear', function() {
-                location.reload();
+               // location.reload();
+               window.location.href = baseUrl + 'projects/project_hourly_web?parent=' + encodeURIComponent(getUrlVars()["parent"]) + '&child=' + encodeURIComponent(getUrlVars()["child"]);
+
             })
             $(document).on('click', '#filter_search', function() {
                 KTApp.block('#hourly_card', {
