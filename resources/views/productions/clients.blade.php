@@ -1,6 +1,6 @@
 @extends('layouts.app3')
 @section('content')
-    <div class="card card-custom custom-card">
+    <div class="card card-custom custom-card" id="clientsDiv">
         <div class="card-body pt-4 pb-0 px-2">
             <div class="my-client-div">
                 {{-- <span class="svg-icon svg-icon-primary svg-icon-lg ">
@@ -187,7 +187,7 @@
                     row.child.hide();
                     tr.removeClass('shown');
                 } else {
-                    KTApp.block('#clients_list', {
+                    KTApp.block('#clientsDiv', {
                         overlayColor: '#000000',
                         state: 'danger',
                         opacity: 0.1,
@@ -219,7 +219,7 @@
                                 }
                             }
                             tr.addClass('shown');
-                            KTApp.unblock('#clients_list');
+                            KTApp.unblock('#clientsDiv');
                         },
                         error: function(jqXHR, exception) {}
                     });
@@ -267,7 +267,7 @@
 
                 // window.location.href = baseUrl + 'projects/' + encodedId + '/' + clientName + "?parent=" +
                 //     getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
-                KTApp.block('#clients_list', {
+                KTApp.block('#clientsDiv', {
                         overlayColor: '#000000',
                         state: 'danger',
                         opacity: 0.1,
@@ -276,7 +276,7 @@
                 window.location.href = baseUrl + 'projects_assigned/' + btoa(clientName) + '/' + btoa(
                         subProjectName) + "?parent=" +
                     getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
-                    KTApp.unblock('#clients_list');
+                  //  KTApp.unblock('#clientsDiv');
 
 
             })
