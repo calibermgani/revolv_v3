@@ -85,7 +85,9 @@
                         <thead>
                             <tr>
                                 <th>Project</th>
+                                <th>Project Type</th>
                                 <th>Manager Name</th>
+                                <th>Project Work Type</th>
                                 <th>Billable FTE</th>
                                 @if ($targetType == 'sla_target')
                                 <th>SLA Target</th>
@@ -150,11 +152,25 @@
                                                 {{ $data['project'] }}
                                             </a>
                                         </td>
+                                        <td> 
+                                            @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjType']))
+                                               {{ ucwords(strtolower($prjBillableFTE['prjType'])) }}
+                                            @else
+                                                {{ is_array($prjBillableFTE) && $prjBillableFTE['prjType']  == null ? '--' : $prjBillableFTE }}
+                                            @endif
+                                        </td>
                                         <td>
                                             @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjMgrName']))
                                                 {{ ucwords(strtolower($prjBillableFTE['prjMgrName'])) }}
                                             @else
                                             {{ is_array($prjBillableFTE) && $prjBillableFTE['prjMgrName']  == null ? '--' : $prjBillableFTE }}
+                                            @endif
+                                        </td>
+                                        <td>
+                                             @if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjWorkType']))
+                                                {{ ucwords(strtolower($prjBillableFTE['prjWorkType'])) }}
+                                             @else
+                                                {{ is_array($prjBillableFTE) && $prjBillableFTE['prjWorkType']  == null ? '--' : $prjBillableFTE }}
                                             @endif
                                         </td>
                                         <td>
