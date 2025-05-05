@@ -172,6 +172,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('mosi_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@medValueOffshoreSolutionsIncArDuplicates');
     Route::any('rlmg_ar', 'App\Http\Controllers\ProjectAuthAutomationController@rossLegacyMedicalGroupAr');
     Route::any('rlmg_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@rossLegacyMedicalGroupArArDuplicates');
+    Route::any('oscotr_ar', 'App\Http\Controllers\ProjectAuthAutomationController@orthopaedicSpineCenterOfTheRockiesAr');
+    Route::any('oscotr_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@orthopaedicSpineCenterOfTheRockiesArDuplicates');
 
     
     Route::any('production_auto_close', 'App\Http\Controllers\ProjectController@productionAutoClose');
