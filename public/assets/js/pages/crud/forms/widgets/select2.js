@@ -105,6 +105,9 @@ var KTSelect2 = function() {
         $('.kt_select2_manager').select2({
             placeholder: "Select"
         });
+        $('.kt_select2_assigned').select2({
+            placeholder: "Assigned/Non Workable"
+        });
         // loading data from array
         // var data = [{
         //     id: 0,

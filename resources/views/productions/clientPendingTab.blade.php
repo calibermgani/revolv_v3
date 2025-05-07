@@ -17,6 +17,19 @@ use Carbon\Carbon;
                                 </div>
                                 <div class="col-md-6">
                                     <div class="row" style="justify-content: flex-end;margin-right:1.4rem">
+                                        <div class="col-lg-3 mb-lg-0 mb-6">
+                                            <fieldset class="form-group mb-0 white-smoke-disabled">
+                                                @php
+                                                $statusDropDown = ["CE_Assigned" => "Assigned","AR_non_workable" => "Non Workable"]
+                                                @endphp
+                                                {!! Form::select('status_val', ['' => 'Assigned/Non Workable'] + $statusDropDown, null, [
+                                                    'class' => 'form-control white-smoke kt_select2_assigned',
+                                                    'id' => 'workable_dropdown',
+                                                    'style' => 'width: 100%;',
+                                                    'disabled',
+                                                ]) !!}
+                                            </fieldset>
+                                        </div>
                                         <div>
                                             @if ($popUpHeader != null)
                                                     @php
@@ -290,6 +303,12 @@ use Carbon\Carbon;
                                 </div>
                           
                                 {!! Form::close() !!}
+                                @php
+                                $pageSelectedRecord = ($pendingProjectDetails->lastItem() - $pendingProjectDetails->firstItem()) + 1;
+                                @endphp
+                                <p id="select_p1" style="text-align:center;display:none">All {{$pageSelectedRecord}} {{$pageSelectedRecord == 1 ? 'record on this page is selected' : 'records on this page are selected'}} . <a  id="select_all_status" style="color:#6993FF !important;cursor:pointer !important">Select all {{$pendingProjectDetails->total()}} records</a></p>
+                                <p id="clear_p1" style="text-align:center;display:none">All {{$pendingProjectDetails->total()}} records are selected.<a style="color:#6993FF !important;cursor:pointer !important" id="clear_all_status">Clear Selection.</a></p>
+
                             <div class="card-body py-0 px-7">
                                 <input type="hidden" value={{ $clientName }} id="clientName">
                                 <input type="hidden" value={{ $subProjectName }} id="subProjectName">
@@ -299,6 +318,8 @@ use Carbon\Carbon;
                                         <thead>
                                             @if (!empty($columnsHeader))
                                                 <tr>
+                                                    <th class='notexport'><input type="checkbox" id="ckbCheckAll" class="cursor_hand">
+                                                    </th>
                                                     <th class='notexport' style="color:white !important">Action</th>
                                                     @foreach ($columnsHeader as $columnName => $columnValue)
                                                         @if ($columnValue != 'id')
@@ -346,6 +367,9 @@ use Carbon\Carbon;
                                                     @endphp
                                                     <tr
                                                         style="{{ $data->invoke_date == 125 ? 'background-color: #f77a7a;' : '' }}">
+                                                        <td><input type="checkbox" class="checkBoxClass cursor_hand" name='check[]'
+                                                            value="{{ $data->id }}">
+                                                        </td>
                                                         <td>
                                                                @if (($loginEmpId !== "Admin" || strpos($empDesignation, 'Manager') !== true || strpos($empDesignation, 'VP') !== true || strpos($empDesignation, 'Leader') !== true || strpos($empDesignation, 'Team Lead') !== true || strpos($empDesignation, 'CEO') !== true || strpos($empDesignation, 'Vice') !== true || strpos($empDesignation, 'Group Coordinator') !== true || strpos($empDesignation, 'Subject Matter Expert') !== true) && $loginEmpId != $data->CE_emp_id)
                                                                 {{-- @if (empty($assignedDropDown)) --}}
@@ -1985,6 +2009,128 @@ use Carbon\Carbon;
                             "parent"] +
                         "&child=" + getUrlVars()["child"];
                 })
+                $("#ckbCheckAll").click(function() {
+                    var isChecked = $(this).prop('checked');
+                    
+                    $(".checkBoxClass").prop('checked', isChecked);
+                    var table = $('#client_pending_list').DataTable();
+                    for (var i = 0; i < table.page.info().pages; i++) {
+                        table.page(i).draw(false); 
+                        $(".checkBoxClass").prop('checked', isChecked); 
+                    }
+                    if ($(this).prop('checked') == true && $('.checkBoxClass:checked').length > 0) {
+                        $('#workable_dropdown').prop('disabled', false);
+                        $('#select_p1').css('display', 'block');
+                    
+                    } else {
+                        $('#select_p1').css('display','none')
+                        $('#workable_dropdown').prop('disabled', true);
+
+                    }
+               });
+               $('#select_all_status').click(function() {
+                $('#select_p1').css('display','none');
+                $('#clear_p1').css('display','block');
+               
+                });
+                $('#clear_all_status').click(function() {
+                    var isChecked = false;
+                    $("#ckbCheckAll").prop('checked', isChecked);
+                    $(".checkBoxClass").prop('checked', isChecked);
+                    $('#clear_p1').css('display','none');              
+                    $('#workable_dropdown').prop('disabled', true);            
+                
+                });
+               function handleCheckboxChange() {
+                var anyCheckboxChecked = $('.checkBoxClass:checked').length > 0;
+                var allCheckboxesChecked = $('.checkBoxClass:checked').length === $('.checkBoxClass')
+                    .length;
+                if (allCheckboxesChecked) {
+                    $("#ckbCheckAll").prop('checked', $(this).prop('checked'));
+                    $('#select_p1').css('display','block');
+                } else {
+                    $("#ckbCheckAll").prop('checked', false);
+                    $('#select_p1').css('display','none');
+                    $('#clear_p1').css('display','none');
+                }
+             
+                $('#workable_dropdown').prop('disabled', !(anyCheckboxChecked || allCheckboxesChecked));
+              
+            }            
+
+            function attachCheckboxHandlers() {
+                $('.checkBoxClass').off('change').on('change', handleCheckboxChange);
+            }
+            attachCheckboxHandlers();
+
+                table.on('draw', function() {
+                    attachCheckboxHandlers();
+                });
+            $('#workable_dropdown').change(function() {            
+                var checkedRowValues = [];
+                $('#client_pending_list').DataTable().$('input[name="check[]"]:checked').each(function() {
+                    var rowData = {
+                        name: 'check[]',
+                        value: $(this).val()
+                    };
+                    checkedRowValues.push(rowData);
+                });
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                            'content')
+                    }
+                });
+                var selectId = $('#select_p1').css('display');
+                var clearId = $('#clear_p1').css('display');
+                var dropdownText = $(this).find("option:selected").text();
+                var popupRecord = clearId == "none" ? <?= json_encode($pendingProjectDetails->lastItem()); ?> : <?= json_encode($pendingProjectDetails->total()); ?>;
+                var recordText = checkedRowValues.length > 1 ? "Do you want to update all "+ checkedRowValues.length + " records to "+ dropdownText + "?" : "Do you want to update this record to "+ dropdownText + "?";
+                var allRecordText = popupRecord > 1 ? "Do you want to update all "+ popupRecord + " records to "+ dropdownText + "?" : "Do you want to update this record to "+ dropdownText + "?";
+                var dropdownValue = $(this).val();console.log(dropdownValue,'dropdownValue',dropdownText);
+                
+                var formData = $('#formSearch').serialize();
+                    formData += '&checkedRowValues=' + encodeURIComponent(JSON.stringify(checkedRowValues));
+                    formData += '&clientName=' + clientName;
+                    formData += '&subProjectName=' + subProjectName;
+                    formData += '&selectedRecords=' + clearId;
+                    formData += '&dropdownValue=' + dropdownValue;                    
+                swal.fire({
+                    text: selectId == "none" && clearId == "none" ?  recordText: allRecordText ,
+                    icon: "success",
+                    buttonsStyling: false,
+                    showCancelButton: true,
+                    confirmButtonText: "Yes",
+                    cancelButtonText: "No",
+                    customClass: {
+                        confirmButton: "btn font-weight-bold btn-white-black",
+                        cancelButton: "btn font-weight-bold  btn-light-danger",
+                    }
+
+                }).then(function(result) {
+                    if (result.value == true) {
+                        $.ajax({
+                            url: "{{ url('pendingtab_status_update') }}",
+                            method: 'POST',
+                            data: formData,
+                            success: function(response) {
+                                if (response.success == true) {
+                                    js_notification('success',
+                                        'Workable Updated Successfully');
+                                } else {
+                                    js_notification('error', 'Something went wrong');
+                                }
+                                setTimeout(function() {
+                                    location.reload();
+                                }, 2000);
+                            },
+                        });
+
+                    } else {
+                        location.reload();
+                    }
+                });
+            })
                 $(document).on('click', '#assign_export', function(e) {   
                     var resourceName = null; 
                     var formData = $('#formSearch').serialize();
