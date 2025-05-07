@@ -23,7 +23,7 @@ use App\Models\MsChargeEntryDuplicates;
 use App\Models\DkmgChargeEntry;
 use App\Models\DkmgChargeEntryDuplicates;
 use App\Models\SmhcEvVob;
-use App\Models\smhcEvVobDuplicates;
+use App\Models\SmhcEvVobDuplicates;
 use App\Models\LastsChargeEntry;
 use App\Models\LastsChargeEntryDuplicates;
 use App\Models\MosiAr;
