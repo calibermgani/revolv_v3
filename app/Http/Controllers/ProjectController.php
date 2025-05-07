@@ -668,7 +668,8 @@ class ProjectController extends Controller
                         $columnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
                         $hourlyCount = $modelClass::whereBetween($columnToUse, [$slotStart, $slotEnd])
                        // ->where('chart_status', 'CE_Completed')
-                       ->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                      //    ->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                        ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','AR_non_workable','Revoke','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
                         ->count();
                      
 
@@ -1601,7 +1602,8 @@ class ProjectController extends Controller
                             $hasNonNullArAt = $columnExists && $modelClass::whereNotNull('ar_at')->exists();
                             $columnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
                             $hourlyCount = $modelClass::whereBetween($columnToUse, [$slotStart, $slotEnd])
-                            ->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                            //->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                            ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','AR_non_workable','Revoke','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
                             ->count();
 
                             $hourlyCounts[] = $hourlyCount; 
