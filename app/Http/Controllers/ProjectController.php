@@ -1473,7 +1473,7 @@ class ProjectController extends Controller
                                                                         ->orWhereNull('coder_emp_id');
                                                                 })->orderBy('id', 'desc')->get();
                                             $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
-                                            if($qasamplingDetailsList > 0) {                                          
+                                            if(count($qasamplingDetailsList) > 0) {                                          
                                                 foreach ($qasamplingDetailsList as $qasamplingDetails) {
                                                     if($qasamplingDetails != null) {
                                                         $qaPercentage = $qasamplingDetails["qa_percentage"];
