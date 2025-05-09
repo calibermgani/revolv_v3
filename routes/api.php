@@ -174,7 +174,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('rlmg_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@rossLegacyMedicalGroupArArDuplicates');
     Route::any('oscotr_ar', 'App\Http\Controllers\ProjectAuthAutomationController@orthopaedicSpineCenterOfTheRockiesAr');
     Route::any('oscotr_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@orthopaedicSpineCenterOfTheRockiesArDuplicates');
-
+    Route::any('mpms_ar', 'App\Http\Controllers\ProjectAuthAutomationController@medicalPracticeManagementServicesAr');
+    Route::any('mpms_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@medicalPracticeManagementServicesArDuplicates');
     
     Route::any('production_auto_close', 'App\Http\Controllers\ProjectController@productionAutoClose');
     Route::any('alter_table_chart_status_column', 'App\Http\Controllers\ProjectController@alterTableChartStatusColumn');

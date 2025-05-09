@@ -32,6 +32,8 @@ use App\Models\RlmgAr;
 use App\Models\RlmgArDuplicates;
 use App\Models\OscotrAr;
 use App\Models\OscotrArDuplicates;
+use App\Models\MpmsAr;
+use App\Models\MpmsArDuplicates;
 
 class ProjectAuthAutomationController extends Controller
 {
@@ -1343,6 +1345,104 @@ class ProjectAuthAutomationController extends Controller
                     'total_pmnt' => isset($request->total_pmnt) && $request->total_pmnt != "NULL" ? $request->total_pmnt : NULL,
                     'insur_pmnt' => isset($request->insur_pmnt) && $request->insur_pmnt != "NULL" ? $request->insur_pmnt : NULL,
                     'insur_pv_bal' => isset($request->insur_pv_bal) && $request->insur_pv_bal != "NULL" ? $request->insur_pv_bal : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+    public function medicalPracticeManagementServicesAr(Request $request)
+    {
+        try {
+            $attributes = [
+                 'encounter' => isset($request->encounter) && $request->encounter != "NULL" ? $request->encounter : NULL
+             ];         
+
+            $duplicateRecordExisting  =  MpmsAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                MpmsAr::insert([
+                        'encounter' => isset($request->encounter) && $request->encounter != "NULL" ? $request->encounter : NULL,
+                        'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'loc_name' => isset($request->loc_name) && $request->loc_name != "NULL" ? $request->loc_name : NULL,
+                        'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                        'fin_class' => isset($request->fin_class) && $request->fin_class != "NULL" ? $request->fin_class : NULL,
+                        'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
+                        'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
+                        'outstanding' => isset($request->outstanding) && $request->outstanding != "NULL" ? $request->outstanding : NULL,
+                        'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->currdate_touchedent_insur_carrier : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords  =  MpmsAr::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'encounter' => isset($request->encounter) && $request->encounter != "NULL" ? $request->encounter : NULL,
+                            'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'loc_name' => isset($request->loc_name) && $request->loc_name != "NULL" ? $request->loc_name : NULL,
+                            'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                            'fin_class' => isset($request->fin_class) && $request->fin_class != "NULL" ? $request->fin_class : NULL,
+                            'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
+                            'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
+                            'outstanding' => isset($request->outstanding) && $request->outstanding != "NULL" ? $request->outstanding : NULL,
+                            'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->currdate_touchedent_insur_carrier : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                    MpmsAr::insert([
+                        'encounter' => isset($request->encounter) && $request->encounter != "NULL" ? $request->encounter : NULL,
+                        'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'loc_name' => isset($request->loc_name) && $request->loc_name != "NULL" ? $request->loc_name : NULL,
+                        'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                        'fin_class' => isset($request->fin_class) && $request->fin_class != "NULL" ? $request->fin_class : NULL,
+                        'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
+                        'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
+                        'outstanding' => isset($request->outstanding) && $request->outstanding != "NULL" ? $request->outstanding : NULL,
+                        'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->currdate_touchedent_insur_carrier : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record reinserted Successfully']);
+                }
+                
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function medicalPracticeManagementServicesArDuplicates(Request $request)
+    {
+        try {
+            MpmsArDuplicates::insert([
+                    'encounter' => isset($request->encounter) && $request->encounter != "NULL" ? $request->encounter : NULL,
+                    'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'loc_name' => isset($request->loc_name) && $request->loc_name != "NULL" ? $request->loc_name : NULL,
+                    'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                    'fin_class' => isset($request->fin_class) && $request->fin_class != "NULL" ? $request->fin_class : NULL,
+                    'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
+                    'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
+                    'outstanding' => isset($request->outstanding) && $request->outstanding != "NULL" ? $request->outstanding : NULL,
+                    'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->currdate_touchedent_insur_carrier : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
