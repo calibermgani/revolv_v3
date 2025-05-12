@@ -34,6 +34,8 @@ use App\Models\OscotrAr;
 use App\Models\OscotrArDuplicates;
 use App\Models\MpmsAr;
 use App\Models\MpmsArDuplicates;
+use App\Models\GaAr;
+use App\Models\GaArDuplicates;
 
 class ProjectAuthAutomationController extends Controller
 {
@@ -1443,6 +1445,96 @@ class ProjectAuthAutomationController extends Controller
                     'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
                     'outstanding' => isset($request->outstanding) && $request->outstanding != "NULL" ? $request->outstanding : NULL,
                     'date_touched' => isset($request->date_touched) && $request->date_touched != "NULL" ? $request->date_touched : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+    public function gastrointestinalAssociateAr(Request $request)
+    {
+        try {
+            $attributes = [
+                 'bill_number' => isset($request->bill_number) && $request->bill_number != "NULL" ? $request->bill_number : NULL
+             ];         
+
+            $duplicateRecordExisting  =  GaAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                GaAr::insert([
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'amount' => isset($request->amount) && $request->amount != "NULL" ? $request->amount : NULL,
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                        'location' => isset($request->location) && $request->location != "NULL" ? $request->location : NULL,
+                        'perf_prov' => isset($request->perf_prov) && $request->perf_prov != "NULL" ? $request->perf_prov : NULL,
+                        'billing_prov' => isset($request->billing_prov) && $request->billing_prov != "NULL" ? $request->billing_prov : NULL,
+                        'contact_date' => isset($request->contact_date) && $request->contact_date != "NULL" ? $request->contact_date : NULL,
+                        'bill_number' => isset($request->bill_number) && $request->bill_number != "NULL" ? $request->bill_number : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords  =  GaAr::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'amount' => isset($request->amount) && $request->amount != "NULL" ? $request->amount : NULL,
+                            'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                            'location' => isset($request->location) && $request->location != "NULL" ? $request->location : NULL,
+                            'perf_prov' => isset($request->perf_prov) && $request->perf_prov != "NULL" ? $request->perf_prov : NULL,
+                            'billing_prov' => isset($request->billing_prov) && $request->billing_prov != "NULL" ? $request->billing_prov : NULL,
+                            'contact_date' => isset($request->contact_date) && $request->contact_date != "NULL" ? $request->contact_date : NULL,
+                            'bill_number' => isset($request->bill_number) && $request->bill_number != "NULL" ? $request->bill_number : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                    GaAr::insert([
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'amount' => isset($request->amount) && $request->amount != "NULL" ? $request->amount : NULL,
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                        'location' => isset($request->location) && $request->location != "NULL" ? $request->location : NULL,
+                        'perf_prov' => isset($request->perf_prov) && $request->perf_prov != "NULL" ? $request->perf_prov : NULL,
+                        'billing_prov' => isset($request->billing_prov) && $request->billing_prov != "NULL" ? $request->billing_prov : NULL,
+                        'contact_date' => isset($request->contact_date) && $request->contact_date != "NULL" ? $request->contact_date : NULL,
+                        'bill_number' => isset($request->bill_number) && $request->bill_number != "NULL" ? $request->bill_number : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record reinserted Successfully']);
+                }
+                
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function gastrointestinalAssociateArDuplicates(Request $request)
+    {
+        try {
+              GaArDuplicates::insert([
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'amount' => isset($request->amount) && $request->amount != "NULL" ? $request->amount : NULL,
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                    'location' => isset($request->location) && $request->location != "NULL" ? $request->location : NULL,
+                    'perf_prov' => isset($request->perf_prov) && $request->perf_prov != "NULL" ? $request->perf_prov : NULL,
+                    'billing_prov' => isset($request->billing_prov) && $request->billing_prov != "NULL" ? $request->billing_prov : NULL,
+                    'contact_date' => isset($request->contact_date) && $request->contact_date != "NULL" ? $request->contact_date : NULL,
+                    'bill_number' => isset($request->bill_number) && $request->bill_number != "NULL" ? $request->bill_number : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
