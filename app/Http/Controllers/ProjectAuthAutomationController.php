@@ -36,6 +36,8 @@ use App\Models\MpmsAr;
 use App\Models\MpmsArDuplicates;
 use App\Models\GaAr;
 use App\Models\GaArDuplicates;
+use App\Models\CrmcAr;
+use App\Models\CrmcArDuplicates;
 
 class ProjectAuthAutomationController extends Controller
 {
@@ -1535,6 +1537,92 @@ class ProjectAuthAutomationController extends Controller
                     'billing_prov' => isset($request->billing_prov) && $request->billing_prov != "NULL" ? $request->billing_prov : NULL,
                     'contact_date' => isset($request->contact_date) && $request->contact_date != "NULL" ? $request->contact_date : NULL,
                     'bill_number' => isset($request->bill_number) && $request->bill_number != "NULL" ? $request->bill_number : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function colquittRegionalMedicalCenterAr(Request $request)
+    {
+        try {
+            $attributes = [
+                 'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                 'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL
+             ];         
+
+            $duplicateRecordExisting  =  CrmcAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                CrmcAr::insert([
+                        'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                        'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL,
+                        'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,                     
+                        'responsible_provider' => isset($request->responsible_provider) && $request->responsible_provider != "NULL" ? $request->responsible_provider : NULL,
+                        'specialty' => isset($request->specialty) && $request->specialty != "NULL" ? $request->specialty : NULL,
+                        'amount' => isset($request->amount) && $request->amount != "NULL" ? $request->amount : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords  =  CrmcAr::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                            'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL,
+                            'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,                     
+                            'responsible_provider' => isset($request->responsible_provider) && $request->responsible_provider != "NULL" ? $request->responsible_provider : NULL,
+                            'specialty' => isset($request->specialty) && $request->specialty != "NULL" ? $request->specialty : NULL,
+                            'amount' => isset($request->amount) && $request->amount != "NULL" ? $request->amount : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                    CrmcAr::insert([
+                        'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                        'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL,
+                        'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,                     
+                        'responsible_provider' => isset($request->responsible_provider) && $request->responsible_provider != "NULL" ? $request->responsible_provider : NULL,
+                        'specialty' => isset($request->specialty) && $request->specialty != "NULL" ? $request->specialty : NULL,
+                        'amount' => isset($request->amount) && $request->amount != "NULL" ? $request->amount : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record reinserted Successfully']);
+                }
+                
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function colquittRegionalMedicalCenterArDuplicates(Request $request)
+    {
+        try {
+                CrmcArDuplicates::insert([
+                    'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                    'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL,
+                    'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,                     
+                    'responsible_provider' => isset($request->responsible_provider) && $request->responsible_provider != "NULL" ? $request->responsible_provider : NULL,
+                    'specialty' => isset($request->specialty) && $request->specialty != "NULL" ? $request->specialty : NULL,
+                    'amount' => isset($request->amount) && $request->amount != "NULL" ? $request->amount : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
