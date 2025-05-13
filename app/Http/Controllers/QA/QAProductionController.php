@@ -2000,7 +2000,12 @@ class QAProductionController extends Controller
                 return redirect('/');
             }       
     }
-    protected function isDate($value) {
-        return strtotime($value) ? true : false;
+    // protected function isDate($value) {
+    //     return strtotime($value) ? true : false;
+    // }
+    protected function isDate($value, $format = 'Y-m-d') {
+        $date = \DateTime::createFromFormat($format, $value);
+        return $date && $date->format($format) === $value;
     }
+    
 }
