@@ -181,7 +181,7 @@ class QAProductionController extends Controller
                                 dd($value,$request->all(),$key,'1');
                                 $query->where($key, $value);  // Exact match for numeric/boolean
                             } elseif ($this->isDate($value)) {  // Check if it's a date
-                                dd($value,$request->all(),$key,'2');
+                                dd($value,$request->all(),$key,'2',$this->isDate($value));
                                 $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
                             } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                                 dd($value,$request->all(),$key,'3');
