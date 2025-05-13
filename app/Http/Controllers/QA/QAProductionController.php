@@ -185,7 +185,8 @@ class QAProductionController extends Controller
                                 $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                             } else {
                                 if($value != null) {
-                                $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
+                                    $query->where($key, '=', $value);
+                                // $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
                                 }
                             }
                         }
