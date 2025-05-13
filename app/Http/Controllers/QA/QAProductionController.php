@@ -171,7 +171,7 @@ class QAProductionController extends Controller
                     $searchData = [];   
                     if($request['_token'] != null) {
                         foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
-                        $searchData[$key] = $value;dd($value);
+                        $searchData[$key] = $value;dd($value,$request->all());
                             if (is_array($value)) {
                                 $value = implode('_el_', $value); 
                             }
