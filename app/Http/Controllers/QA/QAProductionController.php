@@ -182,11 +182,12 @@ class QAProductionController extends Controller
                             } elseif ($this->isDate($value)) {  // Check if it's a date
                                 $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
                             } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                                dd($value,$request->all(),$key,'3');
                                 $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                             } else {
+                                dd($value,$request->all(),$key,'else');
                                 if($value != null) {
-                                    dd($value,$request->all(),$key);
-                                 $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
+                                $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
                                 }
                             }
                         }
