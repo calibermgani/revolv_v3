@@ -171,7 +171,7 @@ class QAProductionController extends Controller
                     $searchData = [];   
                     if($request['_token'] != null) {
                         foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
-                        $searchData[$key] = $value;
+                        $searchData[$key] = $value;dd($value);
                             if (is_array($value)) {
                                 $value = implode('_el_', $value); 
                             }
@@ -185,7 +185,6 @@ class QAProductionController extends Controller
                                 $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                             } else {
                                 if($value != null) {
-                                    $query->where($key, '=', $value);
                                 // $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
                                 }
                             }
