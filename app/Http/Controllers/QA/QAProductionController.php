@@ -262,7 +262,7 @@ class QAProductionController extends Controller
                         // $assignedProjectDetails = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess','Auto_Close'])->where('qa_work_status','Sampling')->where('QA_emp_id', $loginEmpId)->orderBy('id', 'ASC')->paginate(50);//dd($assignedProjectDetails);
                         $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','QA_Inprocess')->orderBy('id','desc')->pluck('record_id')->toArray();
                         $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('emp_id', $loginEmpId)->where('end_time', null)->whereIn('record_status', ['QA_Assigned','QA_Inprocess'])->orderBy('id', 'desc')->pluck('record_id')->toArray();
-                        $assignedProjectDetails = $query->whereIn('chart_status',['CE_Completed','QA_Inprocess','Auto_Close'])->where('qa_work_status','Sampling')->where('QA_emp_id',$loginEmpId);
+                        $assignedProjectDetails = $query->whereIn('chart_status',['CE_Completed','QA_Inprocess','Auto_Close'])->where('qa_work_status','Sampling')->where('QA_emp_id',$loginEmpId);dd($loginEmpId,$assignedProjectDetails);
                         if (!empty($existingCallerChartsWorkLogs)) {
                             $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
                         }
