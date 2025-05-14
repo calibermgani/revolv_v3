@@ -1457,46 +1457,45 @@ class ProjectController extends Controller
                                 $data = $dataAssignedRows->toArray();
                                 unset($data['id']);
                                 unset($data['created_at']);
-                                unset($data['updated_at']);
-                             //    dd($data,$dataAssignedRows);                    
-                                $autoCloseRecords = $originalModelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$dataAssignedRows->CE_emp_id)->get();
-                                $arEmpId = $dataAssignedRows->CE_emp_id;
-                                $autoCloseRecordsCount = count($autoCloseRecords);
-                                $data['invoke_date'] = date('Y-m-d',strtotime($dataAssignedRows->invoke_date));
+                                unset($data['updated_at']);                  
+                               // $autoCloseRecords = $originalModelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$dataAssignedRows->CE_emp_id)->get();
+                                // $arEmpId = $dataAssignedRows->CE_emp_id;
+                                // $autoCloseRecordsCount = count($autoCloseRecords);
+                                // $data['invoke_date'] = date('Y-m-d',strtotime($dataAssignedRows->invoke_date));
                                 $data['parent_id'] = $dataAssignedRows->id;
                                 $record = $originalModelClass::where('id', $data['parent_id'])->first();
                                         $data['coder_work_date'] = $data['ar_at'] = Carbon::now()->format('Y-m-d');
-                                        $qasamplingDetailsList = QualitySampling::where('project_id', $request->project_id)
-                                                                ->where('sub_project_id', $request->sub_project_id)
-                                                                ->where(function($query) use ($arEmpId) {
-                                                                    $query->where('coder_emp_id', $arEmpId)
-                                                                        ->orWhereNull('coder_emp_id');
-                                                                })->orderBy('id', 'desc')->get();
-                                            $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
-                                            if(count($qasamplingDetailsList) > 0) {                                          
-                                                foreach ($qasamplingDetailsList as $qasamplingDetails) {
-                                                    if($qasamplingDetails != null) {
-                                                        $qaPercentage = $qasamplingDetails["qa_percentage"];
-                                                        $qarecords = $autoCloseRecordsCount*$qaPercentage/100;
-                                                        $samplingRecord = $originalModelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$arEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])->where('qa_work_status','Sampling')->get();
-                                                        $samplingRecordCount =  count($samplingRecord);
-                                                        if($qarecords >= $samplingRecordCount ) {
-                                                            $data['QA_emp_id'] =  $qasamplingDetails["qa_emp_id"];
-                                                            $data['qa_work_status'] = "Sampling";
-                                                            $data['chart_status'] = "Auto_Close";
-                                                            break;
-                                                        } else {
-                                                            $data['qa_work_status'] = "Auto_Close";
-                                                            $data['chart_status'] = "Auto_Close";
+                                        // $qasamplingDetailsList = QualitySampling::where('project_id', $request->project_id)
+                                        //                         ->where('sub_project_id', $request->sub_project_id)
+                                        //                         ->where(function($query) use ($arEmpId) {
+                                        //                             $query->where('coder_emp_id', $arEmpId)
+                                        //                                 ->orWhereNull('coder_emp_id');
+                                        //                         })->orderBy('id', 'desc')->get();
+                                            $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;$data['chart_status'] = "Auto_Close";
+                                            // if(count($qasamplingDetailsList) > 0) {                                          
+                                            //     foreach ($qasamplingDetailsList as $qasamplingDetails) {
+                                            //         if($qasamplingDetails != null) {
+                                            //             $qaPercentage = $qasamplingDetails["qa_percentage"];
+                                            //             $qarecords = $autoCloseRecordsCount*$qaPercentage/100;
+                                            //             $samplingRecord = $originalModelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$arEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])->where('qa_work_status','Sampling')->get();
+                                            //             $samplingRecordCount =  count($samplingRecord);
+                                            //             if($qarecords >= $samplingRecordCount ) {
+                                            //                 $data['QA_emp_id'] =  $qasamplingDetails["qa_emp_id"];
+                                            //                 $data['qa_work_status'] = "Sampling";
+                                            //                 $data['chart_status'] = "Auto_Close";
+                                            //                 break;
+                                            //             } else {
+                                            //                 $data['qa_work_status'] = "Auto_Close";
+                                            //                 $data['chart_status'] = "Auto_Close";
                         
-                                                        }
-                                                    }
-                                                }
-                                            } else {
-                                                $data['QA_emp_id'] =  NULL;
-                                                $data['qa_work_status'] = NULL;
-                                                $data['chart_status'] = "Auto_Close";
-                                            }
+                                            //             }
+                                            //         }
+                                            //     }
+                                            // } else {
+                                            //     $data['QA_emp_id'] =  NULL;
+                                            //     $data['qa_work_status'] = NULL;
+                                            //     $data['chart_status'] = "Auto_Close";
+                                            // }
                                         $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]);
                                         $modelClass::create($data);
                             }
