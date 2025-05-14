@@ -1247,7 +1247,7 @@ class ProductionController extends Controller
                             $callChartWorkLog->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time] );
                         }
                    }
-                   return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName);
+                   return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName.'?parent=' .request()->parent .'&child=' .request()->child);
             } else {
                 
                 $data['invoke_date'] = date('Y-m-d');
@@ -1332,7 +1332,7 @@ class ProductionController extends Controller
                     }
                 }
                 
-                return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName);
+                return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName.'?parent=' .request()->parent .'&child=' .request()->child);
             }
                 // $originalModelClass = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',ucfirst($decodedClientName).ucfirst($decodedsubProjectName));
 
@@ -1351,7 +1351,7 @@ class ProductionController extends Controller
                 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
-                return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName)->with('error','An unexpected error occurred. Please recheck data once.');
+                return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName.'?parent=' .request()->parent .'&child=' .request()->child)->with('error','An unexpected error occurred. Please recheck data once.');
               
             }
         } else {
@@ -1777,12 +1777,12 @@ class ProductionController extends Controller
                         }
                    }
                 $tabUrl = $data['record_old_status'] == "Revoke" ? $data['record_old_status'] : lcfirst(str_replace('CE_', '', $data['record_old_status']));
-                return redirect('/projects_'.$tabUrl.'/'.$clientName.'/'.$subProjectName);
+                return redirect('/projects_'.$tabUrl.'/'.$clientName.'/'.$subProjectName.'?parent=' .request()->parent .'&child=' .request()->child);
              } catch (\Exception $e) {
                 log::debug($e->getMessage());
                 $data = $request->all();
                 $tabUrl = $data['record_old_status'] == "Revoke" ? $data['record_old_status'] : lcfirst(str_replace('CE_', '', $data['record_old_status']));
-                return redirect('/projects_'.$tabUrl.'/'.$clientName.'/'.$subProjectName)->with('error','An unexpected error occurred. Please recheck data once.');
+                return redirect('/projects_'.$tabUrl.'/'.$clientName.'/'.$subProjectName.'?parent=' .request()->parent .'&child=' .request()->child)->with('error','An unexpected error occurred. Please recheck data once.');
             }
         } else {
             return redirect('/');
