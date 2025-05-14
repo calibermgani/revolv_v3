@@ -370,7 +370,8 @@ use Carbon\Carbon;
             table.buttons().container()
                 .appendTo('.outside');
                 $('.dataTables_filter').addClass('pull-left');
-
+                var clientName = $('#clientName').val();
+                var subProjectName = $('#subProjectName').val();
                 $(document).on('click', '#filter_clear', function(e) {
                     window.location.href = baseUrl + 'qa_production/qa_projects_Revoke/' + clientName + '/' + subProjectName +
                         "?parent=" +
@@ -381,8 +382,6 @@ use Carbon\Carbon;
             $(document).on('click', '.clickable-row', function(e) {
                 $('#myModal_status').modal('show');
             });
-            var clientName = $('#clientName').val();
-            var subProjectName = $('#subProjectName').val();
 
             $(document).on('click', '.one', function() {
                 window.location.href = baseUrl + 'qa_production/qa_projects_assigned/' + clientName + '/' + subProjectName +
