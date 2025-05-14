@@ -874,6 +874,9 @@ use Carbon\Carbon;
             table.buttons().container()
                 .appendTo('.outside');
             $('.dataTables_filter').addClass('pull-left');
+            
+            var clientName = $('#clientName').val();
+            var subProjectName = $('#subProjectName').val();
             $(document).on('click', '#filter_clear', function(e) {
                 window.location.href = baseUrl + 'qa_production/qa_projects_completed/' + clientName + '/' + subProjectName +
                     "?parent=" +
@@ -881,8 +884,6 @@ use Carbon\Carbon;
                         "parent"] +
                     "&child=" + getUrlVars()["child"];
             })
-            var clientName = $('#clientName').val();
-            var subProjectName = $('#subProjectName').val();
             $(document).on('click', '.clickable-view', function(e) {
                 var record_id = $(this).closest('tr').find('#table_id').text();
                 var $row = $(this).closest('tr');
