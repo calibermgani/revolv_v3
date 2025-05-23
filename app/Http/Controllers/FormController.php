@@ -516,6 +516,19 @@ class FormController extends Controller
                         $requiredData['project_type'] = $data['project_type_val'];
                         $requiredData['claim_type'] = $data['claim_type_val'];
                         $existingRecord->update($requiredData);
+                         $columnName = Str::lower(str_replace([' ', '/'], ['_', '_else_'], $data['label_name'][$i]));
+                        if ($data['input_type'][$i] == 'text' || $data['input_type'][$i] == 'date_range') {
+                            $columns[$columnName] = 'TEXT';
+                        } else if ($data['input_type'][$i] == 'select' || $data['input_type'][$i] == 'checkbox' || $data['input_type'][$i] == 'radio') {
+                              $enumValues = "'" . implode("','", explode(',',$data['options_name'][$i])) . "'";
+                            $columns[$columnName] = "ENUM($enumValues)";
+                        } else if ($data['input_type'][$i] == 'date') {
+                            $columns[$columnName] = 'DATE';
+                        } else if ($data['input_type'][$i] == 'textarea') {
+                            $columns[$columnName] = 'TEXT';
+                        } else if ($data['input_type'][$i] == 'datetime' ) {
+                            $columns[$columnName] = 'DATETIME';
+                        }
                     } else {
                         $requiredData['project_id'] = $data['project_id_val'];
                         $requiredData['sub_project_id'] = $data['sub_project_id_val'] != null ? $data['sub_project_id_val'] : NULL;
@@ -618,11 +631,16 @@ class FormController extends Controller
                                 FROM INFORMATION_SCHEMA.COLUMNS
                                 WHERE TABLE_NAME = '$tableName'
                                 AND COLUMN_NAME = '$columnName'
-                            ");//dd('else',$columns,$columnExists,empty($columnExists),$tableName);
+                            ");
                             if (empty($columnExists)) {
                                 DB::statement("ALTER TABLE $tableName ADD COLUMN $columnName $columnType AFTER $afterColumn");
                                 $dynamicModel = new DynamicModel($tableName);
                                 $dynamicModel->refreshFillableFromTable();
+                            } else {
+                                // If column exists and is ENUM, update the allowed values
+                                if (Str::startsWith($columnType, 'ENUM')) {
+                                    DB::statement("ALTER TABLE $tableName MODIFY COLUMN $columnName $columnType");
+                                }
                             }
                         }
                     }
@@ -692,6 +710,11 @@ class FormController extends Controller
                                 DB::statement("ALTER TABLE $duplicateTableName ADD COLUMN $columnName $columnType AFTER $afterColumn");
                                 $dynamicDuplicateModel = new DynamicModel($duplicateTableName);
                                 $dynamicDuplicateModel->refreshFillableFromTable();
+                            } else {
+                                // If column exists and is ENUM, update the allowed values
+                                if (Str::startsWith($columnType, 'ENUM')) {
+                                    DB::statement("ALTER TABLE $duplicateTableName MODIFY COLUMN $columnName $columnType");
+                                }
                             }
                         }
                     }
@@ -760,6 +783,11 @@ class FormController extends Controller
                                 DB::statement("ALTER TABLE $tableDataName ADD COLUMN $columnName TEXT AFTER $afterColumn");
                                 $dynamicModel = new DynamicModel($tableDataName);
                                 $dynamicModel->refreshFillableFromTable();
+                            } else {
+                                // If column exists and is ENUM, update the allowed values
+                                if (Str::startsWith($columnType, 'ENUM')) {
+                                    DB::statement("ALTER TABLE $tableDataName MODIFY COLUMN $columnName $columnType");
+                                }
                             }
                         }
                     }
@@ -828,6 +856,11 @@ class FormController extends Controller
                                 DB::statement("ALTER TABLE $tableHistoryName ADD COLUMN $columnName TEXT AFTER $afterColumn");
                                 $dynamicModel = new DynamicModel($tableHistoryName);
                                 $dynamicModel->refreshFillableFromTable();
+                            } else {
+                                // If column exists and is ENUM, update the allowed values
+                                if (Str::startsWith($columnType, 'ENUM')) {
+                                    DB::statement("ALTER TABLE $tableHistoryName MODIFY COLUMN $columnName $columnType");
+                                }
                             }
                         }
                     }
@@ -896,6 +929,11 @@ class FormController extends Controller
                                 DB::statement("ALTER TABLE $tableRevokeHistoryName ADD COLUMN $columnName TEXT AFTER $afterColumn");
                                 $dynamicModel = new DynamicModel($tableRevokeHistoryName);
                                 $dynamicModel->refreshFillableFromTable();
+                            } else {
+                                // If column exists and is ENUM, update the allowed values
+                                if (Str::startsWith($columnType, 'ENUM')) {
+                                    DB::statement("ALTER TABLE $tableRevokeHistoryName MODIFY COLUMN $columnName $columnType");
+                                }
                             }
                         }
                     }
