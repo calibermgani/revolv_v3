@@ -505,6 +505,7 @@ class FormController extends Controller
                         $requiredData['project_id'] = $data['project_id_val'];
                         $requiredData['sub_project_id'] = $data['sub_project_id_val'] != null ? $data['sub_project_id_val'] : NULL;
                         $requiredData['label_name'] = $data['label_name'][$i];
+                          $requiredData['input_type'] = $data['input_type'][$i];
                         $requiredData['options_name'] = $data['options_name'][$i];
                         $requiredData['field_type'] = $data['field_type'][$i];
                         $requiredData['field_type_1'] = $data['field_type_1'][$i];
