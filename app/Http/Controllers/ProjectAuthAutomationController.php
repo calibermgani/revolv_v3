@@ -38,8 +38,8 @@ use App\Models\GaAr;
 use App\Models\GaArDuplicates;
 use App\Models\CrmcAr;
 use App\Models\CrmcArDuplicates;
-use App\Models\SmmiArDallas;
-use App\Models\SmmiArDallasDuplicates;
+use App\Models\SmmiArDenver;
+use App\Models\SmmiArDenverDuplicates;
 
 class ProjectAuthAutomationController extends Controller
 {
@@ -1635,7 +1635,7 @@ class ProjectAuthAutomationController extends Controller
             $e->getMessage();
         }
     }
-     public function smmiArDallas(Request $request)
+     public function SmmiArDenver(Request $request)
     {
         try {
             $attributes = [
@@ -1649,9 +1649,9 @@ class ProjectAuthAutomationController extends Controller
                  'file_order' => isset($request->file_order) && $request->file_order != "NULL" ? $request->file_order : NULL
              ];         
 
-            $duplicateRecordExisting  =  SmmiArDallas::where($attributes)->exists();
+            $duplicateRecordExisting  =  SmmiArDenver::where($attributes)->exists();
             if (!$duplicateRecordExisting) {
-                SmmiArDallas::insert([
+                SmmiArDenver::insert([
                         'practice' => isset($request->practice) && $request->practice != "NULL" ? $request->practice : NULL,
                         'lineref' => isset($request->lineref) && $request->lineref != "NULL" ? $request->lineref : NULL,
                         'acct_no' => isset($request->acct_no) && $request->acct_no != "NULL" ? $request->acct_no : NULL,
@@ -1667,7 +1667,7 @@ class ProjectAuthAutomationController extends Controller
                     ]);
                         return response()->json(['message' => 'Record Inserted Successfully']);
             } else {
-                $duplicateRecords  =  SmmiArDallas::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                $duplicateRecords  =  SmmiArDenver::where($attributes)->where('chart_status',"CE_Assigned")->get();
                 if ($duplicateRecords->isNotEmpty()) {
                     foreach ($duplicateRecords as $duplicateRecord) {
                         $duplicateRecord->update([
@@ -1687,7 +1687,7 @@ class ProjectAuthAutomationController extends Controller
                     }
                     return response()->json(['message' => 'Existing Record Updated Successfully']);
                 } else {
-                    SmmiArDallas::insert([
+                    SmmiArDenver::insert([
                         'practice' => isset($request->practice) && $request->practice != "NULL" ? $request->practice : NULL,
                         'lineref' => isset($request->lineref) && $request->lineref != "NULL" ? $request->lineref : NULL,
                         'acct_no' => isset($request->acct_no) && $request->acct_no != "NULL" ? $request->acct_no : NULL,
@@ -1709,10 +1709,10 @@ class ProjectAuthAutomationController extends Controller
             $e->getMessage();
         }
     }
-    public function smmiArDallasDuplicates(Request $request)
+    public function SmmiArDenverDuplicates(Request $request)
     {
         try {
-                 SmmiArDallasDuplicates::insert([
+                 SmmiArDenverDuplicates::insert([
                     'practice' => isset($request->practice) && $request->practice != "NULL" ? $request->practice : NULL,
                     'lineref' => isset($request->lineref) && $request->lineref != "NULL" ? $request->lineref : NULL,
                     'acct_no' => isset($request->acct_no) && $request->acct_no != "NULL" ? $request->acct_no : NULL,
