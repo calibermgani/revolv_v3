@@ -180,8 +180,10 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('ga_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@gastrointestinalAssociateArDuplicates');
     Route::any('crmc_ar', 'App\Http\Controllers\ProjectAuthAutomationController@colquittRegionalMedicalCenterAr');
     Route::any('crmc_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@colquittRegionalMedicalCenterArDuplicates');
-      Route::any('smmi_ar_denver', 'App\Http\Controllers\ProjectAuthAutomationController@SmmiArDenver');
+    Route::any('smmi_ar_denver', 'App\Http\Controllers\ProjectAuthAutomationController@SmmiArDenver');
     Route::any('smmi_ar_denver_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@SmmiArDenverDuplicates');
+    Route::any('smmi_ar_dallas', 'App\Http\Controllers\ProjectAuthAutomationController@SmmiArDallas');
+    Route::any('smmi_ar_dallas_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@SmmiArDallasDuplicates');
 
 
     Route::any('production_auto_close', 'App\Http\Controllers\ProjectController@productionAutoClose');

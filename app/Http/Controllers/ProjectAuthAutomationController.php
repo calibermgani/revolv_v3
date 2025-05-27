@@ -40,6 +40,8 @@ use App\Models\CrmcAr;
 use App\Models\CrmcArDuplicates;
 use App\Models\SmmiArDenver;
 use App\Models\SmmiArDenverDuplicates;
+use App\Models\SmmiArDallas;
+use App\Models\SmmiArDallasDuplicates;
 
 class ProjectAuthAutomationController extends Controller
 {
@@ -1713,6 +1715,102 @@ class ProjectAuthAutomationController extends Controller
     {
         try {
                  SmmiArDenverDuplicates::insert([
+                    'practice' => isset($request->practice) && $request->practice != "NULL" ? $request->practice : NULL,
+                    'lineref' => isset($request->lineref) && $request->lineref != "NULL" ? $request->lineref : NULL,
+                    'acct_no' => isset($request->acct_no) && $request->acct_no != "NULL" ? $request->acct_no : NULL,
+                    'pt_name' => isset($request->pt_name) && $request->pt_name != "NULL" ? $request->pt_name : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'carrier' => isset($request->carrier) && $request->carrier != "NULL" ? $request->carrier : NULL,
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                    'file_order' => isset($request->file_order) && $request->file_order != "NULL" ? $request->file_order : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+       public function SmmiArDallas(Request $request)
+    {
+        try {
+            $attributes = [
+                 'practice' => isset($request->practice) && $request->practice != "NULL" ? $request->practice : NULL,
+                 'lineref' => isset($request->lineref) && $request->lineref != "NULL" ? $request->lineref : NULL,
+                 'acct_no' => isset($request->acct_no) && $request->acct_no != "NULL" ? $request->acct_no : NULL,
+                 'pt_name' => isset($request->pt_name) && $request->pt_name != "NULL" ? $request->pt_name : NULL,
+                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                 'carrier' => isset($request->carrier) && $request->carrier != "NULL" ? $request->carrier : NULL,
+                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                 'file_order' => isset($request->file_order) && $request->file_order != "NULL" ? $request->file_order : NULL
+             ];         
+
+            $duplicateRecordExisting  =  SmmiArDallas::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                SmmiArDallas::insert([
+                        'practice' => isset($request->practice) && $request->practice != "NULL" ? $request->practice : NULL,
+                        'lineref' => isset($request->lineref) && $request->lineref != "NULL" ? $request->lineref : NULL,
+                        'acct_no' => isset($request->acct_no) && $request->acct_no != "NULL" ? $request->acct_no : NULL,
+                        'pt_name' => isset($request->pt_name) && $request->pt_name != "NULL" ? $request->pt_name : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'carrier' => isset($request->carrier) && $request->carrier != "NULL" ? $request->carrier : NULL,
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                        'file_order' => isset($request->file_order) && $request->file_order != "NULL" ? $request->file_order : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords  =  SmmiArDallas::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'practice' => isset($request->practice) && $request->practice != "NULL" ? $request->practice : NULL,
+                            'lineref' => isset($request->lineref) && $request->lineref != "NULL" ? $request->lineref : NULL,
+                            'acct_no' => isset($request->acct_no) && $request->acct_no != "NULL" ? $request->acct_no : NULL,
+                            'pt_name' => isset($request->pt_name) && $request->pt_name != "NULL" ? $request->pt_name : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'carrier' => isset($request->carrier) && $request->carrier != "NULL" ? $request->carrier : NULL,
+                            'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                            'file_order' => isset($request->file_order) && $request->file_order != "NULL" ? $request->file_order : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                    SmmiArDallas::insert([
+                        'practice' => isset($request->practice) && $request->practice != "NULL" ? $request->practice : NULL,
+                        'lineref' => isset($request->lineref) && $request->lineref != "NULL" ? $request->lineref : NULL,
+                        'acct_no' => isset($request->acct_no) && $request->acct_no != "NULL" ? $request->acct_no : NULL,
+                        'pt_name' => isset($request->pt_name) && $request->pt_name != "NULL" ? $request->pt_name : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'carrier' => isset($request->carrier) && $request->carrier != "NULL" ? $request->carrier : NULL,
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                        'file_order' => isset($request->file_order) && $request->file_order != "NULL" ? $request->file_order : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record reinserted Successfully']);
+                }
+                
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function SmmiArDallasDuplicates(Request $request)
+    {
+        try {
+                 SmmiArDallasDuplicates::insert([
                     'practice' => isset($request->practice) && $request->practice != "NULL" ? $request->practice : NULL,
                     'lineref' => isset($request->lineref) && $request->lineref != "NULL" ? $request->lineref : NULL,
                     'acct_no' => isset($request->acct_no) && $request->acct_no != "NULL" ? $request->acct_no : NULL,
