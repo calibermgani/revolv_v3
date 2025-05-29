@@ -186,6 +186,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('smmi_ar_dallas_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@SmmiArDallasDuplicates');
     Route::any('tqhs_ar_denials', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsArDenials');
     Route::any('tqhs_ar_denials_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsArDenialsDuplicates');
+    Route::any('tqhs_ar_no_response_tfi', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsARNoResponseTfi');
+    Route::any('tqhs_ar_no_response_tfi_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsARNoResponseTfiDuplicates');
 
 
 
