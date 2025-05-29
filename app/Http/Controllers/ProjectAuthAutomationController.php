@@ -1837,9 +1837,9 @@ class ProjectAuthAutomationController extends Controller
                 'invoke_date' => carbon::now()->format('Y-m-d')
              ];          
 
-            $duplicateRecordExisting  =  TqhsAr::where($attributes)->exists();
+            $duplicateRecordExisting  =  TqhsArDenials::where($attributes)->exists();
             if (!$duplicateRecordExisting) {
-                TqhsAr::insert([
+                TqhsArDenials::insert([
                     'priority' => isset($request->priority) && $request->priority != "NULL" ? $request->priority : NULL,  
                     'fup_score' => isset($request->fup_score) && $request->fup_score != "NULL" ? $request->fup_score : NULL,  
                     'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,  
@@ -1903,7 +1903,7 @@ class ProjectAuthAutomationController extends Controller
                     ]);
                         return response()->json(['message' => 'Record Inserted Successfully']);
             } else {
-                $duplicateRecords = TqhsAr::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                $duplicateRecords = TqhsArDenials::where($attributes)->where('chart_status',"CE_Assigned")->get();
                 if ($duplicateRecords->isNotEmpty()) {
                     foreach ($duplicateRecords as $duplicateRecord) {
                         $duplicateRecord->update([
@@ -1971,7 +1971,7 @@ class ProjectAuthAutomationController extends Controller
                     }
                     return response()->json(['message' => 'Existing Record Updated Successfully']);
                 } else {
-                     TqhsAr::insert([
+                     TqhsArDenials::insert([
                         'priority' => isset($request->priority) && $request->priority != "NULL" ? $request->priority : NULL,  
                         'fup_score' => isset($request->fup_score) && $request->fup_score != "NULL" ? $request->fup_score : NULL,  
                         'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,  
@@ -2044,7 +2044,7 @@ class ProjectAuthAutomationController extends Controller
     public function tqhsArDenialsDuplicates(Request $request)
     {
         try {
-            TqhsArDuplicates::insert([
+            TqhsArDenialsDuplicates::insert([
                     'priority' => isset($request->priority) && $request->priority != "NULL" ? $request->priority : NULL,  
                     'fup_score' => isset($request->fup_score) && $request->fup_score != "NULL" ? $request->fup_score : NULL,  
                     'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,  
