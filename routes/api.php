@@ -188,6 +188,10 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('tqhs_ar_denials_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsArDenialsDuplicates');
     Route::any('tqhs_ar_no_response_tfi', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsARNoResponseTfi');
     Route::any('tqhs_ar_no_response_tfi_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsARNoResponseTfiDuplicates');
+    Route::any('tqhs_ar_rhc_no_response', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsArRhcNoResponse');
+    Route::any('tqhs_ar_rhc_no_response_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsArRhcNoResponseDuplicates');
+    Route::any('tqhs_ar_rhc_denials', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsArRhcDenials');
+    Route::any('tqhs_ar_rhc_denials_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsArRhcDenialsDuplicates');
 
 
 
