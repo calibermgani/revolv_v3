@@ -155,65 +155,70 @@ class ReportsController extends Controller
                     if (Schema::hasColumn($table_name, 'qa_modifiers')) {
                         $columns[] = 'qa_modifiers';
                     }
+                    // $client_data = DB::table($table_name)
+                    //     // ->select([
+                    //     //     DB::raw($columnsHeader),
+                    //     //     "caller_charts_work_logs.work_time","caller_charts_work_logs.record_status",'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers'
+                    //     //     // DB::raw("TIME_FORMAT(SEC_TO_TIME(TIMESTAMPDIFF(SECOND, caller_charts_work_logs.start_time, caller_charts_work_logs.end_time)), '%H:%i:%s') AS work_hours")
+                    //     // ])
+                    //     ->select($columns)
+                    //     ->where('caller_charts_work_logs.project_id', '=', $request->project_id)
+                    //     ->where('caller_charts_work_logs.sub_project_id', '=', $request->sub_project_id)
+                    //     ->join('caller_charts_work_logs', 'caller_charts_work_logs.record_id', '=', $table_name . '.parent_id')
+                    //     ->where(function ($query) use ($start_date, $end_date) {
+                    //         if (!empty($start_date) && !empty($end_date)) {
+                    //             $query->whereBetween('caller_charts_work_logs.start_time', [$start_date, $end_date]);
+                    //         }else{
+                    //             $query;
+                    //         }
+                    //     })
+                    //     ->where(function ($query) use ($request) {
+                    //         if ($request->user) {
+                    //             $query->where('CE_emp_id',$request->user);
+                    //             $query->orWhere('QA_emp_id',$request->user);
+                    //         }else{
+                    //             $query;
+                    //         }
+                    //     })
+                    //     ->where(function ($query) use ($request) {
+
+                    //         if ($request->client_status) {
+                    //             // $query->where('chart_status',$request->client_status);
+                    //             $query->where('caller_charts_work_logs.record_status', $request->client_status);
+                    //         }else{
+                    //             $query;
+                    //         }
+                    //     })
+                    //     ->get();
+                        $latestWorkLogs = DB::table(DB::raw('
+                            (
+                                SELECT *, 
+                                    ROW_NUMBER() OVER (
+                                        PARTITION BY record_id, project_id, sub_project_id, record_status 
+                                        ORDER BY start_time DESC
+                                    ) AS row_num
+                                FROM caller_charts_work_logs
+                            ) as ranked_logs
+                        '))
+                        ->where('row_num', 1);
+
                     $client_data = DB::table($table_name)
-                        // ->select([
-                        //     DB::raw($columnsHeader),
-                        //     "caller_charts_work_logs.work_time","caller_charts_work_logs.record_status",'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers'
-                        //     // DB::raw("TIME_FORMAT(SEC_TO_TIME(TIMESTAMPDIFF(SECOND, caller_charts_work_logs.start_time, caller_charts_work_logs.end_time)), '%H:%i:%s') AS work_hours")
-                        // ])
+                        ->joinSub($latestWorkLogs, 'caller_charts_work_logs', function ($join) use ($table_name) {
+                            $join->on('caller_charts_work_logs.record_id', '=', $table_name . '.parent_id');
+                        })
                         ->select($columns)
                         ->where('caller_charts_work_logs.project_id', '=', $request->project_id)
                         ->where('caller_charts_work_logs.sub_project_id', '=', $request->sub_project_id)
-                        ->join('caller_charts_work_logs', 'caller_charts_work_logs.record_id', '=', $table_name . '.parent_id')
-                        ->where(function ($query) use ($start_date, $end_date) {
-                            if (!empty($start_date) && !empty($end_date)) {
-                                $query->whereBetween('caller_charts_work_logs.start_time', [$start_date, $end_date]);
-                            }else{
-                                $query;
-                            }
+                        ->when(!empty($start_date) && !empty($end_date), function ($query) use ($start_date, $end_date) {
+                            $query->whereBetween('caller_charts_work_logs.start_time', [$start_date, $end_date]);
                         })
-                        ->where(function ($query) use ($request) {
-                            if ($request->user) {
-                                $query->where('CE_emp_id',$request->user);
-                                $query->orWhere('QA_emp_id',$request->user);
-                            }else{
-                                $query;
-                            }
-                        })
-                        ->where(function ($query) use ($request) {
-
-                            if ($request->client_status) {
-                                // $query->where('chart_status',$request->client_status);
-                                $query->where('caller_charts_work_logs.record_status', $request->client_status);
-                            }else{
-                                $query;
-                            }
+                        ->when(!empty($request->user), function ($query) use ($request) {
+                            $query->where(function ($q) use ($request) {
+                                $q->where('CE_emp_id', $request->user)
+                                ->orWhere('QA_emp_id', $request->user);
+                            });
                         })
                         ->get();
-                        $client_data = DB::table($table_name)
-    ->join(DB::raw("(SELECT * FROM caller_charts_work_logs as ccwl1 
-                     WHERE ccwl1.start_time = (
-                         SELECT MAX(ccwl2.start_time) 
-                         FROM caller_charts_work_logs as ccwl2 
-                         WHERE ccwl2.project_id = ccwl1.project_id 
-                           AND ccwl2.sub_project_id = ccwl1.sub_project_id 
-                           AND ccwl2.record_status = ccwl1.record_status
-                     )
-                    ) as caller_charts_work_logs"), 
-           'caller_charts_work_logs.record_id', '=', DB::raw($table_name . '.parent_id'))
-    ->select($columns)
-    ->where('caller_charts_work_logs.project_id', '=', $request->project_id)
-    ->where('caller_charts_work_logs.sub_project_id', '=', $request->sub_project_id)
-    ->when(!empty($start_date) && !empty($end_date), function ($query) use ($start_date, $end_date) {
-        $query->whereBetween('caller_charts_work_logs.start_time', [$start_date, $end_date]);
-    })
-    ->when(!empty($request->user), function ($query) use ($request) {
-        $query->where(function ($q) use ($request) {
-            $q->where('CE_emp_id', $request->user)
-              ->orWhere('QA_emp_id', $request->user);
-        });
-    })
-    ->get();
                 } else {
                     $client_data = [];
                 }//dd($client_data);
