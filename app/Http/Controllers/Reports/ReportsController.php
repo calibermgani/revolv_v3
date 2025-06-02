@@ -192,7 +192,7 @@ class ReportsController extends Controller
                     //     ->get();
                     $latestLogs = DB::table(DB::raw('(
                         SELECT *,
-                            ROW_NUMBER() OVER (PARTITION BY parent_id ORDER BY start_time DESC) as rn
+                            ROW_NUMBER() OVER (PARTITION BY record_id ORDER BY start_time DESC) as rn
                         FROM caller_charts_work_logs
                     ) as latest_logs'))
                     ->where('rn', 1); // Keep only latest one per parent_id
