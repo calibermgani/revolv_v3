@@ -155,12 +155,7 @@ class ReportsController extends Controller
                     if (Schema::hasColumn($table_name, 'qa_modifiers')) {
                         $columns[] = 'qa_modifiers';
                     }
-                    // $client_data = DB::table($table_name)
-                    //     // ->select([
-                    //     //     DB::raw($columnsHeader),
-                    //     //     "caller_charts_work_logs.work_time","caller_charts_work_logs.record_status",'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers'
-                    //     //     // DB::raw("TIME_FORMAT(SEC_TO_TIME(TIMESTAMPDIFF(SECOND, caller_charts_work_logs.start_time, caller_charts_work_logs.end_time)), '%H:%i:%s') AS work_hours")
-                    //     // ])
+                    // $client_data = DB::table($table_name)                  
                     //     ->select($columns)
                     //     ->where('caller_charts_work_logs.project_id', '=', $request->project_id)
                     //     ->where('caller_charts_work_logs.sub_project_id', '=', $request->sub_project_id)
@@ -189,7 +184,7 @@ class ReportsController extends Controller
                     //             $query;
                     //         }
                     //     })
-                    //     ->get();
+                    //     ->get();//before same status duplicate remove
                         $latestWorkLogs = DB::table(DB::raw('
                             (
                                 SELECT *, 
