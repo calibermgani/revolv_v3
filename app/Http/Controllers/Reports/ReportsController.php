@@ -189,7 +189,6 @@ class ReportsController extends Controller
                                 $query;
                             }
                         })
-
                         ->get();
                 } else {
                     $client_data = [];
