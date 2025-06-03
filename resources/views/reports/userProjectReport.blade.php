@@ -333,8 +333,7 @@
                             "parent"] + "&child=" + getUrlVars()["child"];
                 });
                     $(document).on('change', '#project_id', function() {
-                        console.log($('#user_id').val(),'user_id');                      
-                        $('#user_id').val('');   console.log($('#user_id').val(),'user_id after');             
+                         $('#user_id').val('').change(); 
                         var project_id = $(this).val();
                         KTApp.block('#formConfigAddDiv', {
                             overlayColor: '#000000',
