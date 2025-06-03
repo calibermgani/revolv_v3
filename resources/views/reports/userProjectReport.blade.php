@@ -101,7 +101,7 @@
                         @foreach ($prjDetailsList as $projectDetails)
                           @foreach ($projectDetails as $project)
                            @php
-                            dd($formConfigurationDetails[$project['sub_prj_id']] , $formConfigurationDetails[$project['sub_prj_id']], $project['prj_id']);
+                            dd($formConfigurationDetails , $formConfigurationDetails[$project['sub_prj_id']], $project['prj_id']);
                               $subProjectName = $project['prj_id'] != null && $project['sub_prj_id'] != null ? App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id'])['sub_project_name'] : '--' 
                              
                            @endphp
