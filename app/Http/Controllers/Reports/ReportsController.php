@@ -1204,7 +1204,18 @@ class ReportsController extends Controller
             $formConfigurationDetails = formConfiguration::groupBy(['project_id', 'sub_project_id'])
                                             ->select('project_id', 'sub_project_id')
                                             ->pluck('project_id', 'sub_project_id')->toArray();
-                return view('reports.userProjectReport', compact('prjDetailsList','workDate','userName','formConfigurationDetails'));                
+                  $formProjectIds = formConfiguration::groupBy('project_id', 'sub_project_id')->pluck('project_id')->toArray();
+                  $formSubProjectIds = formConfiguration::groupBy('project_id', 'sub_project_id')->pluck('sub_project_id')->toArray();                 
+                  $unique_client_ids = array_unique($formProjectIds);
+                   $grouped_sub_prj_ids = [];
+                    foreach ($unique_client_ids as $client_id) {
+                            $grouped_sub_prj_ids[] = array_values(array_filter($formSubProjectIds, function($sub_prj_id, $key) use ($formProjectIds, $client_id) {
+                                return $formProjectIds[$key] == $client_id;
+                            }, ARRAY_FILTER_USE_BOTH));
+                    }
+                    $clientIds = array_values($unique_client_ids);
+                    $subPrjIds = $grouped_sub_prj_ids;                  
+                return view('reports.userProjectReport', compact('prjDetailsList','workDate','userName','formConfigurationDetails','formProjectIds','subPrjIds','clientIds'));                
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
             }
