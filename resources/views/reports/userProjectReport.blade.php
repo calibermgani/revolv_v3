@@ -40,6 +40,31 @@
                         ]) !!}
                     </fieldset>
                 </div>
+                <div class="col-lg-2 mb-lg-0 mb-6">
+                    <label>Project</label>
+                    <fieldset class="form-group mb-1">
+                        @php
+                            $projectList = App\Http\Helper\Admin\Helpers::projectList();
+                             $projectName = null;
+                        @endphp
+                        {!! Form::select('project_id', $projectList, $projectName, [
+                            'class' => 'form-control kt_select2_project',
+                            'id' => 'project_list',
+                            'style' => 'width: 100%;',
+                        ]) !!}
+                    </fieldset>
+                </div>
+                <div class="col-lg-2 mb-lg-0 mb-6">
+                    <label>Sub Project</label>
+                    <fieldset class="form-group mb-1">
+                          @php $subProjectList = []; @endphp
+                        {!! Form::select('sub_project_id', $subProjectList, null, [
+                            'class' => 'form-control kt_select2_sub_project',
+                            'id' => 'sub_project_list',
+                            'style' => 'width: 100%;',
+                        ]) !!}
+                    </fieldset>
+                </div>
                 <div class="col-lg-2 mt-8">
                     <button class="btn btn-light-danger" id="clear_submit" tabindex="10" type="button">
                         <span>
@@ -307,6 +332,43 @@
                         getUrlVars()[
                             "parent"] + "&child=" + getUrlVars()["child"];
                 });
+                    $(document).on('change', '#project_list', function() {
+                        var project_id = $(this).val();
+                        KTApp.block('#formConfigAddDiv', {
+                            overlayColor: '#000000',
+                            state: 'danger',
+                            opacity: 0.1,
+                            message: 'Fetching...',
+                        });
+                        $.ajaxSetup({
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            }
+                        });
+                        $.ajax({
+                            type: "GET",
+                            url: "{{ url('sub_project_list') }}",
+                            data: {
+                                project_id: project_id
+                            },
+                            success: function(res) {
+                                subprojectCount = Object.keys(res.subProject).length;
+                                var myArray = res.existingSubProject;
+                                var sla_options = '<option value="">-- Select --</option>';
+                                $.each(res.subProject, function(key, value) {
+                                    sla_options += '<option value="' + key + '" ' +
+                                                        (myArray.length >0 && $.inArray(key, myArray) !== -1 ? 'disabled' :
+                                                            '') +
+                                                        '>' + value +
+                                        '</option>';
+                                });
+                                $("#sub_project_id").html(sla_options);
+                                $('select[name="sub_project_id"]').html(sla_options);
+                                KTApp.unblock('#formConfigAddDiv');
+                            },
+                            error: function(jqXHR, exception) {}
+                        });
+                    });
             });
         </script>
     @endpush
