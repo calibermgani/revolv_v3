@@ -50,7 +50,7 @@
                         {!! Form::select('project_id', $projectList, $projectName, [
                             'class' => 'form-control kt_select2_project',
                             'id' => 'project_list',
-                            'style' => 'width: 100%;',
+                            'style' => 'width: 100%;background-color: #fff !important;',
                         ]) !!}
                     </fieldset>
                 </div>
