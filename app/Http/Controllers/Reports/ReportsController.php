@@ -1173,7 +1173,18 @@ class ReportsController extends Controller
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {            
             try {   
             
-            if ($request->work_date != null || $request->user_name != null ) {  
+            if ($request->work_date != null || $request->user_name != null ) {  dd($request->all());
+                    if($request->user_name) {
+                        $userName = $request->user_name;
+                    } else {
+                        $userName = null;
+                    }
+                    if ($request->work_date) {
+                        $workDate = $request->work_date;
+                    } else {
+                        $workDate = '';
+                    }
+                    // Fetching project details from external API
                 $payload = [
                         'token' => '1a32e71a46317b9cc6feb7388238c95d',
                         "userId" => $request['user_name'] ?? '',

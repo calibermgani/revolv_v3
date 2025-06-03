@@ -36,7 +36,7 @@
                         {!! Form::select('user_name', $userList, $userName, [
                             'class' => 'form-control kt_select2_manager',
                             'id' => 'production_user_id',
-                            'style' => 'width: 100%;',
+                            'style' => 'width: 100%;background-color: #fff !important;',
                         ]) !!}
                     </fieldset>
                 </div>
