@@ -61,8 +61,8 @@
                         $workDates = explode(' - ', $workDate);
                         $startDate = date('Y-m-d', strtotime($workDates[0]));
                         $endDate = date('Y-m-d', strtotime($workDates[1]));
-                        $resolvStartDate = date('Y-m-d 17:00:00', strtotime($work_date[0]));
-                        $resolvEndDate = date('Y-m-d 09:00:00', strtotime($work_date[0] . ' +1 day'));
+                        $resolvStartDate = date('Y-m-d 17:00:00', strtotime($workDates[0]));
+                        $resolvEndDate = date('Y-m-d 09:00:00', strtotime($workDates[0] . ' +1 day'));
                      } else {
                         $startDate = Carbon::now()->startOfMonth()->format('Y-m-d');
                         $endDate = Carbon::now()->format('Y-m-d');
