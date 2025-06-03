@@ -61,9 +61,13 @@
                         $workDates = explode(' - ', $workDate);
                         $startDate = date('Y-m-d', strtotime($workDates[0]));
                         $endDate = date('Y-m-d', strtotime($workDates[1]));
+                        $resolvStartDate = date('Y-m-d 17:00:00', strtotime($work_date[0]));
+                        $resolvEndDate = date('Y-m-d 09:00:00', strtotime($work_date[0] . ' +1 day'));
                      } else {
-                        $startDate = Carbon::now()->startOfMonth();
-                        $endDate = Carbon::now();
+                        $startDate = Carbon::now()->startOfMonth()->format('Y-m-d');
+                        $endDate = Carbon::now()->format('Y-m-d');
+                        $resolvStartDate = date('Y-m-d 17:00:00', strtotime($startDate));
+                        $resolvEndDate = date('Y-m-d 09:00:00', strtotime($startDate . ' +1 day'));
                      }
 
 
@@ -122,8 +126,7 @@
                                                     }
                                                 }
                                             }
-                                             $resolvStartDate = date('Y-m-d 17:00:00', strtotime($work_date[0]));
-                                             $resolvEndDate = date('Y-m-d 09:00:00', strtotime($work_date[1] . ' +1 day'));
+                                            
                                             $paProject = Helpers::projectName($project['prj_id']);
                                             $decodedClientName = $paProject ? $paProject->project_name : null;
                                             $decodedsubProjectName = $project['sub_prj_id'] == null ? 'project' :($project['prj_id'] != null ? (Helpers::subProjectName($project['prj_id'], $project['sub_prj_id']) != null ?Helpers::subProjectName($project['prj_id'], $project['sub_prj_id'])->sub_project_name : null) : null);
