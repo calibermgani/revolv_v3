@@ -105,7 +105,10 @@
                               $subProjectName = $project['prj_id'] != null && $project['sub_prj_id'] != null ? App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id'])['sub_project_name'] : '--' 
                              
                            @endphp
-                           @if($subProjectName !== '--' &&  isset($formConfigurationDetails[$project['sub_prj_id']]) &&  $formConfigurationDetails[$project['sub_prj_id']] == $project['prj_id'])                                   
+                           @if($subProjectName !== '--' &&  isset($formConfigurationDetails[$project['sub_prj_id']]) &&  $formConfigurationDetails[$project['sub_prj_id']] == $project['prj_id'])        
+                           @php
+                           dd($project['emp_id']);
+                            @endphp                           
                             <tr>
                                 <td>{{ $project['emp_id'] }}</td>
                                 <td>{{ $project['user_name'] }}</td>
