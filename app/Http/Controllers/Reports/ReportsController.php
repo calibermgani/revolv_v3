@@ -1203,7 +1203,7 @@ class ReportsController extends Controller
             }
             $formConfigurationDetails = formConfiguration::groupBy(['project_id', 'sub_project_id'])
                                             ->select('project_id', 'sub_project_id')
-                                            ->pluck('project_id', 'sub_project_id')->toArray();dd($prjDetailsList);
+                                            ->pluck('project_id', 'sub_project_id')->toArray();dd($prjDetailsList,$workDate,$userName);
                 return view('reports.userProjectReport', compact('prjDetailsList','workDate','userName','formConfigurationDetails'));                
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
