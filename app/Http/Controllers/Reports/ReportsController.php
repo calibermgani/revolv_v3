@@ -1169,4 +1169,48 @@ class ReportsController extends Controller
         }
     }
 
+    public function userProjectReport(Request $request) {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {            
+            try {   
+            
+            if ($request->work_date != null || $request->user_name != null ) {  
+                $payload = [
+                        'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                        "userId" => $request['user_name'] ?? '',
+                        "workDate" => $request['work_date'] ?? '',
+                    ];
+                    $client = new Client();
+                    $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_user_prj_details', [
+                        'json' => $payload
+                    ]);
+                    if ($response->getStatusCode() == 200) {
+                        $data = json_decode($response->getBody(), true);
+                    } else {
+                        return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+                    }
+                    if(isset($data['prjDetailsList'])){
+                        $prjDetailsList = $data['prjDetailsList'];
+                    } else {
+                        $prjDetailsList = '--';
+                    }
+                            $workDate =  $request['work_date'] ?? '';  
+                            $userName =  $request['user_name'] ?? '';                         
+                    $managerName = null;
+            } else {      
+                    $prjDetailsList = [];
+                    $workDate =  '';                  
+                    $userName = null;
+            }
+            $formConfigurationDetails = formConfiguration::groupBy(['project_id', 'sub_project_id'])
+                                            ->select('project_id', 'sub_project_id')
+                                            ->pluck('project_id', 'sub_project_id')->toArray();
+                return view('reports.userProjectReport', compact('prjDetailsList','workDate','userName','formConfigurationDetails'));                
+            } catch (\Exception $e) {
+                Log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
+
 }

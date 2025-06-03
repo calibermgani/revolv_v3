@@ -1245,4 +1245,27 @@ class Helpers
 			}    
         
     }
+	public static function getUserList()
+	{
+		$payload = [
+			'token' => '1a32e71a46317b9cc6feb7388238c95d'
+		];
+		$client = new Client();
+		$response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_resolv_user_list', [
+			'json' => $payload
+		]);
+		if ($response->getStatusCode() == 200) {
+			$data = json_decode($response->getBody(), true);
+		} else {
+			return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+		}
+		if(isset($data['userList'])){
+			$userList = $data['userList'];
+			return $userList;
+		} else {
+			$userList = '--';
+			return $userList;
+		}
+				
+	}
 }

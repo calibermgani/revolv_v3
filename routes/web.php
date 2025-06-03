@@ -163,6 +163,7 @@ Route::group(['prefix' => 'qa_production'], function () {
         Route::any('production_reports', 'App\Http\Controllers\Reports\ReportsController@productionReports');
         Route::any('production_report_search', 'App\Http\Controllers\Reports\ReportsController@productionReportSearch');
         Route::any('production_mgr_comments_report', 'App\Http\Controllers\Reports\ReportsController@productionMgrUserReport');
+        Route::any('user_project_report', 'App\Http\Controllers\Reports\ReportsController@userProjectReport');
       
     });
     Route::group(['prefix' => 'production'], function () {
