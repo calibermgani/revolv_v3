@@ -35,7 +35,7 @@
                         @endphp
                         {!! Form::select('user_name', $userList, $userName, [
                             'class' => 'form-control kt_select2_manager',
-                            'id' => 'user_id',
+                            'id' => 'production_user_id',
                             'style' => 'width: 100%;',
                         ]) !!}
                     </fieldset>
@@ -333,7 +333,7 @@
                             "parent"] + "&child=" + getUrlVars()["child"];
                 });
                     $(document).on('change', '#project_id', function() {
-                         $('#user_id').val('').change(); 
+                         $('#production_user_id').val('').change(); 
                         var project_id = $(this).val();
                         KTApp.block('#formConfigAddDiv', {
                             overlayColor: '#000000',
