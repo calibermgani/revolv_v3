@@ -135,7 +135,7 @@
                                             $modelClass = "App\\Models\\" .  $modelName;
                                                $arColumnExists = Schema::hasColumn($table_name, 'ar_at');
                                                 $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
-                                                $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at'; 
+                                                $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at'; dd($arColumnToUse,$resolvStartDate, $resolvEndDate,$modelClass);
                                               $resolvCount = $modelClass::whereBetween($arColumnToUse, [$resolvStartDate, $resolvEndDate])
                                             ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','AR_non_workable','Revoke','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
                                             ->count();
