@@ -356,9 +356,7 @@
                                 var myArray = res.existingSubProject;
                                 var sla_options = '<option value="">-- Select --</option>';
                                 $.each(res.subProject, function(key, value) {
-                                    sla_options += '<option value="' + key + '" ' +
-                                                        (myArray.length >0 && $.inArray(key, myArray) !== -1 ? 'disabled' :
-                                                            '') +
+                                    sla_options += '<option value="' + key + '" ' +                                                        
                                                         '>' + value +
                                         '</option>';
                                 });
