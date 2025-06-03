@@ -49,7 +49,7 @@
                         @endphp
                         {!! Form::select('project_id', $projectList, $projectName, [
                             'class' => 'form-control kt_select2_project',
-                            'id' => 'project_list',
+                            'id' => 'project_id',
                             'style' => 'width: 100%;background-color: #fff !important;',
                         ]) !!}
                     </fieldset>
@@ -332,7 +332,7 @@
                         getUrlVars()[
                             "parent"] + "&child=" + getUrlVars()["child"];
                 });
-                    $(document).on('change', '#project_list', function() {
+                    $(document).on('change', '#project_id', function() {
                         var project_id = $(this).val();
                         KTApp.block('#formConfigAddDiv', {
                             overlayColor: '#000000',
