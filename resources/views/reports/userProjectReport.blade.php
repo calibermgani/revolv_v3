@@ -115,10 +115,12 @@
                                     @foreach ($dates as $date)
                                         @php
                                             $aimsCount = 0;
-                                            foreach ($project['tool_data'] as $entry) {
-                                                if ($entry['work_date'] === $date) {
-                                                    $aimsCount = $entry['achieved'];
-                                                    break;
+                                            if(!empty($project['tool_data']) && !is_null($project['tool_data'])) {                                               
+                                                foreach ($project['tool_data'] as $entry) {
+                                                    if ($entry['work_date'] === $date) {
+                                                        $aimsCount = $entry['achieved'];
+                                                        break;
+                                                    }
                                                 }
                                             }
                                         @endphp
