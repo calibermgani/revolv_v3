@@ -45,9 +45,8 @@
                     <fieldset class="form-group mb-1">
                         @php
                             $projectList = App\Http\Helper\Admin\Helpers::projectList();
-                             $projectName = null;
                         @endphp
-                        {!! Form::select('project_id', $projectList, $projectName, [
+                        {!! Form::select('project_id', $projectList, $projectId, [
                             'class' => 'form-control kt_select2_project',
                             'id' => 'project_id',
                             'style' => 'width: 100%;background-color: #fff !important;',
@@ -57,12 +56,27 @@
                 <div class="col-lg-2 mb-lg-0 mb-6">
                     <label>Sub Project</label>
                     <fieldset class="form-group mb-1">
-                          @php $subProjectList = []; @endphp
-                        {!! Form::select('sub_project_id', $subProjectList, null, [
-                            'class' => 'form-control kt_select2_sub_project',
-                            'id' => 'sub_project_list',
-                            'style' => 'width: 100%;',
-                        ]) !!}
+                          @if (isset(request()->sub_project_id))
+                                @php
+                                    $subProjectList = App\Http\Helper\Admin\Helpers::subProjectList(
+                                        $projectId,
+                                    );
+                                @endphp
+                                {!! Form::select('sub_project_id', $subProjectList, $subProjectId, [
+                                    'class' => 'form-control kt_select2_sub_project',
+                                    'id' => 'sub_project_list',
+                                    'disabled',
+                                ]) !!}
+                                <input type="hidden" name="sub_project_id_val"
+                                    value="{{ $subProjectId ?? '' }}">
+                         @else
+                            @php $subProjectList = []; @endphp
+                                {!! Form::select('sub_project_id', $subProjectList, null, [
+                                    'class' => 'form-control kt_select2_sub_project',
+                                    'id' => 'sub_project_list',
+                                    'style' => 'width: 100%;',
+                                ]) !!}
+                        @endif
                     </fieldset>
                 </div>
                 <div class="col-lg-2 mt-8">
@@ -208,11 +222,11 @@
                     endDate: '+0d',
                 });
                 var dateRangeValue = $('#select_date').val();
-                if (!dateRangeValue) {
-                    $('.daterange').val('');
-                } else {
-                    $('.daterange').val(dateRangeValue);
-                }
+                // if (!dateRangeValue) {
+                //     $('.daterange').val('');
+                // } else {
+                //     $('.daterange').val(dateRangeValue);
+                // }
                 var subprojectCount;
                 var table = $('#comments_report').DataTable({
                     processing: true,
