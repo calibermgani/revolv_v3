@@ -140,10 +140,10 @@
                     </thead>
                     <tbody>
                         @if (isset($prjDetailsList) && is_array($prjDetailsList))
-                            @php
+                            {{-- @php
                                 $clientIds = array_keys($prjDetailsList);
                                 $subPrjIds = array_column($prjDetailsList, 'sub_prj_id');
-                            @endphp
+                            @endphp --}}
                             @foreach ($prjDetailsList as $projectDetails)
                                 @foreach ($projectDetails as $project)
                                     @php                          
