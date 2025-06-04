@@ -278,46 +278,46 @@
                     }]
                 })
                 table.buttons().container().appendTo($('.dataTables_wrapper .col-md-6.text-right'));
-                $(document).on('change', '#project_id', function() {
-                    var project_id = $(this).val();
-                    var subproject_id = '';
-                    KTApp.block('#production_report_form', {
-                        overlayColor: '#000000',
-                        state: 'danger',
-                        opacity: 0.1,
-                        message: 'Fetching...',
-                    });
-                    subProjectNameList(project_id, subproject_id);
-                    KTApp.unblock('#production_report_form');
-                });
+                // $(document).on('change', '#project_id', function() {
+                //     var project_id = $(this).val();
+                //     var subproject_id = '';
+                //     KTApp.block('#production_report_form', {
+                //         overlayColor: '#000000',
+                //         state: 'danger',
+                //         opacity: 0.1,
+                //         message: 'Fetching...',
+                //     });
+                //     subProjectNameList(project_id, subproject_id);
+                //     KTApp.unblock('#production_report_form');
+                // });
 
-                function subProjectNameList(project_id, subproject_id) {
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        }
-                    });
-                    $.ajax({
-                        type: "GET",
-                        url: "{{ url('sub_project_list') }}",
-                        data: {
-                            project_id: project_id
-                        },
-                        success: function(res) {
-                            subprojectCount = Object.keys(res.subProject).length;
-                            var myArray = res.existingSubProject;
-                            var sla_options = '<option value="">-- Select --</option>';
-                            $.each(res.subProject, function(key, value) {
-                                sla_options += '<option value="' + key + '"' + (key ===
-                                        subproject_id ? 'selected="selected"' : '') + '>' + value +
-                                    '</option>';
+                // function subProjectNameList(project_id, subproject_id) {
+                //     $.ajaxSetup({
+                //         headers: {
+                //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                //         }
+                //     });
+                //     $.ajax({
+                //         type: "GET",
+                //         url: "{{ url('sub_project_list') }}",
+                //         data: {
+                //             project_id: project_id
+                //         },
+                //         success: function(res) {
+                //             subprojectCount = Object.keys(res.subProject).length;
+                //             var myArray = res.existingSubProject;
+                //             var sla_options = '<option value="">-- Select --</option>';
+                //             $.each(res.subProject, function(key, value) {
+                //                 sla_options += '<option value="' + key + '"' + (key ===
+                //                         subproject_id ? 'selected="selected"' : '') + '>' + value +
+                //                     '</option>';
 
-                            });
-                            $('select[name="sub_project_id"]').html(sla_options);
-                        },
-                        error: function(jqXHR, exception) {}
-                    });
-                };
+                //             });
+                //             $('select[name="sub_project_id"]').html(sla_options);
+                //         },
+                //         error: function(jqXHR, exception) {}
+                //     });
+                // };
 
                 $(document).on('click', '#form_submit', function(e) {
                     e.preventDefault();
