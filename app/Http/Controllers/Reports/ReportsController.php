@@ -1226,12 +1226,12 @@ class ReportsController extends Controller
                             $sub_project_id = null;
                         }
                         // Fetching project details from external API
-                        $payload = [
+                    $payload = [
                             'token' => '1a32e71a46317b9cc6feb7388238c95d',
                             "projectId" => $request['project_id'] ?? '',
                             "subProjectId" => $request['sub_project_id'] ?? null,
                             "workDate" => $request['work_date'] ?? '',
-                        ];
+                        ];dd($payload);
                         $client = new Client();
                         $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_prj_aims_user_details', [
                             'json' => $payload
