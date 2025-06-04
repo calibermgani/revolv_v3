@@ -139,12 +139,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if (isset($prjDetailsList) && is_array($prjDetailsList))
-                            {{-- @php
-                                $clientIds = array_keys($prjDetailsList);
-                                $subPrjIds = array_column($prjDetailsList, 'sub_prj_id');
-                            @endphp --}}
-                           
+                        @if (isset($prjDetailsList) && is_array($prjDetailsList))                           
                             @foreach ($prjDetailsList as $projectDetails)
                                 @foreach ($projectDetails as $project)
                                     @php                          
@@ -186,7 +181,7 @@
                                                         ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','AR_non_workable','Revoke','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
                                                         ->count();
                                                     @endphp
-                                                    <td>{{$resolvCount}}</td> {{-- Resolv Count --}}
+                                                    <td style="color: #f515c4">{{$resolvCount}}</td> {{-- Resolv Count --}}
                                                     <td>{{ $aimsCount }}</td> {{-- AIMS Count --}}
                                                 @endforeach                               
                                         </tr>
