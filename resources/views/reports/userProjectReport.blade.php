@@ -372,7 +372,7 @@
                 $(document).on('change', '#project_id', function() {
                     console.log("Project changed");
                     
-                        $('#manager_name').val('').change(); 
+                       // $('#manager_name').val('').change(); 
                     var project_id = $(this).val();
                     KTApp.block('#formConfigAddDiv', {
                         overlayColor: '#000000',
