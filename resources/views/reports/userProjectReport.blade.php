@@ -364,42 +364,45 @@
                         getUrlVars()[
                             "parent"] + "&child=" + getUrlVars()["child"];
                 });
-                    $(document).on('change', '#project_id', function() {
-                         $('#manager_name').val('').change(); 
-                        var project_id = $(this).val();
-                        KTApp.block('#formConfigAddDiv', {
-                            overlayColor: '#000000',
-                            state: 'danger',
-                            opacity: 0.1,
-                            message: 'Fetching...',
-                        });
-                        $.ajaxSetup({
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            }
-                        });
-                        $.ajax({
-                            type: "GET",
-                            url: "{{ url('sub_project_list') }}",
-                            data: {
-                                project_id: project_id
-                            },
-                            success: function(res) {
-                                subprojectCount = Object.keys(res.subProject).length;
-                                var myArray = res.existingSubProject;
-                                var sla_options = '<option value="">-- Select --</option>';
-                                $.each(res.subProject, function(key, value) {
-                                    sla_options += '<option value="' + key + '" ' +                                                        
-                                                        '>' + value +
-                                        '</option>';
-                                });
-                                $("#sub_project_id").html(sla_options);
-                                $('select[name="sub_project_id"]').html(sla_options);
-                                KTApp.unblock('#formConfigAddDiv');
-                            },
-                            error: function(jqXHR, exception) {}
-                        });
+                $(document).on('change', '#project_id', function() {
+                        $('#manager_name').val('').change(); 
+                    var project_id = $(this).val();
+                    KTApp.block('#formConfigAddDiv', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Fetching...',
                     });
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ url('sub_project_list') }}",
+                        data: {
+                            project_id: project_id
+                        },
+                        success: function(res) {
+                            subprojectCount = Object.keys(res.subProject).length;
+                            var myArray = res.existingSubProject;
+                            var sla_options = '<option value="">-- Select --</option>';
+                            $.each(res.subProject, function(key, value) {
+                                sla_options += '<option value="' + key + '" ' +                                                        
+                                                    '>' + value +
+                                    '</option>';
+                            });
+                            $('select[name="sub_project_id"]').html(sla_options);
+                            KTApp.unblock('#formConfigAddDiv');
+                        },
+                        error: function(jqXHR, exception) {}
+                    });
+                });
+                 $(document).on('change', '#manager_name', function() {
+                        $('#project_id').val('').change(); 
+                        $('#sub_project_id').val('').change(); 
+                 });
             });
         </script>
     @endpush
