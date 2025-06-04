@@ -401,7 +401,7 @@
                 });
                  $(document).on('change', '#manager_name', function() {
                         $('#project_id').val('').change(); 
-                        $('#sub_project_id').val('').change(); 
+                        $('#sub_project_list').val('').change(); 
                  });
             });
         </script>
