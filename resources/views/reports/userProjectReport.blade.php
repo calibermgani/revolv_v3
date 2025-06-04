@@ -139,7 +139,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if (isset($prjDetailsList) && !empty($prjDetailsList))
+                        @if (isset($prjDetailsList) && is_array($prjDetailsList))
                             @php
                                 $clientIds = array_keys($prjDetailsList);
                                 $subPrjIds = array_column($prjDetailsList, 'sub_prj_id');
