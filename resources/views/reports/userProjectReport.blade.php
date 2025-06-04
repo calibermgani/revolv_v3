@@ -295,7 +295,9 @@
                     subProjectNameList(project_id, subproject_id);
                     KTApp.unblock('#production_report_form');
                 });
-
+                  var project_id = $('#project_id').val();
+                    var subproject_id =  $('#sub_project_list').val();
+                subProjectNameList(project_id, subproject_id);
                 function subProjectNameList(project_id, subproject_id) {
                     $.ajaxSetup({
                         headers: {
