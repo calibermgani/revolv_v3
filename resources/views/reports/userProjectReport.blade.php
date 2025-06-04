@@ -214,7 +214,7 @@
                 KTApp.unblock('#page-loader');
                 var start = moment().startOf('month');
                 var end = moment();
-                $('.daterange').attr("autocomplete", "off");
+               // $('.daterange').attr("autocomplete", "off");
                 $('.daterange').daterangepicker({
                     showOn: 'both',
                     startDate: start,
