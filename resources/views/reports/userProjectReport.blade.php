@@ -278,47 +278,52 @@
                     }]
                 })
                 table.buttons().container().appendTo($('.dataTables_wrapper .col-md-6.text-right'));
-                // $(document).on('change', '#project_id', function() {
-                //     var project_id = $(this).val();
-                //     var subproject_id = '';
-                //     KTApp.block('#production_report_form', {
-                //         overlayColor: '#000000',
-                //         state: 'danger',
-                //         opacity: 0.1,
-                //         message: 'Fetching...',
-                //     });
-                //     subProjectNameList(project_id, subproject_id);
-                //     KTApp.unblock('#production_report_form');
-                // });
+                 let isResetting = false;
+                $(document).on('change', '#project_id', function() {
+                      // if (isResetting) return;
+                        // isResetting = true;
+                        $('#manager_name').val('').trigger('change.select2');
+                        //isResetting = false;
+                    var project_id = $(this).val();
+                    var subproject_id = '';
+                    KTApp.block('#production_report_form', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Fetching...',
+                    });
+                    subProjectNameList(project_id, subproject_id);
+                    KTApp.unblock('#production_report_form');
+                });
 
-                // function subProjectNameList(project_id, subproject_id) {
-                //     $.ajaxSetup({
-                //         headers: {
-                //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                //         }
-                //     });
-                //     $.ajax({
-                //         type: "GET",
-                //         url: "{{ url('sub_project_list') }}",
-                //         data: {
-                //             project_id: project_id
-                //         },
-                //         success: function(res) {
-                //             subprojectCount = Object.keys(res.subProject).length;
-                //             var myArray = res.existingSubProject;
-                //             var sla_options = '<option value="">-- Select --</option>';
-                //             $.each(res.subProject, function(key, value) {
-                //                 sla_options += '<option value="' + key + '"' + (key ===
-                //                         subproject_id ? 'selected="selected"' : '') + '>' + value +
-                //                     '</option>';
+                function subProjectNameList(project_id, subproject_id) {
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ url('sub_project_list') }}",
+                        data: {
+                            project_id: project_id
+                        },
+                        success: function(res) {
+                            subprojectCount = Object.keys(res.subProject).length;
+                            var myArray = res.existingSubProject;
+                            var sla_options = '<option value="">-- Select --</option>';
+                            $.each(res.subProject, function(key, value) {
+                                sla_options += '<option value="' + key + '"' + (key ===
+                                        subproject_id ? 'selected="selected"' : '') + '>' + value +
+                                    '</option>';
 
-                //             });
-                //             $('select[name="sub_project_id"]').html(sla_options);
-                //         },
-                //         error: function(jqXHR, exception) {}
-                //     });
-                // };
-                let isResetting = false;
+                            });
+                            $('select[name="sub_project_id"]').html(sla_options);
+                        },
+                        error: function(jqXHR, exception) {}
+                    });
+                };
+               
                 $(document).on('change', '#manager_name', function() {
                     console.log("Manager changed");
                         // if (isResetting) return;
@@ -373,45 +378,45 @@
                         getUrlVars()[
                             "parent"] + "&child=" + getUrlVars()["child"];
                 });
-                $(document).on('change', '#project_id', function() {
-                    console.log("Project changed");
-                        // if (isResetting) return;
-                        // isResetting = true;
-                        $('#manager_name').val('').trigger('change.select2');
-                        //isResetting = false;
-                    var project_id = $(this).val();
-                    KTApp.block('#formConfigAddDiv', {
-                        overlayColor: '#000000',
-                        state: 'danger',
-                        opacity: 0.1,
-                        message: 'Fetching...',
-                    });
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        }
-                    });
-                    $.ajax({
-                        type: "GET",
-                        url: "{{ url('sub_project_list') }}",
-                        data: {
-                            project_id: project_id
-                        },
-                        success: function(res) {
-                            subprojectCount = Object.keys(res.subProject).length;
-                            var myArray = res.existingSubProject;
-                            var sla_options = '<option value="">-- Select --</option>';
-                            $.each(res.subProject, function(key, value) {
-                                sla_options += '<option value="' + key + '" ' +                                                        
-                                                    '>' + value +
-                                    '</option>';
-                            });
-                            $('select[name="sub_project_id"]').html(sla_options);
-                            KTApp.unblock('#formConfigAddDiv');
-                        },
-                        error: function(jqXHR, exception) {}
-                    });
-                });
+                // $(document).on('change', '#project_id', function() {
+                //     console.log("Project changed");
+                //         // if (isResetting) return;
+                //         // isResetting = true;
+                //         $('#manager_name').val('').trigger('change.select2');
+                //         //isResetting = false;
+                //     var project_id = $(this).val();
+                //     KTApp.block('#formConfigAddDiv', {
+                //         overlayColor: '#000000',
+                //         state: 'danger',
+                //         opacity: 0.1,
+                //         message: 'Fetching...',
+                //     });
+                //     $.ajaxSetup({
+                //         headers: {
+                //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                //         }
+                //     });
+                //     $.ajax({
+                //         type: "GET",
+                //         url: "{{ url('sub_project_list') }}",
+                //         data: {
+                //             project_id: project_id
+                //         },
+                //         success: function(res) {
+                //             subprojectCount = Object.keys(res.subProject).length;
+                //             var myArray = res.existingSubProject;
+                //             var sla_options = '<option value="">-- Select --</option>';
+                //             $.each(res.subProject, function(key, value) {
+                //                 sla_options += '<option value="' + key + '" ' +                                                        
+                //                                     '>' + value +
+                //                     '</option>';
+                //             });
+                //             $('select[name="sub_project_id"]').html(sla_options);
+                //             KTApp.unblock('#formConfigAddDiv');
+                //         },
+                //         error: function(jqXHR, exception) {}
+                //     });
+                // });
             });
         </script>
     @endpush
