@@ -377,7 +377,7 @@
                     console.log("Project changed");
                         if (isResetting) return;
                         isResetting = true;
-                        $('#manager_name').val('').change(); 
+                        $('#manager_name').val('').trigger('change.select2');
                         isResetting = false;
                     var project_id = $(this).val();
                     KTApp.block('#formConfigAddDiv', {
