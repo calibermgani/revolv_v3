@@ -1231,7 +1231,7 @@ class ReportsController extends Controller
                             "projectId" => $request['project_id'] ?? '',
                             "subProjectId" => $request['sub_project_id'] ?? null,
                             "workDate" => $request['work_date'] ?? '',
-                        ];
+                        ];dd($payload);
                         $client = new Client();
                         $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_prj_aims_user_details', [
                             'json' => $payload
