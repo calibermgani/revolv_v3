@@ -46,7 +46,7 @@
                     <fieldset class="form-group mb-1">
                         @php
                             $projectList = App\Http\Helper\Admin\Helpers::projectList();
-                             $projectId = null;
+                            // $projectId = null;
                         @endphp
                         {!! Form::select('project_id', $projectList, $projectId, [
                             'class' => 'form-control kt_select2_project',
@@ -66,8 +66,7 @@
                                 @endphp
                                 {!! Form::select('sub_project_id', $subProjectList, $subProjectId, [
                                     'class' => 'form-control kt_select2_sub_project',
-                                    'id' => 'sub_project_list',
-                                    'disabled',
+                                    'id' => 'sub_project_list'
                                 ]) !!}
                                 <input type="hidden" name="sub_project_id_val"
                                     value="{{ $subProjectId ?? '' }}">
