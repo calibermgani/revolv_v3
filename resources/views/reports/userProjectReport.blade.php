@@ -45,6 +45,7 @@
                     <fieldset class="form-group mb-1">
                         @php
                             $projectList = App\Http\Helper\Admin\Helpers::projectList();
+                             $projectId = null;
                         @endphp
                         {!! Form::select('project_id', $projectList, $projectId, [
                             'class' => 'form-control kt_select2_project',
