@@ -318,6 +318,11 @@
                 //         error: function(jqXHR, exception) {}
                 //     });
                 // };
+                   $(document).on('change', '#manager_name', function() {
+                        console.log("Manager changed");
+                        $('#project_id').val('').trigger('change'); 
+                        $('#sub_project_list').val('').trigger('change'); 
+                    });
 
                 $(document).on('click', '#form_submit', function(e) {
                     e.preventDefault();
