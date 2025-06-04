@@ -321,11 +321,11 @@
                 let isResetting = false;
                 $(document).on('change', '#manager_name', function() {
                     console.log("Manager changed");
-                        if (isResetting) return;
-                        isResetting = true;
+                        // if (isResetting) return;
+                        // isResetting = true;
                     $('#project_id').val('').trigger('change.select2');
                     $('#sub_project_list').val('').trigger('change.select2');
-                        isResetting = false;
+                       // isResetting = false;
                 });
 
                 $(document).on('click', '#form_submit', function(e) {
@@ -375,10 +375,10 @@
                 });
                 $(document).on('change', '#project_id', function() {
                     console.log("Project changed");
-                        if (isResetting) return;
-                        isResetting = true;
+                        // if (isResetting) return;
+                        // isResetting = true;
                         $('#manager_name').val('').trigger('change.select2');
-                        isResetting = false;
+                        //isResetting = false;
                     var project_id = $(this).val();
                     KTApp.block('#formConfigAddDiv', {
                         overlayColor: '#000000',
