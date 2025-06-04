@@ -20,8 +20,9 @@
                 <div class="col-lg-2 mb-lg-0 mb-6">
                     <label>Work Date</label>
                     <fieldset class="form-group mb-1">
-                        <input type="text" name="work_date" id="work_date" class="form-control daterange"
-                            autocomplete="nope">
+                        {{-- <input type="text" name="work_date" id="work_date" class="form-control daterange"
+                            autocomplete="nope"> --}}
+                        {!! Form::text('work_date',request()->input('work_date'),['class'=>'form-control daterange','id'=>'work_date']) !!}
                         <input type="hidden" name="select_date" id="select_date" value= "{{ $workDate }}"
                             autocomplete="nope">
                     </fieldset>
@@ -229,7 +230,7 @@
                     },
                     //endDate: '+0d',
                 });
-                var dateRangeValue = $('#select_date').val();
+                //var dateRangeValue = $('#select_date').val();
                 // if (!dateRangeValue) {
                 //     $('.daterange').val('');
                 // } else {
