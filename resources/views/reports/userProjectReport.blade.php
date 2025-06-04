@@ -116,7 +116,7 @@
                         $dates[] = $date->format('Y-m-d');
                    }
                          
-                   dd($prjDetailsList);
+
                 @endphp
 
                 <table class="table table-separate table-head-custom no-footer dtr-column" id="comments_report">
@@ -139,53 +139,59 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($prjDetailsList as $projectDetails)
-                          @foreach ($projectDetails as $project)
-                            @php                          
-                              $subProjectName = $project['prj_id'] != null && $project['sub_prj_id'] != null ? App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id'])['sub_project_name'] : '--'; 
-                              $matchKey =array_keys($clientIds, $project['prj_id']);
+                        @if (isset($prjDetailsList) && !empty($prjDetailsList) && count($prjDetailsList) > 0)
+                            @php
+                                $clientIds = array_keys($prjDetailsList);
+                                $subPrjIds = array_column($prjDetailsList, 'sub_prj_id');
                             @endphp
-                           @if($subProjectName !== '--' && !empty($matchKey) && in_array($project['sub_prj_id'], $subPrjIds[$matchKey[0]]))                                            
-                            <tr>
-                                <td>{{ $project['emp_id'] }}</td>
-                                <td>{{ $project['user_name'] }}</td>
-                                <td>{{ $project['manager_name'] }}</td>
-                                <td>{{  App\Http\Helper\Admin\Helpers::projectName($project['prj_id'])['aims_project_name'] }}</td>
-                                <td>{{   $subProjectName }}</td>
-                                    @foreach ($dates as $date)
-                                        @php
-                                            $aimsCount = 0;
-                                            if(!empty($project['tool_data']) && !is_null($project['tool_data'])) {                                               
-                                                foreach ($project['tool_data'] as $entry) {
-                                                    if ($entry['work_date'] === $date) {
-                                                        $aimsCount = $entry['achieved'];
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                            $resolvStartDate = date('Y-m-d 17:00:00', strtotime($date));
-                                            $resolvEndDate = date('Y-m-d 09:00:00', strtotime($date . ' +1 day'));
-                                            $paProject =  App\Http\Helper\Admin\Helpers::projectName($project['prj_id']);
-                                            $decodedClientName = $paProject ? $paProject->project_name : null;
-                                            $decodedsubProjectName = $project['sub_prj_id'] == null ? 'project' :($project['prj_id'] != null ? (App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id']) != null ? App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id'])->sub_project_name : null) : null);
-                                            $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
-                                            $modelName = Str::studly($table_name);
-                                            $modelClass = "App\\Models\\" .  $modelName;
-                                               $arColumnExists = Schema::hasColumn($table_name, 'ar_at');
-                                                $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
-                                                $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at'; 
-                                              $resolvCount = $modelClass::whereBetween($arColumnToUse, [$resolvStartDate, $resolvEndDate])
-                                               ->where('CE_emp_id', $project['emp_id'])
-                                            ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','AR_non_workable','Revoke','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
-                                            ->count();
-                                        @endphp
-                                        <td>{{$resolvCount}}</td> {{-- Resolv Count --}}
-                                        <td>{{ $aimsCount }}</td> {{-- AIMS Count --}}
-                                    @endforeach                               
-                            </tr>
-                            @endif
+                            @foreach ($prjDetailsList as $projectDetails)
+                                @foreach ($projectDetails as $project)
+                                    @php                          
+                                    $subProjectName = $project['prj_id'] != null && $project['sub_prj_id'] != null ? App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id'])['sub_project_name'] : '--'; 
+                                    $matchKey =array_keys($clientIds, $project['prj_id']);
+                                    @endphp
+                                    @if($subProjectName !== '--' && !empty($matchKey) && in_array($project['sub_prj_id'], $subPrjIds[$matchKey[0]]))                                            
+                                        <tr>
+                                            <td>{{ $project['emp_id'] }}</td>
+                                            <td>{{ $project['user_name'] }}</td>
+                                            <td>{{ $project['manager_name'] }}</td>
+                                            <td>{{  App\Http\Helper\Admin\Helpers::projectName($project['prj_id'])['aims_project_name'] }}</td>
+                                            <td>{{   $subProjectName }}</td>
+                                                @foreach ($dates as $date)
+                                                    @php
+                                                        $aimsCount = 0;
+                                                        if(!empty($project['tool_data']) && !is_null($project['tool_data'])) {                                               
+                                                            foreach ($project['tool_data'] as $entry) {
+                                                                if ($entry['work_date'] === $date) {
+                                                                    $aimsCount = $entry['achieved'];
+                                                                    break;
+                                                                }
+                                                            }
+                                                        }
+                                                        $resolvStartDate = date('Y-m-d 17:00:00', strtotime($date));
+                                                        $resolvEndDate = date('Y-m-d 09:00:00', strtotime($date . ' +1 day'));
+                                                        $paProject =  App\Http\Helper\Admin\Helpers::projectName($project['prj_id']);
+                                                        $decodedClientName = $paProject ? $paProject->project_name : null;
+                                                        $decodedsubProjectName = $project['sub_prj_id'] == null ? 'project' :($project['prj_id'] != null ? (App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id']) != null ? App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id'])->sub_project_name : null) : null);
+                                                        $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
+                                                        $modelName = Str::studly($table_name);
+                                                        $modelClass = "App\\Models\\" .  $modelName;
+                                                        $arColumnExists = Schema::hasColumn($table_name, 'ar_at');
+                                                            $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
+                                                            $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at'; 
+                                                        $resolvCount = $modelClass::whereBetween($arColumnToUse, [$resolvStartDate, $resolvEndDate])
+                                                        ->where('CE_emp_id', $project['emp_id'])
+                                                        ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','AR_non_workable','Revoke','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                                                        ->count();
+                                                    @endphp
+                                                    <td>{{$resolvCount}}</td> {{-- Resolv Count --}}
+                                                    <td>{{ $aimsCount }}</td> {{-- AIMS Count --}}
+                                                @endforeach                               
+                                        </tr>
+                                    @endif
+                                @endforeach
                             @endforeach
-                         @endforeach
+                         @endif
                     </tbody>
                 </table>
 
