@@ -148,12 +148,10 @@
                                 @foreach ($projectDetails as $project)
                                     @php                          
                                     $subProjectName = $project['prj_id'] != null && $project['sub_prj_id'] != null ? App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id'])['sub_project_name'] : '--'; 
-                                    $matchKey =array_keys($clientIds, $project['prj_id']);
+                                    $matchKey =array_keys($clientIds, $project['prj_id']);dd($subPrjIds);
                                     @endphp
                                     @if($subProjectName !== '--' && !empty($matchKey) && in_array($project['sub_prj_id'], $subPrjIds[$matchKey[0]]))    
-                                    @php
-                                    dd($matchKey);
-                                    @endphp                                        
+                                                                            
                                         <tr>
                                             <td>{{ $project['emp_id'] }}</td>
                                             <td>{{ $project['user_name'] }}</td>
