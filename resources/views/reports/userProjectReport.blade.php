@@ -241,59 +241,76 @@
                 // }
                 var subprojectCount;
                 var table = $('#project_report').DataTable({
-                    processing: true,
-                    lengthChange: false,
-                    clientSide: true,
-                    searching: true,
-                    pageLength: 20,
-                    scrollCollapse: true,
-                    scrollX: true,
-                    "initComplete": function(settings, json) {
-                        $('body').find('.dataTables_scrollBody').addClass("scrollbar");
-                        $('body').find('.dataTables_scrollBody').css("margin-top",'-0.3rem','important');
-                    },
-                    language: {
-                        "search": '',
-                        "searchPlaceholder": "   Search",
-                    },
+            processing: true,
+            lengthChange: false,
+            clientSide: true,
+            searching: true,
+            pageLength: 20,
+            scrollCollapse: true,
+            scrollX: true,
 
-                  buttons: [{
-                    extend: 'excel',
-                    text: `<span ...>Export</span>`,
-                    className: 'btn btn-primary-export text-white',
-                    title: 'Project Report',
-                    filename: 'project_report',
-                    exportOptions: {
-                        columns: ':visible', // Only export visible columns
-                        modifier: {
-                            page: 'all'
-                        },
-                        format: {
-                            header: function (data, columnIdx) {
-                                // Return flattened, meaningful header names
-                                const row1 = $('#project_report thead tr:eq(0) th');
-                                const row2 = $('#project_report thead tr:eq(1) th');
-                                
-                                const row1Count = row1.length;
-                                const isSecondRow = row2.length > 0;
+            initComplete: function (settings, json) {
+                $('.dataTables_scrollBody').addClass("scrollbar");
+                $('.dataTables_scrollBody').css("margin-top", '-0.3rem');
+            },
 
-                                if (isSecondRow && columnIdx >= row1.filter('[rowspan=2]').length) {
-                                    const dateIndex = Math.floor((columnIdx - row1.filter('[rowspan=2]').length) / 2);
-                                    const dateText = row1.eq(row1.filter('[rowspan=2]').length + (dateIndex * 2)).text();
-                                    const subHeader = row2.eq(columnIdx - row1.filter('[rowspan=2]').length).text();
-                                    return `${dateText} - ${subHeader}`;
+            language: {
+                search: '',
+                searchPlaceholder: "   Search",
+            },
+
+            buttons: [{
+                extend: 'excelHtml5',
+                text: `<span style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="12" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/></svg>&nbsp;&nbsp;&nbsp;<span>Export</span></span>`,
+                className: 'btn btn-primary-export text-white',
+                title: 'Project Report',
+                filename: 'project_report',
+                exportOptions: {
+                    columns: ':visible',
+                    modifier: {
+                        page: 'all'
+                    },
+                    format: {
+                        header: function (data, columnIdx) {
+                            const topHeaders = $('#project_report thead tr:eq(0) th');
+                            const subHeaders = $('#project_report thead tr:eq(1) th');
+
+                            let fixedCols = 0;
+
+                            // Count how many fixed columns (Emp ID to Sub Project)
+                            topHeaders.each(function () {
+                                if ($(this).attr('rowspan') === "2") {
+                                    fixedCols++;
                                 }
+                            });
 
-                                return row1.eq(columnIdx).text(); // Default for rowspan headers
+                            // For fixed (non-date) columns
+                            if (columnIdx < fixedCols) {
+                                return topHeaders.eq(columnIdx).text().trim();
                             }
+
+                            // Dynamic columns (Resolv/AIMS)
+                            const dynamicIndex = columnIdx - fixedCols;
+                            const dateIndex = Math.floor(dynamicIndex / 2);
+
+                            const dateTh = topHeaders.filter('[colspan]').eq(dateIndex);
+                            const typeTh = subHeaders.eq(dynamicIndex);
+
+                            const dateText = dateTh.text().trim();
+                            const typeText = typeTh.text().trim();
+
+                            return `${dateText} - ${typeText}`;
                         }
                     }
-                }],
-                    dom: "<'row'<'col-md-6 text-left'f><'col-md-6 text-right'B>>" +
-                        "<'row'<'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>",
-                  
-                })
-                table.buttons().container().appendTo($('.dataTables_wrapper .col-md-6.text-right'));
+                }
+            }],
+
+            dom: "<'row'<'col-md-6 text-left'f><'col-md-6 text-right'B>>" +
+                "<'row'<'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>"
+        });
+
+    // Move export button to the right area
+    table.buttons().container().appendTo($('.dataTables_wrapper .col-md-6.text-right'));
                  let isResetting = false;
                 $(document).on('change', '#project_id', function() {
                       // if (isResetting) return;
