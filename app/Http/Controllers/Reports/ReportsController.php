@@ -1229,7 +1229,7 @@ class ReportsController extends Controller
                     $payload = [
                             'token' => '1a32e71a46317b9cc6feb7388238c95d',
                             "projectId" => $request['project_id'] ?? '',
-                            "subProjectId" => $request['sub_project_id'] ?? '',
+                            "subProjectId" => $request['sub_project_id'] ?? null,
                             "workDate" => $request['work_date'] ?? '',
                         ];
                         $client = new Client();
@@ -1248,7 +1248,7 @@ class ReportsController extends Controller
                         }
                                 $workDate =  $request['work_date'] ?? '';  
                                 $projectId =  $request['project_id'] ?? '';  
-                                $subProjectId =  $request['sub_project_id'] ?? null;  
+                                $subProjectId =  $request['sub_project_id'] ?? '';  
                                  $userName = null;
                 }
             } else {      
