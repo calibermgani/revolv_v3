@@ -1173,7 +1173,7 @@ class ReportsController extends Controller
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {            
             try {   
             
-            if ($request->work_date != null && ($request->user_name != null || ($request->project_id != null && $request->sub_project_id != null) )) { 
+            if ($request->work_date != null && ($request->user_name != null || $request->project_id != null || ($request->project_id != null && $request->sub_project_id != null) )) { 
                 if($request->work_date != null && $request->user_name != null) {
                     if($request->user_name) {
                         $userName = $request->user_name;
