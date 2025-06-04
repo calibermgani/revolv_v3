@@ -213,8 +213,16 @@
                     message: 'Fetching...',
                 });
                 KTApp.unblock('#page-loader');
+                if($("#work_date").val()!=''){
+                    var result = $("#work_date").val().split('-');
+                    var start = result[0];
+                    var end = result[1];
+                }else{
                 var start = moment().startOf('month');
                 var end = moment();
+                }
+                // var start = moment().startOf('month');
+                // var end = moment();
                // $('.daterange').attr("autocomplete", "off");
                 $('.daterange').daterangepicker({
                     showOn: 'both',
