@@ -146,6 +146,9 @@
                             @endphp --}}
                            
                             @foreach ($prjDetailsList as $projectDetails)
+                            @php
+                              dd($projectDetails);      
+                            @endphp
                                 @foreach ($projectDetails as $project)
                                     @php       
                                     dd($project);                   
