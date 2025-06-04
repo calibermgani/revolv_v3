@@ -399,10 +399,10 @@
                         error: function(jqXHR, exception) {}
                     });
                 });
-                 $(document).on('change', '#manager_name', function() {
-                        $('#project_id').val('').change(); 
-                        $('#sub_project_list').val('').change(); 
-                 });
+                //  $(document).on('change', '#manager_name', function() {
+                //         $('#project_id').val('').change(); 
+                //         $('#sub_project_list').val('').change(); 
+                //  });
             });
         </script>
     @endpush
