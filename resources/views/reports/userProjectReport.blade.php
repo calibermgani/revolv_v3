@@ -220,7 +220,7 @@
                             'month').endOf(
                             'month')]
                     },
-                    endDate: '+0d',
+                    //endDate: '+0d',
                 });
                 var dateRangeValue = $('#select_date').val();
                 // if (!dateRangeValue) {
