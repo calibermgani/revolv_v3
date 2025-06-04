@@ -1248,7 +1248,7 @@ class ReportsController extends Controller
                         }
                                 $workDate =  $request['work_date'] ?? '';  
                                 $projectId =  $request['project_id'] ?? '';  
-                                $subProjectId =  $request['sub_project_id'] ?? '';  
+                                $subProjectId =  $request['sub_project_id'] ?? null;  
                                  $userName = null;
                 }
             } else {      
