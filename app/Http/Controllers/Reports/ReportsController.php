@@ -1228,12 +1228,12 @@ class ReportsController extends Controller
                         // Fetching project details from external API
                     $payload = [
                             'token' => '1a32e71a46317b9cc6feb7388238c95d',
-                            "projectIds" => $request['project_id'] ?? '',
-                            "subProjectIds" => $request['sub_project_id'] ?? '',
+                            "projectId" => $request['project_id'] ?? '',
+                            "subProjectId" => $request['sub_project_id'] ?? '',
                             "workDate" => $request['work_date'] ?? '',
                         ];
                         $client = new Client();
-                        $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_aims_user_details', [
+                        $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_prj_aims_user_details', [
                             'json' => $payload
                         ]);
                         if ($response->getStatusCode() == 200) {
