@@ -144,6 +144,9 @@
                                 $clientIds = array_keys($prjDetailsList);
                                 $subPrjIds = array_column($prjDetailsList, 'sub_prj_id');
                             @endphp --}}
+                            @php
+                                dd($prjDetailsList,$clientIds,$subPrjIds);
+                            @endphp
                             @foreach ($prjDetailsList as $projectDetails)
                                 @foreach ($projectDetails as $project)
                                     @php                          
