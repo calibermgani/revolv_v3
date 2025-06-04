@@ -116,7 +116,7 @@
                         $dates[] = $date->format('Y-m-d');
                    }
                          
-
+                   dd($prjDetailsList);
                 @endphp
 
                 <table class="table table-separate table-head-custom no-footer dtr-column" id="comments_report">
