@@ -17,7 +17,7 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
 {
     use \Maatwebsite\Excel\Concerns\Exportable;
 
-    protected $prjDetailsList, $dates, $clientIds, $subPrjIds,$workDate, $userName, $formConfigurationDetails, $formProjectIds, $projectId, $subProjectId;  
+    protected $prjDetailsList, $dates, $clientIds, $subPrjIds,$workDate, $userName, $formConfigurationDetails, $formProjectIds, $projectId, $subProjectId,$periods;  
 
     public function __construct($prjDetailsList, $workDate, $userName, $formConfigurationDetails, $formProjectIds, $subPrjIds, $clientIds, $projectId, $subProjectId)
     {
@@ -58,7 +58,7 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
                     $subProjectName,
                 ];
 
-                foreach ($period as $date) {
+                foreach ($this->periods as $date) {
                     $aimsCount = 0;
                     foreach ($project['tool_data'] ?? [] as $entry) {
                         if ($entry['work_date'] === $date->format('Y-m-d')) {
