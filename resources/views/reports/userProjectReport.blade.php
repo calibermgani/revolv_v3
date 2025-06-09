@@ -350,6 +350,7 @@
                     $(document).on('click', '#export_data', function() {
 
                         var query = {
+                            work_date: $('#work_date').val(),
                             project_id: $('#project_id').val(),
                             sub_project_id: $('#sub_project_list').val(),
                             manager_name: $('#manager_name').val()

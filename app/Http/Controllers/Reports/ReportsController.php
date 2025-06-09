@@ -1286,7 +1286,7 @@ class ReportsController extends Controller
      public function userProjectReportExport(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {            
             try {   
-               dd($request->all());
+            
             if ($request->work_date != null && ($request->user_name != null || $request->project_id != null || ($request->project_id != null && $request->sub_project_id != null) )) { 
                 if($request->work_date != null && $request->user_name != null) {
                     if($request->user_name) {
@@ -1385,7 +1385,7 @@ class ReportsController extends Controller
                             }, ARRAY_FILTER_USE_BOTH));
                     }
                     $clientIds = array_values($unique_client_ids);
-                    $subPrjIds = $grouped_sub_prj_ids;     dd($prjDetailsList,$workDate,$userName,$formConfigurationDetails,$formProjectIds,$subPrjIds,$clientIds,$projectId,$subProjectId);
+                    $subPrjIds = $grouped_sub_prj_ids;     
                     return Excel::download(new userProjectExport($prjDetailsList, $workDate, $userName,$formConfigurationDetails,$formProjectIds,$subPrjIds,$clientIds,$projectId,$subProjectId), 'production_report.xlsx');             
                 return view('reports.userProjectReport', compact('prjDetailsList','workDate','userName','formConfigurationDetails','formProjectIds','subPrjIds','clientIds','projectId','subProjectId'));                
             } catch (\Exception $e) {
