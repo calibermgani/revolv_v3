@@ -1,13 +1,42 @@
 @extends('layouts.app3')
 @section('content')
     <div class="card card-custom custom-card" id="page-loader">
+          <div class="card-header border-0 px-4">
+            <div class="card-title mt-0">
+                <span class="text-muted font-weight-bold font-size-lg flex-grow-1">
+                    <span class="svg-icon svg-icon-primary svg-icon-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
+                            height="24px" viewBox="0 0 24 24" version="1.1">
+                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                <rect x="0" y="0" width="24" height="24"></rect>
+                                <path
+                                    d="M8,4 L16,4 C17.1045695,4 18,4.8954305 18,6 L18,17.726765 C18,18.2790497 17.5522847,18.726765 17,18.726765 C16.7498083,18.726765 16.5087052,18.6329798 16.3242754,18.4639191 L12.6757246,15.1194142 C12.2934034,14.7689531 11.7065966,14.7689531 11.3242754,15.1194142 L7.67572463,18.4639191 C7.26860564,18.8371115 6.63603827,18.8096086 6.26284586,18.4024896 C6.09378519,18.2180598 6,17.9769566 6,17.726765 L6,6 C6,4.8954305 6.8954305,4 8,4 Z"
+                                    fill="#000000"></path>
+                            </g>
+                        </svg>
+                    </span>
+                    <span style="color:#0e969c">User Project Report</span>
+
+                </span>
+            </div>
+            <div class="card-toolbar d-inline float-right mt-0">
+                <div class="card-toolbar d-inline float-right mt-3">
+                    <div class="outside" href="javascript:void(0);" id="export_data">
+                        <span data-dismiss="modal" class="btn btn-primary btn-secondary--icon p-2 float-right mr-3 mb-3"
+                            id="export_data" data-toggle="tooltip" data-placement="left" data-original-title="Export"> <i
+                                class="fas fa-file-excel" style="font-size:14px;color: white"></i> Export</span>
+
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="card-body pt-0 pb-2 pl-8" style="background-color: #ffffff !important">
-            <div class="row mr-0 ml-0">
+            {{-- <div class="row mr-0 ml-0">
                 <div class="col-6 mt-4 pt-0 pb-0 pl-0 pr-0">
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <a class="project_header" href="" style="margin-left:-1.7rem">User Project Report</a>
                 </div>
-            </div>
+            </div> --}}
             {!! Form::open([
                 'url' => url('report/user_project_report') . '?parent=' . request()->parent . '&child=' . request()->child,
                 'id' => 'production_report_form',
