@@ -2,16 +2,19 @@
 @section('content')
     <div class="card card-custom custom-card" id="page-loader">
           <div class="card-header border-0 px-4">
-            <div class="card-title mt-0"> 
-                 <a class="project_header" href="" style="margin-left:-1.7rem">User Project Report</a>
+            <div class="card-title mt-0">
+                <span class="text-muted font-weight-bold font-size-lg flex-grow-1">
+                 
+                  <a class="project_header" href="" style="margin-left:-1.7rem">User Project Report</a>
+
                 </span>
             </div>
             <div class="card-toolbar d-inline float-right mt-0">
                 <div class="card-toolbar d-inline float-right mt-3">
                     <div class="outside" href="javascript:void(0);" id="export_data">
-                        <span data-dismiss="modal" data-toggle="tooltip" data-placement="left" data-original-title="Export" style="font-size:13px">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="12" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
-                                                        </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></span>
+                        <span data-dismiss="modal" class="btn btn-primary btn-secondary--icon p-2 float-right mr-3 mb-3"
+                            id="export_data" data-toggle="tooltip" data-placement="left" data-original-title="Export"> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="12" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
+                                                        </svg>&nbsp;&nbsp;&nbsp; Export</span>
 
                     </div>
                 </div>
