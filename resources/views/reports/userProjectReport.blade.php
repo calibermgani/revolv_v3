@@ -8,7 +8,7 @@
                     <a class="project_header" href="" style="margin-left:-1.7rem">User Project Report</a>
                 </div>
             </div>
-              <div class="card-toolbar d-inline float-right mt-0">
+              {{-- <div class="card-toolbar d-inline float-right mt-0">
                 <div class="card-toolbar d-inline float-right mt-3">
                     <div class="outside" href="javascript:void(0);" id="export_data">
                         <span data-dismiss="modal" class="btn btn-secondary--icon p-2 float-right  mb-3"
@@ -17,7 +17,7 @@
 
                     </div>
                 </div>
-            </div>
+              </div> --}}
         </div>
         <div class="card-body pt-0 pb-2 pl-8" style="background-color: #ffffff !important">
             {{-- <div class="row mr-0 ml-0">
