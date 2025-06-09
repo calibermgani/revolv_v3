@@ -347,6 +347,15 @@
                     $('#sub_project_list').val('').trigger('change.select2');
                        // isResetting = false;
                 });
+                    $(document).on('click', '#export_data', function() {
+
+                        var query = {
+                            project_id: $('#project_id').val(),
+                            sub_project_list: $('#sub_project_list').val(),
+                            manager_name: $('#manager_name').val()
+                        }
+                        window.location.href = "{{ URL::to('report/user_project_report_export') }}?" + $.param(query)
+                    });
 
                 $(document).on('click', '#form_submit', function(e) {
                     e.preventDefault();

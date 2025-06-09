@@ -20,6 +20,8 @@ use App\Models\projectInputSetting;
 use App\Jobs\getProjectResourceListJob;
 use App\Models\ProjectReason;
 use App\Models\formConfiguration;
+use App\Exports\userProjectExport;
+use Maatwebsite\Excel\Facades\Excel;
 class ReportsController extends Controller
 {
     public function reporstIndex(){
@@ -1272,6 +1274,119 @@ class ReportsController extends Controller
                     }
                     $clientIds = array_values($unique_client_ids);
                     $subPrjIds = $grouped_sub_prj_ids;                  
+                return view('reports.userProjectReport', compact('prjDetailsList','workDate','userName','formConfigurationDetails','formProjectIds','subPrjIds','clientIds','projectId','subProjectId'));                
+            } catch (\Exception $e) {
+                Log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
+
+     public function userProjectReportExport(Request $request) {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {            
+            try {   
+            
+            if ($request->work_date != null && ($request->user_name != null || $request->project_id != null || ($request->project_id != null && $request->sub_project_id != null) )) { 
+                if($request->work_date != null && $request->user_name != null) {
+                    if($request->user_name) {
+                        $userName = $request->user_name;
+                    } else {
+                        $userName = null;
+                    }
+                    if ($request->work_date) {
+                        $workDate = $request->work_date;
+                    } else {
+                        $workDate = '';
+                    }
+                    // Fetching project details from external API
+                    $payload = [
+                        'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                        "userId" => $request['user_name'] ?? '',
+                        "workDate" => $request['work_date'] ?? '',
+                    ];
+                    $client = new Client();
+                    $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_user_prj_details', [
+                        'json' => $payload
+                    ]);
+                    if ($response->getStatusCode() == 200) {
+                        $data = json_decode($response->getBody(), true);
+                    } else {
+                        return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+                    }
+                    if(isset($data['prjDetailsList'])){
+                        $prjDetailsList = $data['prjDetailsList'];
+                    } else {
+                        $prjDetailsList = '--';
+                    }
+                            $workDate =  $request['work_date'] ?? '';  
+                            $userName =  $request['user_name'] ?? '';  
+                            $projectId = null;
+                            $subProjectId = null; 
+                }else if($request->work_date != null && ($request->project_id != null || $request->sub_project_id != null)) {
+                        if($request->project_id) {
+                            $project_id = $request->project_id;
+                        } else {
+                            $project_id = null;
+                        }
+                        if ($request->work_date) {
+                            $workDate = $request->work_date;
+                        } else {
+                            $workDate = '';
+                        }
+                         if($request->sub_project_id) {
+                            $sub_project_id = $request->sub_project_id;
+                        } else {
+                            $sub_project_id = null;
+                        }
+                        // Fetching project details from external API
+                    $payload = [
+                            'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                            "projectId" => $request['project_id'] ?? '',
+                            "subProjectId" => $request['sub_project_id'] ?? null,
+                            "workDate" => $request['work_date'] ?? '',
+                        ];
+                        $client = new Client();
+                        $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_prj_aims_user_details', [
+                            'json' => $payload
+                        ]);
+                        if ($response->getStatusCode() == 200) {
+                            $data = json_decode($response->getBody(), true);
+                        } else {
+                            return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+                        }
+                        if(isset($data['prjDetailsList'])){
+                            $prjDetailsList = $data['prjDetailsList'];
+                        } else {
+                            $prjDetailsList = '--';
+                        }
+                                $workDate =  $request['work_date'] ?? '';  
+                                $projectId =  $request['project_id'] ?? '';  
+                                $subProjectId =  $request['sub_project_id'] ?? '';  
+                                 $userName = null;
+                }
+            } else {      
+                    $prjDetailsList = [];
+                    $workDate =  '';                  
+                    $userName = null;
+                    $projectId = null;
+                    $subProjectId = null;  
+            }
+            $formConfigurationDetails = formConfiguration::groupBy(['project_id', 'sub_project_id'])
+                                            ->select('project_id', 'sub_project_id')
+                                            ->pluck('project_id', 'sub_project_id')->toArray();
+                  $formProjectIds = formConfiguration::groupBy('project_id', 'sub_project_id')->pluck('project_id')->toArray();
+                  $formSubProjectIds = formConfiguration::groupBy('project_id', 'sub_project_id')->pluck('sub_project_id')->toArray();                 
+                  $unique_client_ids = array_unique($formProjectIds);
+                   $grouped_sub_prj_ids = [];
+                    foreach ($unique_client_ids as $client_id) {
+                            $grouped_sub_prj_ids[] = array_values(array_filter($formSubProjectIds, function($sub_prj_id, $key) use ($formProjectIds, $client_id) {
+                                return $formProjectIds[$key] == $client_id;
+                            }, ARRAY_FILTER_USE_BOTH));
+                    }
+                    $clientIds = array_values($unique_client_ids);
+                    $subPrjIds = $grouped_sub_prj_ids;     
+                    return Excel::download(new userProjectExport($prjDetailsList, $workDate, $userName,$formConfigurationDetails,$formProjectIds,$subPrjIds,$clientIds,$projectId,$subProjectId), 'production_report.xlsx');             
                 return view('reports.userProjectReport', compact('prjDetailsList','workDate','userName','formConfigurationDetails','formProjectIds','subPrjIds','clientIds','projectId','subProjectId'));                
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
