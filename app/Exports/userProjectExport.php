@@ -31,7 +31,7 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
         $period = CarbonPeriod::create($startDate, $endDate)->filter(function ($date) {
             return !in_array($date->dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY]);
         });
-       $this->periods = $period->toArray();
+        $this->periods = $period->toArray();
         $this->dates = collect($period)->map(fn ($d) => $d->format('Y-m-d'))->values();
     }
 
