@@ -1,7 +1,5 @@
 <?php
 
-
-
 namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -9,8 +7,7 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use Illuminate\Contracts\Support\Responsable;
-use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use Illuminate\Support\Collection;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Str;
@@ -19,23 +16,21 @@ use Illuminate\Support\Facades\Schema;
 class userProjectExport implements FromCollection, WithHeadings, WithMapping, WithTitle, ShouldAutoSize
 {
     protected $prjDetailsList;
-    protected $workDate;
     protected $dates;
 
     public function __construct($prjDetailsList, $workDate)
     {
         $this->prjDetailsList = $prjDetailsList;
-        $this->workDate = $workDate;
 
         $dateRange = explode(' - ', $workDate);
-        $startDate = Carbon::parse($dateRange[0])->format('Y-m-d');
-        $endDate = Carbon::parse($dateRange[1])->format('Y-m-d');
+        $startDate = Carbon::parse($dateRange[0]);
+        $endDate = Carbon::parse($dateRange[1]);
 
         $period = CarbonPeriod::create($startDate, $endDate)->filter(function ($date) {
             return !in_array($date->dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY]);
         });
 
-        $this->dates = collect($period)->map(fn($d) => $d->format('Y-m-d'))->values();
+        $this->dates = collect($period)->map(fn ($d) => $d->format('Y-m-d'))->values();
     }
 
     public function collection()
@@ -55,29 +50,42 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
                     if (!empty($project['tool_data'])) {
                         foreach ($project['tool_data'] as $entry) {
                             if ($entry['work_date'] === $date) {
-                                $aimsCount = $entry['achieved'] ?? 0;
+                                $aimsCount = $entry['achieved'];
                                 break;
                             }
                         }
                     }
 
-                     $resolvStartDate = $date->copy()->setTime(17, 0, 0);
-                    $resolvEndDate = $date->copy()->addDay()->setTime(9, 0, 0);
-                    $paProject = \App\Http\Helper\Admin\Helpers::projectName($project['prj_id']);
-                    $table_name = Str::slug(Str::lower($paProject['project_name']) . '_' . Str::lower($subProjectName), '_');
-                    $modelClass = "App\\Models\\" . Str::studly($table_name);
-                    $arColumn = Schema::hasColumn($table_name, 'ar_at') && $modelClass::whereNotNull('ar_at')->exists()
-                        ? 'ar_at'
-                        : 'updated_at';
+                    // RESOLV COUNT: based on table name logic
+                    $decodedClientName = $project['prj_id'] ?? null;
+                    $decodedsubProjectName = $project['sub_prj_id'] ?? 'project';
 
-                    $resolvCount = $modelClass::whereBetween($arColumn, [$resolvStartDate, $resolvEndDate])
-                        ->where('CE_emp_id', $project['emp_id'])
-                        ->whereIn('chart_status', [
-                            'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
-                            'AR_non_workable','Revoke','QA_Assigned','QA_Inprocess','QA_Pending',
-                            'QA_Completed','QA_Clarification','QA_Hold'
-                        ])
-                        ->count();
+                    $table_name = Str::slug(Str::lower($decodedClientName . '_' . $decodedsubProjectName), '_');
+                    $modelName = Str::studly($table_name);
+                    $modelClass = "App\\Models\\" . $modelName;
+
+                    $resolvCount = 0;
+                    if (class_exists($modelClass) && Schema::hasTable($table_name)) {
+                        $arColumnToUse = Schema::hasColumn($table_name, 'ar_at') &&
+                            $modelClass::whereNotNull('ar_at')->exists() ? 'ar_at' : 'updated_at';
+
+                        $resolvStartDate = date('Y-m-d 17:00:00', strtotime($date));
+                        $resolvEndDate = date('Y-m-d 09:00:00', strtotime($date . ' +1 day'));
+
+                        try {
+                            $resolvCount = $modelClass::whereBetween($arColumnToUse, [$resolvStartDate, $resolvEndDate])
+                                ->where('CE_emp_id', $project['emp_id'])
+                                ->whereIn('chart_status', [
+                                    'CE_Inprocess', 'CE_Pending', 'CE_Completed', 'CE_Clarification', 'CE_Hold',
+                                    'AR_non_workable', 'Revoke', 'QA_Assigned', 'QA_Inprocess', 'QA_Pending',
+                                    'QA_Completed', 'QA_Clarification', 'QA_Hold'
+                                ])
+                                ->count();
+                        } catch (\Exception $e) {
+                            $resolvCount = 0; // fallback
+                        }
+                    }
+
                     $row[] = $resolvCount;
                     $row[] = $aimsCount;
                 }
@@ -111,6 +119,6 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
 
     public function title(): string
     {
-        return 'Production Report';
+        return 'User Project Report';
     }
 }
