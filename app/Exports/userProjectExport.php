@@ -148,7 +148,8 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
                                                   
 
                     $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName), '_');
-                    $modelClass = "App\\Models\\" . Str::studly($table_name);
+                       $modelName = Str::studly($table_name);
+                    $modelClass = "App\\Models\\" . Str::studly($modelName);
 
                     $arColumnExists = Schema::hasColumn($table_name, 'ar_at');
                     $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
