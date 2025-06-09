@@ -13,6 +13,8 @@ use Illuminate\Contracts\Support\Responsable;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Schema;
 
 class userProjectExport implements FromCollection, WithHeadings, WithMapping, WithTitle, ShouldAutoSize
 {
@@ -53,13 +55,29 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
                     if (!empty($project['tool_data'])) {
                         foreach ($project['tool_data'] as $entry) {
                             if ($entry['work_date'] === $date) {
-                                $aimsCount = $entry['achieved'];
+                                $aimsCount = $entry['achieved'] ?? 0;
                                 break;
                             }
                         }
                     }
 
-                    $resolvCount = 0; // You may integrate DB query here if needed
+                     $resolvStartDate = $date->copy()->setTime(17, 0, 0);
+                    $resolvEndDate = $date->copy()->addDay()->setTime(9, 0, 0);
+                    $paProject = \App\Http\Helper\Admin\Helpers::projectName($project['prj_id']);
+                    $table_name = Str::slug(Str::lower($paProject['project_name']) . '_' . Str::lower($subProjectName), '_');
+                    $modelClass = "App\\Models\\" . Str::studly($table_name);
+                    $arColumn = Schema::hasColumn($table_name, 'ar_at') && $modelClass::whereNotNull('ar_at')->exists()
+                        ? 'ar_at'
+                        : 'updated_at';
+
+                    $resolvCount = $modelClass::whereBetween($arColumn, [$resolvStartDate, $resolvEndDate])
+                        ->where('CE_emp_id', $project['emp_id'])
+                        ->whereIn('chart_status', [
+                            'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
+                            'AR_non_workable','Revoke','QA_Assigned','QA_Inprocess','QA_Pending',
+                            'QA_Completed','QA_Clarification','QA_Hold'
+                        ])
+                        ->count();
                     $row[] = $resolvCount;
                     $row[] = $aimsCount;
                 }
@@ -93,6 +111,6 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
 
     public function title(): string
     {
-        return 'User Project Report';
+        return 'Production Report';
     }
 }
