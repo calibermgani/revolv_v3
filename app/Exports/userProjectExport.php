@@ -119,14 +119,33 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                $sheet = $event->sheet->getDelegate();
+                //$sheet = $event->sheet->getDelegate();
                 // $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')->getFont()->setBold(true);
                 // $sheet->freezePane('F2'); // Freeze after static columns
-                $event->sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')->applyFromArray([
+             $event->sheet->getStyle('A1:AY1')->applyFromArray([
                     'font' => [
                         'bold' => true
                     ]
                 ]);
+                $event->sheet->getStyle('A2:AY2')->applyFromArray([
+                    'font' => [
+                        'bold' => true
+                    ]
+                ]);
+
+
+                $style = [
+                    'alignment' => [
+                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                        'wrapText' => true,
+                    ],
+                ];
+                $event->sheet->mergeCells('A1:A2');
+                $event->sheet->mergeCells('B1:B2');
+                $event->sheet->mergeCells('C1:C2');
+                $event->sheet->mergeCells('D1:D2');
+                $event->sheet->mergeCells('E1:E2');
 
             }
         ];
