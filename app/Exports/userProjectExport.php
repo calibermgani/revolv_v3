@@ -123,18 +123,28 @@ public function registerEvents(): array
             $sheet = $event->sheet->getDelegate();
             $highestColumn = $sheet->getHighestColumn();
 
-            // Bold first and second row
+            // Bold styling for both header rows
             $sheet->getStyle("A1:{$highestColumn}1")->getFont()->setBold(true);
             $sheet->getStyle("A2:{$highestColumn}2")->getFont()->setBold(true);
 
-            // Merge static column headers
+            // Merge static column headers (A1 to E1 with A2 to E2)
             $sheet->mergeCells('A1:A2');
             $sheet->mergeCells('B1:B2');
             $sheet->mergeCells('C1:C2');
             $sheet->mergeCells('D1:D2');
             $sheet->mergeCells('E1:E2');
 
-            // Center alignment
+            // Dynamic merge for each date block (2 columns: Resolv & AIMS)
+            $startColIndex = 6; // Column 'F' is index 6
+
+            foreach ($this->dates as $index => $date) {
+                $col1 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColIndex);
+                $col2 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColIndex + 1);
+                $sheet->mergeCells("{$col1}1:{$col2}1"); // Merge two columns in first row
+                $startColIndex += 2;
+            }
+
+            // Center alignment for header rows
             $sheet->getStyle("A1:{$highestColumn}2")->applyFromArray([
                 'alignment' => [
                     'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
@@ -143,11 +153,12 @@ public function registerEvents(): array
                 ],
             ]);
 
-            // Optionally freeze pane below the 2nd row
+            // Freeze pane after headers
             $sheet->freezePane('F3');
         }
     ];
 }
+
 
     public function map($row): array
     {
