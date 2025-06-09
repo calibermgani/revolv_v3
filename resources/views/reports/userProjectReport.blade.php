@@ -270,6 +270,7 @@
                   
                 })
                 table.buttons().container().appendTo($('.dataTables_wrapper .col-md-6.text-right'));
+                new $.fn.dataTable.FixedColumns( table, { leftColumns: 5 } );
                  let isResetting = false;
                 $(document).on('change', '#project_id', function() {
                       // if (isResetting) return;
