@@ -351,7 +351,7 @@
 
                         var query = {
                             project_id: $('#project_id').val(),
-                            sub_project_list: $('#sub_project_list').val(),
+                            sub_project_id: $('#sub_project_list').val(),
                             manager_name: $('#manager_name').val()
                         }
                         window.location.href = "{{ URL::to('report/user_project_report_export') }}?" + $.param(query)
