@@ -174,7 +174,7 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
                     }
 
                     $row[] = $resolvCount;
-                    $row[] = $aimsCount;dd($row);
+                    $row[] = $aimsCount;
                 }
 
                 $rows[] = collect($row);
