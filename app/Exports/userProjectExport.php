@@ -32,7 +32,7 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
             return !in_array($date->dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY]);
         });
 
-        $this->dates = collect($period)->map(fn ($d) => $d->format('Y-m-d'))->values();
+       // $this->dates = collect($period)->map(fn ($d) => $d->format('Y-m-d'))->values();
     }
 
     public function collection()
