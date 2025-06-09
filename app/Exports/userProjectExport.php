@@ -144,11 +144,8 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
                     $paProject = \App\Http\Helper\Admin\Helpers::projectName($project['prj_id']);
                     $decodedClientName = $paProject ? $paProject['project_name'] : null;
 
-                    $decodedSubProjectName = $project['sub_prj_id'] == null
-                        ? 'project'
-                        : ($project['prj_id'] != null
-                            ? (\App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id'])['sub_project_name'] ?? null)
-                            : null);
+                       $decodedSubProjectName = $project['sub_prj_id'] == null ? 'project' :($project['prj_id'] != null ? (\App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id']) != null ? \App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id'])->sub_project_name : null) : null);
+                                                  
 
                     $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName), '_');
                     $modelClass = "App\\Models\\" . Str::studly($table_name);
