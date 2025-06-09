@@ -1,132 +1,98 @@
 <?php
 
+
+
 namespace App\Exports;
 
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Illuminate\Contracts\Support\Responsable;
-use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Concerns\{
-    FromCollection, WithHeadings, WithMapping, WithEvents,
-    ShouldAutoSize, WithTitle, WithStrictNullComparison
-};
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use Str;
-use Schema;
 
-class userProjectExport implements FromCollection, WithHeadings, WithMapping, WithEvents, ShouldAutoSize, WithTitle, WithStrictNullComparison
+class userProjectExport implements FromCollection, WithHeadings, WithMapping, WithTitle, ShouldAutoSize
 {
-    use \Maatwebsite\Excel\Concerns\Exportable;
+    protected $prjDetailsList;
+    protected $workDate;
+    protected $dates;
 
-    protected $prjDetailsList, $dates, $clientIds, $subPrjIds;
-
-    public function __construct($prjDetailsList, $workDate, $userName, $formConfigurationDetails, $formProjectIds, $subPrjIds, $clientIds, $projectId, $subProjectId)
+    public function __construct($prjDetailsList, $workDate)
     {
         $this->prjDetailsList = $prjDetailsList;
-        $this->clientIds = $clientIds;
-        $this->subPrjIds = $subPrjIds;
+        $this->workDate = $workDate;
 
-        // Generate date list (weekdays only)
-        $workDates = explode(' - ', $workDate);
-        $start = Carbon::parse($workDates[0]);
-        $end = Carbon::parse($workDates[1]);
+        $dateRange = explode(' - ', $workDate);
+        $startDate = Carbon::parse($dateRange[0])->format('Y-m-d');
+        $endDate = Carbon::parse($dateRange[1])->format('Y-m-d');
 
-        $this->dates = CarbonPeriod::create($start, $end)->filter(function ($date) {
+        $period = CarbonPeriod::create($startDate, $endDate)->filter(function ($date) {
             return !in_array($date->dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY]);
-        })->toArray();
+        });
+
+        $this->dates = collect($period)->map(fn($d) => $d->format('Y-m-d'))->values();
     }
 
     public function collection()
     {
-        $rows = [];
-
-        foreach ($this->prjDetailsList as $projectDetails) {
-            foreach ($projectDetails as $project) {
-                $subProjectName = $project['prj_id'] != null && $project['sub_prj_id'] != null
-                    ? \App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id'])['sub_project_name']
-                    : '--';
-
-                $matchKey = array_keys($this->clientIds, $project['prj_id']);
-                if ($subProjectName === '--' || empty($matchKey) || !in_array($project['sub_prj_id'], $this->subPrjIds[$matchKey[0]])) {
-                    continue;
-                }
-
+        return collect($this->prjDetailsList)->flatMap(function ($group) {
+            return collect($group)->map(function ($project) {
                 $row = [
-                    $project['emp_id'],
-                    $project['user_name'],
-                    $project['manager_name'],
-                    \App\Http\Helper\Admin\Helpers::projectName($project['prj_id'])['aims_project_name'],
-                    $subProjectName,
+                    $project['emp_id'] ?? '',
+                    $project['user_name'] ?? '',
+                    $project['manager_name'] ?? '',
+                    $project['prj_id'] ?? '',
+                    $project['sub_prj_id'] ?? '',
                 ];
 
                 foreach ($this->dates as $date) {
                     $aimsCount = 0;
-                    foreach ($project['tool_data'] ?? [] as $entry) {
-                        if ($entry['work_date'] === $date->format('Y-m-d')) {
-                            $aimsCount = $entry['achieved'];
-                            break;
+                    if (!empty($project['tool_data'])) {
+                        foreach ($project['tool_data'] as $entry) {
+                            if ($entry['work_date'] === $date) {
+                                $aimsCount = $entry['achieved'];
+                                break;
+                            }
                         }
                     }
 
-                    // Resolv Count calculation
-                    $resolvStartDate = $date->copy()->setTime(17, 0, 0);
-                    $resolvEndDate = $date->copy()->addDay()->setTime(9, 0, 0);
-                    $paProject = \App\Http\Helper\Admin\Helpers::projectName($project['prj_id']);
-                    $table_name = Str::slug(Str::lower($paProject['project_name']) . '_' . Str::lower($subProjectName), '_');
-                    $modelClass = "App\\Models\\" . Str::studly($table_name);
-                    $arColumn = Schema::hasColumn($table_name, 'ar_at') && $modelClass::whereNotNull('ar_at')->exists()
-                        ? 'ar_at'
-                        : 'updated_at';
-
-                    $resolvCount = $modelClass::whereBetween($arColumn, [$resolvStartDate, $resolvEndDate])
-                        ->where('CE_emp_id', $project['emp_id'])
-                        ->whereIn('chart_status', [
-                            'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
-                            'AR_non_workable','Revoke','QA_Assigned','QA_Inprocess','QA_Pending',
-                            'QA_Completed','QA_Clarification','QA_Hold'
-                        ])
-                        ->count();
-
+                    $resolvCount = 0; // You may integrate DB query here if needed
                     $row[] = $resolvCount;
                     $row[] = $aimsCount;
                 }
 
-                $rows[] = collect($row);
-            }
-        }
-
-        return collect($rows);
+                return $row;
+            });
+        });
     }
 
     public function headings(): array
     {
-        $headers = ['Emp Id', 'Emp Name', 'Manager Name', 'Project', 'Sub Project'];
+        $firstRow = ["Emp Id", "Emp Name", "Manager Name", "Project", "Sub Project"];
         foreach ($this->dates as $date) {
-            $headers[] = $date->format('m/d/Y') . ' - Resolv Count';
-            $headers[] = $date->format('m/d/Y') . ' - AIMS Count';
+            $firstRow[] = Carbon::parse($date)->format('m/d/Y');
+            $firstRow[] = '';
         }
-        return $headers;
-    }
 
-    public function title(): string
-    {
-        return 'Project Report';
-    }
+        $secondRow = ["", "", "", "", ""];
+        foreach ($this->dates as $date) {
+            $secondRow[] = "Resolv Count";
+            $secondRow[] = "AIMS Count";
+        }
 
-    public function registerEvents(): array
-    {
-        return [
-            AfterSheet::class => function (AfterSheet $event) {
-                $sheet = $event->sheet->getDelegate();
-                $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')->getFont()->setBold(true);
-                $sheet->freezePane('F2'); // Freeze after static columns
-            }
-        ];
+        return [$firstRow, $secondRow];
     }
 
     public function map($row): array
     {
-        return $row->toArray();
+        return $row;
+    }
+
+    public function title(): string
+    {
+        return 'User Project Report';
     }
 }
