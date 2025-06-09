@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
+use Maatwebsite\Excel\Events\AfterSheet;
 
 class userProjectExport implements FromCollection, WithHeadings, WithMapping, WithTitle, ShouldAutoSize
 {
@@ -114,6 +115,22 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
         return [$firstRow, $secondRow];
     }
 
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function (AfterSheet $event) {
+                $sheet = $event->sheet->getDelegate();
+                // $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')->getFont()->setBold(true);
+                // $sheet->freezePane('F2'); // Freeze after static columns
+                $event->sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')->applyFromArray([
+                    'font' => [
+                        'bold' => true
+                    ]
+                ]);
+
+            }
+        ];
+    }
     public function map($row): array
     {
         return $row->toArray();
