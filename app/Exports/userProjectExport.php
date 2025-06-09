@@ -19,9 +19,9 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
 {
     use \Maatwebsite\Excel\Concerns\Exportable;
 
-    protected $prjDetailsList, $dates, $clientIds, $subPrjIds,$workDate, $userName, $formConfigurationDetails, $formProjectIds, $projectId, $subProjectId,$periods;  
+    protected $prjDetailsList, $dates, $clientIds, $subPrjIds,$periods;  
 
-    public function __construct($prjDetailsList, $workDate, $userName, $formConfigurationDetails, $formProjectIds, $subPrjIds, $clientIds, $projectId, $subProjectId)
+    public function __construct($prjDetailsList, $workDate, $subPrjIds, $clientIds,$periods)
     {
         $this->prjDetailsList = $prjDetailsList;
         $this->clientIds = $clientIds;
