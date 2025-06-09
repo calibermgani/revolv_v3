@@ -1286,7 +1286,7 @@ class ReportsController extends Controller
      public function userProjectReportExport(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {            
             try {   
-            dd($request->all());
+               dd($request->all());
             if ($request->work_date != null && ($request->user_name != null || $request->project_id != null || ($request->project_id != null && $request->sub_project_id != null) )) { 
                 if($request->work_date != null && $request->user_name != null) {
                     if($request->user_name) {
