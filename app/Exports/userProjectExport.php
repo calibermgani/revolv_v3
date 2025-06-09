@@ -65,7 +65,7 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
                             $aimsCount = $entry['achieved'];
                             break;
                         }
-                    }dd($date);
+                    }
 
                     // Resolv Count calculation
                     $resolvStartDate = $date->copy()->setTime(17, 0, 0);
