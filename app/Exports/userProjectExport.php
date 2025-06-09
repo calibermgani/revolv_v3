@@ -94,7 +94,7 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
             }
         }
 
-        return $rows;
+        return collect($rows);
     }
 
     public function headings(): array
@@ -116,11 +116,11 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
 
     public function map($row): array
     {
-        return $row;
+        return $row->toArray();
     }
 
     public function title(): string
     {
-        return 'User Project Report';
+        return 'Production Report';
     }
 }
