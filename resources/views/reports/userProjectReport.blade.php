@@ -362,7 +362,7 @@
                             user_name: $('#manager_name').val()
                         }
                         window.location.href = "{{ URL::to('report/user_project_report_export') }}?" + $.param(query)
-                         KTApp.unblock('#page-loader');
+                        // KTApp.unblock('#page-loader');
                     });
 
                 $(document).on('click', '#form_submit', function(e) {
