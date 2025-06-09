@@ -62,7 +62,7 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
                     $aimsCount = 0;
                     foreach ($project['tool_data'] ?? [] as $entry) {
                         if ($entry['work_date'] === $date->format('Y-m-d')) {
-                            $aimsCount = $entry['achieved'];
+                            $aimsCount = $entry['achieved'] ?? 0;
                             break;
                         }
                     }
@@ -84,7 +84,7 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
                             'AR_non_workable','Revoke','QA_Assigned','QA_Inprocess','QA_Pending',
                             'QA_Completed','QA_Clarification','QA_Hold'
                         ])
-                        ->count();
+                        ->count() ?? 0;
 
                     $row[] = $resolvCount;
                     $row[] = $aimsCount;
