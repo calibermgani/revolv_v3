@@ -1285,21 +1285,14 @@ class ReportsController extends Controller
 
      public function userProjectReportExport(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {            
-            try {   
-            
+            try {               
             if ($request->work_date != null && ($request->user_name != null || $request->project_id != null || ($request->project_id != null && $request->sub_project_id != null) )) { 
-                if($request->work_date != null && $request->user_name != null) {
-                    if($request->user_name) {
-                        $userName = $request->user_name;
-                    } else {
-                        $userName = null;
-                    }
+                if($request->work_date != null && $request->user_name != null) {                   
                     if ($request->work_date) {
                         $workDate = $request->work_date;
                     } else {
                         $workDate = '';
                     }
-                    // Fetching project details from external API
                     $payload = [
                         'token' => '1a32e71a46317b9cc6feb7388238c95d',
                         "userId" => $request['user_name'] ?? '',
@@ -1319,28 +1312,14 @@ class ReportsController extends Controller
                     } else {
                         $prjDetailsList = '--';
                     }
-                            $workDate =  $request['work_date'] ?? '';  
-                            $userName =  $request['user_name'] ?? '';  
-                            $projectId = null;
-                            $subProjectId = null; 
-                }else if($request->work_date != null && ($request->project_id != null || $request->sub_project_id != null)) {
-                        if($request->project_id) {
-                            $project_id = $request->project_id;
-                        } else {
-                            $project_id = null;
-                        }
+                            $workDate =  $request['work_date'] ?? ''; 
+                }else if($request->work_date != null && ($request->project_id != null || $request->sub_project_id != null)) {                        
                         if ($request->work_date) {
                             $workDate = $request->work_date;
                         } else {
                             $workDate = '';
                         }
-                         if($request->sub_project_id) {
-                            $sub_project_id = $request->sub_project_id;
-                        } else {
-                            $sub_project_id = null;
-                        }
-                        // Fetching project details from external API
-                    $payload = [
+                       $payload = [
                             'token' => '1a32e71a46317b9cc6feb7388238c95d',
                             "projectId" => $request['project_id'] ?? '',
                             "subProjectId" => $request['sub_project_id'] ?? null,
@@ -1360,33 +1339,25 @@ class ReportsController extends Controller
                         } else {
                             $prjDetailsList = '--';
                         }
-                                $workDate =  $request['work_date'] ?? '';  
-                                $projectId =  $request['project_id'] ?? '';  
-                                $subProjectId =  $request['sub_project_id'] ?? '';  
-                                 $userName = null;
+                        $workDate =  $request['work_date'] ?? '';  
                 }
             } else {      
                     $prjDetailsList = [];
-                    $workDate =  '';                  
-                    $userName = null;
-                    $projectId = null;
-                    $subProjectId = null;  
+                    $workDate =  '';   
+                    return back()->with('error', 'Please select Work Date and User Name or Project ID');
+            }           
+            $formProjectIds = formConfiguration::groupBy('project_id', 'sub_project_id')->pluck('project_id')->toArray();
+            $formSubProjectIds = formConfiguration::groupBy('project_id', 'sub_project_id')->pluck('sub_project_id')->toArray();                 
+            $unique_client_ids = array_unique($formProjectIds);
+            $grouped_sub_prj_ids = [];
+            foreach ($unique_client_ids as $client_id) {
+                    $grouped_sub_prj_ids[] = array_values(array_filter($formSubProjectIds, function($sub_prj_id, $key) use ($formProjectIds, $client_id) {
+                        return $formProjectIds[$key] == $client_id;
+                    }, ARRAY_FILTER_USE_BOTH));
             }
-            $formConfigurationDetails = formConfiguration::groupBy(['project_id', 'sub_project_id'])
-                                            ->select('project_id', 'sub_project_id')
-                                            ->pluck('project_id', 'sub_project_id')->toArray();
-                  $formProjectIds = formConfiguration::groupBy('project_id', 'sub_project_id')->pluck('project_id')->toArray();
-                  $formSubProjectIds = formConfiguration::groupBy('project_id', 'sub_project_id')->pluck('sub_project_id')->toArray();                 
-                  $unique_client_ids = array_unique($formProjectIds);
-                   $grouped_sub_prj_ids = [];
-                    foreach ($unique_client_ids as $client_id) {
-                            $grouped_sub_prj_ids[] = array_values(array_filter($formSubProjectIds, function($sub_prj_id, $key) use ($formProjectIds, $client_id) {
-                                return $formProjectIds[$key] == $client_id;
-                            }, ARRAY_FILTER_USE_BOTH));
-                    }
-                    $clientIds = array_values($unique_client_ids);
-                    $subPrjIds = $grouped_sub_prj_ids;   
-                    return Excel::download(new userProjectExport($prjDetailsList, $workDate,$subPrjIds,$clientIds), 'resolv_production_report.xlsx');                
+            $clientIds = array_values($unique_client_ids);
+            $subPrjIds = $grouped_sub_prj_ids;   
+            return Excel::download(new userProjectExport($prjDetailsList, $workDate,$subPrjIds,$clientIds), 'resolv_production_report.xlsx');                
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
             }
