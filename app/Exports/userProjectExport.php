@@ -109,7 +109,7 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
                 ? \App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id'])['sub_project_name']
                 : '--';
 
-            $matchKey = array_keys($this->clientIds, $project['prj_id']);
+            $matchKey = array_keys($this->clientIds, $project['prj_id']);dd($matchKey,$this->subPrjIds);
 
             // if ($subProjectName === '--' || empty($matchKey) || !in_array($project['sub_prj_id'], $this->subPrjIds[$matchKey[0]])) {
             //     continue;
