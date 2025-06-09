@@ -28,11 +28,11 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
         $startDate = Carbon::parse($dateRange[0]);
         $endDate = Carbon::parse($dateRange[1]);
 
-        $this->dates = CarbonPeriod::create($startDate, $endDate)->filter(function ($date) {
+        $period = CarbonPeriod::create($startDate, $endDate)->filter(function ($date) {
             return !in_array($date->dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY]);
         });
 
-       // $this->dates = collect($period)->map(fn ($d) => $d->format('Y-m-d'))->values();
+        $this->dates = collect($period)->map(fn ($d) => $d->format('Y-m-d'))->values();
     }
 
     public function collection()
@@ -58,7 +58,7 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
                     $subProjectName,
                 ];
 
-                foreach ($this->dates as $date) {
+                foreach ($period as $date) {
                     $aimsCount = 0;
                     foreach ($project['tool_data'] ?? [] as $entry) {
                         if ($entry['work_date'] === $date->format('Y-m-d')) {
