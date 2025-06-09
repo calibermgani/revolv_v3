@@ -348,13 +348,7 @@
                        // isResetting = false;
                 });
                     $(document).on('click', '#export_data', function() {
-                        KTApp.block('#page-loader', {
-                                            overlayColor: '#000000',
-                                            state: 'danger',
-                                            opacity: 0.1,
-                                            message: 'Fetching...',
-                                        });
-               
+
                         var query = {
                             work_date: $('#work_date').val(),
                             project_id: $('#project_id').val(),
@@ -362,7 +356,6 @@
                             user_name: $('#manager_name').val()
                         }
                         window.location.href = "{{ URL::to('report/user_project_report_export') }}?" + $.param(query)
-                        // KTApp.unblock('#page-loader');
                     });
 
                 $(document).on('click', '#form_submit', function(e) {
