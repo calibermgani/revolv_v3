@@ -2,8 +2,8 @@
 @section('content')
     <div class="card card-custom custom-card" id="page-loader">
           <div class="card-header border-0 px-4">
-             <div class="row mr-0 ml-0">
-                <div class="col-6 mt-4 pt-0 pb-0 pl-0 pr-0">
+             <div class="row mr-0 ml-4">
+                <div class="mt-4 pt-0 pb-0 pl-0 pr-0">
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <a class="project_header" href="" style="margin-left:-1.7rem">User Project Report</a>
                 </div>
@@ -283,7 +283,9 @@
                     //     "title": 'Production Report',
                     //     "filename": 'production_report',
                     // }],
-                    dom: "<'row'<'col-md-6 text-left'f><'col-md-6 text-right'B>>" +
+                    // dom: "<'row'<'col-md-6 text-left'f><'col-md-6 text-right'B>>" +
+                    //     "<'row'<'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>",
+                        dom: "<'row'<'col-md-6 text-left'f>>" +
                         "<'row'<'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>",
                   
                 })
