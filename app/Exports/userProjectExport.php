@@ -12,9 +12,10 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class userProjectExport implements FromCollection, WithHeadings, WithMapping, WithTitle, ShouldAutoSize
+class userProjectExport implements FromCollection, WithHeadings, WithMapping, WithTitle, ShouldAutoSize,WithEvents
 {
     use \Maatwebsite\Excel\Concerns\Exportable;
 
@@ -115,41 +116,39 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
         return [$firstRow, $secondRow];
     }
 
-    public function registerEvents(): array
-    {
-        return [
-            AfterSheet::class => function (AfterSheet $event) {
-                //$sheet = $event->sheet->getDelegate();
-                // $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')->getFont()->setBold(true);
-                // $sheet->freezePane('F2'); // Freeze after static columns
-             $event->sheet->getStyle('A1:AY1')->applyFromArray([
-                    'font' => [
-                        'bold' => true
-                    ]
-                ]);
-                $event->sheet->getStyle('A2:AY2')->applyFromArray([
-                    'font' => [
-                        'bold' => true
-                    ]
-                ]);
+public function registerEvents(): array
+{
+    return [
+        AfterSheet::class => function (AfterSheet $event) {
+            $sheet = $event->sheet->getDelegate();
+            $highestColumn = $sheet->getHighestColumn();
 
+            // Bold first and second row
+            $sheet->getStyle("A1:{$highestColumn}1")->getFont()->setBold(true);
+            $sheet->getStyle("A2:{$highestColumn}2")->getFont()->setBold(true);
 
-                $style = [
-                    'alignment' => [
-                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                        'wrapText' => true,
-                    ],
-                ];
-                $event->sheet->mergeCells('A1:A2');
-                $event->sheet->mergeCells('B1:B2');
-                $event->sheet->mergeCells('C1:C2');
-                $event->sheet->mergeCells('D1:D2');
-                $event->sheet->mergeCells('E1:E2');
+            // Merge static column headers
+            $sheet->mergeCells('A1:A2');
+            $sheet->mergeCells('B1:B2');
+            $sheet->mergeCells('C1:C2');
+            $sheet->mergeCells('D1:D2');
+            $sheet->mergeCells('E1:E2');
 
-            }
-        ];
-    }
+            // Center alignment
+            $sheet->getStyle("A1:{$highestColumn}2")->applyFromArray([
+                'alignment' => [
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                    'wrapText' => true,
+                ],
+            ]);
+
+            // Optionally freeze pane below the 2nd row
+            $sheet->freezePane('F3');
+        }
+    ];
+}
+
     public function map($row): array
     {
         return $row->toArray();
