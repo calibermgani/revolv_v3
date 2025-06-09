@@ -1385,9 +1385,8 @@ class ReportsController extends Controller
                             }, ARRAY_FILTER_USE_BOTH));
                     }
                     $clientIds = array_values($unique_client_ids);
-                    $subPrjIds = $grouped_sub_prj_ids;    dd($prjDetailsList,$workDate,$userName,$formConfigurationDetails,$formProjectIds,$subPrjIds,$clientIds);
-                    return Excel::download(new userProjectExport($prjDetailsList, $workDate, $userName,$formConfigurationDetails,$formProjectIds,$subPrjIds,$clientIds), 'resolv_production_report.xlsx');             
-                return view('reports.userProjectReport', compact('prjDetailsList','workDate','userName','formConfigurationDetails','formProjectIds','subPrjIds','clientIds','projectId','subProjectId'));                
+                    $subPrjIds = $grouped_sub_prj_ids;    dd($prjDetailsList,$workDate,$subPrjIds,$clientIds);
+                    return Excel::download(new userProjectExport($prjDetailsList, $workDate,$subPrjIds,$clientIds), 'resolv_production_report.xlsx');                
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
             }
