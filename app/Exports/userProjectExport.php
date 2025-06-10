@@ -177,7 +177,7 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
                     $row[] = (int)$aimsCount;
                 }
 
-                $rows[] = $row;
+                $rows[] = collect($row);dd($rows);
             }
         }
     }
@@ -249,7 +249,7 @@ public function registerEvents(): array
 
     public function map($row): array
     {
-        return $row;
+        return $row->toArray();
     }
 
     public function title(): string
