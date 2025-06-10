@@ -7,7 +7,6 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use Illuminate\Support\Collection;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Str;
@@ -20,9 +19,7 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
     use \Maatwebsite\Excel\Concerns\Exportable;
 
     protected $prjDetailsList, $dates, $clientIds, $subPrjIds,$periods;  
-
-    public function __construct($prjDetailsList, $workDate, $subPrjIds, $clientIds)
-    {
+    public function __construct($prjDetailsList, $workDate, $subPrjIds, $clientIds){
         $this->prjDetailsList = $prjDetailsList;
         $this->clientIds = $clientIds;
         $this->subPrjIds = $subPrjIds;
@@ -36,158 +33,93 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
         $this->periods = $period->toArray();
         $this->dates = collect($period)->map(fn ($d) => $d->format('Y-m-d'))->values();
     }
+    public function collection() {
+        $rows = [];
+        foreach ($this->prjDetailsList as $projectDetails) {
+            foreach ($projectDetails as $project) {
 
-    // public function collection()
-    // {
-    //  $rows = [];
+                $subProjectName = $project['prj_id'] != null && $project['sub_prj_id'] != null
+                    ? \App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id'])['sub_project_name']
+                    : '--';
 
-    //     foreach ($this->prjDetailsList as $projectDetails) {
-    //         foreach ($projectDetails as $project) {
-    //             $subProjectName = $project['prj_id'] != null && $project['sub_prj_id'] != null
-    //                 ? \App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id'])['sub_project_name']
-    //                 : '--';
+                $matchKey = array_keys($this->clientIds, $project['prj_id']);
 
-    //             $matchKey = array_keys($this->clientIds, $project['prj_id']);
-    //             if ($subProjectName === '--' || empty($matchKey) || !in_array($project['sub_prj_id'], $this->subPrjIds[$matchKey[0]])) {
-    //                 continue;
-    //             }
+                // if ($subProjectName === '--' || empty($matchKey) || !in_array($project['sub_prj_id'], $this->subPrjIds[$matchKey[0]])) {
+                //     continue;
+                // }
+            if($subProjectName !== '--' && !empty($matchKey) && in_array($project['sub_prj_id'], $this->subPrjIds[$matchKey[0]]))  {  
+                    $row = [
+                        $project['emp_id'],
+                        $project['user_name'],
+                        $project['manager_name'],
+                        \App\Http\Helper\Admin\Helpers::projectName($project['prj_id'])['aims_project_name'],
+                        $subProjectName,
+                    ];
 
-    //             $row = [
-    //                 $project['emp_id'],
-    //                 $project['user_name'],
-    //                 $project['manager_name'],
-    //                 \App\Http\Helper\Admin\Helpers::projectName($project['prj_id'])['aims_project_name'],
-    //                 $subProjectName,
-    //             ];
+                    foreach ($this->periods as $date) {
+                        $formattedDate = $date->format('Y-m-d');
+                        $aimsCount = 0;
 
-    //             foreach ($this->periods as $date) {
-    //                 $aimsCount = 0;
-    //                 foreach ($project['tool_data'] ?? [] as $entry) {
-    //                     if ($entry['work_date'] === $date->format('Y-m-d')) {
-    //                         $aimsCount = $entry['achieved'] ?? 0;
-    //                         break;
-    //                     }
-    //                 }
-
-    //                 // Resolv Count calculation
-    //                 $resolvStartDate = $date->copy()->setTime(17, 0, 0);
-    //                 $resolvEndDate = $date->copy()->addDay()->setTime(9, 0, 0);
-    //                 $paProject = \App\Http\Helper\Admin\Helpers::projectName($project['prj_id']);
-    //                 $table_name = Str::slug(Str::lower($paProject['project_name']) . '_' . Str::lower($subProjectName), '_');
-    //                 $modelClass = "App\\Models\\" . Str::studly($table_name);
-    //                 $arColumn = Schema::hasColumn($table_name, 'ar_at') && $modelClass::whereNotNull('ar_at')->exists()
-    //                     ? 'ar_at'
-    //                     : 'updated_at';
-
-    //                 $resolvCount = $modelClass::whereBetween($arColumn, [$resolvStartDate, $resolvEndDate])
-    //                     ->where('CE_emp_id', $project['emp_id'])
-    //                     ->whereIn('chart_status', [
-    //                         'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
-    //                         'AR_non_workable','Revoke','QA_Assigned','QA_Inprocess','QA_Pending',
-    //                         'QA_Completed','QA_Clarification','QA_Hold'
-    //                     ])
-    //                     ->count() ?? 0;
-
-    //                 $row[] = $resolvCount;
-    //                 $row[] = $aimsCount;
-    //             }
-
-    //             $rows[] = collect($row);
-    //         }
-    //     }
-
-    //     return collect($rows);
-    // }
-    public function collection()
-{
-    $rows = [];
-
-    foreach ($this->prjDetailsList as $projectDetails) {
-        foreach ($projectDetails as $project) {
-
-            $subProjectName = $project['prj_id'] != null && $project['sub_prj_id'] != null
-                ? \App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id'])['sub_project_name']
-                : '--';
-
-            $matchKey = array_keys($this->clientIds, $project['prj_id']);
-
-            // if ($subProjectName === '--' || empty($matchKey) || !in_array($project['sub_prj_id'], $this->subPrjIds[$matchKey[0]])) {
-            //     continue;
-            // }
-          if($subProjectName !== '--' && !empty($matchKey) && in_array($project['sub_prj_id'], $this->subPrjIds[$matchKey[0]]))  {  
-                $row = [
-                    $project['emp_id'],
-                    $project['user_name'],
-                    $project['manager_name'],
-                    \App\Http\Helper\Admin\Helpers::projectName($project['prj_id'])['aims_project_name'],
-                    $subProjectName,
-                ];
-
-                foreach ($this->periods as $date) {
-                    $formattedDate = $date->format('Y-m-d');
-                    $aimsCount = 0;
-
-                    // AIMS Count
-                    if (!empty($project['tool_data'])) {
-                        foreach ($project['tool_data'] as $entry) {
-                            if ($entry['work_date'] === $formattedDate) {
-                                $aimsCount = $entry['achieved'] ?? 0;
-                                break;
+                        // AIMS Count
+                        if (!empty($project['tool_data'])) {
+                            foreach ($project['tool_data'] as $entry) {
+                                if ($entry['work_date'] === $formattedDate) {
+                                    $aimsCount = $entry['achieved'] ?? 0;
+                                    break;
+                                }
                             }
                         }
-                    }
 
-                    // Resolv Count
-                    $resolvStartDate = $date->copy()->setTime(17, 0, 0)->format('Y-m-d H:i:s');
-                    $resolvEndDate = $date->copy()->addDay()->setTime(9, 0, 0)->format('Y-m-d H:i:s');
+                        // Resolv Count
+                        $resolvStartDate = $date->copy()->setTime(17, 0, 0)->format('Y-m-d H:i:s');
+                        $resolvEndDate = $date->copy()->addDay()->setTime(9, 0, 0)->format('Y-m-d H:i:s');
 
-                    $paProject = \App\Http\Helper\Admin\Helpers::projectName($project['prj_id']);
-                    $decodedClientName = $paProject ? $paProject['project_name'] : null;
+                        $paProject = \App\Http\Helper\Admin\Helpers::projectName($project['prj_id']);
+                        $decodedClientName = $paProject ? $paProject['project_name'] : null;
 
-                       $decodedSubProjectName = $project['sub_prj_id'] == null ? 'project' :($project['prj_id'] != null ? (\App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id']) != null ? \App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id'])->sub_project_name : null) : null);
-                                                  
+                        $decodedSubProjectName = $project['sub_prj_id'] == null ? 'project' :($project['prj_id'] != null ? (\App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id']) != null ? \App\Http\Helper\Admin\Helpers::subProjectName($project['prj_id'], $project['sub_prj_id'])->sub_project_name : null) : null);
+                                                    
 
-                    $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName), '_');
-                       $modelName = Str::studly($table_name);
-                    $modelClass = "App\\Models\\" . Str::studly($modelName);
+                        $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName), '_');
+                        $modelName = Str::studly($table_name);
+                        $modelClass = "App\\Models\\" . Str::studly($modelName);
 
-                    $arColumnExists = Schema::hasColumn($table_name, 'ar_at');
-                    $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
-                    $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                        $arColumnExists = Schema::hasColumn($table_name, 'ar_at');
+                        $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
+                        $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
 
-                    $resolvCount = 0;
+                        $resolvCount = 0;
 
-                    if (class_exists($modelClass)) {
-                        try {
-                            $resolvCount = $modelClass::whereBetween($arColumnToUse, [$resolvStartDate, $resolvEndDate])
-                                ->where('CE_emp_id', $project['emp_id'])
-                                ->whereIn('chart_status', [
-                                    'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
-                                    'AR_non_workable','Revoke','QA_Assigned','QA_Inprocess','QA_Pending',
-                                    'QA_Completed','QA_Clarification','QA_Hold'
-                                ])
-                                ->count();
-                        } catch (\Exception $e) {
-                            // Optional: Log the error or skip
-                            $resolvCount = 0;
+                        if (class_exists($modelClass)) {
+                            try {
+                                $resolvCount = $modelClass::whereBetween($arColumnToUse, [$resolvStartDate, $resolvEndDate])
+                                    ->where('CE_emp_id', $project['emp_id'])
+                                    ->whereIn('chart_status', [
+                                        'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
+                                        'AR_non_workable','Revoke','QA_Assigned','QA_Inprocess','QA_Pending',
+                                        'QA_Completed','QA_Clarification','QA_Hold'
+                                    ])
+                                    ->count();
+                            } catch (\Exception $e) {
+                                // Optional: Log the error or skip
+                                $resolvCount = 0;
+                            }
                         }
+
+                        $row[] = (int)$resolvCount;
+                        $row[] = (int)$aimsCount;
                     }
 
-                    $row[] = (int)$resolvCount;
-                    $row[] = (int)$aimsCount;
+                    $rows[] = $row;
                 }
-
-                $rows[] = $row;
             }
         }
+
+       return collect($rows);
     }
 
-    return collect($rows);
-}
 
-
-    public function headings(): array
-    {
+    public function headings(): array  {
         $firstRow = ["Emp Id", "Emp Name", "Manager Name", "Project", "Sub Project"];
         foreach ($this->dates as $date) {
             $firstRow[] = Carbon::parse($date)->format('m/d/Y');
@@ -203,52 +135,50 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
         return [$firstRow, $secondRow];
     }
 
-public function registerEvents(): array
-{
-    return [
-        AfterSheet::class => function (AfterSheet $event) {
-            $sheet = $event->sheet->getDelegate();
-            $highestColumn = $sheet->getHighestColumn();
+    public function registerEvents(): array{
+        return [
+            AfterSheet::class => function (AfterSheet $event) {
+                $sheet = $event->sheet->getDelegate();
+                $highestColumn = $sheet->getHighestColumn();
 
-            // Bold styling for both header rows
-            $sheet->getStyle("A1:{$highestColumn}1")->getFont()->setBold(true);
-            $sheet->getStyle("A2:{$highestColumn}2")->getFont()->setBold(true);
+                // Bold styling for both header rows
+                $sheet->getStyle("A1:{$highestColumn}1")->getFont()->setBold(true);
+                $sheet->getStyle("A2:{$highestColumn}2")->getFont()->setBold(true);
 
-            // Merge static column headers (A1 to E1 with A2 to E2)
-            $sheet->mergeCells('A1:A2');
-            $sheet->mergeCells('B1:B2');
-            $sheet->mergeCells('C1:C2');
-            $sheet->mergeCells('D1:D2');
-            $sheet->mergeCells('E1:E2');
+                // Merge static column headers (A1 to E1 with A2 to E2)
+                $sheet->mergeCells('A1:A2');
+                $sheet->mergeCells('B1:B2');
+                $sheet->mergeCells('C1:C2');
+                $sheet->mergeCells('D1:D2');
+                $sheet->mergeCells('E1:E2');
 
-            // Dynamic merge for each date block (2 columns: Resolv & AIMS)
-            $startColIndex = 6; // Column 'F' is index 6
+                // Dynamic merge for each date block (2 columns: Resolv & AIMS)
+                $startColIndex = 6; // Column 'F' is index 6
 
-            foreach ($this->dates as $index => $date) {
-                $col1 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColIndex);
-                $col2 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColIndex + 1);
-                $sheet->mergeCells("{$col1}1:{$col2}1"); // Merge two columns in first row
-                $startColIndex += 2;
+                foreach ($this->dates as $index => $date) {
+                    $col1 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColIndex);
+                    $col2 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColIndex + 1);
+                    $sheet->mergeCells("{$col1}1:{$col2}1"); // Merge two columns in first row
+                    $startColIndex += 2;
+                }
+
+                // Center alignment for header rows
+                $sheet->getStyle("A1:{$highestColumn}2")->applyFromArray([
+                    'alignment' => [
+                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                        'wrapText' => true,
+                    ],
+                ]);
+
+                // Freeze pane after headers
+                $sheet->freezePane('F3');
             }
-
-            // Center alignment for header rows
-            $sheet->getStyle("A1:{$highestColumn}2")->applyFromArray([
-                'alignment' => [
-                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                    'wrapText' => true,
-                ],
-            ]);
-
-            // Freeze pane after headers
-            $sheet->freezePane('F3');
-        }
-    ];
-}
+        ];
+    }
 
 
-    public function map($row): array
-    {
+    public function map($row): array  {
         return array_map(function ($value) {
             return $value === 0 ? '--' : $value;
         }, $row);
