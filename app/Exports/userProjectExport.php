@@ -182,7 +182,7 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
         }
     }
 
-    return $rows;
+    return collect($rows);
 }
 
 
