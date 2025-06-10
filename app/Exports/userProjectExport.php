@@ -249,7 +249,7 @@ public function registerEvents(): array
 
     public function map($row): array
     {
-        return $row->toArray();
+         return $row->toArray();
     }
 
     public function title(): string
