@@ -174,8 +174,8 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
                     }
                     \Log::info('resolvCount:', ['count' => $resolvCount]);
 
-                    $row[] = $resolvCount != '' ? $resolvCount : 0; // Ensure resolvCount is not null
-                    $row[] = $aimsCount != '' ? $aimsCount : 0; // Ensure aimsCount is not null$aimsCount;
+                    $row[] = $resolvCount != 0 ? $resolvCount : 0; // Ensure resolvCount is not null
+                    $row[] = $aimsCount != 0 ? $aimsCount : 0; // Ensure aimsCount is not null$aimsCount;
                 }
 
                 $rows[] = collect($row);
