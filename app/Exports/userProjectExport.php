@@ -172,10 +172,9 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
                             $resolvCount = 0;
                         }
                     }
-                    \Log::info('resolvCount:', ['count' => $resolvCount]);
 
-                    $row[] = $resolvCount != 0 ? $resolvCount : 0; // Ensure resolvCount is not null
-                    $row[] = $aimsCount != 0 ? $aimsCount : 0; // Ensure aimsCount is not null$aimsCount;
+                    $row[] = (int)$resolvCount;
+                    $row[] = (int)$aimsCount;
                 }
 
                 $rows[] = collect($row);
