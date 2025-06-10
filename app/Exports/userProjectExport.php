@@ -249,7 +249,6 @@ public function registerEvents(): array
 
     public function map($row): array
     {
-        dd($row->toArray());
         return $row->toArray();
     }
 
