@@ -192,6 +192,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('tqhs_ar_rhc_no_response_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsArRhcNoResponseDuplicates');
     Route::any('tqhs_ar_rhc_denials', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsArRhcDenials');
     Route::any('tqhs_ar_rhc_denials_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsArRhcDenialsDuplicates');
+    Route::any('dkmg_ar_behavioral_mental_health', 'App\Http\Controllers\ProjectAuthAutomationController@dkmgArBehavioralMentalHealth');
+    Route::any('dkmg_ar_behavioral_mental_health_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@dkmgArBehavioralMentalHealthDuplicates');
 
 
 

@@ -48,7 +48,8 @@ use App\Models\TqhsArRhcNoResponse;
 use App\Models\TqhsArRhcNoResponseDuplicates;
 use App\Models\TqhsArRhcDenials;
 use App\Models\TqhsArRhcDenialsDuplicates;
-
+use App\Models\DkmgArBehavioralMentalHealth;
+use App\Models\DkmgArBehavioralMentalHealthDuplicates;
 class ProjectAuthAutomationController extends Controller
 {
     public function aopsPreAuthVerification(Request $request)
@@ -2962,4 +2963,217 @@ class ProjectAuthAutomationController extends Controller
             $e->getMessage();
         }
     }
+    public function dkmgArBehavioralMentalHealth(Request $request)
+    {
+        try {
+            $attributes = [
+                'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'srvbucket_total' => isset($request->srvbucket_total) && $request->srvbucket_total != "NULL" ? $request->srvbucket_total : NULL,
+                'invoke_date' => Carbon::now()->format('Y-m-d'),
+            ];
+
+            $duplicateRecordExisting = DkmgArBehavioralMentalHealth::where($attributes)->exists();
+
+            if (!$duplicateRecordExisting) {
+                // FIRST TIME INSERT
+                DkmgArBehavioralMentalHealth::insert([
+                    'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                    'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'patient_dob' => isset($request->patient_dob) && $request->patient_dob != "NULL" ? $request->patient_dob : NULL,
+                    'cstm_ins_grpng' => isset($request->cstm_ins_grpng) && $request->cstm_ins_grpng != "NULL" ? $request->cstm_ins_grpng : NULL,
+                    'ins_pkg_id' => isset($request->ins_pkg_id) && $request->ins_pkg_id != "NULL" ? $request->ins_pkg_id : NULL,
+                    'ins_report_cat' => isset($request->ins_report_cat) && $request->ins_report_cat != "NULL" ? $request->ins_report_cat : NULL,
+                    'fc' => isset($request->fc) && $request->fc != "NULL" ? $request->fc : NULL,
+                    'proccode' => isset($request->proccode) && $request->proccode != "NULL" ? $request->proccode : NULL,
+                    'proccode_grp' => isset($request->proccode_grp) && $request->proccode_grp != "NULL" ? $request->proccode_grp : NULL,
+                    'rndrng_prvdr' => isset($request->rndrng_prvdr) && $request->rndrng_prvdr != "NULL" ? $request->rndrng_prvdr : NULL,
+                    'sup_prvdr' => isset($request->sup_prvdr) && $request->sup_prvdr != "NULL" ? $request->sup_prvdr : NULL,
+                    'svc_dprtmnt' => isset($request->svc_dprtmnt) && $request->svc_dprtmnt != "NULL" ? $request->svc_dprtmnt : NULL,
+                    'rndrng_prvdr_mdcl_grp' => isset($request->rndrng_prvdr_mdcl_grp) && $request->rndrng_prvdr_mdcl_grp != "NULL" ? $request->rndrng_prvdr_mdcl_grp : NULL,
+                    'sup_prvdr_mdcl_grp' => isset($request->sup_prvdr_mdcl_grp) && $request->sup_prvdr_mdcl_grp != "NULL" ? $request->sup_prvdr_mdcl_grp : NULL,
+                    'curr_athena_kick_code' => isset($request->curr_athena_kick_code) && $request->curr_athena_kick_code != "NULL" ? $request->curr_athena_kick_code : NULL,
+                    'curr_athena_kick_code_rej_rsn' => isset($request->curr_athena_kick_code_rej_rsn) && $request->curr_athena_kick_code_rej_rsn != "NULL" ? $request->curr_athena_kick_code_rej_rsn : NULL,
+                    'currenterrorfull' => isset($request->currenterrorfull) && $request->currenterrorfull != "NULL" ? $request->currenterrorfull : NULL,
+                    'curr_glbl_rule_rej_rsn' => isset($request->curr_glbl_rule_rej_rsn) && $request->curr_glbl_rule_rej_rsn != "NULL" ? $request->curr_glbl_rule_rej_rsn : NULL,
+                    'curr_glbl_rule' => isset($request->curr_glbl_rule) && $request->curr_glbl_rule != "NULL" ? $request->curr_glbl_rule : NULL,
+                    'srvbucket_0_to_30' => isset($request->srvbucket_0_to_30) && $request->srvbucket_0_to_30 != "NULL" ? $request->srvbucket_0_to_30 : NULL,
+                    'srvbucket_31_to_60' => isset($request->srvbucket_31_to_60) && $request->srvbucket_31_to_60 != "NULL" ? $request->srvbucket_31_to_60 : NULL,
+                    'srvbucket_91_to_120' => isset($request->srvbucket_91_to_120) && $request->srvbucket_91_to_120 != "NULL" ? $request->srvbucket_91_to_120 : NULL,
+                    'srvbucket_121_to_150' => isset($request->srvbucket_121_to_150) && $request->srvbucket_121_to_150 != "NULL" ? $request->srvbucket_121_to_150 : NULL,
+                    'srvbucket_151_to_180' => isset($request->srvbucket_151_to_180) && $request->srvbucket_151_to_180 != "NULL" ? $request->srvbucket_151_to_180 : NULL,
+                    'srvbucket_greater_than_180' => isset($request->srvbucket_greater_than_180) && $request->srvbucket_greater_than_180 != "NULL" ? $request->srvbucket_greater_than_180 : NULL,
+                    'srvbucket_total' => isset($request->srvbucket_total) && $request->srvbucket_total != "NULL" ? $request->srvbucket_total : NULL,
+                    'cstatus' => isset($request->cstatus) && $request->cstatus != "NULL" ? $request->cstatus : NULL,
+                    'lstactiondate' => isset($request->lstactiondate) && $request->lstactiondate != "NULL" ? $request->lstactiondate : NULL,
+                    'trnsfr_type' => isset($request->trnsfr_type) && $request->trnsfr_type != "NULL" ? $request->trnsfr_type : NULL,
+                    'invoke_date' => Carbon::now()->format('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => 'CE_Assigned',
+                ]);
+                return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords = DkmgArBehavioralMentalHealth::where($attributes)->where('chart_status', 'CE_Assigned')->get();
+
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                            'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,
+                            'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'patient_dob' => isset($request->patient_dob) && $request->patient_dob != "NULL" ? $request->patient_dob : NULL,
+                            'cstm_ins_grpng' => isset($request->cstm_ins_grpng) && $request->cstm_ins_grpng != "NULL" ? $request->cstm_ins_grpng : NULL,
+                            'ins_pkg_id' => isset($request->ins_pkg_id) && $request->ins_pkg_id != "NULL" ? $request->ins_pkg_id : NULL,
+                            'ins_report_cat' => isset($request->ins_report_cat) && $request->ins_report_cat != "NULL" ? $request->ins_report_cat : NULL,
+                            'fc' => isset($request->fc) && $request->fc != "NULL" ? $request->fc : NULL,
+                            'proccode' => isset($request->proccode) && $request->proccode != "NULL" ? $request->proccode : NULL,
+                            'proccode_grp' => isset($request->proccode_grp) && $request->proccode_grp != "NULL" ? $request->proccode_grp : NULL,
+                            'rndrng_prvdr' => isset($request->rndrng_prvdr) && $request->rndrng_prvdr != "NULL" ? $request->rndrng_prvdr : NULL,
+                            'sup_prvdr' => isset($request->sup_prvdr) && $request->sup_prvdr != "NULL" ? $request->sup_prvdr : NULL,
+                            'svc_dprtmnt' => isset($request->svc_dprtmnt) && $request->svc_dprtmnt != "NULL" ? $request->svc_dprtmnt : NULL,
+                            'rndrng_prvdr_mdcl_grp' => isset($request->rndrng_prvdr_mdcl_grp) && $request->rndrng_prvdr_mdcl_grp != "NULL" ? $request->rndrng_prvdr_mdcl_grp : NULL,
+                            'sup_prvdr_mdcl_grp' => isset($request->sup_prvdr_mdcl_grp) && $request->sup_prvdr_mdcl_grp != "NULL" ? $request->sup_prvdr_mdcl_grp : NULL,
+                            'curr_athena_kick_code' => isset($request->curr_athena_kick_code) && $request->curr_athena_kick_code != "NULL" ? $request->curr_athena_kick_code : NULL,
+                            'curr_athena_kick_code_rej_rsn' => isset($request->curr_athena_kick_code_rej_rsn) && $request->curr_athena_kick_code_rej_rsn != "NULL" ? $request->curr_athena_kick_code_rej_rsn : NULL,
+                            'currenterrorfull' => isset($request->currenterrorfull) && $request->currenterrorfull != "NULL" ? $request->currenterrorfull : NULL,
+                            'curr_glbl_rule_rej_rsn' => isset($request->curr_glbl_rule_rej_rsn) && $request->curr_glbl_rule_rej_rsn != "NULL" ? $request->curr_glbl_rule_rej_rsn : NULL,
+                            'curr_glbl_rule' => isset($request->curr_glbl_rule) && $request->curr_glbl_rule != "NULL" ? $request->curr_glbl_rule : NULL,
+                            'srvbucket_0_to_30' => isset($request->srvbucket_0_to_30) && $request->srvbucket_0_to_30 != "NULL" ? $request->srvbucket_0_to_30 : NULL,
+                            'srvbucket_31_to_60' => isset($request->srvbucket_31_to_60) && $request->srvbucket_31_to_60 != "NULL" ? $request->srvbucket_31_to_60 : NULL,
+                            'srvbucket_91_to_120' => isset($request->srvbucket_91_to_120) && $request->srvbucket_91_to_120 != "NULL" ? $request->srvbucket_91_to_120 : NULL,
+                            'srvbucket_121_to_150' => isset($request->srvbucket_121_to_150) && $request->srvbucket_121_to_150 != "NULL" ? $request->srvbucket_121_to_150 : NULL,
+                            'srvbucket_151_to_180' => isset($request->srvbucket_151_to_180) && $request->srvbucket_151_to_180 != "NULL" ? $request->srvbucket_151_to_180 : NULL,
+                            'srvbucket_greater_than_180' => isset($request->srvbucket_greater_than_180) && $request->srvbucket_greater_than_180 != "NULL" ? $request->srvbucket_greater_than_180 : NULL,
+                            'srvbucket_total' => isset($request->srvbucket_total) && $request->srvbucket_total != "NULL" ? $request->srvbucket_total : NULL,
+                            'cstatus' => isset($request->cstatus) && $request->cstatus != "NULL" ? $request->cstatus : NULL,
+                            'lstactiondate' => isset($request->lstactiondate) && $request->lstactiondate != "NULL" ? $request->lstactiondate : NULL,
+                            'trnsfr_type' => isset($request->trnsfr_type) && $request->trnsfr_type != "NULL" ? $request->trnsfr_type : NULL,
+                            'invoke_date' => Carbon::now()->format('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                    DkmgArBehavioralMentalHealth::insert([
+                           'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                            'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,
+                            'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'patient_dob' => isset($request->patient_dob) && $request->patient_dob != "NULL" ? $request->patient_dob : NULL,
+                            'cstm_ins_grpng' => isset($request->cstm_ins_grpng) && $request->cstm_ins_grpng != "NULL" ? $request->cstm_ins_grpng : NULL,
+                            'ins_pkg_id' => isset($request->ins_pkg_id) && $request->ins_pkg_id != "NULL" ? $request->ins_pkg_id : NULL,
+                            'ins_report_cat' => isset($request->ins_report_cat) && $request->ins_report_cat != "NULL" ? $request->ins_report_cat : NULL,
+                            'fc' => isset($request->fc) && $request->fc != "NULL" ? $request->fc : NULL,
+                            'proccode' => isset($request->proccode) && $request->proccode != "NULL" ? $request->proccode : NULL,
+                            'proccode_grp' => isset($request->proccode_grp) && $request->proccode_grp != "NULL" ? $request->proccode_grp : NULL,
+                            'rndrng_prvdr' => isset($request->rndrng_prvdr) && $request->rndrng_prvdr != "NULL" ? $request->rndrng_prvdr : NULL,
+                            'sup_prvdr' => isset($request->sup_prvdr) && $request->sup_prvdr != "NULL" ? $request->sup_prvdr : NULL,
+                            'svc_dprtmnt' => isset($request->svc_dprtmnt) && $request->svc_dprtmnt != "NULL" ? $request->svc_dprtmnt : NULL,
+                            'rndrng_prvdr_mdcl_grp' => isset($request->rndrng_prvdr_mdcl_grp) && $request->rndrng_prvdr_mdcl_grp != "NULL" ? $request->rndrng_prvdr_mdcl_grp : NULL,
+                            'sup_prvdr_mdcl_grp' => isset($request->sup_prvdr_mdcl_grp) && $request->sup_prvdr_mdcl_grp != "NULL" ? $request->sup_prvdr_mdcl_grp : NULL,
+                            'curr_athena_kick_code' => isset($request->curr_athena_kick_code) && $request->curr_athena_kick_code != "NULL" ? $request->curr_athena_kick_code : NULL,
+                            'curr_athena_kick_code_rej_rsn' => isset($request->curr_athena_kick_code_rej_rsn) && $request->curr_athena_kick_code_rej_rsn != "NULL" ? $request->curr_athena_kick_code_rej_rsn : NULL,
+                            'currenterrorfull' => isset($request->currenterrorfull) && $request->currenterrorfull != "NULL" ? $request->currenterrorfull : NULL,
+                            'curr_glbl_rule_rej_rsn' => isset($request->curr_glbl_rule_rej_rsn) && $request->curr_glbl_rule_rej_rsn != "NULL" ? $request->curr_glbl_rule_rej_rsn : NULL,
+                            'curr_glbl_rule' => isset($request->curr_glbl_rule) && $request->curr_glbl_rule != "NULL" ? $request->curr_glbl_rule : NULL,
+                            'srvbucket_0_to_30' => isset($request->srvbucket_0_to_30) && $request->srvbucket_0_to_30 != "NULL" ? $request->srvbucket_0_to_30 : NULL,
+                            'srvbucket_31_to_60' => isset($request->srvbucket_31_to_60) && $request->srvbucket_31_to_60 != "NULL" ? $request->srvbucket_31_to_60 : NULL,
+                            'srvbucket_91_to_120' => isset($request->srvbucket_91_to_120) && $request->srvbucket_91_to_120 != "NULL" ? $request->srvbucket_91_to_120 : NULL,
+                            'srvbucket_121_to_150' => isset($request->srvbucket_121_to_150) && $request->srvbucket_121_to_150 != "NULL" ? $request->srvbucket_121_to_150 : NULL,
+                            'srvbucket_151_to_180' => isset($request->srvbucket_151_to_180) && $request->srvbucket_151_to_180 != "NULL" ? $request->srvbucket_151_to_180 : NULL,
+                            'srvbucket_greater_than_180' => isset($request->srvbucket_greater_than_180) && $request->srvbucket_greater_than_180 != "NULL" ? $request->srvbucket_greater_than_180 : NULL,
+                            'srvbucket_total' => isset($request->srvbucket_total) && $request->srvbucket_total != "NULL" ? $request->srvbucket_total : NULL,
+                            'cstatus' => isset($request->cstatus) && $request->cstatus != "NULL" ? $request->cstatus : NULL,
+                            'lstactiondate' => isset($request->lstactiondate) && $request->lstactiondate != "NULL" ? $request->lstactiondate : NULL,
+                            'trnsfr_type' => isset($request->trnsfr_type) && $request->trnsfr_type != "NULL" ? $request->trnsfr_type : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record Reinserted Successfully']);
+                }
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()]);
+        }
+    }
+
+ public function dkmgArBehavioralMentalHealthDuplicates(Request $request)
+    {
+        try {
+                DkmgArBehavioralMentalHealthDuplicates::insert([
+                    'priority' => isset($request->priority) && $request->priority != "NULL" ? $request->priority : NULL,  
+                    'fup_score' => isset($request->fup_score) && $request->fup_score != "NULL" ? $request->fup_score : NULL,  
+                    'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,  
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL, 
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                    'over_90' => isset($request->over_90) && $request->over_90 != "NULL" ? $request->over_90 : NULL, 
+                    'created' => isset($request->created) && $request->created != "NULL" ? $request->created : NULL, 
+                    'sts' => isset($request->sts) && $request->sts != "NULL" ? $request->sts : NULL, 
+                    'account_id' => isset($request->account_id) && $request->account_id != "NULL" ? $request->account_id : NULL, 
+                    'account' => isset($request->account) && $request->account != "NULL" ? $request->account : NULL, 
+                    'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL, 
+                    'billing_provider' => isset($request->billing_provider) && $request->billing_provider != "NULL" ? $request->billing_provider : NULL, 
+                    'tx_list' => isset($request->tx_list) && $request->tx_list != "NULL" ? $request->tx_list : NULL, 
+                    'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt : NULL, 
+                    'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL, 
+                    'correspondence' => isset($request->correspondence) && $request->correspondence != "NULL" ? $request->correspondence : NULL, 
+                    'wq_entry_date' => isset($request->wq_entry_date) && $request->wq_entry_date != "NULL" ? $request->wq_entry_date : NULL, 
+                    'payor' => isset($request->payor) && $request->payor != "NULL" ? $request->payor : NULL, 
+                    'plan' => isset($request->plan) && $request->plan != "NULL" ? $request->plan : NULL, 
+                    'allowance_discrepancy_amount' => isset($request->allowance_discrepancy_amount) && $request->allowance_discrepancy_amount != "NULL" ? $request->allowance_discrepancy_amount : NULL,
+                    'allowance_discrepancy_percentage' => isset($request->allowance_discrepancy_percentage) && $request->allowance_discrepancy_percentage != "NULL" ? $request->allowance_discrepancy_percentage : NULL,
+                    'timely_filing_deadline_date' => isset($request->timely_filing_deadline_date) && $request->timely_filing_deadline_date != "NULL" ? $request->timely_filing_deadline_date : NULL,
+                    'days_until_timely_filing_deadline' => isset($request->days_until_timely_filing_deadline) && $request->days_until_timely_filing_deadline != "NULL" ? $request->days_until_timely_filing_deadline : NULL,
+                    'id_1' => isset($request->id_1) && $request->id_1 != "NULL" ? $request->id_1 : NULL,
+                    'bill_area' => isset($request->bill_area) && $request->bill_area != "NULL" ? $request->bill_area : NULL,
+                    'department' => isset($request->department) && $request->department != "NULL" ? $request->department : NULL,
+                    'pos' => isset($request->pos) && $request->pos != "NULL" ? $request->pos : NULL,
+                    'bill_area_name' => isset($request->bill_area_name) && $request->bill_area_name != "NULL" ? $request->bill_area_name : NULL,
+                    'cross_over_flag' => isset($request->cross_over_flag) && $request->cross_over_flag != "NULL" ? $request->cross_over_flag : NULL,
+                    'id_2' => isset($request->id_2) && $request->id_2 != "NULL" ? $request->id_2 : NULL,
+                    'last_activity' => isset($request->last_activity) && $request->last_activity != "NULL" ? $request->last_activity : NULL,
+                    'reason_codes' => isset($request->reason_codes) && $request->reason_codes != "NULL" ? $request->reason_codes : NULL,
+                    'procedure_code' => isset($request->procedure_code) && $request->procedure_code != "NULL" ? $request->procedure_code : NULL,
+                    'open_hb_denials' => isset($request->open_hb_denials) && $request->open_hb_denials != "NULL" ? $request->open_hb_denials : NULL,
+                    'icn_no' => isset($request->icn_no) && $request->icn_no != "NULL" ? $request->icn_no : NULL,
+                    'subscriber_id' => isset($request->subscriber_id) && $request->subscriber_id != "NULL" ? $request->subscriber_id : NULL,
+                    'modifier_list' => isset($request->modifier_list) && $request->modifier_list != "NULL" ? $request->modifier_list : NULL,
+                    'expected_amt' => isset($request->expected_amt) && $request->expected_amt != "NULL" ? $request->expected_amt : NULL,
+                    'payment' => isset($request->payment) && $request->payment != "NULL" ? $request->payment : NULL,
+                    'remit_code_last_pmt' => isset($request->remit_code_last_pmt) && $request->remit_code_last_pmt != "NULL" ? $request->remit_code_last_pmt : NULL,
+                    'remit_code_name_last_pmt' => isset($request->remit_code_name_last_pmt) && $request->remit_code_name_last_pmt != "NULL" ? $request->remit_code_name_last_pmt : NULL,
+                    'precert_required' => isset($request->precert_required) && $request->precert_required != "NULL" ? $request->precert_required : NULL,
+                    'referral_created_user_id' => isset($request->referral_created_user_id) && $request->referral_created_user_id != "NULL" ? $request->referral_created_user_id : NULL,
+                    'referral_created_user_name' => isset($request->referral_created_user_name) && $request->referral_created_user_name != "NULL" ? $request->referral_created_user_name : NULL,
+                    'billing_provider_pin' => isset($request->billing_provider_pin) && $request->billing_provider_pin != "NULL" ? $request->billing_provider_pin : NULL,
+                    'billing_provider_npi' => isset($request->billing_provider_npi) && $request->billing_provider_npi != "NULL" ? $request->billing_provider_npi : NULL,
+                    'referring_provider_npi' => isset($request->referring_provider_npi) && $request->referring_provider_npi != "NULL" ? $request->referring_provider_npi : NULL,
+                    'claim_form_name' => isset($request->claim_form_name) && $request->claim_form_name != "NULL" ? $request->claim_form_name : NULL,
+                    'claim_date' => isset($request->claim_date) && $request->claim_date != "NULL" ? $request->claim_date : NULL,
+                    'estimate_status' => isset($request->estimate_status) && $request->estimate_status != "NULL" ? $request->estimate_status : NULL,
+                    'no_surprise_act_status' => isset($request->no_surprise_act_status) && $request->no_surprise_act_status != "NULL" ? $request->no_surprise_act_status : NULL,
+                    'smartedit_message' => isset($request->smartedit_message) && $request->smartedit_message != "NULL" ? $request->smartedit_message : NULL,
+                    'last_transfer_user' => isset($request->last_transfer_user) && $request->last_transfer_user != "NULL" ? $request->last_transfer_user : NULL,
+                    'last_transfer_wq_id' => isset($request->last_transfer_wq_id) && $request->last_transfer_wq_id != "NULL" ? $request->last_transfer_wq_id : NULL,
+                    'last_transfer_wq_nm' => isset($request->last_transfer_wq_nm) && $request->last_transfer_wq_nm != "NULL" ? $request->last_transfer_wq_nm : NULL,
+                    'last_transfer_date' => isset($request->last_transfer_date) && $request->last_transfer_date != "NULL" ? $request->last_transfer_date : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    
 }
