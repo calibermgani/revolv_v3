@@ -60,8 +60,9 @@ class FormController extends Controller
 
     public static function formConfigurationStore(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userInfo'] && Session::get('loginDetails')['userInfo']['user_id'] !=null) {
-            DB::beginTransaction();
+          
             try {
+                  DB::beginTransaction();
                  $data = $request->all();
                 // $projectName = project::where('id',$data['project_id'])->first();
                 // $subProjectArray = subproject::where('project_id',$data['project_id'])->where('id',$data['sub_project_id'])->first();
@@ -446,11 +447,14 @@ class FormController extends Controller
                             }
                         }
                     }
-                    //DB::commit();
+                    if (DB::getPdo()->inTransaction()) {
+                        DB::commit();
+                    }
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
-                    DB::commit();
             } catch (\Exception $e) {
-                DB::rollBack();
+                if (DB::transactionLevel() > 0) {
+                    DB::rollBack();
+                }
                 return response()->json(['error' => $e->getMessage()], 500);
                 Log::debug($e->getMessage());
             }
@@ -489,8 +493,9 @@ class FormController extends Controller
 
     public static function formConfigurationUpdate(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userInfo'] && Session::get('loginDetails')['userInfo']['user_id'] !=null) {
-            DB::beginTransaction();
+            
             try {
+                DB::beginTransaction();
                 $data = $request->all();
                 // $projectName = project::where('id',$data['project_id_val'])->first();
                 // $subProjectArray = subproject::where('project_id',$data['project_id_val'])->where('id',$data['sub_project_id_val'])->first();
@@ -899,11 +904,14 @@ class FormController extends Controller
                             }
                         }
                     }
-                
+                   if (DB::getPdo()->inTransaction()) {
+                        DB::commit();
+                    }
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
-                    DB::commit();
             } catch (\Exception $e) {
-                DB::rollBack();
+                 if (DB::transactionLevel() > 0) {
+                    DB::rollBack();
+                }
                 return response()->json(['error' => $e->getMessage()], 500);
                 Log::debug($e->getMessage());
             }
@@ -915,6 +923,7 @@ class FormController extends Controller
     public function projectConfigDelete(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
               try {
+                    DB::beginTransaction();
                     $data = $request->all();
                   //  $projectName =  Helpers::projectName($data['projectId'])->project_name;
                     $faProject = Helpers::projectName($data['projectId']);
@@ -975,8 +984,13 @@ class FormController extends Controller
                         return response()->json(['error' => true]);
                     }
 
-
+                    if (DB::getPdo()->inTransaction()) {
+                        DB::commit();
+                    }
                 } catch (\Exception $e) {
+                     if (DB::transactionLevel() > 0) {
+                        DB::rollBack();
+                     }
                     Log::debug($e->getMessage());
                 }
         } else {
