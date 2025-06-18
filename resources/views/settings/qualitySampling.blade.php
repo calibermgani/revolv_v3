@@ -296,11 +296,12 @@
                     $('select[id="edit_project_id"]').val(project_id).trigger('change');
                     $('select[id="edit_sub_project_list"]').val(subproject_id).trigger('change');
                     $('select[id="edit_coder_id"]').val(coder_id).trigger('change');
-                    $('select[id="edit_qa_id"]').val(qa_emp_id).trigger('change');
+                    $('select[id="edit_qa_id"]').val(qa_emp_id).trigger('change');console.log(qa_emp_id,'qa_emp_id');
+                    
                     $('input[id="edit_qa_percentage"]').val(qa_percentage.slice(0, -1));
                     $('select[id="edit_claim_priority"]').val(claim_priority).trigger('change');
                     $('input[name="record_id"]').val(record_id);
-                    subProjectNameList(project_id,subproject_id);console.log(qa_sample_column_name,'qa_sample_column_name',qa_sample_column_val);
+                    subProjectNameList(project_id,subproject_id);
                     var editContainer = $('#edit_sampling_container');
                     if(qa_sample_column_name != '--' && qa_sample_column_val != '--') {   
                         $.ajaxSetup({
@@ -516,7 +517,7 @@
                                     }
                                 });
                             qaSampleColumnNames = qaSampleColumnValues.length > 0 ? qaSampleColumnNames.join(',') : null;
-                            qaSampleColumnValues = qaSampleColumnValues.length > 0 ? qaSampleColumnValues.join(',') : null;console.log(val,'qaSampleColumnNames',qaSampleColumnNames,qaSampleColumnValues);
+                            qaSampleColumnValues = qaSampleColumnValues.length > 0 ? qaSampleColumnValues.join(',') : null;
                             
                                 if (projectId == val.project_id && subProjectId == val.sub_project_id && qaId == val.qa_emp_id && coderId == val.coder_emp_id && qaSampleColumnNames == val.qa_sample_column_name && qaSampleColumnValues == val.qa_sample_column_value) {
                                         js_notification('error', 'This Setting already exist!');
