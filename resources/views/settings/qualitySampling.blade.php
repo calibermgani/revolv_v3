@@ -296,7 +296,7 @@
                     $('select[id="edit_project_id"]').val(project_id).trigger('change');
                     $('select[id="edit_sub_project_list"]').val(subproject_id).trigger('change');
                     $('select[id="edit_coder_id"]').val(coder_id).trigger('change');
-                    $('select[id="edit_qa_id"]').val(qa_emp_id).trigger('change');console.log(qa_emp_id,'qa_emp_id');
+                    $('select[id="edit_qa_id"]').val(qa_emp_id).trigger('change');
                     
                     $('input[id="edit_qa_percentage"]').val(qa_percentage.slice(0, -1));
                     $('select[id="edit_claim_priority"]').val(claim_priority).trigger('change');
@@ -467,14 +467,14 @@
                 $('#qa_sampling_update').submit(function(e) {
                     e.preventDefault();
                     var edit_project_id = $('#edit_project_id');
-                    var edit_qa_id = $('#edit_qa_id');console.log(edit_qa_id.val(),'edit_qa_id');
+                    var edit_qa_id = $('#edit_qa_id');
                     
                     var edit_qa_percentage = $('#edit_qa_percentage');
                     var edit_sub_project_id = $('#edit_sub_project_list');
                     var edit_coder_id = $('#edit_coder_id');
                     var record_id = $('#record_id').val();
                     var inputTypeValue = 0;
-                    if (edit_project_id.val() == '' || edit_qa_id.val() == '' || edit_qa_percentage.val() == '' || edit_sub_project_id.val() == '') {
+                    if (edit_project_id.val() == '' || edit_project_id.val() == null || edit_qa_id.val() == '' || edit_qa_id.val() == null || edit_qa_percentage.val() == '' || edit_qa_percentage.val() == null || edit_sub_project_id.val() == '' || edit_sub_project_id.val() == null) {
                         if (edit_project_id.val() == '') {
                             edit_project_id.next('.select2').find(".select2-selection").css('border-color', 'red');
                         } else {
