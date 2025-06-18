@@ -128,7 +128,7 @@ class SettingController extends Controller
     {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
             try {
-                $data =  $request->all();dd($data);
+                $data =  $request->all();
                 $data['added_by'] = Session::get('loginDetails')['userInfo']['user_id'];
                 if($request['_token'] != null) {
                     $filteredRequest = $request->except('_token', 'parent', 'child', 'page', 'project_id', 'sub_project_id', 'coder_emp_id', 'qa_emp_id', 'qa_percentage', 'claim_priority','record_id');
