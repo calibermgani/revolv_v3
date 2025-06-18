@@ -995,7 +995,7 @@ class DashboardController extends Controller
                     $currentDate = Carbon::now();
                     $start_date = $currentDate->subMonths(2)->startOfMonth()->format('Y-m-d 00:00:00');
                     $end_date = $currentDate->addMonths(2)->endOfMonth()->format('Y-m-d 23:59:59');
-                }dd(isset($request->sub_project_id),$request->sub_project_id);
+                }
                 if (isset($request->project_id) && isset($request->sub_project_id)) {
                     $client_data = InventoryExeFile::where('project_id', '=', $request->project_id)
                             ->where('sub_project_id', '=', $request->sub_project_id)
@@ -1006,7 +1006,7 @@ class DashboardController extends Controller
                                         $query;
                                     }
                                 })->get();
-                }else if (isset($request->project_id) && isset($request->sub_project_id)) {
+                }else if (isset($request->project_id) && $request->sub_project_id == null) {
                     $client_data = InventoryExeFile::where('project_id', '=', $request->project_id)
                             //->where('sub_project_id', '=', $request->sub_project_id)
                             ->where(function ($query) use ($start_date, $end_date) {
