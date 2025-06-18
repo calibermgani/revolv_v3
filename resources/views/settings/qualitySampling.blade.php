@@ -467,7 +467,7 @@
                 $('#qa_sampling_update').submit(function(e) {
                     e.preventDefault();
                     var edit_project_id = $('#edit_project_id');
-                    var edit_qa_id = $('#edit_qa_id');console.log(edit_qa_id,'edit_qa_id');
+                    var edit_qa_id = $('#edit_qa_id');console.log(edit_qa_id.val(),'edit_qa_id');
                     
                     var edit_qa_percentage = $('#edit_qa_percentage');
                     var edit_sub_project_id = $('#edit_sub_project_list');
