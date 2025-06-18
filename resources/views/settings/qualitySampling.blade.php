@@ -630,9 +630,10 @@
                     });
                 }
 
-                $(document).on('click','#clear_submit',function(){
-                location.reload();
-            })
+                 $(document).on('click','#clear_submit',function(){
+                    $('#edit_qa_percentage').val('');
+                    $('#qa_percentage').val('');
+                });       
 
             });
         </script>
