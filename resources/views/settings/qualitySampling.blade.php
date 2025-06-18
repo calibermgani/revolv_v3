@@ -475,22 +475,22 @@
                     var record_id = $('#record_id').val();
                     var inputTypeValue = 0;
                     if (edit_project_id.val() == '' || edit_project_id.val() == null || edit_qa_id.val() == '' || edit_qa_id.val() == null || edit_qa_percentage.val() == '' || edit_qa_percentage.val() == null || edit_sub_project_id.val() == '' || edit_sub_project_id.val() == null) {
-                        if (edit_project_id.val() == '') {
+                        if (edit_project_id.val() == '' || edit_project_id.val() == null) {
                             edit_project_id.next('.select2').find(".select2-selection").css('border-color', 'red');
                         } else {
                             edit_project_id.next('.select2').find(".select2-selection").css('border-color', '');
                         }
-                        if (edit_qa_id.val() == '') {
+                        if (edit_qa_id.val() == '' || edit_qa_id.val() == null) {
                             edit_qa_id.next('.select2').find(".select2-selection").css('border-color', 'red');
                         } else {
                             edit_qa_id.next('.select2').find(".select2-selection").css('border-color', '');
                         }
-                        if (edit_qa_percentage.val() == '') {
+                        if (edit_qa_percentage.val() == '' || edit_qa_percentage.val() == null) {
                             edit_qa_percentage.css('border-color', 'red');
                         } else {
                             edit_qa_percentage.css('border-color', '');
                         }
-                        if (edit_sub_project_id.val() == '' && subprojectCount != 0) {
+                        if ((edit_sub_project_id.val() == '' || edit_sub_project_id.val() == null) && subprojectCount != 0) {
                             edit_sub_project_id.next('.select2').find(".select2-selection").css('border-color', 'red');
                         } else {
                             edit_sub_project_id.next('.select2').find(".select2-selection").css('border-color', '');
