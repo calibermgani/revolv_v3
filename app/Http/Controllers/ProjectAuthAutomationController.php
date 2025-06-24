@@ -995,25 +995,45 @@ class ProjectAuthAutomationController extends Controller
                     ]);
                         return response()->json(['message' => 'Record Inserted Successfully']);
             } else {
-                $duplicateRecord  =  LastsChargeEntry::where($attributes)->where('chart_status',"CE_Assigned")->first();
-                if ($duplicateRecord) {
-                    $duplicateRecord->update([
-                        'c_id' => isset($request->c_id) && $request->c_id != "NULL" ? $request->c_id : NULL,
-                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
-                        'therapist' => isset($request->therapist) && $request->therapist != "NULL" ? $request->therapist : NULL,
-                        'pri' => isset($request->pri) && $request->pri != "NULL" ? $request->pri : NULL,
-                        'proc' => isset($request->proc) && $request->proc != "NULL" ? $request->proc : NULL,
-                        'units' => isset($request->units) && $request->units != "NULL" ? $request->units : NULL,
-                        'loc' => isset($request->loc) && $request->loc != "NULL" ? $request->loc : NULL,
-                        'rate' => isset($request->rate) && $request->rate != "NULL" ? $request->rate : NULL,
-                        'invoke_date' => date('Y-m-d'),
-                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
-                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
-                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
-                    ]);
+                $duplicateRecords  =  LastsChargeEntry::where($attributes)->where('chart_status',"CE_Assigned")->get();            
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'c_id' => isset($request->c_id) && $request->c_id != "NULL" ? $request->c_id : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                            'therapist' => isset($request->therapist) && $request->therapist != "NULL" ? $request->therapist : NULL,
+                            'pri' => isset($request->pri) && $request->pri != "NULL" ? $request->pri : NULL,
+                            'proc' => isset($request->proc) && $request->proc != "NULL" ? $request->proc : NULL,
+                            'units' => isset($request->units) && $request->units != "NULL" ? $request->units : NULL,
+                            'loc' => isset($request->loc) && $request->loc != "NULL" ? $request->loc : NULL,
+                            'rate' => isset($request->rate) && $request->rate != "NULL" ? $request->rate : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                     return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                        LastsChargeEntry::insert([
+                            'c_id' => isset($request->c_id) && $request->c_id != "NULL" ? $request->c_id : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                            'therapist' => isset($request->therapist) && $request->therapist != "NULL" ? $request->therapist : NULL,
+                            'pri' => isset($request->pri) && $request->pri != "NULL" ? $request->pri : NULL,
+                            'proc' => isset($request->proc) && $request->proc != "NULL" ? $request->proc : NULL,
+                            'units' => isset($request->units) && $request->units != "NULL" ? $request->units : NULL,
+                            'loc' => isset($request->loc) && $request->loc != "NULL" ? $request->loc : NULL,
+                            'rate' => isset($request->rate) && $request->rate != "NULL" ? $request->rate : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'chart_status' => "CE_Assigned",
+                        ]);
+                        return response()->json(['message' => 'Record Reinserted Successfully']);
                 }
-                return response()->json(['message' => 'Existing Record Updated Successfully']);
+               
             }
         } catch (\Exception $e) {
             $e->getMessage();
