@@ -9,5 +9,5 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class NonWorkableReason extends Model
 {
     use HasFactory,SoftDeletes;
-    protected $fillable = ['project_id','sub_project_id','duplicate_column'];
+    protected $fillable = ['reason_type','status','added_by'];
 }
