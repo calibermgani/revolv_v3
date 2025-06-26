@@ -155,6 +155,7 @@
                                             KTApp.unblock('#formConfigDiv');
                                         } else {
                                             js_notification('error', 'We can not delete the project because it contains data.');
+                                             KTApp.unblock('#formConfigDiv');
                                         }
                                     },
                                 });
