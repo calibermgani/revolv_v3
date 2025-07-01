@@ -617,7 +617,7 @@ class ProjectController extends Controller
             $slotStart = $startTime->copy();
 
             while ($slotStart->lessThan($endTime)) {
-                $slotEnd = $slotStart->copy()->addHour();
+                $slotEnd = $slotStart->copy()->addHour()->subSecond();
                 $timeSlots[] = [
                     'start' => $slotStart,
                     'end' => $slotEnd,
@@ -1563,7 +1563,7 @@ class ProjectController extends Controller
                 $slotStart = $startTime->copy();
 
                 while ($slotStart->lessThan($endTime)) {
-                    $slotEnd = $slotStart->copy()->addHour();
+                    $slotEnd = $slotStart->copy()->addHour()->subSecond();
                     $timeSlots[] = [
                         'start' => $slotStart,
                         'end' => $slotEnd,
@@ -1669,7 +1669,7 @@ class ProjectController extends Controller
             $timeSlots = [];
             $slotStart = $startTime->copy();
             while ($slotStart->lessThan($endTime)) {
-                $slotEnd = $slotStart->copy()->addHour();
+                $slotEnd = $slotStart->copy()->addHour()->subSecond();
                 $timeSlots[] = [
                     'start' => $slotStart,
                     'end' => $slotEnd,
@@ -2037,7 +2037,7 @@ class ProjectController extends Controller
                 $timeSlots = [];
                 $slotStart = $startTime->copy();
                 while ($slotStart->lessThan($endTime)) {
-                    $slotEnd = $slotStart->copy()->addHour();
+                    $slotEnd = $slotStart->copy()->addHour()->subSecond();
                     $timeSlots[] = [
                         'start' => $slotStart,
                         'end' => $slotEnd,
