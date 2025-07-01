@@ -632,17 +632,17 @@ use Carbon\Carbon;
                                                                 </div>
                                                                 <div class="col-md-9" style="border-left: 1px solid #ccc;" data-scroll="true" data-height="400">
                                                                     <h6 class="title-h6">AR
-                                                                        @php
+                                                                        {{-- @php
                                                                               $clientName = App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->project_id, 'encode');
                                                                               $subProjectName = $data->sub_project_id != null ? App\Http\Helper\Admin\Helpers::encodeAndDecodeID($data->sub_project_id, 'encode') : '--';
-                                                                        @endphp
+                                                                        @endphp --}}
                                                                         {{-- <span type = "button" id="expandButton"  class="float-right"> --}}
-                                                                            <span type = "button"  id="history_tab" class="float-right" title="History" style="color:#6993FF;background-color:white;border-color:white;cursor: pointer;">
+                                                                            {{-- <span type = "button"  id="history_tab" class="float-right" title="History" style="color:#6993FF;background-color:white;border-color:white;cursor: pointer;">
                                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
                                                                                     <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z"/>
                                                                                     <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466"/>
                                                                                 </svg>
-                                                                            </span>
+                                                                            </span> --}}
 
                                                                     </h6>&nbsp;&nbsp;
                                                                     @if (count($popupEditableFields) > 0)
