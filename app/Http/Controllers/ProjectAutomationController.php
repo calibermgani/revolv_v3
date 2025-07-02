@@ -6043,8 +6043,9 @@ public function NexTrustBillingArDuplicates(Request $request)
                     ]);
                         return response()->json(['message' => 'Record Inserted Successfully']);
             } else {
-                $duplicateRecord  =  SmbArProactive::where($attributes)->where('chart_status',"CE_Assigned")->first();
-                if ($duplicateRecord->isNotEmpty()) {
+                $duplicateRecords  =  SmbArProactive::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                      foreach ($duplicateRecords as $duplicateRecord) {
                     $duplicateRecord->update([
                         'uid_pt_dos' => isset($request->uid_pt_dos) && $request->uid_pt_dos != "NULL" ? $request->uid_pt_dos : NULL,
                         'dup_uid_pt_dos' => isset($request->dup_uid_pt_dos) && $request->dup_uid_pt_dos != "NULL" ? $request->dup_uid_pt_dos : NULL,
