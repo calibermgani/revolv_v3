@@ -613,21 +613,33 @@ class ProjectController extends Controller
      
 
             // Generate time slots dynamically
-            $timeSlots = [];
-            $slotStart = $startTime->copy();
-            $headerSlotStart = $startTime->copy(); 
-            while ($slotStart->lessThan($endTime)) {
-                $slotEnd = $slotStart->copy()->addHour()->subSecond();
-                  $headerSlotEnd = $slotStart->copy()->addHour();
-                $timeSlots[] = [
-                    'start' => $slotStart,
-                    'end' => $slotEnd,
-                    'header' => $headerSlotStart->format('m/d/Y h:i A') . ' to ' . $headerSlotEnd->format('m/d/Y h:i A'),
-                ];
-               // Log::info("Time slot added: {$slotStart} to {$slotEnd}");
-                $slotStart = $slotEnd;
-                $headerSlotStart = $headerSlotEnd;
-            }
+               $timeSlots = [];
+              $slotStart = $startTime->copy();
+                $index = 0;
+
+                while ($slotStart->lessThan($endTime)) {
+                    $slotEnd = $slotStart->copy()->addHour()->subSecond(); // 59:59
+                    
+                    $timeSlots[$index]['start'] = $slotStart->copy();
+                    $timeSlots[$index]['end'] = $slotEnd->copy();
+
+                    $slotStart = $slotStart->copy()->addHour(); // next hour
+                    $index++;
+                }
+
+                // Second loop: fill header
+                $headerSlotStart = $startTime->copy();
+                $index = 0;
+
+                while ($headerSlotStart->lessThan($endTime)) {
+                    $headerSlotEnd = $headerSlotStart->copy()->addHour();
+
+                    $timeSlots[$index]['header'] = $headerSlotStart->format('m/d/Y h:i A') . ' to ' . $headerSlotEnd->format('m/d/Y h:i A');
+
+                    $headerSlotStart = $headerSlotEnd;
+                    $index++;
+                }
+
 
           
 
@@ -1563,19 +1575,31 @@ class ProjectController extends Controller
                 // Generate time slots dynamically
                 $timeSlots = [];
                 $slotStart = $startTime->copy();
-                $headerSlotStart = $startTime->copy(); 
+                $index = 0;
+
                 while ($slotStart->lessThan($endTime)) {
-                    $slotEnd = $slotStart->copy()->addHour()->subSecond();
-                      $headerSlotEnd = $slotStart->copy()->addHour();
-                    $timeSlots[] = [
-                        'start' => $slotStart,
-                        'end' => $slotEnd,
-                        'header' => $headerSlotStart->format('m/d/Y h:i A') . ' to ' . $headerSlotEnd->format('m/d/Y h:i A'),
-                    ];
-                
-                    $slotStart = $slotEnd;
-                    $headerSlotStart = $headerSlotEnd;
+                    $slotEnd = $slotStart->copy()->addHour()->subSecond(); // 59:59
+                    
+                    $timeSlots[$index]['start'] = $slotStart->copy();
+                    $timeSlots[$index]['end'] = $slotEnd->copy();
+
+                    $slotStart = $slotStart->copy()->addHour(); // next hour
+                    $index++;
                 }
+
+                // Second loop: fill header
+                $headerSlotStart = $startTime->copy();
+                $index = 0;
+
+                while ($headerSlotStart->lessThan($endTime)) {
+                    $headerSlotEnd = $headerSlotStart->copy()->addHour();
+
+                    $timeSlots[$index]['header'] = $headerSlotStart->format('m/d/Y h:i A') . ' to ' . $headerSlotEnd->format('m/d/Y h:i A');
+
+                    $headerSlotStart = $headerSlotEnd;
+                    $index++;
+                }
+
                 $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
                 $mailBody = $projectIds = $subProjectIds = [];
 
@@ -1670,21 +1694,33 @@ class ProjectController extends Controller
                     $endTime = $currentTime;
                 }
             }
-            $timeSlots = [];
-            $slotStart = $startTime->copy();
-             $headerSlotStart = $startTime->copy(); 
-            while ($slotStart->lessThan($endTime)) {
-                $slotEnd = $slotStart->copy()->addHour()->subSecond();
-                  $headerSlotEnd = $slotStart->copy()->addHour();
-                $timeSlots[] = [
-                    'start' => $slotStart,
-                    'end' => $slotEnd,
-                    'header' => $headerSlotStart->format('m/d/Y h:i A') . ' to ' . $headerSlotEnd->format('m/d/Y h:i A'),
-                ];
-                //Log::info("Time slot added: {$slotStart} to {$slotEnd}");
-                $slotStart = $slotEnd;
-                $headerSlotStart = $headerSlotEnd;
-            }
+               $timeSlots = [];
+               $slotStart = $startTime->copy();
+                $index = 0;
+
+                while ($slotStart->lessThan($endTime)) {
+                    $slotEnd = $slotStart->copy()->addHour()->subSecond(); // 59:59
+                    
+                    $timeSlots[$index]['start'] = $slotStart->copy();
+                    $timeSlots[$index]['end'] = $slotEnd->copy();
+
+                    $slotStart = $slotStart->copy()->addHour(); // next hour
+                    $index++;
+                }
+
+                // Second loop: fill header
+                $headerSlotStart = $startTime->copy();
+                $index = 0;
+
+                while ($headerSlotStart->lessThan($endTime)) {
+                    $headerSlotEnd = $headerSlotStart->copy()->addHour();
+
+                    $timeSlots[$index]['header'] = $headerSlotStart->format('m/d/Y h:i A') . ' to ' . $headerSlotEnd->format('m/d/Y h:i A');
+
+                    $headerSlotStart = $headerSlotEnd;
+                    $index++;
+                }
+
             $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
             $BodyDetails = [];
           
@@ -2043,19 +2079,31 @@ class ProjectController extends Controller
                 }
                 $timeSlots = [];
                 $slotStart = $startTime->copy();
-                 $headerSlotStart = $startTime->copy(); 
+                $index = 0;
+
                 while ($slotStart->lessThan($endTime)) {
-                    $slotEnd = $slotStart->copy()->addHour()->subSecond();
-                      $headerSlotEnd = $slotStart->copy()->addHour();
-                    $timeSlots[] = [
-                        'start' => $slotStart,
-                        'end' => $slotEnd,
-                        'header' => $headerSlotStart->format('m/d/Y h:i A') . ' to ' . $headerSlotEnd->format('m/d/Y h:i A'),
-                    ];
-                    //Log::info("Time slot added: {$slotStart} to {$slotEnd}");
-                    $slotStart = $slotEnd;
-                    $headerSlotStart = $headerSlotEnd;
+                    $slotEnd = $slotStart->copy()->addHour()->subSecond(); // 59:59
+                    
+                    $timeSlots[$index]['start'] = $slotStart->copy();
+                    $timeSlots[$index]['end'] = $slotEnd->copy();
+
+                    $slotStart = $slotStart->copy()->addHour(); // next hour
+                    $index++;
                 }
+
+                // Second loop: fill header
+                $headerSlotStart = $startTime->copy();
+                $index = 0;
+
+                while ($headerSlotStart->lessThan($endTime)) {
+                    $headerSlotEnd = $headerSlotStart->copy()->addHour();
+
+                    $timeSlots[$index]['header'] = $headerSlotStart->format('m/d/Y h:i A') . ' to ' . $headerSlotEnd->format('m/d/Y h:i A');
+
+                    $headerSlotStart = $headerSlotEnd;
+                    $index++;
+                }
+
                 $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
                 $BodyDetails = [];
               
