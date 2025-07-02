@@ -156,6 +156,12 @@
                 var project_id = $('#project_list').val();
                 var sub_project_id = $('#sub_project_list').val();
                 var error_date = $('#error_date').val();
+                   KTApp.block('#listDataFetching', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Fetching...',
+                    });
                 errorList(project_id, sub_project_id, error_date);
             });
 
