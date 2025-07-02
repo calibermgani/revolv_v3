@@ -216,6 +216,9 @@ class MomController extends Controller
                 $start = $request->meeting_date . ' ' . $request->start_time;
                 $end = $request->meeting_date . ' ' . $request->end_time;
                 $existingRecord = MomParent::where('id', $request->parent_id)->first();
+                MomChild::where('mom_id', $request->parent_id)->forceDelete();
+                 $maxId = DB::table('mom_children')->max('id') ?? 0;
+                 DB::statement('ALTER TABLE mom_children AUTO_INCREMENT = ' . ($maxId + 1));
                 if ($existingRecord) {
                     $requiredData['meeting_title'] = $data['meeting_title'];
                     $requiredData['meeting_attendies'] = $request['meeting_attendies'] != null ? implode(",", $request['meeting_attendies']) : null;
@@ -242,13 +245,14 @@ class MomController extends Controller
                             'topic_eta' => $request['topic_eta'][$i],
                             'added_by' => $userId,
                         );
-                        if ($request['mc_id'][$i] != null) {
-                            MomChild::where('mom_id', '=', $request->parent_id)
-                                ->where('id', '=', $request['mc_id'][$i])
-                                ->update($childData);
-                        } else {
-                            MomChild::create($childData);
-                        }
+                          MomChild::create($childData);
+                        // if ($request['mc_id'][$i] != null) {
+                        //     MomChild::where('mom_id', '=', $request->parent_id)
+                        //         ->where('id', '=', $request['mc_id'][$i])
+                        //         ->update($childData);
+                        // } else {
+                        //     MomChild::create($childData);
+                        // }
                     }
                 }
                 return redirect('mom/mom_dashboard'.'?parent=' . request()->parent . '&child=' . request()->child);

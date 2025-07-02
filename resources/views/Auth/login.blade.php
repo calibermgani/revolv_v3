@@ -123,6 +123,8 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+        <script src="/assets/plugins/global/plugins.bundle.js"></script>
+        <script src="/assets/js/scripts.bundle.js"></script>
         <script>
             $(document).ready(function() {
                 $("#error_close").click(function() {
@@ -262,11 +264,16 @@
 
                 // })
                 $(document).on('click', '#kt_login_signin_submit', function(e) {
+                         KTApp.block('#loginPage', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Loading...',
+                    });
                     var token = "1a32e71a46317b9cc6feb7388238c95d";
                     var userId = $('#emp_id').val();
                     var userPassword = $('#password').val();
                     var proCodeUrl = $('#pro_code_url').val();
-                    console.log('in login', userId, userPassword);
                     if (userId == '' || userPassword == '') {
                         e.preventDefault();
                         if (userId == '') {
@@ -311,25 +318,22 @@
                                         value: sessionUserId
                                     },
                                     success: function(response) {
-                                        console.log(
-                                            'Value stored successfully in session');
                                         window.location.href = baseUrl + 'dashboard';
                                     },
                                     error: function(jqXHR, exception) {
-                                        console.error('Error storing value in session',
-                                            exception);
+                                      KTApp.unblock('#loginPage');
                                     }
                                 });
                             } else if(res.code == 500 && res.message == 'error'){
-
+                                   KTApp.unblock('#loginPage');
                                 js_notification('error', res.errorMessage);
                             } else if(res.code == 400 && res.message == 'Bad Request'){
-                                console.log('error', res);
+                               KTApp.unblock('#loginPage');
                                 js_notification('error', 'Invalid Credentials');
                             }
                         },
                         error: function(jqXHR, exception) {
-                            console.error('Login request failed', exception);
+                           KTApp.unblock('#loginPage');
                         }
                     });
                 });

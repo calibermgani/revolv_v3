@@ -132,7 +132,7 @@
     </style>
 </head>
 <body>
-    <div class="login-container">
+    <div class="login-container" id="loginPage">
         <div class="left-side">
             <!-- Left side content -->
             <div class="resolv_img">
