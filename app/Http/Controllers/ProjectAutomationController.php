@@ -6045,31 +6045,32 @@ public function NexTrustBillingArDuplicates(Request $request)
             } else {
                 $duplicateRecords  =  SmbArProactive::where($attributes)->where('chart_status',"CE_Assigned")->get();
                 if ($duplicateRecords->isNotEmpty()) {
-                      foreach ($duplicateRecords as $duplicateRecord) {
-                    $duplicateRecord->update([
-                        'uid_pt_dos' => isset($request->uid_pt_dos) && $request->uid_pt_dos != "NULL" ? $request->uid_pt_dos : NULL,
-                        'dup_uid_pt_dos' => isset($request->dup_uid_pt_dos) && $request->dup_uid_pt_dos != "NULL" ? $request->dup_uid_pt_dos : NULL,
-                        'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL,
-                        'days' => isset($request->days) && $request->days != "NULL" ? $request->days : NULL,
-                        'since' => isset($request->since) && $request->since != "NULL" ? $request->since : NULL,  
-                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                        'year' => isset($request->year) && $request->year != "NULL" ? $request->year : NULL,
-                        'month' => isset($request->month) && $request->month != "NULL" ? $request->month : NULL,
-                        'tdate' => isset($request->tdate) && $request->tdate != "NULL" ? $request->tdate : NULL,
-                        'service' => isset($request->service) && $request->service != "NULL" ? $request->service : NULL,
-                        'client' => isset($request->client) && $request->client != "NULL" ? $request->client : NULL,
-                        'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
-                        'cdate' => isset($request->cdate) && $request->cdate != "NULL" ? $request->cdate : NULL,
-                        'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
-                        'ins' => isset($request->ins) && $request->ins != "NULL" ? $request->ins : NULL,
-                        'client_paid' => isset($request->client_paid) && $request->client_paid != "NULL" ? $request->client_paid : NULL,
-                        'adj' => isset($request->adj) && $request->adj != "NULL" ? $request->adj : NULL,
-                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
-                        'invoke_date' => date('Y-m-d'),
-                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
-                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
-                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
-                    ]);
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'uid_pt_dos' => isset($request->uid_pt_dos) && $request->uid_pt_dos != "NULL" ? $request->uid_pt_dos : NULL,
+                            'dup_uid_pt_dos' => isset($request->dup_uid_pt_dos) && $request->dup_uid_pt_dos != "NULL" ? $request->dup_uid_pt_dos : NULL,
+                            'insurance_name' => isset($request->insurance_name) && $request->insurance_name != "NULL" ? $request->insurance_name : NULL,
+                            'days' => isset($request->days) && $request->days != "NULL" ? $request->days : NULL,
+                            'since' => isset($request->since) && $request->since != "NULL" ? $request->since : NULL,  
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'year' => isset($request->year) && $request->year != "NULL" ? $request->year : NULL,
+                            'month' => isset($request->month) && $request->month != "NULL" ? $request->month : NULL,
+                            'tdate' => isset($request->tdate) && $request->tdate != "NULL" ? $request->tdate : NULL,
+                            'service' => isset($request->service) && $request->service != "NULL" ? $request->service : NULL,
+                            'client' => isset($request->client) && $request->client != "NULL" ? $request->client : NULL,
+                            'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                            'cdate' => isset($request->cdate) && $request->cdate != "NULL" ? $request->cdate : NULL,
+                            'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
+                            'ins' => isset($request->ins) && $request->ins != "NULL" ? $request->ins : NULL,
+                            'client_paid' => isset($request->client_paid) && $request->client_paid != "NULL" ? $request->client_paid : NULL,
+                            'adj' => isset($request->adj) && $request->adj != "NULL" ? $request->adj : NULL,
+                            'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
                     return response()->json(['message' => 'Existing Record Updated Successfully']);
                 } else {
                     SmbArProactive::insert([
