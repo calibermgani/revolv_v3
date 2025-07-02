@@ -618,10 +618,11 @@ class ProjectController extends Controller
 
             while ($slotStart->lessThan($endTime)) {
                 $slotEnd = $slotStart->copy()->addHour()->subSecond();
+                  $headerSlotEnd = $slotStart->copy()->addHour();
                 $timeSlots[] = [
                     'start' => $slotStart,
                     'end' => $slotEnd,
-                    'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $slotEnd->format('m/d/Y h:i A'),
+                    'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $headerSlotEnd->format('m/d/Y h:i A'),
                 ];
                // Log::info("Time slot added: {$slotStart} to {$slotEnd}");
                 $slotStart = $slotEnd;
@@ -1564,10 +1565,11 @@ class ProjectController extends Controller
 
                 while ($slotStart->lessThan($endTime)) {
                     $slotEnd = $slotStart->copy()->addHour()->subSecond();
+                      $headerSlotEnd = $slotStart->copy()->addHour();
                     $timeSlots[] = [
                         'start' => $slotStart,
                         'end' => $slotEnd,
-                        'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $slotEnd->format('m/d/Y h:i A'),
+                        'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $headerSlotEnd->format('m/d/Y h:i A'),
                     ];
                 
                     $slotStart = $slotEnd;
@@ -1670,10 +1672,11 @@ class ProjectController extends Controller
             $slotStart = $startTime->copy();
             while ($slotStart->lessThan($endTime)) {
                 $slotEnd = $slotStart->copy()->addHour()->subSecond();
+                  $headerSlotEnd = $slotStart->copy()->addHour();
                 $timeSlots[] = [
                     'start' => $slotStart,
                     'end' => $slotEnd,
-                    'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $slotEnd->format('m/d/Y h:i A'),
+                    'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $headerSlotEnd->format('m/d/Y h:i A'),
                 ];
                 //Log::info("Time slot added: {$slotStart} to {$slotEnd}");
                 $slotStart = $slotEnd;
@@ -2038,10 +2041,11 @@ class ProjectController extends Controller
                 $slotStart = $startTime->copy();
                 while ($slotStart->lessThan($endTime)) {
                     $slotEnd = $slotStart->copy()->addHour()->subSecond();
+                      $headerSlotEnd = $slotStart->copy()->addHour();
                     $timeSlots[] = [
                         'start' => $slotStart,
                         'end' => $slotEnd,
-                        'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $slotEnd->format('m/d/Y h:i A'),
+                        'header' => $slotStart->format('m/d/Y h:i A') . ' to ' . $headerSlotEnd->format('m/d/Y h:i A'),
                     ];
                     //Log::info("Time slot added: {$slotStart} to {$slotEnd}");
                     $slotStart = $slotEnd;
