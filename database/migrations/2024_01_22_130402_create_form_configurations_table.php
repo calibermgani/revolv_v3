@@ -17,9 +17,9 @@ class CreateFormConfigurationsTable extends Migration
             $table->bigIncrements('id');
             $table->string('project_id')->nullable();
             $table->string('sub_project_id')->nullable();
-            $table->string('label_name')->nullable();
-            $table->string('input_type')->nullable();
-            $table->string('options_name')->nullable();
+            $table->text('label_name')->nullable();
+            $table->text('input_type')->nullable();
+            $table->text('options_name')->nullable();
             $table->string('field_type')->nullable();
             $table->string('field_type_1')->nullable();
             $table->string('field_type_2')->nullable();
