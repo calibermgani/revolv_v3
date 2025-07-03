@@ -50,6 +50,8 @@ use App\Models\TqhsArRhcDenials;
 use App\Models\TqhsArRhcDenialsDuplicates;
 use App\Models\DkmgArBehavioralMentalHealth;
 use App\Models\DkmgArBehavioralMentalHealthDuplicates;
+use App\Models\PbhgPreAuthVerification;
+use App\Models\PbhgPreAuthVerificationDuplicates;
 class ProjectAuthAutomationController extends Controller
 {
     public function aopsPreAuthVerification(Request $request)
@@ -3160,6 +3162,121 @@ class ProjectAuthAutomationController extends Controller
                     'cstatus' => isset($request->cstatus) && $request->cstatus != "NULL" ? $request->cstatus : NULL,
                     'lstactiondate' => isset($request->lstactiondate) && $request->lstactiondate != "NULL" ? $request->lstactiondate : NULL,
                     'trnsfr_type' => isset($request->trnsfr_type) && $request->trnsfr_type != "NULL" ? $request->trnsfr_type : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+    public function pbhgPreAuthVerification(Request $request)  {
+        try {
+            $attributes = [
+                'invoke_date' => Carbon::now()->format('Y-m-d')
+            ];
+
+            $duplicateRecordExisting = PbhgPreAuthVerification::where($attributes)->exists();
+
+            if (!$duplicateRecordExisting) {
+                // FIRST TIME INSERT
+                PbhgPreAuthVerification::insert([
+                    'organization' => isset($request->organization) && $request->organization != "NULL" ? $request->organization : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,
+                    'admit_date' => isset($request->admit_date) && $request->admit_date != "NULL" ? $request->admit_date : NULL,
+                    'program' => isset($request->program) && $request->program != "NULL" ? $request->program : NULL,
+                    'units' => isset($request->units) && $request->units != "NULL" ? $request->units : NULL,
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                    'services_type' => isset($request->services_type) && $request->services_type != "NULL" ? $request->services_type : NULL,
+                    'authorization_expiration' => isset($request->authorization_expiration) && $request->authorization_expiration != "NULL" ? $request->authorization_expiration : NULL,
+                    'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                    'cpt_code' => isset($request->cpt_code) && $request->cpt_code != "NULL" ? $request->cpt_code : NULL,
+                    'dx_code' => isset($request->dx_code) && $request->dx_code != "NULL" ? $request->dx_code : NULL,
+                    'login' => isset($request->login) && $request->login != "NULL" ? $request->login : NULL,
+                    'call_or_review' => isset($request->call_or_review) && $request->call_or_review != "NULL" ? $request->call_or_review : NULL,
+                    'invoke_date' => Carbon::now()->format('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => 'CE_Assigned',
+                ]);
+                return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords = PbhgPreAuthVerification::where($attributes)->where('chart_status', 'CE_Assigned')->get();
+
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'organization' => isset($request->organization) && $request->organization != "NULL" ? $request->organization : NULL,
+                            'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                            'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,
+                            'admit_date' => isset($request->admit_date) && $request->admit_date != "NULL" ? $request->admit_date : NULL,
+                            'program' => isset($request->program) && $request->program != "NULL" ? $request->program : NULL,
+                            'units' => isset($request->units) && $request->units != "NULL" ? $request->units : NULL,
+                            'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                            'services_type' => isset($request->services_type) && $request->services_type != "NULL" ? $request->services_type : NULL,
+                            'authorization_expiration' => isset($request->authorization_expiration) && $request->authorization_expiration != "NULL" ? $request->authorization_expiration : NULL,
+                            'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                            'cpt_code' => isset($request->cpt_code) && $request->cpt_code != "NULL" ? $request->cpt_code : NULL,
+                            'dx_code' => isset($request->dx_code) && $request->dx_code != "NULL" ? $request->dx_code : NULL,
+                            'login' => isset($request->login) && $request->login != "NULL" ? $request->login : NULL,
+                            'call_or_review' => isset($request->call_or_review) && $request->call_or_review != "NULL" ? $request->call_or_review : NULL,
+                            'invoke_date' => Carbon::now()->format('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                       PbhgPreAuthVerification::insert([
+                            'organization' => isset($request->organization) && $request->organization != "NULL" ? $request->organization : NULL,
+                            'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                            'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,
+                            'admit_date' => isset($request->admit_date) && $request->admit_date != "NULL" ? $request->admit_date : NULL,
+                            'program' => isset($request->program) && $request->program != "NULL" ? $request->program : NULL,
+                            'units' => isset($request->units) && $request->units != "NULL" ? $request->units : NULL,
+                            'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                            'services_type' => isset($request->services_type) && $request->services_type != "NULL" ? $request->services_type : NULL,
+                            'authorization_expiration' => isset($request->authorization_expiration) && $request->authorization_expiration != "NULL" ? $request->authorization_expiration : NULL,
+                            'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                            'cpt_code' => isset($request->cpt_code) && $request->cpt_code != "NULL" ? $request->cpt_code : NULL,
+                            'dx_code' => isset($request->dx_code) && $request->dx_code != "NULL" ? $request->dx_code : NULL,
+                            'login' => isset($request->login) && $request->login != "NULL" ? $request->login : NULL,
+                            'call_or_review' => isset($request->call_or_review) && $request->call_or_review != "NULL" ? $request->call_or_review : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record Reinserted Successfully']);
+                }
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function pbhgPreAuthVerificationDuplicates(Request $request)  {
+        try {
+                PbhgPreAuthVerificationDuplicates::insert([
+                    'organization' => isset($request->organization) && $request->organization != "NULL" ? $request->organization : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,
+                    'admit_date' => isset($request->admit_date) && $request->admit_date != "NULL" ? $request->admit_date : NULL,
+                    'program' => isset($request->program) && $request->program != "NULL" ? $request->program : NULL,
+                    'units' => isset($request->units) && $request->units != "NULL" ? $request->units : NULL,
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                    'services_type' => isset($request->services_type) && $request->services_type != "NULL" ? $request->services_type : NULL,
+                    'authorization_expiration' => isset($request->authorization_expiration) && $request->authorization_expiration != "NULL" ? $request->authorization_expiration : NULL,
+                    'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                    'cpt_code' => isset($request->cpt_code) && $request->cpt_code != "NULL" ? $request->cpt_code : NULL,
+                    'dx_code' => isset($request->dx_code) && $request->dx_code != "NULL" ? $request->dx_code : NULL,
+                    'login' => isset($request->login) && $request->login != "NULL" ? $request->login : NULL,
+                    'call_or_review' => isset($request->call_or_review) && $request->call_or_review != "NULL" ? $request->call_or_review : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
