@@ -52,6 +52,8 @@ use App\Models\DkmgArBehavioralMentalHealth;
 use App\Models\DkmgArBehavioralMentalHealthDuplicates;
 use App\Models\PbhgPreAuthVerification;
 use App\Models\PbhgPreAuthVerificationDuplicates;
+use App\Models\SmmiArDallas;
+use App\Models\SmmiArDallasDuplicates;
 class ProjectAuthAutomationController extends Controller
 {
     public function aopsPreAuthVerification(Request $request)
