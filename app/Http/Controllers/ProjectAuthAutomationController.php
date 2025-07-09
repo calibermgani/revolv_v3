@@ -1587,7 +1587,8 @@ class ProjectAuthAutomationController extends Controller
         try {
             $attributes = [
                  'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
-                 'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL
+                 'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                 'invoke_date' => carbon::now()->format('Y-m-d')
              ];         
 
             $duplicateRecordExisting  =  CrmcAr::where($attributes)->exists();
