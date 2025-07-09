@@ -1677,7 +1677,8 @@ class ProjectAuthAutomationController extends Controller
                  'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
                  'carrier' => isset($request->carrier) && $request->carrier != "NULL" ? $request->carrier : NULL,
                  'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
-                 'file_order' => isset($request->file_order) && $request->file_order != "NULL" ? $request->file_order : NULL
+                 'file_order' => isset($request->file_order) && $request->file_order != "NULL" ? $request->file_order : NULL,
+                  'invoke_date' => carbon::now()->format('Y-m-d')
              ];         
 
             $duplicateRecordExisting  =  SmmiArDenver::where($attributes)->exists();
@@ -1781,7 +1782,8 @@ class ProjectAuthAutomationController extends Controller
                  'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
                  'carrier' => isset($request->carrier) && $request->carrier != "NULL" ? $request->carrier : NULL,
                  'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
-                 'file_order' => isset($request->file_order) && $request->file_order != "NULL" ? $request->file_order : NULL
+                 'file_order' => isset($request->file_order) && $request->file_order != "NULL" ? $request->file_order : NULL,
+                'invoke_date' => carbon::now()->format('Y-m-d')
              ];         
 
             $duplicateRecordExisting  =  SmmiArDallas::where($attributes)->exists();
