@@ -1678,7 +1678,7 @@ class ProjectAuthAutomationController extends Controller
                  'carrier' => isset($request->carrier) && $request->carrier != "NULL" ? $request->carrier : NULL,
                  'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
                  'file_order' => isset($request->file_order) && $request->file_order != "NULL" ? $request->file_order : NULL,
-                  'invoke_date' => carbon::now()->format('Y-m-d')
+                 'invoke_date' => carbon::now()->format('Y-m-d')
              ];         
 
             $duplicateRecordExisting  =  SmmiArDenver::where($attributes)->exists();
@@ -1783,7 +1783,7 @@ class ProjectAuthAutomationController extends Controller
                  'carrier' => isset($request->carrier) && $request->carrier != "NULL" ? $request->carrier : NULL,
                  'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
                  'file_order' => isset($request->file_order) && $request->file_order != "NULL" ? $request->file_order : NULL,
-                'invoke_date' => carbon::now()->format('Y-m-d')
+                 'invoke_date' => carbon::now()->format('Y-m-d')
              ];         
 
             $duplicateRecordExisting  =  SmmiArDallas::where($attributes)->exists();
@@ -1865,7 +1865,7 @@ class ProjectAuthAutomationController extends Controller
                     'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
                     'client_comments' => isset($request->client_comments) && $request->client_comments != "NULL" ? $request->client_comments : NULL,
                     'file_order' => isset($request->file_order) && $request->file_order != "NULL" ? $request->file_order : NULL,
-                    'image' => isset($request->image) && $request->image != "NULL" ? $request->image : NULL,    
+                    'image' => isset($request->image) && $request->image != "NULL" ? $request->image : NULL,     
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
