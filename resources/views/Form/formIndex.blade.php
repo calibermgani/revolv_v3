@@ -9,7 +9,8 @@
         </div>
         <div class="d-flex align-items-start">
             <a class="btn btn-light-primary font-weight-bolder btn-sm mr-5"
-                href="{{ url('form_configuration_list') }}?parent={{ request()->parent }}&child={{ request()->child }}">List</a>
+                href="{{ url('
+                list') }}?parent={{ request()->parent }}&child={{ request()->child }}">List</a>
         </div>
     </div>
 @endsection --}}
@@ -270,7 +271,7 @@
                     '"><div class="row"><div class="col-md-11 pt-5" id="form_div' + j +
                     '"><div class="row form-group pl-5"><div class="col-md-2"><label class="required">Label</label><div class="form-group mb-1"><input type="text" id="label_name' +
                     j +
-                    '" name="label_name[]" class="white-smoke form-control label_name"> </div></div><div class="col-md-2"><label>Input Type</label><div class="form-group mb-1"><select  class="white-smoke form-control input_type" name="input_type[]" id="input_type_id_' +
+                    '" name="label_name[]" class="white-smoke form-control label_name" value="" oninput="validateInput(this)"> </div></div><div class="col-md-2"><label>Input Type</label><div class="form-group mb-1"><select  class="white-smoke form-control input_type" name="input_type[]" id="input_type_id_' +
                     j +
                     '"><option value="text">Text Box</option><option value="select">Drop Down</option><option value="checkbox">CheckBox</option><option value="radio">Radio</option><option value="date">Date</option><option value="date_range">Date Range</option><option value="textarea">Text Area</option><option value="datetime">DateTime</option></select></div></div> <div class="col-md-2 options_div" style="display:none" id="options_div_' +
                     j +
