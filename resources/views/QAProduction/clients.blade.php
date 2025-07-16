@@ -320,6 +320,11 @@
                 KTApp.unblock('#clients_list');
 
             })
+            var useEmpDesignation = @json($empDesignation);            
+            var keywords = ['Manager', 'VP', 'Leader', 'Team Lead', 'CEO', 'Vice', 'Group Coordinator - AR', 'Subject Matter Expert'];
+            var isMatch =  keywords.some(role => useEmpDesignation.includes(role));
+            
+        if (isMatch) {
             $(document).on('click','.clickable-client td:nth-child(2)',function(e){                
                 $("#projectReasonModal").modal('show');
                  project_id = $(this).closest('tr').find('td:eq(1) input').val();
@@ -348,6 +353,7 @@
                     error: function(jqXHR, exception) {}
                 });
             });
+        }
             $('#project_reason').on('change', function() {
                 var projectReason = $(this).val();
                 if(projectReason == 9) {
