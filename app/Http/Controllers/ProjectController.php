@@ -1854,7 +1854,7 @@ class ProjectController extends Controller
                                 // ->where('chart_status', 'CE_Assigned')->count();
                                   $aCount = InventoryExeFile::whereBetween('exe_date', [$yesterDayStartDate, $yesterDayEndDate])
                                             ->where('project_id', $project['id'])
-                                             ->where('sub_project_id', $subProject)
+                                             ->where('sub_project_id', $subKey)
                                              ->count();
                                 $cCount = $modelClass::whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                             // ->where('chart_status', 'CE_Completed')
@@ -1968,7 +1968,7 @@ class ProjectController extends Controller
                                 // ->where('chart_status', 'CE_Assigned')->count();
                                   $aCount = InventoryExeFile::whereBetween('exe_date', [$yesterDayStartDate, $yesterDayEndDate])
                                             ->where('project_id', $project['id'])
-                                             ->where('sub_project_id', $subProject)
+                                             ->where('sub_project_id', $subKey)
                                              ->count();
                                 $cCount = $modelClass::whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                             // ->where('chart_status', 'CE_Completed')
