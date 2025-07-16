@@ -1850,12 +1850,8 @@ class ProjectController extends Controller
                                 $hasNonNullQaAt = $qaColumnExists && $modelClass::whereNotNull('qa_at')->exists();
                                 $qaColumnToUse = $hasNonNullQaAt ? 'qa_at' : 'updated_at';
                                 
-                                // $aCount = $modelClass::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
-                                // ->where('chart_status', 'CE_Assigned')->count();
-                                  $aCount = InventoryExeFile::whereBetween('exe_date', [$yesterDayStartDate, $yesterDayEndDate])
-                                            ->where('project_id', $project['id'])
-                                             ->where('sub_project_id', $subProject)
-                                             ->count();
+                                $aCount = $modelClass::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                ->where('chart_status', 'CE_Assigned')->count();
                                 $cCount = $modelClass::whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                             // ->where('chart_status', 'CE_Completed')
                                             ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','AR_non_workable','Revoke','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
@@ -1964,12 +1960,8 @@ class ProjectController extends Controller
                                 $hasNonNullQaAt = $qaColumnExists && $modelClass::whereNotNull('qa_at')->exists();
                                 $qaColumnToUse = $hasNonNullQaAt ? 'qa_at' : 'updated_at';
                                 
-                                // $aCount = $modelClass::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
-                                // ->where('chart_status', 'CE_Assigned')->count();
-                                   $aCount = InventoryExeFile::whereBetween('exe_date', [$yesterDayStartDate, $yesterDayEndDate])
-                                            ->where('project_id', $project['id'])
-                                             ->where('sub_project_id', $subProject)
-                                             ->count();
+                                $aCount = $modelClass::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                ->where('chart_status', 'CE_Assigned')->count();
                                 $cCount = $modelClass::whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                             // ->where('chart_status', 'CE_Completed')
                                             //->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
