@@ -70,7 +70,7 @@
                     {!! Form::label('Percentage', 'Percentage', ['class' => 'required']) !!}
                     <fieldset class="form-group mb-1">
                         <input type="text" name="qa_percentage" id="qa_percentage" class="form-control qa_percentage"
-                            autocomplete="nope" onkeypress = "return event.charCode >= 48 && event.charCode <= 57">
+                            autocomplete="nope">
                     </fieldset>
                 </div>
 
@@ -464,7 +464,7 @@
 
                      }
                 });
-                $('#qa_sampling_update').submit(function(e) {
+                $(document).on('click', '#formUpdate_save', function(e) {
                     e.preventDefault();
                     var edit_project_id = $('#edit_project_id');
                     var edit_qa_id = $('#edit_qa_id');
@@ -630,10 +630,42 @@
                     });
                 }
 
-                 $(document).on('click','#clear_submit',function(){
+                $(document).on('click','#clear_submit',function(){
                     $('#edit_qa_percentage').val('');
                     $('#qa_percentage').val('');
-                });       
+                });  
+                $('#qa_percentage').on('keypress', function (e) {
+                    let charCode = e.which;
+                    let currentVal = $(this).val();
+
+                    // Allow only digits (0–9)
+                    if (charCode < 48 || charCode > 57) {
+                        return false;
+                    }
+
+                    // Prevent '0' as the first character
+                    if (currentVal.length === 0 && charCode === 48) {
+                        return false;
+                    }
+
+                    return true;
+                });
+                $('#edit_qa_percentage').on('keypress', function (e) {
+                    let charCode = e.which;
+                    let currentVal = $(this).val();
+
+                    // Allow only digits (0–9)
+                    if (charCode < 48 || charCode > 57) {
+                        return false;
+                    }
+
+                    // Prevent '0' as the first character
+                    if (currentVal.length === 0 && charCode === 48) {
+                        return false;
+                    }
+
+                    return true;
+                });     
 
             });
         </script>

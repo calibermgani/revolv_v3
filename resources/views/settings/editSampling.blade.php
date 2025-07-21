@@ -71,7 +71,7 @@
                     <label class="col-md-12 col-form-label required">Percentage</label>
                     <div class="col-md-11">
                         <input type="text" name="qa_percentage" id="edit_qa_percentage" class="form-control qa_percentage"
-                            autocomplete="nope" onkeypress = "return event.charCode >= 48 && event.charCode <= 57">
+                            autocomplete="nope">
                             <input type="hidden" name="record_id" id="record_id" class="form-control record_id">
                         </fieldset>
                     </div>
@@ -104,11 +104,16 @@
         <br>
 
         <div class="modal-footer">
-            <button class="btn btn-light-danger" id="clear_submit" tabindex="10" type="button">
+            {{-- <button class="btn btn-light-danger" id="clear_submit" tabindex="10" type="button">
                 <span>
                     <span>Clear</span>
                 </span>
-            </button>&nbsp;&nbsp;
+            </button>&nbsp;&nbsp; --}}
+              <button class="btn btn-light-danger float-right" id="close_assign" tabindex="10" type="button" data-dismiss="modal">
+                <span>
+                    <span>Close</span>
+                </span>
+            </button>
             <button type="submit" class="btn btn-white-black font-weight-bold" id="formUpdate_save">Submit</button>
         </div>
         {!! Form::close() !!}
