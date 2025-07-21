@@ -89,31 +89,45 @@ class SettingController extends Controller
                     $data['qa_sample_column_condition'] = empty($filteredRequest) ? null : implode(',', $qaSampleRandamizerCondition);
                 
                 }
-              //  dd($data);
-              if($data['coder_emp_id'] == null) {
-                   $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->whereNull('coder_emp_id')->sum('qa_percentage');
-              } else {
-                //   $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('coder_emp_id',$data['coder_emp_id'])->where('qa_emp_id',$data['qa_emp_id'])->sum('qa_percentage');
-                  $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('coder_emp_id',$data['coder_emp_id'])->sum('qa_percentage');
-            }
-               $totalQAPercentage = $samplingPercentage + $data['qa_percentage'];
+            //   if($data['coder_emp_id'] == null) {
+            //        $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->whereNull('coder_emp_id')->sum('qa_percentage');
+            //   } else {
+            //     //   $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('coder_emp_id',$data['coder_emp_id'])->where('qa_emp_id',$data['qa_emp_id'])->sum('qa_percentage');//PREVIOUS COMMENTED CODE
+            //       $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('coder_emp_id',$data['coder_emp_id'])->sum('qa_percentage');
+            // }
+            //    $totalQAPercentage = $samplingPercentage + $data['qa_percentage'];
+            //   if($totalQAPercentage <=  100) { 
+            //        QualitySampling::create($data);
+            //   } else {
+            //     if($samplingPercentage < 100) {
+            //         $allowPercentage = 100 - $samplingPercentage;
+            //         // return redirect('/sampling?parent=' . request('parent') . '&child=' . request('child'))//PREVIOUS COMMENTED CODE
+            //         // ->with('error', 'Allowed percentage is up to '.$allowPercentage.', but you entered '.$data['qa_percentage'].'.');//PREVIOUS COMMENTED CODE
+            //         //return back()->withErrors(['error' => 'Allowed percentage is up to ' . $allowPercentage . ', but you entered ' . $data['qa_percentage'] . '.']);//PREVIOUS COMMENTED CODE
+            //          session()->flash('error', 'Allowed percentage is up to ' . $allowPercentage . ', but you entered ' . $data['qa_percentage'] . '.');
+            //     } else {
+            //         if($data['coder_emp_id'] == null) {
+            //            session()->flash('error', 'This QA already has ' . $samplingPercentage . ' percentage.');
+            //         } else {
+            //             session()->flash('error', 'This AR already has a 100% sampling setting configured.');
+            //         }
+            //     }
+            //     return back();
+            //   }
+              $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->sum('qa_percentage');
+              $totalQAPercentage = $data['qa_percentage'] + $samplingPercentage;
+              
               if($totalQAPercentage <=  100) { 
                    QualitySampling::create($data);
+                   session()->flash('success', 'Quality Sampling created successfully.');
               } else {
                 if($samplingPercentage < 100) {
                     $allowPercentage = 100 - $samplingPercentage;
-                    // return redirect('/sampling?parent=' . request('parent') . '&child=' . request('child'))
-                    // ->with('error', 'Allowed percentage is up to '.$allowPercentage.', but you entered '.$data['qa_percentage'].'.');
-                    //return back()->withErrors(['error' => 'Allowed percentage is up to ' . $allowPercentage . ', but you entered ' . $data['qa_percentage'] . '.']);
-                     session()->flash('error', 'Allowed percentage is up to ' . $allowPercentage . ', but you entered ' . $data['qa_percentage'] . '.');
+                     session()->flash('error', 'Only up to ' . $allowPercentage . '% is allowed for this project, but you entered ' . $data['qa_percentage'] . '%.');
                 } else {
-                    if($data['coder_emp_id'] == null) {
-                       session()->flash('error', 'This QA already has ' . $samplingPercentage . ' percentage.');
-                    } else {
-                        session()->flash('error', 'This AR already has a 100% sampling setting configured.');
-                    }
+                   session()->flash('error', 'Cannot assign QA.This project has already been assigned ' . $samplingPercentage . '% QA.');
                 }
-                return back();
+            
               }
                 return redirect('/sampling' . '?parent=' . request()->parent . '&child=' . request()->child);
             } catch (\Exception $e) {
@@ -146,18 +160,54 @@ class SettingController extends Controller
                     $data['qa_sample_column_condition'] = empty($filteredRequest) ? null : implode(',', $qaSampleRandamizerCondition);
                 
                 }
-                $existingRecord = QualitySampling::where('id', $data["record_id"])->first();
-                if($data['coder_emp_id'] == null) {
-                    // $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('qa_emp_id',$data['qa_emp_id'])->sum('qa_percentage');
-                    $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->whereNull('coder_emp_id')->sum('qa_percentage');
-                } else {
-                    //$samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('coder_emp_id',$data['coder_emp_id'])->where('qa_emp_id',$data['qa_emp_id'])->sum('qa_percentage');
-                    $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('coder_emp_id',$data['coder_emp_id'])->sum('qa_percentage');
-                }
-                //$samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('qa_emp_id',$data['qa_emp_id'])->sum('qa_percentage');
-                $recordPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('qa_emp_id',$data['qa_emp_id'])->where('id', $data["record_id"])->sum('qa_percentage');
-               // $totalQAPercentage = ($samplingPercentage-$recordPercentage) + $data['qa_percentage'];
-                $totalQAPercentage = $samplingPercentage + $data['qa_percentage'];
+                //     $existingRecord = QualitySampling::where('id', $data["record_id"])->first();
+                //     if($data['coder_emp_id'] == null) {
+                //         // $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('qa_emp_id',$data['qa_emp_id'])->sum('qa_percentage');//PREVIOUS COMMENTED CODE
+                //         $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->whereNull('coder_emp_id')->sum('qa_percentage');
+                //     } else {
+                //         //$samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('coder_emp_id',$data['coder_emp_id'])->where('qa_emp_id',$data['qa_emp_id'])->sum('qa_percentage');//PREVIOUS COMMENTED CODE
+                //         $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('coder_emp_id',$data['coder_emp_id'])->sum('qa_percentage');
+                //     }
+                //     //$samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('qa_emp_id',$data['qa_emp_id'])->sum('qa_percentage');//PREVIOUS COMMENTED CODE
+                //     $recordPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('qa_emp_id',$data['qa_emp_id'])->where('id', $data["record_id"])->sum('qa_percentage');
+                //    // $totalQAPercentage = ($samplingPercentage-$recordPercentage) + $data['qa_percentage'];//PREVIOUS COMMENTED CODE
+                //     $totalQAPercentage = $samplingPercentage + $data['qa_percentage'];
+                //    if($totalQAPercentage <=  100) { 
+                //         if ($existingRecord) { 
+                //             $historyRecord = $existingRecord->toArray();
+                //             $historyRecord['quality_sampling_id'] = $historyRecord['id'];
+                //             unset($historyRecord['id']);
+                //             QualitySamplingHistory::create($historyRecord);
+                //             $existingRecord->update($data);
+                //         } else {
+                //             QualitySampling::create($data);
+                //         }
+                //     } else {
+                //        // $allowPercentage = 100 - ($samplingPercentage-$recordPercentage);//PREVIOUS COMMENTED CODE
+                //        if($samplingPercentage < 100) {
+                //             $allowPercentage = 100 - $samplingPercentage;
+                //             session()->flash('error', 'Allowed percentage is up to ' . $allowPercentage . ', but you entered ' . $data['qa_percentage'] . '.');
+                //         } else {
+                //             if($data['coder_emp_id'] == null) {
+                //                 session()->flash('error', 'This QA already has ' . $samplingPercentage . ' percentage.');
+                //              } else {
+                //                  session()->flash('error', 'This AR already has a 100% sampling setting configured.');
+                //              }
+                //         }
+                //         return back();
+                    
+                //     }
+                $existingRecord = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('id', $data["record_id"])->first();
+                $samplingPercentage = QualitySampling::where('project_id',$data['project_id'])->where('sub_project_id',$data['sub_project_id'])->sum('qa_percentage');      
+                      if(isset($existingRecord) && isset($existingRecord->qa_percentage) && $existingRecord->qa_percentage == $data['qa_percentage']) {
+                        $totalQAPercentage = $samplingPercentage;
+                    } else if(isset($existingRecord) && isset($existingRecord->qa_percentage)) {
+                         
+                        $totalQAPercentage = $data['qa_percentage'] + ($samplingPercentage-$existingRecord->qa_percentage);
+                    } else {
+                        $totalQAPercentage = $data['qa_percentage'] + $samplingPercentage;
+                    }       
+              
                if($totalQAPercentage <=  100) { 
                     if ($existingRecord) { 
                         $historyRecord = $existingRecord->toArray();
@@ -168,20 +218,15 @@ class SettingController extends Controller
                     } else {
                         QualitySampling::create($data);
                     }
-                } else {
-                   // $allowPercentage = 100 - ($samplingPercentage-$recordPercentage);
-                   if($samplingPercentage < 100) {
+                    session()->flash('success', 'Quality Sampling updated successfully.');
+                } else {       
+                    if($samplingPercentage < 100) {
                         $allowPercentage = 100 - $samplingPercentage;
-                        session()->flash('error', 'Allowed percentage is up to ' . $allowPercentage . ', but you entered ' . $data['qa_percentage'] . '.');
-                    } else {
-                        if($data['coder_emp_id'] == null) {
-                            session()->flash('error', 'This QA already has ' . $samplingPercentage . ' percentage.');
-                         } else {
-                             session()->flash('error', 'This AR already has a 100% sampling setting configured.');
-                         }
-                    }
-                    return back();
-                
+                        session()->flash('error', 'Only up to ' . $allowPercentage . '% is allowed for this project, but you entered ' . $data['qa_percentage'] . '%.');
+                    } else {            
+                      session()->flash('error', 'Cannot assign QA.This project has already been assigned ' . $samplingPercentage . '% QA.');
+                    }                      
+                    return back();                
                 }
                 return redirect('/sampling' . '?parent=' . request()->parent . '&child=' . request()->child);
             } catch (\Exception $e) {
