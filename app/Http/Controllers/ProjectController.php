@@ -76,7 +76,6 @@ class ProjectController extends Controller
                 $subPrjData['project_id'] = $data['project_id'];
                 $subPrjData['sub_project_id'] = $data['sub_project_id'];
                 $subPrjData['sub_project_name'] = $data['sub_project_name'];
-                $subPrjData['status'] = $data['sub_project_name_status'];
                 $subPrjData['added_by'] = 1;
                 $subPrjDetails = subproject::where('project_id', $subPrjData['project_id'])->where('sub_project_id', $subPrjData['sub_project_id'])->first();
                 if ($subPrjDetails) {
