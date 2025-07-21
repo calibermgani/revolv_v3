@@ -541,7 +541,7 @@ class Helpers
 		$data = formConfiguration::where('status', 'Active')->where('project_id', $projectId)->where('id', $subProjectId)->first();
 		return $data;
 	}
-	public static function getUserNameById($id)
+	public static function getUserNameById1($id)
 	{
 		$payload = [
 			'token' => '1a32e71a46317b9cc6feb7388238c95d',
@@ -569,7 +569,7 @@ class Helpers
 		$client = new Client();
 		$response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_user_emp_id_by_id', [
 			'json' => $payload
-		]); //http://dev.aims.officeos.in/api/v1_users/cache_get_username_by_id(once integrated cache shall we use this url)
+		]);
 		if ($response->getStatusCode() == 200) {
 			$data = json_decode($response->getBody(), true);
 		} else {
@@ -1267,5 +1267,50 @@ class Helpers
 			return $userList;
 		}
 				
+	}
+	public static function getUserNameById($id){
+		try {
+			$payload = [
+				'token' => '1a32e71a46317b9cc6feb7388238c95d',
+				'user_id' => $id
+			];
+
+			// Retry 3 times, 2 seconds apart
+			$data = retry(3, function () use ($payload) {
+				$client = new Client(['verify' => false]);
+
+				try {
+					$response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_username_by_id', [
+						'json' => $payload,
+					]);
+
+					if ($response->getStatusCode() === 200) {
+						$responseData = json_decode($response->getBody(), true);
+
+						if (isset($responseData) && isset($responseData['user_name']) &&isset($responseData['user_name']['user_name'])) {
+							return $responseData['user_name']['user_name'];
+						} else {
+							throw new \Exception('Username not found in the API response');
+						}
+					}
+
+				} catch (\GuzzleHttp\Exception\ClientException $e) {
+					// Specifically catch 429 error
+					if ($e->getResponse()->getStatusCode() == 429) {
+						$retryAfter = $e->getResponse()->getHeader('Retry-After')[0] ?? 2;
+						sleep($retryAfter); // Wait before retry
+						throw new \Exception('Too many requests. Please try again later.');
+					}
+
+					throw $e; // Rethrow if not 429
+				}
+			}, 2000); // 2000ms = 2s delay between retries
+
+			return $data;
+
+		} catch (\Exception $e) {
+			Log::error('Error in getUserNameById: ' . $e->getMessage());
+			return 'Unable to fetch username right now. Please try again later.';
+		}
 	}
 }

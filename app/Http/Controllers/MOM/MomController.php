@@ -44,7 +44,7 @@ class MomController extends Controller
                 $meetingArray[$key]['eta'] = $data['eta'];
                 $meetingArray[$key]['meeting_attendies'] = implode(',', $attendeeArray);
                 $meetingArray[$key]['time_zone'] = $data['time_zone'] != null ? Timezone::where('id', $data['time_zone'])->first('name')->name : null;
-                $meetingArray[$key]['req_description'] = trim(strip_tags($data['req_description']));
+                $meetingArray[$key]['req_description'] = $data['req_description'] != NULL ?  trim(strip_tags($data['req_description'])) : $data['req_description'] ;
 
             }
             $calendar_data = json_encode($meetingArray);
