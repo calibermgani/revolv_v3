@@ -3200,6 +3200,20 @@ class ProjectAuthAutomationController extends Controller
     public function pbhgPreAuthVerification(Request $request)  {
         try {
             $attributes = [
+                'organization' => isset($request->organization) && $request->organization != "NULL" ? $request->organization : NULL,
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                'client_id' => isset($request->client_id) && $request->client_id != "NULL" ? $request->client_id : NULL,
+                'admit_date' => isset($request->admit_date) && $request->admit_date != "NULL" ? $request->admit_date : NULL,
+                'program' => isset($request->program) && $request->program != "NULL" ? $request->program : NULL,
+                'units' => isset($request->units) && $request->units != "NULL" ? $request->units : NULL,
+                'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                'services_type' => isset($request->services_type) && $request->services_type != "NULL" ? $request->services_type : NULL,
+                'authorization_expiration' => isset($request->authorization_expiration) && $request->authorization_expiration != "NULL" ? $request->authorization_expiration : NULL,
+                'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                'cpt_code' => isset($request->cpt_code) && $request->cpt_code != "NULL" ? $request->cpt_code : NULL,
+                'dx_code' => isset($request->dx_code) && $request->dx_code != "NULL" ? $request->dx_code : NULL,
+                'login' => isset($request->login) && $request->login != "NULL" ? $request->login : NULL,
+                'call_or_review' => isset($request->call_or_review) && $request->call_or_review != "NULL" ? $request->call_or_review : NULL,
                 'invoke_date' => Carbon::now()->format('Y-m-d')
             ];
 
@@ -3311,5 +3325,7 @@ class ProjectAuthAutomationController extends Controller
             $e->getMessage();
         }
     }
+
+    
     
 }
