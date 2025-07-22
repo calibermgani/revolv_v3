@@ -196,8 +196,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('dkmg_ar_behavioral_mental_health_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@dkmgArBehavioralMentalHealthDuplicates');
     Route::any('pbhg_pre_auth_verification', 'App\Http\Controllers\ProjectAuthAutomationController@pbhgPreAuthVerification');
     Route::any('pbhg_pre_auth_verification_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@pbhgPreAuthVerificationDuplicates');
-    Route::any('iVC_EV_VOB', 'App\Http\Controllers\ProjectAuthAutomationController@insightVascularConsultantsEVandVOB');
-    Route::any('iVC_EV_VOB_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@insightVascularConsultantsEVandVOBDuplicates');
+    Route::any('ivc_ev_vob', 'App\Http\Controllers\ProjectAuthAutomationController@insightVascularConsultantsEVandVOB');
+    Route::any('ivc_ev_vob_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@insightVascularConsultantsEVandVOBDuplicates');
 
 
 
