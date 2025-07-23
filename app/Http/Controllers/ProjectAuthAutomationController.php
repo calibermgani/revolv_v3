@@ -3018,7 +3018,7 @@ class ProjectAuthAutomationController extends Controller
                 'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
                 'srvbucket_total' => isset($request->srvbucket_total) && $request->srvbucket_total != "NULL" ? $request->srvbucket_total : NULL,
-                'invoke_date' => Carbon::now()->format('Y-m-d'),
+                //'invoke_date' => Carbon::now()->format('Y-m-d'),
             ];
 
             $duplicateRecordExisting = DkmgArBehavioralMentalHealth::where($attributes)->exists();
@@ -3100,7 +3100,7 @@ class ProjectAuthAutomationController extends Controller
                             'cstatus' => isset($request->cstatus) && $request->cstatus != "NULL" ? $request->cstatus : NULL,
                             'lstactiondate' => isset($request->lstactiondate) && $request->lstactiondate != "NULL" ? $request->lstactiondate : NULL,
                             'trnsfr_type' => isset($request->trnsfr_type) && $request->trnsfr_type != "NULL" ? $request->trnsfr_type : NULL,
-                            'invoke_date' => Carbon::now()->format('Y-m-d'),
+                          //  'invoke_date' => Carbon::now()->format('Y-m-d'),
                             'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                             'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
                             'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
