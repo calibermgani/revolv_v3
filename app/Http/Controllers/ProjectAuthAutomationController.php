@@ -56,6 +56,8 @@ use App\Models\SmmiArDallas;
 use App\Models\SmmiArDallasDuplicates;
 use App\Models\IvcEvVob;
 use App\Models\IvcEvVobDuplicates;
+use App\Models\ChcEligibilityVerification;
+use App\Models\ChcEligibilityVerificationDuplicates;
 class ProjectAuthAutomationController extends Controller
 {
     public function aopsPreAuthVerification(Request $request)
@@ -3416,7 +3418,98 @@ class ProjectAuthAutomationController extends Controller
             $e->getMessage();
         }
     } 
+    public function chcEligibilityVerification(Request $request) {
+        try {
+            $attributes = [
+                'eligibility_date' => isset($request->eligibility_date) && $request->eligibility_date != "NULL" ? $request->eligibility_date : NULL,
+                'pid' => isset($request->pid) && $request->pid != "NULL" ? $request->pid : NULL,
+                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                'appt_id' => isset($request->appt_id) && $request->appt_id != "NULL" ? $request->appt_id : NULL,
+                'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                'member_id' => isset($request->member_id) && $request->member_id != "NULL" ? $request->member_id : NULL,
+                'invoke_date' => Carbon::now()->format('Y-m-d')
+            ];
 
-    
+            $duplicateRecordExisting = ChcEligibilityVerification::where($attributes)->exists();
+
+            if (!$duplicateRecordExisting) {
+                // FIRST TIME INSERT
+                ChcEligibilityVerification::insert([
+                    'eligibility_date' => isset($request->eligibility_date) && $request->eligibility_date != "NULL" ? $request->eligibility_date : NULL,
+                    'pid' => isset($request->pid) && $request->pid != "NULL" ? $request->pid : NULL,
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                    'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                    'appt_id' => isset($request->appt_id) && $request->appt_id != "NULL" ? $request->appt_id : NULL,
+                    'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                    'member_id' => isset($request->member_id) && $request->member_id != "NULL" ? $request->member_id : NULL,
+                    'invoke_date' => Carbon::now()->format('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => 'CE_Assigned',
+                ]);
+                return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords = ChcEligibilityVerification::where($attributes)->where('chart_status', 'CE_Assigned')->get();
+
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                           'eligibility_date' => isset($request->eligibility_date) && $request->eligibility_date != "NULL" ? $request->eligibility_date : NULL,
+                            'pid' => isset($request->pid) && $request->pid != "NULL" ? $request->pid : NULL,
+                            'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                            'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                            'appt_id' => isset($request->appt_id) && $request->appt_id != "NULL" ? $request->appt_id : NULL,
+                            'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                            'member_id' => isset($request->member_id) && $request->member_id != "NULL" ? $request->member_id : NULL,
+                            'invoke_date' => Carbon::now()->format('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                       ChcEligibilityVerification::insert([
+                           'eligibility_date' => isset($request->eligibility_date) && $request->eligibility_date != "NULL" ? $request->eligibility_date : NULL,
+                            'pid' => isset($request->pid) && $request->pid != "NULL" ? $request->pid : NULL,
+                            'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                            'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                            'appt_id' => isset($request->appt_id) && $request->appt_id != "NULL" ? $request->appt_id : NULL,
+                            'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                            'member_id' => isset($request->member_id) && $request->member_id != "NULL" ? $request->member_id : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record Reinserted Successfully']);
+                }
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()]);
+        }
+     }
+
+    public function chcEligibilityVerificationDuplicates(Request $request)  {
+        try {
+                ChcEligibilityVerificationDuplicates::insert([
+                   'eligibility_date' => isset($request->eligibility_date) && $request->eligibility_date != "NULL" ? $request->eligibility_date : NULL,
+                    'pid' => isset($request->pid) && $request->pid != "NULL" ? $request->pid : NULL,
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                    'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                    'appt_id' => isset($request->appt_id) && $request->appt_id != "NULL" ? $request->appt_id : NULL,
+                    'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                    'member_id' => isset($request->member_id) && $request->member_id != "NULL" ? $request->member_id : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }    
     
 }

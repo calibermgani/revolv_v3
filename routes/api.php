@@ -198,6 +198,9 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('pbhg_pre_auth_verification_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@pbhgPreAuthVerificationDuplicates');
     Route::any('ivc_ev_vob', 'App\Http\Controllers\ProjectAuthAutomationController@insightVascularConsultantsEVandVOB');
     Route::any('ivc_ev_vob_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@insightVascularConsultantsEVandVOBDuplicates');
+    Route::any('chc_ev', 'App\Http\Controllers\ProjectAuthAutomationController@chcEligibilityVerification');
+    Route::any('chc_ev_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@chcEligibilityVerificationDuplicates');
+
 
 
 
