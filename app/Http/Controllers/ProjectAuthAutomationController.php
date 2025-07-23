@@ -58,6 +58,8 @@ use App\Models\IvcEvVob;
 use App\Models\IvcEvVobDuplicates;
 use App\Models\ChcEligibilityVerification;
 use App\Models\ChcEligibilityVerificationDuplicates;
+use App\Models\ThcAr;
+use App\Models\ThcArDuplicates;
 class ProjectAuthAutomationController extends Controller
 {
     public function aopsPreAuthVerification(Request $request)
@@ -3501,6 +3503,130 @@ class ProjectAuthAutomationController extends Controller
                     'appt_id' => isset($request->appt_id) && $request->appt_id != "NULL" ? $request->appt_id : NULL,
                     'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
                     'member_id' => isset($request->member_id) && $request->member_id != "NULL" ? $request->member_id : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }    
+
+    public function theHeritageClinicAR(Request $request) {
+        try {
+            $attributes = [
+                'claims_no' => isset($request->claims_no) && $request->claims_no != "NULL" ? $request->claims_no : NULL,
+                'invoke_date' => Carbon::now()->format('Y-m-d')
+            ];
+
+            $duplicateRecordExisting = ThcAr::where($attributes)->exists();
+
+            if (!$duplicateRecordExisting) {
+                // FIRST TIME INSERT
+                ThcAr::insert([
+                    'claims_no' => isset($request->claims_no) && $request->claims_no != "NULL" ? $request->claims_no : NULL,
+                    'atb' => isset($request->atb) && $request->atb != "NULL" ? $request->atb : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                    'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                    'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                    'pmts_adjs' => isset($request->pmts_adjs) && $request->pmts_adjs != "NULL" ? $request->pmts_adjs : NULL,
+                    'adjustment' => isset($request->adjustment) && $request->adjustment != "NULL" ? $request->adjustment : NULL,
+                    'withheld' => isset($request->withheld) && $request->withheld != "NULL" ? $request->withheld : NULL,
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                    'visit_type' => isset($request->visit_type) && $request->visit_type != "NULL" ? $request->visit_type : NULL,
+                    'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                    'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                    'guarantor_name' => isset($request->guarantor_name) && $request->guarantor_name != "NULL" ? $request->guarantor_name : NULL,
+                    'invoke_date' => Carbon::now()->format('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => 'CE_Assigned',
+                ]);
+                return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords = ThcAr::where($attributes)->where('chart_status', 'CE_Assigned')->get();
+
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'claims_no' => isset($request->claims_no) && $request->claims_no != "NULL" ? $request->claims_no : NULL,
+                            'atb' => isset($request->atb) && $request->atb != "NULL" ? $request->atb : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
+                            'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                            'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                            'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                            'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                            'pmts_adjs' => isset($request->pmts_adjs) && $request->pmts_adjs != "NULL" ? $request->pmts_adjs : NULL,
+                            'adjustment' => isset($request->adjustment) && $request->adjustment != "NULL" ? $request->adjustment : NULL,
+                            'withheld' => isset($request->withheld) && $request->withheld != "NULL" ? $request->withheld : NULL,
+                            'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                            'visit_type' => isset($request->visit_type) && $request->visit_type != "NULL" ? $request->visit_type : NULL,
+                            'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                            'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                            'guarantor_name' => isset($request->guarantor_name) && $request->guarantor_name != "NULL" ? $request->guarantor_name : NULL,
+                            'invoke_date' => Carbon::now()->format('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                       ThcAr::insert([
+                            'claims_no' => isset($request->claims_no) && $request->claims_no != "NULL" ? $request->claims_no : NULL,
+                            'atb' => isset($request->atb) && $request->atb != "NULL" ? $request->atb : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
+                            'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                            'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                            'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                            'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                            'pmts_adjs' => isset($request->pmts_adjs) && $request->pmts_adjs != "NULL" ? $request->pmts_adjs : NULL,
+                            'adjustment' => isset($request->adjustment) && $request->adjustment != "NULL" ? $request->adjustment : NULL,
+                            'withheld' => isset($request->withheld) && $request->withheld != "NULL" ? $request->withheld : NULL,
+                            'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                            'visit_type' => isset($request->visit_type) && $request->visit_type != "NULL" ? $request->visit_type : NULL,
+                            'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                            'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                            'guarantor_name' => isset($request->guarantor_name) && $request->guarantor_name != "NULL" ? $request->guarantor_name : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record Reinserted Successfully']);
+                }
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()]);
+        }
+     }
+
+    public function theHeritageClinicARDuplicates(Request $request)  {
+        try {
+                ThcArDuplicates::insert([
+                    'claims_no' => isset($request->claims_no) && $request->claims_no != "NULL" ? $request->claims_no : NULL,
+                    'atb' => isset($request->atb) && $request->atb != "NULL" ? $request->atb : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'pvdr' => isset($request->pvdr) && $request->pvdr != "NULL" ? $request->pvdr : NULL,
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                    'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                    'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                    'pmts_adjs' => isset($request->pmts_adjs) && $request->pmts_adjs != "NULL" ? $request->pmts_adjs : NULL,
+                    'adjustment' => isset($request->adjustment) && $request->adjustment != "NULL" ? $request->adjustment : NULL,
+                    'withheld' => isset($request->withheld) && $request->withheld != "NULL" ? $request->withheld : NULL,
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                    'visit_type' => isset($request->visit_type) && $request->visit_type != "NULL" ? $request->visit_type : NULL,
+                    'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                    'provider_name' => isset($request->provider_name) && $request->provider_name != "NULL" ? $request->provider_name : NULL,
+                    'guarantor_name' => isset($request->guarantor_name) && $request->guarantor_name != "NULL" ? $request->guarantor_name : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
