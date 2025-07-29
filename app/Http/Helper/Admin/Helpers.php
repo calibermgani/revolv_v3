@@ -34,6 +34,7 @@ use App\Models\ProjectReasonType;
 use App\Models\ProjectReason;
 use Illuminate\Support\Facades\Cache;
 use App\Models\NonWorkableReason;
+use Illuminate\Support\Str;
 
 class Helpers
 {
@@ -1312,5 +1313,21 @@ class Helpers
 			Log::error('Error in getUserNameById: ' . $e->getMessage());
 			return 'Unable to fetch username right now. Please try again later.';
 		}
+	}
+
+	Public static function getProjectColumns($projectId, $subProjectId)	{
+		
+		$columns = formConfiguration::where('project_id', $projectId)
+			->where('sub_project_id', $subProjectId)
+			->pluck('label_name', 'id')
+			->filter(function ($label) {
+				return !in_array($label, ['AR Notes', 'AR At', 'QA At']);
+			})
+			->map(function ($label) {
+				return Str::lower(str_replace([' ', '/'], ['_', '_else_'], $label));
+			})
+			->toArray();
+
+		return $columns;
 	}
 }

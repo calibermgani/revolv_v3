@@ -1016,5 +1016,21 @@ class FormController extends Controller
             ], 500);
         }
     }
+    public function getProjectColumns(Request $request) {
+        try {
+            $projectId = $request->input('project_id');
+            $subProjectId = $request->input('sub_project_id');
+
+            if (!$projectId || !$subProjectId) {
+                return response()->json(['error' => 'Invalid parameters'], 400);
+            }
+
+            $columns = Helpers::getProjectColumns($projectId, $subProjectId);
+            return response()->json(['columns' => $columns]);
+        } catch (\Exception $e) {
+            Log::error('Error in getProjectColumns: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while fetching project columns'], 500);
+        }
+    }
 
 }
