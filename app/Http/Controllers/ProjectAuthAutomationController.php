@@ -60,6 +60,8 @@ use App\Models\ChcEligibilityVerification;
 use App\Models\ChcEligibilityVerificationDuplicates;
 use App\Models\ThcAr;
 use App\Models\ThcArDuplicates;
+use App\Models\CrmhsAr;
+use App\Models\CrmhsArDuplicates;
 class ProjectAuthAutomationController extends Controller
 {
     public function aopsPreAuthVerification(Request $request)
@@ -3636,6 +3638,103 @@ class ProjectAuthAutomationController extends Controller
         } catch (\Exception $e) {
             $e->getMessage();
         }
-    }    
+    }   
+    public function columbiaRiverMentalHealthServiceAR(Request $request) {
+        try {
+            $attributes = [
+                'claim_number' => isset($request->claim_number) && $request->claim_number != "NULL" ? $request->claim_number : NULL,
+                'invoke_date' => Carbon::now()->format('Y-m-d')
+            ];
+
+            $duplicateRecordExisting = CrmhsAr::where($attributes)->exists();
+
+            if (!$duplicateRecordExisting) {
+                // FIRST TIME INSERT
+                CrmhsAr::insert([
+                    'client_name' => isset($request->client_name) && $request->client_name != "NULL" ? $request->client_name : NULL,
+                    'claim_number' => isset($request->claim_number) && $request->claim_number != "NULL" ? $request->claim_number : NULL,
+                    'payer_plan_else_guarantor' => isset($request->payer_plan_else_guarantor) && $request->payer_plan_else_guarantor != "NULL" ? $request->payer_plan_else_guarantor : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'cprocedure' => isset($request->cprocedure) && $request->cprocedure != "NULL" ? $request->cprocedure : NULL,
+                    'units' => isset($request->units) && $request->units != "NULL" ? $request->units : NULL,
+                    'expected' => isset($request->expected) && $request->expected != "NULL" ? $request->expected : NULL,
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                    'next_follow_up_date' => isset($request->next_follow_up_date) && $request->next_follow_up_date != "NULL" ? $request->next_follow_up_date : NULL,
+                     'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                
+                ]);
+                 return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                 $duplicateRecords = CrmhsAr::where($attributes)->where('chart_status', 'CE_Assigned')->get();
+                 if($duplicateRecords->count() > 0) {
+                     foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'client_name' => isset($request->client_name) && $request->client_name != "NULL" ? $request->client_name : $duplicateRecord->client_name,
+                            'claim_number' => isset($request->claim_number) && $request->claim_number != "NULL" ? $request->claim_number : $duplicateRecord->claim_number,
+                            'payer_plan_else_guarantor' => isset($request->payer_plan_else_guarantor) && $request->payer_plan_else_guarantor != "NULL" ? $request->payer_plan_else_guarantor : $duplicateRecord->payer_plan_else_guarantor,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : $duplicateRecord->dos,
+                            'cprocedure' => isset($request->cprocedure) && $request->cprocedure != "NULL" ? $request->cprocedure : $duplicateRecord->cprocedure,
+                            'units' => isset($request->units) && $request->units != "NULL" ? $request->units : $duplicateRecord->units,
+                            'expected' => isset($request->expected) && $request->expected != "NULL" ? $request->expected : $duplicateRecord->expected,
+                            'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : $duplicateRecord->balance,
+                            'next_follow_up_date' => isset($request->next_follow_up_date) && $request->next_follow_up_date != "NULL" ? $request->next_follow_up_date : $duplicateRecord->next_follow_up_date,
+                            'invoke_date' => Carbon::now()->format('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : $duplicateRecord->CE_emp_id,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : $duplicateRecord->QA_emp_id,
+                            'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                        ]); 
+                     }
+                     return response()->json(['message' => 'Existing Record Updated Successfully']);
+                 } else {
+                        CrmhsAr::insert([
+                            'client_name' => isset($request->client_name) && $request->client_name != "NULL" ? $request->client_name : NULL,
+                            'claim_number' => isset($request->claim_number) && $request->claim_number != "NULL" ? $request->claim_number : NULL,
+                            'payer_plan_else_guarantor' => isset($request->payer_plan_else_guarantor) && $request->payer_plan_else_guarantor != "NULL" ? $request->payer_plan_else_guarantor : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'cprocedure' => isset($request->cprocedure) && $request->cprocedure != "NULL" ? $request->cprocedure : NULL,
+                            'units' => isset($request->units) && $request->units != "NULL" ? $request->units : NULL,
+                            'expected' => isset($request->expected) && $request->expected != "NULL" ? $request->expected : NULL,
+                            'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                            'next_follow_up_date' => isset($request->next_follow_up_date) && $request->next_follow_up_date != "NULL" ? $request->next_follow_up_date : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'chart_status' => "CE_Assigned",
+                        
+                        ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+                 }
+            }
+
+            } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()]);
+        }
+    }
+    public function columbiaRiverMentalHealthServiceARDuplicates(Request $request)  {
+        try {
+                CrmhsArDuplicates::insert([
+                    'client_name' => isset($request->client_name) && $request->client_name != "NULL" ? $request->client_name : NULL,
+                    'claim_number' => isset($request->claim_number) && $request->claim_number != "NULL" ? $request->claim_number : NULL,
+                    'payer_plan_else_guarantor' => isset($request->payer_plan_else_guarantor) && $request->payer_plan_else_guarantor != "NULL" ? $request->payer_plan_else_guarantor : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'cprocedure' => isset($request->cprocedure) && $request->cprocedure != "NULL" ? $request->cprocedure : NULL,
+                    'units' => isset($request->units) && $request->units != "NULL" ? $request->units : NULL,
+                    'expected' => isset($request->expected) && $request->expected != "NULL" ? $request->expected : NULL,
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                    'next_follow_up_date' => isset($request->next_follow_up_date) && $request->next_follow_up_date != "NULL" ? $request->next_follow_up_date : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()]);
+        }
+    }
+
     
 }

@@ -200,8 +200,10 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('ivc_ev_vob_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@insightVascularConsultantsEVandVOBDuplicates');
     Route::any('chc_ev', 'App\Http\Controllers\ProjectAuthAutomationController@chcEligibilityVerification');
     Route::any('chc_ev_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@chcEligibilityVerificationDuplicates');
-     Route::any('thc_ar', 'App\Http\Controllers\ProjectAuthAutomationController@theHeritageClinicAR');
+    Route::any('thc_ar', 'App\Http\Controllers\ProjectAuthAutomationController@theHeritageClinicAR');
     Route::any('thc_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@theHeritageClinicARDuplicates');
+    Route::any('crmhs_ar', 'App\Http\Controllers\ProjectAuthAutomationController@columbiaRiverMentalHealthServiceAR');
+    Route::any('crmhs_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@columbiaRiverMentalHealthServiceARDuplicates');
 
 
 
