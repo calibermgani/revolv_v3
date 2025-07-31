@@ -4600,7 +4600,7 @@ public function NexTrustBillingArDuplicates(Request $request)
     {
         try {
             $attributes = [
-                'unique_id' => isset($request->unique_id) && $request->unique_id != "NULL" ? $request->unique_id : NULL,  
+                'account_no' => isset($request->account_no) && $request->account_no != "NULL" ? $request->account_no : NULL,  
                 'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,  
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,  
                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL, 
