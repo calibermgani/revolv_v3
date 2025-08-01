@@ -77,7 +77,18 @@ class ProductionExport implements FromCollection, WithHeadings
                     $exportRow[$headerField] = $agingCount;
                 } elseif ($field == 'aging_range') {
                     $exportRow[$headerField] =  $agingRange;
-                } else {
+                } else if($field == 'QA_status_code') {
+                     $exportRow[$headerField] = Helpers::qaStatusById($record->{$field})['status_code'] ;
+                } else if($field == 'QA_sub_status_code') {
+                     $exportRow[$headerField] = Helpers::qaSubStatusById($record->{$field})['sub_status_code'] ;
+                } else if($field == 'qa_classification') {
+                     $exportRow[$headerField] = Helpers::qaClassificationById($record->{$field})['qa_classification'] ;
+                } else if($field == 'qa_category') {
+                     $exportRow[$headerField] = Helpers::qaCategoryById($record->{$field})['qa_category'] ;
+                } else if($field == 'qa_scope') {
+                     $exportRow[$headerField] = Helpers::qaScopeById($record->{$field})['qa_scope'] ;
+                }
+                else {
                     $exportRow[$headerField] = $record->{$field};
                 }
                 // Dynamically get the values based on field names
