@@ -96,7 +96,7 @@ class FormController extends Controller
                     "single"
                 ];
                 $additionalFieldType2Array = [
-                    "non-mandatory",
+                    "mandatory",
                     "non-mandatory"
                 ];
                 $additionalFieldType3Array = [
