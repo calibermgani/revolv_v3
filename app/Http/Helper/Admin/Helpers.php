@@ -35,6 +35,8 @@ use App\Models\ProjectReason;
 use Illuminate\Support\Facades\Cache;
 use App\Models\NonWorkableReason;
 use Illuminate\Support\Str;
+use App\Models\ARDenialCode;
+use App\Models\ARSubStatusCode;
 
 class Helpers
 {
@@ -1329,5 +1331,26 @@ class Helpers
 			->toArray();
 
 		return $columns;
+	}
+	
+	public static function arDenialList()
+	{
+		$data = ARDenialCode::select('id', DB::raw("concat(denial_code,' - ',code_description) as denialCode"))->where('status', 'Active')->pluck('denialCode', 'id')->prepend(trans('Select Denial'), '')->toArray();
+		return $data;
+	}
+	public static function arDenialById($id)
+	{
+		$data = ARDenialCode::select('id', DB::raw("concat(denial_code,' - ',code_description) as denialCode"))->where('status', 'Active')->where('id', $id)->first('denialCode');
+		return $data;
+	}
+	public static function arSubStatusList()
+	{
+		$data = ARSubStatusCode::select('id', DB::raw("concat(sub_status_code,' - ',sub_status_code_description) as substatusCode"))->where('status', 'Active')->pluck('substatusCode', 'id')->prepend(trans('Select substatus'), '')->toArray();
+		return $data;
+	}
+	public static function arSubStatusById($id)
+	{
+		$data = ARSubStatusCode::select('id', DB::raw("concat(sub_status_code,' - ',sub_status_code_description) as substatusCode"))->where('status', 'Active')->where('id', $id)->first('substatusCode');
+		return $data;
 	}
 }

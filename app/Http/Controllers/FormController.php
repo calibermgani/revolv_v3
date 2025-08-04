@@ -64,6 +64,54 @@ class FormController extends Controller
             try {
                   DB::beginTransaction();
                  $data = $request->all();
+                $additionalLabelArray = [
+                    "AR Denial Codes",                    
+                    "AR SubStatus Codes"
+                ];
+                $additionalInputTypeArray = [
+                    "text",
+                     "text"
+                ];
+                $additionalOptionsArray = [
+                    null,
+                     null
+                ];
+                 $additionalUserTypeArray = [
+                    "3",
+                     "3"
+                ];
+                $additionalInputTypeEditableArray = [
+                    "1",
+                    "1"
+
+                ];
+               
+               
+                $additionalFieldTypeArray = [
+                    "editable",
+                    "editable"
+                ];
+                $additionalFieldType1Array = [
+                    "single",
+                    "single"
+                ];
+                $additionalFieldType2Array = [
+                    "non-mandatory",
+                    "non-mandatory"
+                ];
+                $additionalFieldType3Array = [
+                    "popup_visible",
+                    "popup_visible"
+                ];
+                $data['label_name'] = array_merge($data['label_name'], $additionalLabelArray);
+                $data['input_type'] = array_merge($data['input_type'], $additionalInputTypeArray);
+                $data['options_name'] = array_merge($data['options_name'], $additionalOptionsArray);
+                $data['field_type'] = array_merge($data['field_type'], $additionalFieldTypeArray);
+                $data['field_type_1'] = array_merge($data['field_type_1'], $additionalFieldType1Array);
+                $data['field_type_2'] = array_merge($data['field_type_2'], $additionalFieldType2Array);
+                $data['field_type_3'] = array_merge($data['field_type_3'], $additionalFieldType3Array);
+                $data['user_type'] = array_merge($data['user_type'], $additionalUserTypeArray);
+                $data['input_type_editable'] = array_merge($data['input_type_editable'], $additionalInputTypeEditableArray);
                 // $projectName = project::where('id',$data['project_id'])->first();
                 // $subProjectArray = subproject::where('project_id',$data['project_id'])->where('id',$data['sub_project_id'])->first();
                 $projectName = project::where('project_id',$data['project_id'])->first();
@@ -497,6 +545,53 @@ class FormController extends Controller
             try {
                 DB::beginTransaction();
                 $data = $request->all();
+                $additionalLabelArray = [
+                    "AR Denial Codes",
+                    "AR SubStatus Codes"
+                ];
+                $additionalInputTypeArray = [
+                    "text",
+                     "text"
+                ];
+                $additionalOptionsArray = [
+                    null,
+                    null
+                ];
+                 $additionalUserTypeArray = [
+                    "3",
+                     "3"
+                ];
+                $additionalInputTypeEditableArray = [
+                    "1",
+                     "1"
+                ];
+               
+               
+                $additionalFieldTypeArray = [
+                    "editable",
+                    "editable"
+                ];
+                $additionalFieldType1Array = [
+                    "single",
+                    "single"
+                ];
+                $additionalFieldType2Array = [
+                    "non-mandatory",
+                    "non-mandatory"
+                ];
+                $additionalFieldType3Array = [
+                    "popup_non_visible",
+                    "popup_non_visible" 
+                ];
+                $data['label_name'] = array_merge($data['label_name'], $additionalLabelArray);
+                $data['input_type'] = array_merge($data['input_type_val'], $additionalInputTypeArray);
+                $data['options_name'] = array_merge($data['options_name'], $additionalOptionsArray);
+                $data['field_type'] = array_merge($data['field_type'], $additionalFieldTypeArray);
+                $data['field_type_1'] = array_merge($data['field_type_1'], $additionalFieldType1Array);
+                $data['field_type_2'] = array_merge($data['field_type_2'], $additionalFieldType2Array);
+                $data['field_type_3'] = array_merge($data['field_type_3'], $additionalFieldType3Array);
+                $data['user_type'] = array_merge($data['user_type'], $additionalUserTypeArray);
+                $data['input_type_editable'] = array_merge($data['input_type_editable'], $additionalInputTypeEditableArray);
                 // $projectName = project::where('id',$data['project_id_val'])->first();
                 // $subProjectArray = subproject::where('project_id',$data['project_id_val'])->where('id',$data['sub_project_id_val'])->first();
                 $projectName = project::where('project_id',$data['project_id_val'])->first();

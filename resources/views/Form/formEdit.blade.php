@@ -193,6 +193,8 @@
                                                         <div class="col-md-2">
                                                             <label>Input Type</label>
                                                             <div class="form-group mb-1">
+                                                                  <input type="hidden" name="input_type_val[]"
+                                                                       value="{{ $data->input_type ?? '' }}">
                                                                 {!! Form::select(
                                                                     'input_type[{{ $key }}]',
                                                                     [
@@ -389,6 +391,8 @@
                                                         <div class="col-md-2">
                                                             <label>Input Type</label>
                                                             <div class="form-group mb-1">
+                                                                 <input type="hidden" name="input_type_val[]"
+                                                                       value="{{ $data->input_type ?? '' }}">
                                                                 {!! Form::select(
                                                                     'input_type[{{ $key }}]',
                                                                     [
