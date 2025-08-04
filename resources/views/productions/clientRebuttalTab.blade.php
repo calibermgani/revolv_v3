@@ -477,6 +477,8 @@ use Carbon\Carbon;
                                                                 {{ $agingCount }}
                                                             @elseif ($columnName == 'aging_range')
                                                                   {{ $agingRange }}  
+                                                            @elseif ($columnName == 'ar_manager_rebuttal_status' && str_contains($columnValue, '_'))
+                                                                {{ \Illuminate\Support\Str::ucfirst(str_replace('_', ' ', $columnValue)) }}
                                                             @else
                                                                 @if ($columnName == 'chart_status' && str_contains($columnValue, 'CE_'))
                                                                     {{ str_replace('CE_', '', $columnValue) }}
@@ -660,6 +662,26 @@ use Carbon\Carbon;
                                                 @endif
                                             </div>
                                         @endif
+                                         <div class="row mt-4">             
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-md-12" id="ar_denial_label">
+                                                        Denial Code
+                                                    </label>
+                                                    <label class="col-md-12 pop-non-edt-val" id="ar_denial_view">
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-md-12" id="ar_substatus_code_label">
+                                                        Substatus Code
+                                                    </label>
+                                                    <label class="col-md-12 pop-non-edt-val" id="ar_substatus_view">
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="row mt-4">
                                             <div class="col-md-6">
                                                 <div class="form-group row">
@@ -865,6 +887,8 @@ use Carbon\Carbon;
             var qaStatusList = @json($qaStatusList);
             var arStatusList = @json( $arStatusList);
             var arActionList = @json($arActionListVal);
+            var arDenialList = @json($arDenialList);
+            var arSubStatusList = @json($arSubStatusList);
             var qaClassification = @json($qaClassificationVal);
             var qaCategory = @json($qaCategoryVal);
             var qaScope = @json($qaScopeVal);
@@ -1065,6 +1089,24 @@ use Carbon\Carbon;
                                 $('label[id="ar_action_view"]').text(subStatusName);
 
                             }
+                            if (header == 'ar_denial_codes') {
+                                var denialName = '';
+                                $.each(arDenialList, function(key, val) {
+                                    if (value == key) {
+                                        denialName = val;
+                                    }
+                                });
+                                $('label[id="ar_denial_view"]').text(denialName);
+                            }
+                            if (header == 'ar_substatus_codes') {
+                                var subStatusName = '';
+                                $.each(arSubStatusList, function(key, val) {
+                                    if (value == key) {
+                                        subStatusName = val;
+                                    }
+                                });
+                                $('label[id="ar_substatus_view"]').text(subStatusName);
+                            }
                             if (header == 'qa_classification') {
                                 var qa_classification = '';
                                 $.each(qaClassification, function(key, val) {      
@@ -1153,6 +1195,14 @@ use Carbon\Carbon;
                 var ar_manager_rebuttal_comments = $('#ar_manager_rebuttal_comments').val();
                 var parentIdVal = $('input[name="parentId"]').val();
                 var chargeStatus = $('#chart_status').text();
+                var inputTypeValue = 0;
+                if($('#ar_denial_codes').val() == '') {
+                    $('#ar_denial_codes').next('.select2').find(".select2-selection").css('border-color', 'red', 'important');
+                    inputTypeValue = 1;
+                } else {
+                    $('#ar_denial_codes').next('.select2').find(".select2-selection").css('border-color', '');
+                    inputTypeValue = 0;
+                }         
                 if (ar_manager_rebuttal_status == '') {
                     $('#ar_manager_rebuttal_status').css('border-color', 'red');
                     return false;

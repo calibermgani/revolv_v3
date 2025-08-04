@@ -243,6 +243,10 @@ class ReportsController extends Controller
                         $body_info .= '<th>Status Code</th>';
                     } else if($header == "ar_action_code") {
                         $body_info .= '<th>Action Code</th>';
+                    } else if($header == "ar_denial_codes") {
+                        $body_info .= '<th>Denial Code</th>';
+                    } else if($header == "ar_substatus_codes") {
+                        $body_info .= '<th>Sub Status Code</th>';
                     }
                      else {
                         $body_info .= '<th>' . ucwords(str_replace(['_else_', '_'], ['/', ' '], $header)) . '</th>';
@@ -302,6 +306,22 @@ class ReportsController extends Controller
                             if ($data != '--' && $data != null) {
                                 $action = Helpers::arActionById($data);
                                 $data = $action != null ? $action['action_code'] : $data;
+                            } else {
+                                $data;
+                            }
+                        } 
+                        if ($header == 'ar_denial_codes') {
+                            if ($data != '--' && $data != null) {
+                                $denial = Helpers::arDenialById($data);
+                                $data = $denial != null ? $denial['denialCode'] : $data;
+                            } else {
+                                $data;
+                            }
+                        }
+                        if ($header == 'ar_substatus_codes') {
+                            if ($data != '--' && $data != null) {
+                                $denial = Helpers::arSubStatusById($data);
+                                $data = $denial != null ? $denial['substatusCode'] : $data;
                             } else {
                                 $data;
                             }

@@ -623,6 +623,26 @@ use Carbon\Carbon;
                                                 @endif
                                             </div>
                                         @endif
+                                           <div class="row mt-4">
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-md-12" id="ar_denial_label">
+                                                            Denial Code
+                                                        </label>
+                                                        <label class="col-md-12 pop-non-edt-val" id="ar_denial_view">
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-md-12" id="ar_substatus_codes_label">
+                                                            Substatus Code
+                                                        </label>
+                                                        <label class="col-md-12 pop-non-edt-val" id="ar_substatus_view">
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         <hr>
                                         <h6 class="title-h6">QA</h6>&nbsp;&nbsp;
                                         <div class="row mt-4">
@@ -822,6 +842,8 @@ use Carbon\Carbon;
             var qaStatusList = @json($qaStatusList);
             var arStatusList = @json( $arStatusList);
             var arActionList = @json($arActionListVal);
+            var arDenialList = @json($arDenialList);
+            var arSubStatusList = @json($arSubStatusList);
             var qaClassification = @json($qaClassificationVal);
             var qaCategory = @json($qaCategoryVal);
             var qaScope = @json($qaScopeVal);
@@ -1060,6 +1082,24 @@ use Carbon\Carbon;
                                 }
                                 $('label[id="ar_action_view"]').text(subStatusName);
 
+                            }
+                            if (header == 'ar_denial_codes') {
+                                var denialName = '';
+                                $.each(arDenialList, function(key, val) {
+                                    if (value == key) {
+                                        denialName = val;
+                                    }
+                                });
+                                $('label[id="ar_denial_view"]').text(denialName);
+                            }
+                            if (header == 'ar_substatus_codes') {
+                                var subStatusName = '';
+                                $.each(arSubStatusList, function(key, val) {
+                                    if (value == key) {
+                                        subStatusName = val;
+                                    }
+                                });
+                                $('label[id="ar_substatus_view"]').text(subStatusName);
                             }
                             if (header == 'qa_classification') {
                                 var qa_classification = '';

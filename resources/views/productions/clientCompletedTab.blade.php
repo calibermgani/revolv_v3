@@ -654,6 +654,26 @@ use Carbon\Carbon;
                                                         @endif
                                                     </div>
                                                 @endif
+                                                   <div class="row mt-4">             
+                                                        <div class="col-md-6">
+                                                            <div class="form-group row">
+                                                                <label class="col-md-12" id="ar_denial_label">
+                                                                    Denial Code
+                                                                </label>
+                                                                <label class="col-md-12 pop-non-edt-val" id="ar_denial_view">
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group row">
+                                                                <label class="col-md-12" id="ar_substatus_code_label">
+                                                                    Substatus Code
+                                                                </label>
+                                                                <label class="col-md-12 pop-non-edt-val" id="ar_substatus_view">
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                   </div>
                                                     <div class="col-md-6">
                                                         <div class="form-group row" style="margin-left: -2rem">
                                                             <label class="col-md-12">
@@ -760,6 +780,8 @@ use Carbon\Carbon;
             var indvidualSearchFieldsCount = Object.keys(@json($projectColSearchFields)).length;
             var arStatusList = @json( $arStatusList);
             var arActionList = @json($arActionListVal);
+            var arDenialList = @json($arDenialList);
+            var arSubStatusList = @json($arSubStatusList);
             const url = window.location.href;
             const startIndex = url.indexOf('projects_') + 'projects_'.length;
             const endIndex = url.indexOf('/', startIndex);
@@ -910,7 +932,24 @@ use Carbon\Carbon;
                                     $('label[id="ar_action_label"]').css('display','block');
                                 }
                                 $('label[id="ar_action_view"]').text(subStatusName);
-
+                            }
+                            if (header == 'ar_denial_codes') {
+                                var denialName = '';
+                                $.each(arDenialList, function(key, val) {
+                                    if (value == key) {
+                                        denialName = val;
+                                    }
+                                });
+                                $('label[id="ar_denial_view"]').text(denialName);
+                            }
+                            if (header == 'ar_substatus_codes') {
+                                var subStatusName = '';
+                                $.each(arSubStatusList, function(key, val) {
+                                    if (value == key) {
+                                        subStatusName = val;
+                                    }
+                                });
+                                $('label[id="ar_substatus_view"]').text(subStatusName);
                             }
                        $('label[id="' + header + '"]').text(value);
                     }

@@ -816,7 +816,7 @@ use Carbon\Carbon;
                                                             $arStatusList,
                                                             null,
                                                             [
-                                                                'class' => 'form-control white-smoke  kt_select2_qa_status pop-non-edt-val ',
+                                                                'class' => 'form-control white-smoke  kt_select2_qa_status_modal pop-non-edt-val ',
                                                                 'autocomplete' => 'none',
                                                                 'id' => 'ar_status_code',
                                                                 'style' => 'cursor:pointer',
@@ -851,7 +851,54 @@ use Carbon\Carbon;
                                             </div>
                                         @endif
                                     </div>
-                                @endif    
+                                @endif   
+                                      <div class="row mt-4">
+                                        <div class="col-md-6">
+                                            <div class="form-group row">
+                                                <label class="col-md-12 required">
+                                                    Denial Code
+                                                </label>
+                                                @php $arDenialList = App\Http\Helper\Admin\Helpers::arDenialList(); @endphp
+
+                                                <div class="col-md-10">
+                                                    {!! Form::Select(
+                                                        'ar_denial_codes',
+                                                        $arDenialList,
+                                                        null,
+                                                        [
+                                                            'class' => 'form-control white-smoke  kt_select2_denial_modal pop-non-edt-val ',
+                                                            'autocomplete' => 'none',
+                                                            'id' => 'ar_denial_codes',
+                                                            'style' => 'cursor:pointer',
+                                                        ],
+                                                    ) !!}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group row">
+                                                <label class="col-md-12">
+                                                    Substatus Code
+                                                </label>
+                                                @php $arSubStatusList = App\Http\Helper\Admin\Helpers::arSubStatusList(); @endphp
+
+                                                <div class="col-md-10">
+                                                        <input type="hidden" id="ar_substatus_val">
+                                                    {!! Form::Select(
+                                                        'ar_substatus_codes',
+                                                        $arSubStatusList,
+                                                        null,
+                                                        [
+                                                            'class' => 'form-control white-smoke  kt_select2_substatus_1_modal pop-non-edt-val ',
+                                                            'autocomplete' => 'none',
+                                                            'id' => 'ar_substatus_codes',
+                                                            'style' => 'cursor:pointer',
+                                                        ],
+                                                    ) !!}
+                                                </div>
+                                            </div>
+                                        </div>                                                                                 
+                                      </div> 
                                      <div class="row mt-4">
                                          <div class="col-md-6">
                                              <input type="hidden" name="invoke_date">
@@ -898,7 +945,7 @@ use Carbon\Carbon;
                                              </div>
                                          </div>
                                      </div>
-
+                                      
                                      <hr>
                                      <h6 class="title-h6">QA</h6>&nbsp;&nbsp;
                                             @if (count($popupQAEditableFields) > 0)
@@ -1042,7 +1089,7 @@ use Carbon\Carbon;
                                                                 $qaStatusList,
                                                                 null,
                                                                 [
-                                                                    'class' => 'form-control white-smoke  kt_select2_qa_status pop-non-edt-val ',
+                                                                    'class' => 'form-control white-smoke  kt_select2_qa_status_modal pop-non-edt-val ',
                                                                     'autocomplete' => 'none',
                                                                     'id' => 'qa_status',
                                                                     'style' => 'cursor:pointer',
@@ -1299,6 +1346,26 @@ use Carbon\Carbon;
                                          @endif
                                      </div>
                                  @endif
+                                   <div class="row mt-4">             
+                                        <div class="col-md-6">
+                                            <div class="form-group row">
+                                                <label class="col-md-12" id="ar_denial_label">
+                                                    Denial Code
+                                                </label>
+                                                <label class="col-md-12 pop-non-edt-val" id="ar_denial_view">
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group row">
+                                                <label class="col-md-12" id="ar_substatus_code_label">
+                                                    Substatus Code
+                                                </label>
+                                                <label class="col-md-12 pop-non-edt-val" id="ar_substatus_view">
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
                                      <div class="row mt-4">
                                         <div class="col-md-6">
                                             <div class="form-group row">
@@ -1522,6 +1589,8 @@ use Carbon\Carbon;
             var qaStatusList = @json($qaStatusList);
             var arStatusList = @json( $arStatusList);
             var arActionList = @json($arActionListVal);
+            var arDenialList = @json($arDenialList);
+            var arSubStatusList = @json($arSubStatusList);
             var qaClassification = @json($qaClassificationVal);
             var qaCategory = @json($qaCategoryVal);
             var qaScope = @json($qaScopeVal);
@@ -2020,6 +2089,14 @@ use Carbon\Carbon;
                                         statusVal = $('#ar_status_val').val();
                                         actionCode(statusVal,value);
                                     }
+                                    if (header == 'ar_denial_codes') {
+                                        $('select[name="ar_denial_codes"]').val(value).trigger('change');
+                                        $('#ar_denial_val').val(value);
+                                    }
+                                    if (header == 'ar_substatus_codes') {
+                                        $('select[name="ar_substatus_codes"]').val(value).trigger('change');
+                                        $('#ar_substatus_val').val(value);
+                                    }
                                     $('textarea[name="' + header + '[]"]').val(value);
                                     $('label[id="' + header + '"]').text(value);
                                         if(value != null) {
@@ -2202,6 +2279,24 @@ use Carbon\Carbon;
                                     });
                                     $('label[id="ar_action_view"]').text(subStatusName);
 
+                                }
+                                if (header == 'ar_denial_codes') {
+                                   var denialName = '';
+                                    $.each(arDenialList, function(key, val) {
+                                        if (value == key) {
+                                            denialName = val;
+                                        }
+                                    });
+                                    $('label[id="ar_denial_view"]').text(denialName);
+                                }
+                                if (header == 'ar_substatus_codes') {
+                                    var subStatusName = '';
+                                    $.each(arSubStatusList, function(key, val) {
+                                        if (value == key) {
+                                            subStatusName = val;
+                                        }
+                                    });
+                                    $('label[id="ar_substatus_view"]').text(subStatusName);
                                 }
                                 if (header == 'qa_classification') {
                                 var qa_classification = '';

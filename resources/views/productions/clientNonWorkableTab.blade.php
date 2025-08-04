@@ -696,6 +696,26 @@ use Carbon\Carbon;
                                                             @endif
                                                         </div>
                                                     @endif
+                                                    <div class="row mt-4">             
+                                                        <div class="col-md-6">
+                                                            <div class="form-group row">
+                                                                <label class="col-md-12" id="ar_denial_label">
+                                                                    Denial Code
+                                                                </label>
+                                                                <label class="col-md-12 pop-non-edt-val" id="ar_denial_view">
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group row">
+                                                                <label class="col-md-12" id="ar_substatus_codes">
+                                                                    Substatus Code
+                                                                </label>
+                                                                <label class="col-md-12 pop-non-edt-val" id="ar_substatus_view">
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     <div class="col-md-6">
                                                         <div class="form-group row" style="margin-left: -2rem">
                                                             <label class="col-md-12">
@@ -792,6 +812,8 @@ use Carbon\Carbon;
         $(document).ready(function() {
             var arStatusList = @json( $arStatusList);
             var arActionList = @json($arActionListVal);
+            var arDenialList = @json($arDenialList);
+            var arSubStatusList = @json($arSubStatusList);
             $("#filterExpandButton").click(function() {
                 var div = document.getElementById('filter_section');
                 if (div.style.display !== 'none') {
@@ -914,6 +936,24 @@ use Carbon\Carbon;
                                 });
                                 $('label[id="ar_action_view"]').text(subStatusName);
 
+                            }
+                            if (header == 'ar_denial_codes') {
+                                var denialName = '';
+                                $.each(arDenialList, function(key, val) {
+                                    if (value == key) {
+                                        denialName = val;
+                                    }
+                                });
+                                $('label[id="ar_denial_view"]').text(denialName);
+                            }
+                            if (header == 'ar_substatus_codes') {
+                                var subStatusName = '';
+                                $.each(arSubStatusList, function(key, val) {
+                                    if (value == key) {
+                                        subStatusName = val;
+                                    }
+                                });
+                                $('label[id="ar_substatus_view"]').text(subStatusName);
                             }
                        $('label[id="' + header + '"]').text(value);
                     }

@@ -292,12 +292,14 @@ class QAProductionController extends Controller
                 $qaSubStatusListVal = Helpers::qaSubStatusList();
                 $arStatusList = Helpers::arStatusList();
                 $arActionListVal = Helpers::arActionList();
+                $arDenialList = Helpers::arDenialList();
+                $arSubStatusList = Helpers::arSubStatusList();
                 $qaClassificationVal = Helpers::qaClassification();
                 $qaCategoryVal = Helpers::qaCategory();
                 $qaScopeVal = Helpers::qaScope();
                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
-                return view('QAProduction/qaClientAssignedTab', compact('assignedProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arStatusList'));
+                return view('QAProduction/qaClientAssignedTab', compact('assignedProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arStatusList','arDenialList','arSubStatusList'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -417,12 +419,14 @@ class QAProductionController extends Controller
                 $qaSubStatusListVal =  Helpers::qaSubStatusList();
                 $arStatusList = Helpers::arStatusList();
                 $arActionListVal = Helpers::arActionList();
+                $arDenialList = Helpers::arDenialList();
+                $arSubStatusList = Helpers::arSubStatusList();
                 $qaClassificationVal = Helpers::qaClassification();
                 $qaCategoryVal = Helpers::qaCategory();
                 $qaScopeVal = Helpers::qaScope();
                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
-                return view('QAProduction/qaClientPendingTab', compact('pendingProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'existingCallerChartsWorkLogs', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arStatusList'));
+                return view('QAProduction/qaClientPendingTab', compact('pendingProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'existingCallerChartsWorkLogs', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arStatusList','arDenialList','arSubStatusList'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -542,12 +546,14 @@ class QAProductionController extends Controller
                 $qaSubStatusListVal =  Helpers::qaSubStatusList();
                 $arStatusList = Helpers::arStatusList();
                 $arActionListVal = Helpers::arActionList();
+                $arDenialList = Helpers::arDenialList();
+                $arSubStatusList = Helpers::arSubStatusList();
                 $qaClassificationVal = Helpers::qaClassification();
                 $qaCategoryVal = Helpers::qaCategory();
                 $qaScopeVal = Helpers::qaScope();
                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
-                return view('QAProduction/qaClientOnholdTab', compact('holdProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'existingCallerChartsWorkLogs','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arStatusList'));
+                return view('QAProduction/qaClientOnholdTab', compact('holdProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'existingCallerChartsWorkLogs','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arStatusList','arDenialList','arSubStatusList'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -655,12 +661,14 @@ class QAProductionController extends Controller
                 $qaStatusList = Helpers::qaStatusList();
                 $arStatusList = Helpers::arStatusList();
                 $arActionListVal = Helpers::arActionList();
+                $arDenialList = Helpers::arDenialList();
+                $arSubStatusList = Helpers::arSubStatusList();
                 $qaClassificationVal = Helpers::qaClassification();
                 $qaCategoryVal = Helpers::qaCategory();
                 $qaScopeVal = Helpers::qaScope();
                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
-                return view('QAProduction/qaClientCompletedTab', compact('completedProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields','popupQAEditableFields','qaSubStatusListVal','qaStatusList','autoCloseCount','unAssignedCount','arStatusList','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData'));
+                return view('QAProduction/qaClientCompletedTab', compact('completedProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields','popupQAEditableFields','qaSubStatusListVal','qaStatusList','autoCloseCount','unAssignedCount','arStatusList','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arDenialList','arSubStatusList'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -1483,12 +1491,14 @@ class QAProductionController extends Controller
                 $qaSubStatusListVal = Helpers::qaSubStatusList();
                 $arStatusList = Helpers::arStatusList();
                 $arActionListVal = Helpers::arActionList();
+                $arDenialList = Helpers::arDenialList();
+                $arSubStatusList = Helpers::arSubStatusList();
                 $qaClassificationVal = Helpers::qaClassification();
                 $qaCategoryVal = Helpers::qaCategory();
                 $qaScopeVal = Helpers::qaScope();
                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
-                return view('QAProduction/qaClientAutoClose', compact('autoCloseProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arStatusList'));
+                return view('QAProduction/qaClientAutoClose', compact('autoCloseProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arStatusList','arDenialList','arSubStatusList'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -1666,12 +1676,14 @@ class QAProductionController extends Controller
                 $qaSubStatusListVal = Helpers::qaSubStatusList();
                 $arStatusList = Helpers::arStatusList();
                 $arActionListVal = Helpers::arActionList();
+                $arDenialList = Helpers::arDenialList();
+                $arSubStatusList = Helpers::arSubStatusList();
                 $qaClassificationVal = Helpers::qaClassification();
                 $qaCategoryVal = Helpers::qaCategory();
                 $qaScopeVal = Helpers::qaScope();
                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
-                return view('QAProduction/qaClientUnAssignedTab', compact('unAssignedProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arStatusList'));
+                return view('QAProduction/qaClientUnAssignedTab', compact('unAssignedProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arStatusList','arDenialList','arSubStatusList'));
 
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -1805,12 +1817,14 @@ class QAProductionController extends Controller
                 $qaStatusList = Helpers::qaStatusList();
                 $arStatusList = Helpers::arStatusList();
                 $arActionListVal = Helpers::arActionList();
+                $arDenialList = Helpers::arDenialList();
+                $arSubStatusList = Helpers::arSubStatusList();
                 $qaClassificationVal = Helpers::qaClassification();
                 $qaCategoryVal = Helpers::qaCategory();
                 $qaScopeVal = Helpers::qaScope();
                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
-                return view('QAProduction/qaRebuttalTab',compact('rebuttalProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','existingCallerChartsWorkLogs','popUpHeader','popupNonEditableFields','popupEditableFields','popupQAEditableFields','qaSubStatusListVal','unAssignedCount','qaStatusList','rebuttalCount','autoCloseCount','arStatusList','arActionListVal','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData'));
+                return view('QAProduction/qaRebuttalTab',compact('rebuttalProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','existingCallerChartsWorkLogs','popUpHeader','popupNonEditableFields','popupEditableFields','popupQAEditableFields','qaSubStatusListVal','unAssignedCount','qaStatusList','rebuttalCount','autoCloseCount','arStatusList','arActionListVal','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arDenialList','arSubStatusList'));
 
         } catch (\Exception $e) {
             log::debug($e->getMessage());

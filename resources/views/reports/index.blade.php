@@ -272,6 +272,8 @@
                                         var displayName = "Status Code";
                                     } else if(columnName === "ar_action_code") {
                                         var displayName = "Action Code";
+                                    } else if(columnName === "ar_denial_codes") {
+                                        var displayName = "Denial Code";
                                     }
                                      else {console.log(columnName,'if else');
                                         var displayName = columnName.split('_').map(function(word) {

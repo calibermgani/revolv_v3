@@ -822,7 +822,7 @@ use Carbon\Carbon;
                                                                                                 $arStatusList,
                                                                                                 null,
                                                                                                 [
-                                                                                                    'class' => 'form-control white-smoke  kt_select2_qa_status pop-non-edt-val ',
+                                                                                                    'class' => 'form-control white-smoke  kt_select2_qa_status_modal pop-non-edt-val ',
                                                                                                     'autocomplete' => 'none',
                                                                                                     'id' => 'ar_status_code',
                                                                                                     'style' => 'cursor:pointer',
@@ -845,7 +845,7 @@ use Carbon\Carbon;
                                                                                             $arActionList,
                                                                                             null,
                                                                                             [
-                                                                                                'class' => 'form-control white-smoke  kt_select2_ar_action_code pop-non-edt-val ',
+                                                                                                'class' => 'form-control white-smoke  kt_select2_ar_action_code_modal pop-non-edt-val ',
                                                                                                 'autocomplete' => 'none',
                                                                                                 'id' => 'ar_action_code',
                                                                                                 'style' => 'cursor:pointer',
@@ -858,6 +858,52 @@ use Carbon\Carbon;
                                                                             @endif
                                                                         </div>
                                                                     @endif
+                                                                    <div class="row mt-4">
+                                                                        <div class="col-md-6">
+                                                                            <div class="form-group row">
+                                                                                <label class="col-md-12 required">
+                                                                                    Denial Code
+                                                                                </label>
+                                                                                @php $arDenialList = App\Http\Helper\Admin\Helpers::arDenialList(); @endphp
+                            
+                                                                                <div class="col-md-10">
+                                                                                    {!! Form::Select(
+                                                                                        'ar_denial_codes',
+                                                                                        $arDenialList,
+                                                                                        null,
+                                                                                        [
+                                                                                            'class' => 'form-control white-smoke  kt_select2_denial_modal pop-non-edt-val ',
+                                                                                            'autocomplete' => 'none',
+                                                                                            'id' => 'ar_denial_codes',
+                                                                                            'style' => 'cursor:pointer',
+                                                                                        ],
+                                                                                    ) !!}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div> 
+                                                                            <div class="col-md-6">
+                                                                            <div class="form-group row">
+                                                                                <label class="col-md-12">
+                                                                                    Substatus Code
+                                                                                </label>
+                                                                                @php $arSubStatusList = App\Http\Helper\Admin\Helpers::arSubStatusList(); @endphp
+                            
+                                                                                <div class="col-md-10">
+                                                                                    {!! Form::Select(
+                                                                                        'ar_substatus_codes',
+                                                                                        $arSubStatusList,
+                                                                                        null,
+                                                                                        [
+                                                                                            'class' => 'form-control white-smoke  kt_select2_substatus_modal pop-non-edt-val ',
+                                                                                            'autocomplete' => 'none',
+                                                                                            'id' => 'ar_sub_status_codes',
+                                                                                            'style' => 'cursor:pointer',
+                                                                                        ],
+                                                                                    ) !!}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>                                                                   
+                                                                    </div>
                                                                     <div class="row mt-4">
                                                                         <div class="col-md-6">
                                                                             <input type="hidden" name="invoke_date">
@@ -922,7 +968,7 @@ use Carbon\Carbon;
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                  </div>
+                                                                    </div>                                                                       
                                                                 </div>
                                                             </div>
                                                             <div class="modal-footer" style="justify-content: space-between;">
@@ -1316,9 +1362,9 @@ use Carbon\Carbon;
                                                                                         $arStatusList,
                                                                                         null,
                                                                                         [
-                                                                                            'class' => 'form-control white-smoke  kt_select2_qa_status pop-non-edt-val ',
+                                                                                            'class' => 'form-control white-smoke  kt_select2_qa_status_1_modal pop-non-edt-val ',
                                                                                             'autocomplete' => 'none',
-                                                                                            'id' => 'ar_status_code',
+                                                                                            'id' => 'ar_status_code_1',
                                                                                             'style' => 'cursor:pointer',
                                                                                         ],
                                                                                     ) !!}
@@ -1339,9 +1385,9 @@ use Carbon\Carbon;
                                                                                     $arActionList,
                                                                                     null,
                                                                                     [
-                                                                                        'class' => 'form-control white-smoke  kt_select2_ar_action_code pop-non-edt-val ',
+                                                                                        'class' => 'form-control white-smoke  kt_select2_ar_action_code_1_modal pop-non-edt-val ',
                                                                                         'autocomplete' => 'none',
-                                                                                        'id' => 'ar_action_code',
+                                                                                        'id' => 'ar_action_code_1',
                                                                                         'style' => 'cursor:pointer',
                                                                                     ],
                                                                                 ) !!}
@@ -1352,6 +1398,52 @@ use Carbon\Carbon;
                                                                     @endif
                                                                 </div>
                                                             @endif
+                                                             <div class="row mt-4">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group row">
+                                                                        <label class="col-md-12 required">
+                                                                            Denial Code
+                                                                        </label>
+                                                                        @php $arDenialList = App\Http\Helper\Admin\Helpers::arDenialList(); @endphp
+                    
+                                                                        <div class="col-md-10">
+                                                                            {!! Form::Select(
+                                                                                'ar_denial_codes',
+                                                                                $arDenialList,
+                                                                                null,
+                                                                                [
+                                                                                    'class' => 'form-control white-smoke  kt_select2_denial_1_modal pop-non-edt-val ',
+                                                                                    'autocomplete' => 'none',
+                                                                                    'id' => 'ar_denial_codes_1',
+                                                                                    'style' => 'cursor:pointer',
+                                                                                ],
+                                                                            ) !!}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>             
+                                                                 <div class="col-md-6">
+                                                                    <div class="form-group row">
+                                                                        <label class="col-md-12">
+                                                                            Substatus Code
+                                                                        </label>
+                                                                        @php $arSubStatusList = App\Http\Helper\Admin\Helpers::arSubStatusList(); @endphp
+                    
+                                                                        <div class="col-md-10">
+                                                                            {!! Form::Select(
+                                                                                'ar_substatus_codes',
+                                                                                $arSubStatusList,
+                                                                                null,
+                                                                                [
+                                                                                    'class' => 'form-control white-smoke  kt_select2_substatus_1_modal pop-non-edt-val ',
+                                                                                    'autocomplete' => 'none',
+                                                                                    'id' => 'ar_sub_status_codes_1',
+                                                                                    'style' => 'cursor:pointer',
+                                                                                ],
+                                                                            ) !!}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>                                                                   
+                                                             </div>
                                                             <div class="row mt-4">
                                                                 <div class="col-md-6">
                                                                     <input type="hidden" name="invoke_date">
@@ -1409,7 +1501,7 @@ use Carbon\Carbon;
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
+                                                            </div>                                                            
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer" style="justify-content: end;">
@@ -1739,7 +1831,7 @@ use Carbon\Carbon;
                         error: function(jqXHR, exception) {}
                     });
                 }
-                $(document).on('change', '#ar_status_code', function() {
+                $(document).on('change', '#ar_status_code, #ar_status_code_1', function() {
                     var status_code_id = $(this).val();
                         KTApp.block('#myModal_status', {
                             overlayColor: '#000000',
@@ -1911,6 +2003,13 @@ use Carbon\Carbon;
                             inputTypeValue = 0;
                     }
                 }
+                if($('#ar_denial_codes').val() == '') {
+                    $('#ar_denial_codes').next('.select2').find(".select2-selection").css('border-color', 'red', 'important');
+                    inputTypeValue = 1;
+                } else {
+                    $('#ar_denial_codes').next('.select2').find(".select2-selection").css('border-color', '');
+                    inputTypeValue = 0;
+                }               
                 $('#formConfiguration').find(':input[required], select[required], textarea[required]',
                     ':input[type="checkbox"][required], input[type="radio"][required]').each(
                     function() {
@@ -2967,7 +3066,7 @@ use Carbon\Carbon;
                                 inputTypeValue = 0;
                         }
                     }
-                
+                    
                     $('#multiformConfiguration').find(':input[required], select[required], textarea[required]',
                     ':input[type="checkbox"][required], input[type="radio"][required]').each(function() {
                         var fieldName = $(this).attr('name');
@@ -3015,7 +3114,14 @@ use Carbon\Carbon;
                             });
 
                         }
-                    }                   
+                    }           
+                    if($('#ar_denial_codes_1').val() == '') {
+                        $('#ar_denial_codes_1').next('.select2').find(".select2-selection").css('border-color', 'red', 'important');
+                        inputTypeValue = 1;
+                    } else {
+                        $('#ar_denial_codes_1').next('.select2').find(".select2-selection").css('border-color', '');
+                        inputTypeValue = 0;
+                    }        
                     if (inputTypeValue == 0 && inputTypeRadioValue == 0 && duplicateValue == 0)  {
                     var checkedRowValues = [];
                     $('#client_assigned_list').DataTable().$('input[name="check[]"]:checked').each(function() {
