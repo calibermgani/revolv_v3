@@ -291,9 +291,18 @@ class ProductionController extends Controller
                         if (!empty($existingCallerChartsWorkLogs) && $existingCallerChartsWorkLogs[0] != null) {
                             $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
                         }
-                        if (!empty($existingCallerChartsWorkLogsInprocess) && $existingCallerChartsWorkLogsInprocess[0] != null) {
-                            $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogsInprocess) . ') DESC');
+                        $existingCallerChartsWorkLogsInprocess = array_filter($existingCallerChartsWorkLogsInprocess, function ($value) {
+                        return !is_null($value) && $value !== '';
+                        });
+
+                        if (!empty($existingCallerChartsWorkLogsInprocess)) {
+                        $assignedProjectDetails = $assignedProjectDetails->orderByRaw(
+                        'FIELD(id, ' . implode(',', $existingCallerChartsWorkLogsInprocess) . ') DESC'
+                        );
                         }
+                       /*  if (!empty($existingCallerChartsWorkLogsInprocess) && $existingCallerChartsWorkLogsInprocess[0] != null) {
+                            $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogsInprocess) . ') DESC');
+                        } */
                        $assignedProjectDetails = $assignedProjectDetails->orderBy('id', 'ASC')->paginate(50);
                        $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->count();
                        $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
