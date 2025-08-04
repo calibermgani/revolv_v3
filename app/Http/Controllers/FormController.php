@@ -544,7 +544,7 @@ class FormController extends Controller
             
             try {
                 DB::beginTransaction();
-                $data = $request->all();
+                $data = $request->all();dd($data);
                 $additionalLabelArray = [
                     "AR Denial Codes",
                     "AR SubStatus Codes"
