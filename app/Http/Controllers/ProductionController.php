@@ -2856,26 +2856,26 @@ class ProductionController extends Controller
                         }
                     }
                    if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)) {
-                        //$query->where('chart_status', 'CE_Assigned')->update(['chart_status' => 'AR_non_workable']);
-                        $existingRecord =$query->where('chart_status', 'CE_Assigned')->first();
-                        if ($existingRecord) {
-                            $updateData = ['chart_status' => 'AR_non_workable'];                            
-                            if ($columnToUpdate) {
-                                $updateData[$columnToUpdate] = $column_value;
-                            }                            
-                           $existingRecord->update($updateData);
-                       }
+                        $query->where('chart_status', 'CE_Assigned')->update(['chart_status' => 'AR_non_workable']);
+                    //     $existingRecord =$query->where('chart_status', 'CE_Assigned')->first();
+                    //     if ($existingRecord) {
+                    //         $updateData = ['chart_status' => 'AR_non_workable'];                            
+                    //         if ($columnToUpdate) {
+                    //             $updateData[$columnToUpdate] = $column_value;
+                    //         }                            
+                    //        $existingRecord->update($updateData);
+                    //    }
 
                     } else {
-                      // $query->where('CE_emp_id',$loginEmpId)->where('chart_status','CE_Assigned')->update(['chart_status' => 'AR_non_workable']);
-                        $existingRecord =$query->where('CE_emp_id',$loginEmpId)->where('chart_status', 'CE_Assigned')->first();
-                        if ($existingRecord) {
-                            $updateData = ['chart_status' => 'AR_non_workable'];                            
-                            if ($columnToUpdate) {
-                                $updateData[$columnToUpdate] = $column_value;
-                            }                            
-                            $existingRecord->update($updateData);
-                        }
+                       $query->where('CE_emp_id',$loginEmpId)->where('chart_status','CE_Assigned')->update(['chart_status' => 'AR_non_workable']);
+                        // $existingRecord =$query->where('CE_emp_id',$loginEmpId)->where('chart_status', 'CE_Assigned')->first();
+                        // if ($existingRecord) {
+                        //     $updateData = ['chart_status' => 'AR_non_workable'];                            
+                        //     if ($columnToUpdate) {
+                        //         $updateData[$columnToUpdate] = $column_value;
+                        //     }                            
+                        //     $existingRecord->update($updateData);
+                        // }
                     }
                 }
                 return response()->json(['success' => true]);
