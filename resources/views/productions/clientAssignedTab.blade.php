@@ -811,7 +811,7 @@ use Carbon\Carbon;
                                                                             @if($statusActionShow->status_input == 1)
                                                                                 <div class="col-md-6">
                                                                                     <div class="form-group row">
-                                                                                        <label class="col-md-12">
+                                                                                        <label class="col-md-12 required">
                                                                                             Status Code
                                                                                         </label>
                                                                                         @php $arStatusList = $popUpHeader->sub_project_id != null && $popUpHeader->sub_project_id != "" ? App\Http\Helper\Admin\Helpers::arStatusListBySubPrjId( $popUpHeader->sub_project_id) : []; @endphp
@@ -835,7 +835,7 @@ use Carbon\Carbon;
                                                                             @if($statusActionShow->action_input == 1)
                                                                             <div class="col-md-6">
                                                                                 <div class="form-group row">
-                                                                                    <label class="col-md-12">
+                                                                                    <label class="col-md-12 required">
                                                                                         Action Code
                                                                                     </label>
                                                                                     @php $arActionList = []; @endphp
@@ -1351,7 +1351,7 @@ use Carbon\Carbon;
                                                                     @if($statusActionShow->status_input == 1)
                                                                         <div class="col-md-6">
                                                                             <div class="form-group row">
-                                                                                <label class="col-md-12">
+                                                                                <label class="col-md-12 required">
                                                                                     Status Code
                                                                                 </label>
                                                                                 @php $arStatusList = $popUpHeader->sub_project_id != null && $popUpHeader->sub_project_id != "" ? App\Http\Helper\Admin\Helpers::arStatusListBySubPrjId( $popUpHeader->sub_project_id) : []; @endphp
@@ -1375,7 +1375,7 @@ use Carbon\Carbon;
                                                                     @if($statusActionShow->action_input == 1)
                                                                     <div class="col-md-6">
                                                                         <div class="form-group row">
-                                                                            <label class="col-md-12">
+                                                                            <label class="col-md-12 required">
                                                                                 Action Code
                                                                             </label>
                                                                             @php $arActionList = []; @endphp
@@ -1579,6 +1579,7 @@ use Carbon\Carbon;
         $(document).ready(function() {
             var indvidualSearchFieldsCount = Object.keys(@json($projectColSearchFields)).length;
             var resourceName = @json($resourceName);
+            var statusActionShowJson = @json($statusActionShow);
             $("#expandButton").click(function() {
                  var modalContent = $(".modal-content");
                 if (modalContent.width() === 800) {
@@ -2003,13 +2004,38 @@ use Carbon\Carbon;
                             inputTypeValue = 0;
                     }
                 }
-                if($('#ar_denial_codes').val() == '') {
-                    $('#ar_denial_codes').next('.select2').find(".select2-selection").css('border-color', 'red', 'important');
-                    inputTypeValue = 1;
+
+                if (
+                    (statusActionShowJson['status_input'] == 1 && ($('#ar_status_code').val() == '' || $('#ar_status_code').val() == null)) ||
+                    (statusActionShowJson['action_input'] == 1 && ($('#ar_action_code').val() == '' || $('#ar_action_code').val() == null)) ||
+                    ($('#ar_denial_codes').val() == '' || $('#ar_denial_codes').val() == null)
+                ) {
+                    e.preventDefault(); // block form submission
+                    inputTypeValue = 1; // at least one field is invalid
+                }
+
+
+                // Validate status code
+                if ($('#ar_status_code').val() == '' || $('#ar_status_code').val() == null) {
+                    $('#ar_status_code').next('.select2-container').find('.select2-selection').css('border', '1px solid red');
                 } else {
-                    $('#ar_denial_codes').next('.select2').find(".select2-selection").css('border-color', '');
-                    inputTypeValue = 0;
-                }               
+                    $('#ar_status_code').next('.select2-container').find('.select2-selection').css('border', '');
+                }
+
+                // Validate action code
+                if ($('#ar_action_code').val() == '' || $('#ar_action_code').val() == null) {
+                    $('#ar_action_code').next('.select2-container').find('.select2-selection').css('border', '1px solid red');
+                } else {
+                    $('#ar_action_code').next('.select2-container').find('.select2-selection').css('border', '');
+                }
+
+                // Validate denial code
+                if ($('#ar_denial_codes').val() == '' || $('#ar_denial_codes').val() == null) {
+                    $('#ar_denial_codes').next('.select2-container').find('.select2-selection').css('border', '1px solid red');
+                } else {
+                    $('#ar_denial_codes').next('.select2-container').find('.select2-selection').css('border', '');
+                }  
+                                                 
                 $('#formConfiguration').find(':input[required], select[required], textarea[required]',
                     ':input[type="checkbox"][required], input[type="radio"][required]').each(
                     function() {
@@ -3115,13 +3141,44 @@ use Carbon\Carbon;
 
                         }
                     }           
-                    if($('#ar_denial_codes_1').val() == '') {
-                        $('#ar_denial_codes_1').next('.select2').find(".select2-selection").css('border-color', 'red', 'important');
-                        inputTypeValue = 1;
-                    } else {
-                        $('#ar_denial_codes_1').next('.select2').find(".select2-selection").css('border-color', '');
-                        inputTypeValue = 0;
-                    }        
+                    // if($('#ar_denial_codes_1').val() == '') {
+                    //     $('#ar_denial_codes_1').next('.select2').find(".select2-selection").css('border-color', 'red', 'important');
+                    //     inputTypeValue = 1;
+                    // } else {
+                    //     $('#ar_denial_codes_1').next('.select2').find(".select2-selection").css('border-color', '');
+                    //     inputTypeValue = 0;
+                    // }   
+                if (
+                    (statusActionShowJson['status_input'] == 1 && ($('#ar_status_code_1').val() == '' || $('#ar_status_code_1').val() == null)) ||
+                    (statusActionShowJson['action_input'] == 1 && ($('#ar_action_code_1').val() == '' || $('#ar_action_code_1').val() == null)) ||
+                    ($('#ar_denial_codes_1').val() == '' || $('#ar_denial_codes_1').val() == null)
+                ) {
+                    e.preventDefault(); // block form submission
+                    inputTypeValue = 1; // at least one field is invalid
+                }
+                   
+                   
+                    
+                // Validate status code
+                if ($('#ar_status_code_1').val() == '' || $('#ar_status_code_1').val() == null) {
+                    $('#ar_status_code_1').next('.select2-container').find('.select2-selection').css('border', '1px solid red');
+                } else {
+                    $('#ar_status_code_1').next('.select2-container').find('.select2-selection').css('border', '');
+                }
+
+                // Validate action code
+                if ($('#ar_action_code_1').val() == '' || $('#ar_action_code_1').val() == null) {
+                    $('#ar_action_code_1').next('.select2-container').find('.select2-selection').css('border', '1px solid red');
+                } else {
+                    $('#ar_action_code_1').next('.select2-container').find('.select2-selection').css('border', '');
+                }
+
+                // Validate denial code
+                if ($('#ar_denial_codes_1').val() == '' || $('#ar_denial_codes_1').val() == null) {
+                    $('#ar_denial_codes_1').next('.select2-container').find('.select2-selection').css('border', '1px solid red');
+                } else {
+                    $('#ar_denial_codes_1').next('.select2-container').find('.select2-selection').css('border', '');
+                }   
                     if (inputTypeValue == 0 && inputTypeRadioValue == 0 && duplicateValue == 0)  {
                     var checkedRowValues = [];
                     $('#client_assigned_list').DataTable().$('input[name="check[]"]:checked').each(function() {

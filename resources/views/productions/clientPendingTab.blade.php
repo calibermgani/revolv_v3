@@ -746,7 +746,7 @@ use Carbon\Carbon;
                                                         @if($statusActionShow->status_input == 1)
                                                             <div class="col-md-6">
                                                                 <div class="form-group row">
-                                                                    <label class="col-md-12">
+                                                                    <label class="col-md-12 required">
                                                                         Status Code
                                                                     </label>
                                                                     @php $arStatusList = $popUpHeader->sub_project_id != null && $popUpHeader->sub_project_id != "" ? App\Http\Helper\Admin\Helpers::arStatusListBySubPrjId( $popUpHeader->sub_project_id) : []; @endphp
@@ -771,7 +771,7 @@ use Carbon\Carbon;
                                                         @if($statusActionShow->action_input == 1)
                                                             <div class="col-md-6">
                                                                 <div class="form-group row">
-                                                                    <label class="col-md-12">
+                                                                    <label class="col-md-12 required">
                                                                         Action Code
                                                                     </label>
                                                                     @php $arActionList = []; @endphp
@@ -1214,6 +1214,7 @@ use Carbon\Carbon;
             var arActionList = @json($arActionListVal);
             var arDenialList = @json($arDenialList);
             var arSubStatusList = @json($arSubStatusList);
+            var statusActionShowJson = @json($statusActionShow);
             function getUrlParam(param) {
                 const urlParams = new URLSearchParams(window.location.search);
                 return urlParams.get(param);
@@ -1884,13 +1885,43 @@ use Carbon\Carbon;
                                     inputTypeValue = 0;
                             }
                         }
-                        if($('#ar_denial_codes').val() == '') {
-                            $('#ar_denial_codes').next('.select2').find(".select2-selection").css('border-color', 'red', 'important');
-                            inputTypeValue = 1;
-                        } else {
-                            $('#ar_denial_codes').next('.select2').find(".select2-selection").css('border-color', '');
-                            inputTypeValue = 0;
-                        }         
+                        // if($('#ar_denial_codes').val() == '') {
+                        //     $('#ar_denial_codes').next('.select2').find(".select2-selection").css('border-color', 'red', 'important');
+                        //     inputTypeValue = 1;
+                        // } else {
+                        //     $('#ar_denial_codes').next('.select2').find(".select2-selection").css('border-color', '');
+                        //     inputTypeValue = 0;
+                        // }  
+                    if (
+                        (statusActionShowJson['status_input'] == 1 && ($('#ar_status_code').val() == '' || $('#ar_status_code').val() == null)) ||
+                        (statusActionShowJson['action_input'] == 1 && ($('#ar_action_code').val() == '' || $('#ar_action_code').val() == null)) ||
+                        ($('#ar_denial_codes').val() == '' || $('#ar_denial_codes').val() == null)
+                    ) {
+                        e.preventDefault(); // block form submission
+                        inputTypeValue = 1; // at least one field is invalid
+                    }
+
+
+                    // Validate status code
+                    if ($('#ar_status_code').val() == '' || $('#ar_status_code').val() == null) {
+                        $('#ar_status_code').next('.select2-container').find('.select2-selection').css('border', '1px solid red');
+                    } else {
+                        $('#ar_status_code').next('.select2-container').find('.select2-selection').css('border', '');
+                    }
+
+                    // Validate action code
+                    if ($('#ar_action_code').val() == '' || $('#ar_action_code').val() == null) {
+                        $('#ar_action_code').next('.select2-container').find('.select2-selection').css('border', '1px solid red');
+                    } else {
+                        $('#ar_action_code').next('.select2-container').find('.select2-selection').css('border', '');
+                    }
+
+                    // Validate denial code
+                    if ($('#ar_denial_codes').val() == '' || $('#ar_denial_codes').val() == null) {
+                        $('#ar_denial_codes').next('.select2-container').find('.select2-selection').css('border', '1px solid red');
+                    } else {
+                        $('#ar_denial_codes').next('.select2-container').find('.select2-selection').css('border', '');
+                    }         
                     $('#pendingFormConfiguration').find(':input[required], select[required], textarea[required]',
                         ':input[type="checkbox"][required], input[type="radio"][required]').each(
                         function() {
