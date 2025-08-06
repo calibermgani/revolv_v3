@@ -628,9 +628,9 @@ use Carbon\Carbon;
                                                         $statusActionShow = null;
                                                     }
                                                 @endphp
-                                                @if($statusActionShow != null)
+                                                {{-- @if($statusActionShow != null) --}}
                                                     <div class="row mt-4">
-                                                        @if($statusActionShow->status_input == 1)
+                                                        {{-- @if($statusActionShow->status_input == 1) --}}
                                                             <div class="col-md-6">
                                                                 <div class="form-group row">
                                                                     <label class="col-md-12" id="ar_status_label">
@@ -640,8 +640,8 @@ use Carbon\Carbon;
                                                                     </label>
                                                                 </div>
                                                             </div>
-                                                        @endif
-                                                        @if($statusActionShow->action_input == 1)
+                                                        {{-- @endif
+                                                        @if($statusActionShow->action_input == 1) --}}
                                                             <div class="col-md-6">
                                                                 <div class="form-group row">
                                                                     <label class="col-md-12" id="ar_action_label">
@@ -651,9 +651,9 @@ use Carbon\Carbon;
                                                                     </label>
                                                                 </div>
                                                             </div>
-                                                        @endif
+                                                        {{-- @endif --}}
                                                     </div>
-                                                @endif
+                                                {{-- @endif --}}
                                                    <div class="row mt-4">             
                                                         <div class="col-md-6">
                                                             <div class="form-group row">
