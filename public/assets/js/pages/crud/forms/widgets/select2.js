@@ -273,30 +273,30 @@ var KTSelect2 = function() {
         $('#myModal_status').on('shown.bs.modal', function () {
             // basic
             $('.kt_select2_denial_modal').select2({
-                placeholder: "Denial"
+                placeholder: "Select Denial"
             });
             $('.kt_select2_qa_status_modal').select2({
-                placeholder: "Status"
+                placeholder: "Select Status"
             });
             $('.kt_select2_ar_action_code_modal').select2({
-                placeholder: "Action"
+                placeholder: "Select Action"
             });
             $('.kt_select2_substatus_modal').select2({
-                placeholder: "Substatus"
+                placeholder: "Select Substatus"
             });
         });
         $('#myModal_multiline').on('shown.bs.modal', function () {
              $('.kt_select2_denial_1_modal').select2({
-                placeholder: "Denial"
+                placeholder: "Select Denial"
             });
             $('.kt_select2_qa_status_1_modal').select2({
-                placeholder: "Status"
+                placeholder: "Select Status"
             });
             $('.kt_select2_ar_action_code_1_modal').select2({
-                placeholder: "Action"
+                placeholder: "Select Action"
             });
              $('.kt_select2_substatus_1_modal').select2({
-                placeholder: "Substatus"
+                placeholder: "Select Substatus"
             });
           
         });
