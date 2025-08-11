@@ -820,7 +820,7 @@ use Carbon\Carbon;
                                                                                             {!! Form::Select(
                                                                                                 'ar_status_code',
                                                                                                 $arStatusList,
-                                                                                                null,
+                                                                                                242,
                                                                                                 [
                                                                                                     'class' => 'form-control white-smoke  kt_select2_qa_status_modal pop-non-edt-val ',
                                                                                                     'autocomplete' => 'none',
@@ -838,12 +838,12 @@ use Carbon\Carbon;
                                                                                     <label class="col-md-12 required">
                                                                                         Action Code
                                                                                     </label>
-                                                                                    @php $arActionList = []; @endphp
+                                                                                    @php $arActionList = [1512 => 'None']; @endphp
                                                                                     <div class="col-md-10">
                                                                                         {!! Form::Select(
                                                                                             'ar_action_code',
                                                                                             $arActionList,
-                                                                                            null,
+                                                                                            1512,
                                                                                             [
                                                                                                 'class' => 'form-control white-smoke  kt_select2_ar_action_code_modal pop-non-edt-val ',
                                                                                                 'autocomplete' => 'none',
@@ -870,7 +870,7 @@ use Carbon\Carbon;
                                                                                     {!! Form::Select(
                                                                                         'ar_denial_codes',
                                                                                         $arDenialList,
-                                                                                        null,
+                                                                                        64,
                                                                                         [
                                                                                             'class' => 'form-control white-smoke  kt_select2_denial_modal pop-non-edt-val ',
                                                                                             'autocomplete' => 'none',
@@ -892,7 +892,7 @@ use Carbon\Carbon;
                                                                                     {!! Form::Select(
                                                                                         'ar_substatus_codes',
                                                                                         $arSubStatusList,
-                                                                                        null,
+                                                                                        1,
                                                                                         [
                                                                                             'class' => 'form-control white-smoke  kt_select2_substatus_modal pop-non-edt-val ',
                                                                                             'autocomplete' => 'none',
@@ -1820,7 +1820,9 @@ use Carbon\Carbon;
                             subStatusCount = Object.keys(res.subStatus).length;
                             var sla_options = '<option value="">-- Select --</option>';
                             $.each(res.subStatus, function(key, value) {
-                                sla_options += '<option value="' + key + '" ' + '>' + value +
+                                sla_options += '<option value="' + key + '" '  +
+                                                (key == 1512 ? 'selected="selected"' :
+                                                    '') + '>' + value +
                                     '</option>';
                             });
                             $('select[name="ar_action_code"]').html(sla_options);
@@ -1834,14 +1836,14 @@ use Carbon\Carbon;
                 }
                 $(document).on('change', '#ar_status_code, #ar_status_code_1', function() {
                     var status_code_id = $(this).val();
-                        KTApp.block('#myModal_status', {
-                            overlayColor: '#000000',
-                            state: 'danger',
-                            opacity: 0.1,
-                            message: 'Fetching...',
-                        });
+                        // KTApp.block('#myModal_status', {
+                        //     overlayColor: '#000000',
+                        //     state: 'danger',
+                        //     opacity: 0.1,
+                        //     message: 'Fetching...',
+                        // });
                     subStatus(status_code_id,'');
-                    KTApp.unblock('#myModal_status');
+                    // KTApp.unblock('#myModal_status');
                 });
             $(document).on('click', '.clickable-row', function(e) {
               
@@ -2189,47 +2191,156 @@ use Carbon\Carbon;
                     });
                 }
 
-              
-                checkDuplicate(duplicateColumnData)
-                    .then((duplicateValue) => {
+                // var statusInput = 0; 
+                // if ( $('#ar_status_code').val() == 242 || $('#ar_denial_codes').val() == 64) {
+                //      e.preventDefault();  
+                //       inputTypeValue = 1;
+                      
+                //    swal.fire({
+                //                 text: $('#ar_status_code').val() == 242 && $('#ar_denial_codes').val() == 64 ? "Status code & Denial code None is selected, do you want to proceed? " : ($('#ar_status_code').val() == 242 ? "Status code None is selected, do you want to proceed?" : "Denial code None is selected, do you want to proceed?"),
+                //                 icon: "success",
+                //                 buttonsStyling: false,
+                //                 showCancelButton: true,
+                //                 confirmButtonText: "Yes",
+                //                 cancelButtonText: "No",
+                //                 reverseButtons: true,
+                //                 customClass: {
+                //                     confirmButton: "btn font-weight-bold btn-white-black",
+                //                     cancelButton: "btn font-weight-bold btn-light-danger",
+                //                 }
+
+                //             }).then(function(result) {
+                //                 if (result.value == true) {
+                //                   statusInput = 1;
+
+                //                 } else {
+                //                    statusInput = 0;
+                //                 }
+                //             });
+
+                // }
+                //  console.log(statusInput,'statusInput');
+                 
+                // checkDuplicate(duplicateColumnData)
+                //     .then((duplicateValue) => {
                    
-                         if (inputTypeValue == 0 && inputTypeRadioValue == 0 && duplicateValue == 0)  {
-                            swal.fire({
-                                text: "Do you want to update?",
-                                icon: "success",
-                                buttonsStyling: false,
-                                showCancelButton: true,
-                                confirmButtonText: "Yes",
-                                cancelButtonText: "No",
-                                reverseButtons: true,
-                                customClass: {
-                                    confirmButton: "btn font-weight-bold btn-white-black",
-                                    cancelButton: "btn font-weight-bold btn-light-danger",
-                                }
+                //          if (inputTypeValue == 0 && inputTypeRadioValue == 0 && duplicateValue == 0)  {
+                //             swal.fire({
+                //                 text: "Do you want to update1?",
+                //                 icon: "success",
+                //                 buttonsStyling: false,
+                //                 showCancelButton: true,
+                //                 confirmButtonText: "Yes",
+                //                 cancelButtonText: "No",
+                //                 reverseButtons: true,
+                //                 customClass: {
+                //                     confirmButton: "btn font-weight-bold btn-white-black",
+                //                     cancelButton: "btn font-weight-bold btn-light-danger",
+                //                 }
 
-                            }).then(function(result) {
-                                if (result.value == true) {
-                                    KTApp.block('#myModal_status', {
-                                        overlayColor: '#000000',
-                                        state: 'danger',
-                                        opacity: 0.1,
-                                        message: 'Fetching...',
-                                    });
-                                    document.querySelector('#formConfiguration').submit();
-                                 //   KTApp.unblock('#myModal_status');
+                //             }).then(function(result) {
+                //                 if (result.value == true) {
+                //                     KTApp.block('#myModal_status', {
+                //                         overlayColor: '#000000',
+                //                         state: 'danger',
+                //                         opacity: 0.1,
+                //                         message: 'Fetching...',
+                //                     });
+                //                     document.querySelector('#formConfiguration').submit();
+                //                  //   KTApp.unblock('#myModal_status');
 
-                                } else {
+                //                 } else {
 
-                                }
-                            });
+                //                 }
+                //             });
 
-                          } else {
-                            return false;
-                         }
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
+                //           } else {
+                //             return false;
+                //          }
+                //     })
+                //     .catch((error) => {
+                //         console.error('Error:', error);
+                //     });
+                var statusInput = 0; 
+                if ($('#ar_status_code').val() == 242 || $('#ar_denial_codes').val() == 64) {
+                    e.preventDefault();  
+                  //  inputTypeValue = 1;
+                    
+                    swal.fire({
+                        text: $('#ar_status_code').val() == 242 && $('#ar_denial_codes').val() == 64 
+                            ? "Status code & Denial code None is selected, do you want to proceed? " 
+                            : ($('#ar_status_code').val() == 242 
+                                ? "Status code None is selected, do you want to proceed?" 
+                                : "Denial code None is selected, do you want to proceed?"),
+                        icon: "success",
+                        buttonsStyling: false,
+                        showCancelButton: true,
+                        confirmButtonText: "Yes",
+                        cancelButtonText: "No",
+                        reverseButtons: true,
+                        customClass: {
+                            confirmButton: "btn font-weight-bold btn-white-black",
+                            cancelButton: "btn font-weight-bold btn-light-danger",
+                        }
+                    }).then(function(result) {
+                        if (result.value == true) {
+                            statusInput = 0; // proceed
+                            // showSubmitPopup(); // directly show submit popup here
+                                 console.log(inputTypeValue ,inputTypeRadioValue  ,duplicateValue , statusInput ,'input');
+                            if (inputTypeValue == 0 && inputTypeRadioValue == 0 && duplicateValue == 0 && statusInput == 0) {
+                           
+                                
+                                showSubmitPopup();
+                            } else {
+                                return false;
+                            }
+                        } else {
+                            statusInput = 1; // block
+                        }
                     });
+
+                } else {
+                    // If no status/denial check needed, run duplicate check flow
+                    checkDuplicate(duplicateColumnData)
+                        .then((duplicateValue) => {
+                            if (inputTypeValue == 0 && inputTypeRadioValue == 0 && duplicateValue == 0 && statusInput == 0) {
+                                showSubmitPopup();
+                            } else {
+                                return false;
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
+                }
+
+// Function to show submit confirmation
+function showSubmitPopup() {
+    swal.fire({
+        text: "Do you want to update?",
+        icon: "success",
+        buttonsStyling: false,
+        showCancelButton: true,
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+        reverseButtons: true,
+        customClass: {
+            confirmButton: "btn font-weight-bold btn-white-black",
+            cancelButton: "btn font-weight-bold btn-light-danger",
+        }
+    }).then(function(result) {
+        if (result.value == true) {
+            KTApp.block('#myModal_status', {
+                overlayColor: '#000000',
+                state: 'danger',
+                opacity: 0.1,
+                message: 'Fetching...',
+            });
+            document.querySelector('#formConfiguration').submit();
+        }
+    });
+}
+
         
             });
             $("#ckbCheckAll").click(function() {

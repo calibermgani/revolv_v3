@@ -636,9 +636,9 @@ use Carbon\Carbon;
                                                 $statusActionShow = null;
                                             }
                                         @endphp
-                                        @if($statusActionShow != null)
+                                        {{-- @if($statusActionShow != null) --}}
                                             <div class="row mt-4">
-                                                @if($statusActionShow->status_input == 1)
+                                                {{-- @if($statusActionShow->status_input == 1) --}}
                                                     <div class="col-md-6">
                                                         <div class="form-group row">
                                                             <label class="col-md-12 required" id="ar_status_label">
@@ -648,8 +648,8 @@ use Carbon\Carbon;
                                                             </label>
                                                         </div>
                                                     </div>
-                                                @endif
-                                                @if($statusActionShow->action_input == 1)
+                                                {{-- @endif
+                                                @if($statusActionShow->action_input == 1) --}}
                                                     <div class="col-md-6">
                                                         <div class="form-group row">
                                                             <label class="col-md-12 required" id="ar_action_label">
@@ -659,9 +659,9 @@ use Carbon\Carbon;
                                                             </label>
                                                         </div>
                                                     </div>
-                                                @endif
+                                                {{-- @endif --}}
                                             </div>
-                                        @endif
+                                        {{-- @endif --}}
                                          <div class="row mt-4">             
                                             <div class="col-md-6">
                                                 <div class="form-group row">
@@ -1197,16 +1197,23 @@ use Carbon\Carbon;
                 var parentIdVal = $('input[name="parentId"]').val();
                 var chargeStatus = $('#chart_status').text();
                 var inputTypeValue = 0;
-                if (
-                    (statusActionShowJson['status_input'] == 1 && ($('#ar_status_code').val() == '' || $('#ar_status_code').val() == null)) ||
-                    (statusActionShowJson['action_input'] == 1 && ($('#ar_action_code').val() == '' || $('#ar_action_code').val() == null)) ||
+                // if (
+                //     (statusActionShowJson['status_input'] == 1 && ($('#ar_status_code').val() == '' || $('#ar_status_code').val() == null)) ||
+                //     (statusActionShowJson['action_input'] == 1 && ($('#ar_action_code').val() == '' || $('#ar_action_code').val() == null)) ||
+                //     ($('#ar_denial_codes').val() == '' || $('#ar_denial_codes').val() == null)
+                // ) {
+                //     e.preventDefault(); // block form submission
+                //     inputTypeValue = 1; // at least one field is invalid
+                // }
+
+               if (
+                    ($('#ar_status_code').val() == '' || $('#ar_status_code').val() == null) ||
+                    ($('#ar_action_code').val() == '' || $('#ar_action_code').val() == null) ||
                     ($('#ar_denial_codes').val() == '' || $('#ar_denial_codes').val() == null)
                 ) {
                     e.preventDefault(); // block form submission
                     inputTypeValue = 1; // at least one field is invalid
                 }
-
-
                 // Validate status code
                 if ($('#ar_status_code').val() == '' || $('#ar_status_code').val() == null) {
                     $('#ar_status_code').next('.select2-container').find('.select2-selection').css('border', '1px solid red');
