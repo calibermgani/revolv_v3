@@ -2378,7 +2378,7 @@ class ProjectController extends Controller
                 ? Carbon::createFromFormat('Y-m-d', $request->input('coder_work_date'))->toDateString()
                 : ($data['ar_at'] ?? null);
         $dateValue = $request->input('ar_at') ?? $request->input('ar_work_date') ?? $request->input('coder_work_date');
-        $data['ar_at'] = $dateValue ? Carbon::parse($dateValue)->toDateTimeString() : null;
+        $data['ar_at'] = $dateValue ? Carbon::parse($dateValue)->setTime(23, 0, 0)->toDateTimeString(): null;
 
             $originData = $data;
             $originData['ar_notes'] = NULL;
