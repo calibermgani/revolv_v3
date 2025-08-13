@@ -2182,5 +2182,250 @@ class ProjectController extends Controller
                 Log::debug($e->getTraceAsString());
             }
         }
-    
+    public function productionInsert1(Request $request) {
+        try {
+            $prjDetails = $request->project_id != null ? Helpers::projectName($request->project_id) : null;
+            $decodedClientName = $prjDetails && $prjDetails != null ? $prjDetails->project_name : null;
+            $decodedSubProjectName = $request->sub_project_id == NULL
+                ? 'project'
+                : Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
+            $table_name = Str::slug(Str::lower($decodedClientName.'_'.$decodedSubProjectName), '_');
+            $modelName = Str::studly($table_name);
+            $originalModelClass = "App\\Models\\" . $modelName;
+            $modelClass = "App\\Models\\" . $modelName.'Datas';
+
+            if (class_exists($originalModelClass)) {
+                $query = $originalModelClass::query();
+                $data = [];
+                foreach ($request->except('token', 'project_id', 'sub_project_id') as $key => $value) {
+                     if (is_array($value)) {
+                        $value = implode('_el_', $value);
+                    }
+                    $d = \DateTime::createFromFormat('Y-m-d', $value);
+                    $isValid = $d && $d->format('Y-m-d') === $value;
+
+                    if (is_numeric($value) || is_bool($value)) {
+                        $query->where($key, $value);
+                    } elseif ($isValid) {
+                        $query->whereDate($key, '=', $value);
+                    } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                        $query->where($key, $value);
+                    } else {
+                        if ($value != null) {
+                            $query->where($key, 'like', '%' . $value . '%');
+                        }
+                    }
+                }
+
+               dd($query->toSql(), $query->getBindings());
+                     $modelClass::create($data);  
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Model class {$originalModelClass} not found."
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // public function productionInsert(Request $request){
+    //     try {
+    //         $prjDetails = $request->project_id ? Helpers::projectName($request->project_id) : null;
+    //         $decodedClientName = $prjDetails?->project_name;
+    //         $decodedSubProjectName = $request->sub_project_id
+    //             ? Helpers::subProjectName($request->project_id, $request->sub_project_id)?->sub_project_name
+    //             : 'project';
+
+    //         $table_name = Str::slug(Str::lower($decodedClientName . '_' . $decodedSubProjectName), '_');
+    //         $modelName = Str::studly($table_name);
+    //         $originalModelClass = "App\\Models\\" . $modelName;
+    //         $modelClass = $originalModelClass . 'Datas';
+
+    //         if (!class_exists($originalModelClass)) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => "Model class {$originalModelClass} not found."
+    //             ], 404);
+    //         }
+
+    //         $data = [];
+    //         foreach ($request->except('token', 'project_id', 'sub_project_id') as $key => $value) {
+    //             $data[$key] = is_array($value) ? implode('_el_', $value) : $value;
+    //         }
+
+    //         $data['chart_status'] = "CE_Completed";
+    //         $data['qa_work_status'] = "Auto_Close";
+    //         $data['CE_emp_id'] = ($request->filled('CE_emp_id') || $request->filled('AR_emp_id')) ? $request->input('CE_emp_id') : null;         
+    //         $data['coder_work_date'] = ($request->filled('coder_work_date') || $request->filled('ar_work_date'))
+    //             ? Carbon::createFromFormat('Y-m-d', $request->input('coder_work_date'))->toDateString()
+    //             : ($data['invoke_date'] ?? null);
+
+    //         $originData = $data;
+    //         $originData['ar_notes'] = NULL;
+    //         $originData['ar_status_code'] = NULL;
+    //         $originData['ar_action_code'] = NULL;
+    //         $originData['ar_denial_codes'] = NULL;
+    //         $originData['ar_substatus_codes'] = NULL;
+
+    //         // 1️⃣ Save in original model
+    //         $parentRecord = $originalModelClass::create($originData);
+
+    //         // 2️⃣ Insert into modelClass with parent_id
+    //         if (class_exists($modelClass)) {
+    //             $data['parent_id'] = $parentRecord->id;
+    //             $modelClass::create($data);
+    //         }
+
+    //         return response()->json(['success' => true, 'message' => 'Record inserted.']);
+
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'error' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+    public function productionInsert(Request $request) {
+        try {
+            $prjDetails = $request->project_id ? Helpers::projectName($request->project_id) : null;
+            $decodedClientName = $prjDetails?->project_name;
+            $decodedSubProjectName = $request->sub_project_id
+                ? Helpers::subProjectName($request->project_id, $request->sub_project_id)?->sub_project_name
+                : 'project';
+
+            $table_name = Str::slug(Str::lower($decodedClientName . '_' . $decodedSubProjectName), '_');
+            $modelName = Str::studly($table_name);
+            $originalModelClass = "App\\Models\\" . $modelName;
+            $modelClass = $originalModelClass . 'Datas';
+
+            if (!class_exists($originalModelClass)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Model class {$originalModelClass} not found."
+                ], 404);
+            }
+
+            // Collect validation errors
+            $errors = [];
+            foreach ($request->except('token', 'project_id', 'sub_project_id') as $key => $value) {
+                $data[$key] = is_array($value) ? implode('_el_', $value) : $value;
+            }
+            // Validate AR Status Code
+            if (!empty($request->ar_status_code)) {
+                $statCodes = $request->ar_status_code == '--' ? "None" : $request->ar_status_code;
+                $status = \App\Models\ARStatusCodes::where('status_code', $statCodes)->first();
+                if (!$status) {
+                    $errors['ar_status_code'] = "Invalid status code: {$request->ar_status_code}";
+                } else {
+                    $data['ar_status_code'] = $status->id; // Use ID instead of code
+                }
+            }
+
+            // Validate AR Action Code
+            if (!empty($request->ar_action_code)) {
+                $actionCodes = $request->ar_action_code == '--' ? "None" : $request->ar_action_code;
+                $action = \App\Models\ARActionCodes::where('action_code', $actionCodes)->first();
+                if (!$action) {
+                    $errors['ar_action_code'] = "Invalid action code: {$request->ar_action_code}";
+                } else {
+                    $data['ar_action_code'] = $action->id;
+                }
+            }
+
+            // Validate AR Denial Code
+            if (!empty($request->ar_denial_codes)) {
+                $denialCodes = $request->ar_denial_codes == '--' ? "N" : $request->ar_denial_codes;
+                $denial = \App\Models\ARDenialCode::where('denial_code', $denialCodes)->first();
+                if (!$denial) {
+                    $errors['ar_denial_codes'] = "Invalid denial code: {$request->ar_denial_codes}";
+                } else {
+                    $data['ar_denial_codes'] = $denial->id;
+                }
+            }
+
+            // Validate AR Substatus Code
+            if (!empty($request->ar_substatus_codes)) {
+                $subStatusCodes = $request->ar_substatus_codes == '--' ? "None" : $request->ar_substatus_codes;
+                $substatus = \App\Models\ARSubStatusCode::where('sub_status_code_description', $subStatusCodes)->first();
+                if (!$substatus) {
+                    $errors['ar_substatus_codes'] = "Invalid substatus code: { $request->ar_substatus_codes}";
+                } else {
+                    $data['ar_substatus_codes'] = $substatus->id;
+                }
+            }
+
+            // If any validation fails, return to Python
+            if (!empty($errors)) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $errors,
+                    'row_data' => $request->all()
+                ], 422);
+            }
+
+            // Build common data
+        
+
+            $data['chart_status'] = "CE_Completed";
+            $data['qa_work_status'] = "Auto_Close";
+            $data['CE_emp_id'] = ($request->filled('CE_emp_id') || $request->filled('AR_emp_id')) ? $request->input('CE_emp_id') : null;
+            $data['coder_work_date'] = ($request->filled('coder_work_date') || $request->filled('ar_work_date'))
+                ? Carbon::createFromFormat('Y-m-d', $request->input('coder_work_date'))->toDateString()
+                : ($data['ar_at'] ?? null);
+        $dateValue = $request->input('ar_at') ?? $request->input('ar_work_date') ?? $request->input('coder_work_date');
+        $data['ar_at'] = $dateValue ? Carbon::parse($dateValue)->toDateTimeString() : null;
+
+            $originData = $data;
+            $originData['ar_notes'] = NULL;
+            $originData['ar_status_code'] = NULL;
+            $originData['ar_action_code'] = NULL;
+            $originData['ar_denial_codes'] = NULL;
+            $originData['ar_substatus_codes'] = NULL;
+                // Check for duplicate record
+                // $duplicate = $originalModelClass::where($originData)->first();
+                // if ($duplicate) {
+                //     return response()->json([
+                //         'success' => false,
+                //         'duplicate' => true,
+                //         'message' => 'Record already exists in database',
+                //         'row_data' => $request->all()
+                //     ], 409); // 409 Conflict
+                // }
+
+            // Insert into original model
+            $parentRecord = $originalModelClass::create($originData);
+
+            // Insert into modelClass
+            if (class_exists($modelClass)) {
+                $data['parent_id'] = $parentRecord->id;
+                $callChartData['emp_id'] =  $data['CE_emp_id'];
+                $callChartData['project_id'] = $request->project_id;
+                $callChartData['sub_project_id'] = $request->sub_project_id;
+                $callChartData['record_id'] = $parentRecord->id;
+                $callChartData['start_time'] = $data['ar_at'];
+                $callChartData['end_time'] = $data['ar_at'];
+                $callChartData['work_time'] = "00:00:00";
+                $callChartData['record_status'] = "CE_Completed";
+                $modelClass::create($data);
+            CallerChartsWorkLogs::create($callChartData);
+            }
+        
+
+            return response()->json(['success' => true, 'message' => 'Record inserted.']);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+
 }
