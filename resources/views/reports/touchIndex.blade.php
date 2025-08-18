@@ -271,7 +271,7 @@
                     overlayColor: '#000000',
                     state: 'danger',
                     opacity: 0.1,
-                    message: 'data Fetching...',
+                    message: 'Fetching...',
                 });
                 $.ajaxSetup({
                     headers: {
