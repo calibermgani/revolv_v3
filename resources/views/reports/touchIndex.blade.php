@@ -271,7 +271,7 @@
                     overlayColor: '#000000',
                     state: 'danger',
                     opacity: 0.1,
-                    message: 'Fetching...',
+                    message: 'data Fetching...',
                 });
                 $.ajaxSetup({
                     headers: {
@@ -347,7 +347,9 @@
                                 error: function(jqXHR, exception) {
                                 }
                             });
-                    } else {  }
+                        } else {
+                            KTApp.unblock('#reportModal');
+                        }
                     });
                 } else {
                     $.ajax({
