@@ -6,14 +6,14 @@
             <span class="project_header">Report</span>
             <div>
                 <button class="btn1" id="reportModalBtn" style="width: 171px;">
-                    <img src="{{ asset('assets/svg/generate_report.svg') }}">&nbsp;&nbsp;<strong>Generate Report</strong>
+                    <img src="{{ asset('assets/svg/generate_report.svg') }}">&nbsp;&nbsp;<strong>Generate Touch Report</strong>
                 </button>
             </div>
         </div>
         <div class="text-center" style="height:100%">
             <div>
                 <img src="{{ asset('assets/svg/green_human_image.svg') }}">
-                <p style="margin-top: 30px">Click Generate report to get response</p>
+                <p style="margin-top: 30px">Click Generate touch report to get response</p>
             </div>
         </div>
     </div>
@@ -43,7 +43,7 @@
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header" style="background-color: #139AB3;height: 84px">
-                <h5 class="modal-title" id="modalLabel" style="color: #ffffff;" >Generate report</h5>
+                <h5 class="modal-title" id="modalLabel" style="color: #ffffff;" >Generate touch report</h5>
                 <button type="button" class="close comment_close" data-dismiss="modal" aria-hidden="true">&times;</button>
             </div>
             <div class="modal-body" style="background-color: #139AB3;height: 84px">
@@ -78,7 +78,7 @@
                 </div>
             </div>
             <div class="modal-body m-10" id="project_assign_body">
-                <p style="text-align: center">Select Projects to Generate Report</p>
+                <p style="text-align: center">Select Projects to Generate Touch Report</p>
             </div>
             <div class="modal-body m-10" id="no_data" style="display: none">
                 <p style="text-align: center">No Data Available</p>
