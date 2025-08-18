@@ -1508,6 +1508,7 @@ class ReportsController extends Controller
                             )
                             ->groupBy(DB::raw($groupByColumns))
                             ->orderBy(DB::raw($groupByColumns))
+                            ->having('touch_count', '>', 1)
                             ->get();                       
 
                     }
