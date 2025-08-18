@@ -165,6 +165,9 @@ Route::group(['prefix' => 'qa_production'], function () {
         Route::any('production_mgr_comments_report', 'App\Http\Controllers\Reports\ReportsController@productionMgrUserReport');
         Route::any('user_project_report', 'App\Http\Controllers\Reports\ReportsController@userProjectReport');
         Route::any('user_project_report_export', 'App\Http\Controllers\Reports\ReportsController@userProjectReportExport');
+        Route::any('touch_reports', 'App\Http\Controllers\Reports\ReportsController@touchReportsIndex');
+        Route::any('touch_report_client_assigned_tab', 'App\Http\Controllers\Reports\ReportsController@touchReportClientAssignedTab');
+        Route::any('touch_report_client_columns_list', 'App\Http\Controllers\Reports\ReportsController@touchReportClientColumnsList');
       
     });
     Route::group(['prefix' => 'production'], function () {

@@ -1385,5 +1385,175 @@ class ReportsController extends Controller
             return redirect('/');
         }
     }
+    public function touchReportsIndex(){
+        return view('reports.touchIndex');
+    }
 
+     public function touchReportClientAssignedTab(Request $request) {
+
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+            $client = new Client(['verify' => false]);
+            try {
+                $subProject = Helpers::subProjectList($request->project_id);
+                $decodedClientName = Helpers::projectName($request->project_id) != null ? Helpers::projectName($request->project_id)->project_name : null;
+                $decodedsubProjectName = $request->sub_project_id == null ? 'project' :($request->project_id != null ? Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name : null);
+                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
+                $columnsHeader=[];
+                if (Schema::hasTable($table_name)) {
+                    if ($decodedsubProjectName == 'project' && count($subProject) == 1) {
+                        $column_names = DB::select("DESCRIBE $table_name");
+                        $columns = array_column($column_names, 'Field');
+                        $columnsToExclude = ['invoke_date','CE_emp_id','QA_emp_id','chart_status','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','QA_status_code','QA_sub_status_code','qa_classification',
+                       'qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date','updated_at','created_at', 'deleted_at','cpt_trends','icd_trends','modifiers','annex_coder_trends', 'annex_qa_trends', 'qa_cpt_trends', 'qa_icd_trends',
+                       'QA_comments_count','coder_work_date','qa_work_date','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','ar_status_code','ar_action_code','ar_manager_rebuttal_status','ar_manager_rebuttal_comments',
+                       'qa_manager_rebuttal_status','ar_substatus_codes','ar_denial_codes','qa_manager_rebuttal_comments'];
+                        $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
+                            return !in_array($column, $columnsToExclude);
+                        });
+                    } else if ($decodedsubProjectName !== 'project') {
+                        $column_names = DB::select("DESCRIBE $table_name");
+                        $columns = array_column($column_names, 'Field');
+                        $columnsToExclude = ['invoke_date','CE_emp_id','QA_emp_id','chart_status','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','QA_status_code','QA_sub_status_code','qa_classification',
+                             'qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date','updated_at','created_at', 'deleted_at','cpt_trends','icd_trends','modifiers','annex_coder_trends', 'annex_qa_trends', 'qa_cpt_trends', 'qa_icd_trends',
+                             'QA_comments_count','coder_work_date','qa_work_date','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','ar_status_code','ar_action_code','ar_manager_rebuttal_status','ar_manager_rebuttal_comments',
+                             'qa_manager_rebuttal_status','ar_substatus_codes','ar_denial_codes','qa_manager_rebuttal_comments'];
+                        $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
+                            return !in_array($column, $columnsToExclude);
+                        });
+                    }
+                }
+                if($request->sub_project_id != null && $request->sub_project_id != "") {
+                    $statusActionShow = projectInputSetting::where('sub_project_id',$request->sub_project_id)->first();                                                                                                                              
+                } else {
+                    $statusActionShow = null;
+                } 
+                if($statusActionShow != null) {
+                    if($statusActionShow->sub_project_id == $request->sub_project_id && $statusActionShow->status_input != 1) {
+                        $key = array_search('ar_status_code', $columnsHeader);
+                                if ($key !== false) {
+                                    unset($columnsHeader[$key]); 
+                                }           
+                    }
+                    if($statusActionShow->sub_project_id == $request->sub_project_id && $statusActionShow->action_input != 1) {
+                        $key = array_search('ar_action_code', $columnsHeader);
+                                if ($key !== false) {
+                                    unset($columnsHeader[$key]); 
+                                }           
+                    }
+
+                }
+                return response()->json([
+                    'success' => true,
+                    'columnsHeader' => $columnsHeader,
+                ]);
+            } catch (Exception $e) {
+                log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
+    public function touchReportClientColumnsList(Request $request) {
+        if (Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
+            try {
+                $paProject = Helpers::projectName($request->project_id);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
+                $decodedsubProjectName = $request->sub_project_id == null
+                    ? 'project'
+                    : ($request->project_id != null
+                        ? (Helpers::subProjectName($request->project_id, $request->sub_project_id) != null
+                            ? Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name
+                            : null)
+                        : null);
+
+                $table_name = Str::slug(
+                    Str::lower($decodedClientName) . '_' . Str::lower($decodedsubProjectName),
+                    '_'
+                );
+
+                $modelName = Str::studly($table_name);
+                $modelClass = "App\\Models\\" . $modelName;
+                if (!empty($request->checkedValues)) {
+                    if ($request->checkedValues[0] === 'all') {
+                        $checkedValues = array_diff($request->checkedValues, ['all']);
+                    } else {
+                        $checkedValues = $request->checkedValues;
+                    }
+
+                    // Build safe SQL parts
+                    $selectColumns = implode(',', $checkedValues);
+                    $groupByColumns = implode(',', array_map(fn($col) => "t.$col", $checkedValues));
+                    $notNullConditions = implode(' AND ', array_map(fn($col) => "$col IS NOT NULL", $checkedValues));
+                        $columns = Schema::getColumnListing($table_name);
+
+                        // Exclude columns that should not be selected
+                        $exclude = ['id']; // add more if needed
+                        $columns = array_diff($columns, $exclude);
+                    if (class_exists($modelClass)) {
+                        $client_data = DB::table(DB::raw("(  
+                            SELECT 
+                                {$selectColumns},
+                                coder_work_date,
+                                COUNT(*) AS final_touch_count
+                            FROM {$table_name}
+                            WHERE coder_work_date IS NOT NULL
+                            AND {$notNullConditions}
+                            GROUP BY {$selectColumns}, coder_work_date
+                        ) as t"))
+                            ->select(
+                                DB::raw($selectColumns),
+                                DB::raw('COUNT(*) AS touch_count'),
+                                DB::raw('SUM(final_touch_count) AS total_touches'),
+                                DB::raw("GROUP_CONCAT(DISTINCT DATE_FORMAT(coder_work_date, '%m/%d/%Y') ORDER BY coder_work_date ASC SEPARATOR ', ') AS work_date")
+                            )
+                            ->groupBy(DB::raw($groupByColumns))
+                            ->orderBy(DB::raw($groupByColumns))
+                            ->get();                       
+
+                    }
+                } else {
+                    $client_data = [];
+                    $checkedValues = [];
+                }
+                if($checkedValues == null || count($checkedValues) == 0) {
+                        return response()->json([
+                            'error' => true
+                        ]);
+                }
+                // Prepare table output
+                $body_info = '<table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter" id="report_list"><thead><tr>';
+                // $additionalValues = ['final_touch_count','touch_count','total_touches'];
+                $additionalValues = ['work_date','touch_count'];
+                $checkedValues = count($checkedValues) > 0 ? array_merge($checkedValues, $additionalValues) : $checkedValues;
+
+                foreach ($checkedValues as $header) {
+                    $body_info .= '<th>' . ucwords(str_replace(['_else_', '_'], ['/', ' '], $header)) . '</th>';
+                }
+                $body_info .= '</tr></thead><tbody>';
+
+                foreach ($client_data as $row) {
+                    $body_info .= '<tr>';
+                    foreach ($checkedValues as $header) {
+                        $data = isset($row->{$header}) && $row->{$header} !== '' ? $row->{$header} : "--";
+                        $body_info .= '<td class="wrap-text">' . $data . '</td>';
+                    }
+                    $body_info .= '</tr>';
+                }
+
+                $body_info .= '</tbody></table>';
+
+                return response()->json([
+                    'success' => true,
+                    'body_info' => $body_info,
+                ]);
+            } catch (Exception $e) {
+                Log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
+
+
+   
 }
