@@ -5,7 +5,7 @@
         <div class="d-flex justify-content-between align-items-center m-2">
             <span class="project_header">Report</span>
             <div>
-                <button class="btn1" id="reportModalBtn" style="width: 171px;">
+                <button class="btn1" id="reportModalBtn" style="width: 214px;">
                     <img src="{{ asset('assets/svg/generate_report.svg') }}">&nbsp;&nbsp;<strong>Generate Touch Report</strong>
                 </button>
             </div>
