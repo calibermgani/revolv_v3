@@ -233,6 +233,7 @@
                             $('#no_data').show();
                             $('#project_assign_body').hide();
                             $('#headers_modal').hide();
+                             $('#select_all_columns').prop('checked', false);
                         }
                     },
                     error: function(jqXHR, exception) {
