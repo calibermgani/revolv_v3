@@ -142,6 +142,7 @@
                 $('#reportModal').modal('show');
                 $('#project_assign_body').show();
                 $('#headers_modal').hide();
+                $('#no_data').hide();
             });
 
             $(document).on('change', '#project_id', function() {
