@@ -200,7 +200,7 @@
                         sub_project_id: sub_project_id
                     },
                     success: function(res) {
-                        if (res.columnsHeader != '') {
+                        if (res.columnsHeader != '' && res.columnsHeader.length > 0) {
                             $('#exampleModalCenterTitle').hide();
                             $('#project_assign_body').hide();
                             $('#no_data').hide();
