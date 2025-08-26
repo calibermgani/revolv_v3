@@ -1259,7 +1259,7 @@ class ProjectAuthAutomationController extends Controller
         }
     }
 
-    public function orthopaedicSpineCenterOfTheRockiesAr(Request $request)
+    public function orthopaedicSpineCenterOfTheRockiesArBkp(Request $request)
     {
         try {
             $attributes = [
@@ -1367,7 +1367,7 @@ class ProjectAuthAutomationController extends Controller
             $e->getMessage();
         }
     }
-    public function orthopaedicSpineCenterOfTheRockiesArDuplicates(Request $request)
+    public function orthopaedicSpineCenterOfTheRockiesArDuplicatesBkp(Request $request)
     {
         try {
                 OscotrArDuplicates::insert([
@@ -3733,6 +3733,174 @@ class ProjectAuthAutomationController extends Controller
             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
+        }
+    }
+
+        public function orthopaedicSpineCenterOfTheRockiesAr(Request $request)
+    {
+        try {
+            $attributes = [
+                 'ticket_number' => isset($request->ticket_number) && $request->ticket_number != "NULL" ? $request->ticket_number : NULL,
+                 'total_pv_bal' => isset($request->total_pv_bal) && $request->total_pv_bal != "NULL" ? $request->total_pv_bal : NULL,
+                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+             ];         
+
+            $duplicateRecordExisting  =  OscotrAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                   OscotrAr::insert([
+                        'division' => isset($request->division) && $request->division != "NULL" ? $request->division : NULL,
+                        'company' => isset($request->company) && $request->company != "NULL" ? $request->company : NULL,
+                        'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                        'doctor' => isset($request->doctor) && $request->doctor != "NULL" ? $request->doctor : NULL,
+                        'patient_internal_id' => isset($request->patient_internal_id) && $request->patient_internal_id != "NULL" ? $request->patient_internal_id : NULL,
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'ticket_number' => isset($request->ticket_number) && $request->ticket_number != "NULL" ? $request->ticket_number : NULL,
+                        'total_chrg' => isset($request->total_chrg) && $request->total_chrg != "NULL" ? $request->total_chrg : NULL,
+                        'financial_class' => isset($request->financial_class) && $request->financial_class != "NULL" ? $request->financial_class : NULL,
+                        'primary_insur_carrier' => isset($request->primary_insur_carrier) && $request->primary_insur_carrier != "NULL" ? $request->primary_insur_carrier : NULL,
+                        'primary_insur_group' => isset($request->primary_insur_group) && $request->primary_insur_group != "NULL" ? $request->primary_insur_group : NULL,
+                        'current_insur_carrier' => isset($request->current_insur_carrier) && $request->current_insur_carrier != "NULL" ? $request->current_insur_carrier : NULL,
+                        'current_insur_group' => isset($request->current_insur_group) && $request->current_insur_group != "NULL" ? $request->current_insur_group : NULL,
+                        'total_pmnt' => isset($request->total_pmnt) && $request->total_pmnt != "NULL" ? $request->total_pmnt : NULL,
+                        'total_adj' => isset($request->total_adj) && $request->total_adj != "NULL" ? $request->total_adj : NULL,
+                        'total_pv_bal' => isset($request->total_pv_bal) && $request->total_pv_bal != "NULL" ? $request->total_pv_bal : NULL,
+                        'insur_alloc' => isset($request->insur_alloc) && $request->insur_alloc != "NULL" ? $request->insur_alloc : NULL,
+                        'insur_pmnt' => isset($request->insur_pmnt) && $request->insur_pmnt != "NULL" ? $request->insur_pmnt : NULL,
+                        'insur_adj' => isset($request->insur_adj) && $request->insur_adj != "NULL" ? $request->insur_adj : NULL,
+                        'insur_pv_bal' => isset($request->insur_pv_bal) && $request->insur_pv_bal != "NULL" ? $request->insur_pv_bal : NULL,
+                        'patient_alloc' => isset($request->patient_alloc) && $request->patient_alloc != "NULL" ? $request->patient_alloc : NULL,
+                        'patient_pmnt' => isset($request->patient_pmnt) && $request->patient_pmnt != "NULL" ? $request->patient_pmnt : NULL,
+                        'patient_adj' => isset($request->patient_adj) && $request->patient_adj != "NULL" ? $request->patient_adj : NULL,
+                        'patient_pv_bal' => isset($request->patient_pv_bal) && $request->patient_pv_bal != "NULL" ? $request->patient_pv_bal : NULL,
+                        'visit_description' => isset($request->visit_description) && $request->visit_description != "NULL" ? $request->visit_description : NULL,
+                        'visit_owner' => isset($request->visit_owner) && $request->visit_owner != "NULL" ? $request->visit_owner : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                        return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords  =  OscotrAr::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'division' => isset($request->division) && $request->division != "NULL" ? $request->division : NULL,
+                            'company' => isset($request->company) && $request->company != "NULL" ? $request->company : NULL,
+                            'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                            'doctor' => isset($request->doctor) && $request->doctor != "NULL" ? $request->doctor : NULL,
+                            'patient_internal_id' => isset($request->patient_internal_id) && $request->patient_internal_id != "NULL" ? $request->patient_internal_id : NULL,
+                            'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'ticket_number' => isset($request->ticket_number) && $request->ticket_number != "NULL" ? $request->ticket_number : NULL,
+                            'total_chrg' => isset($request->total_chrg) && $request->total_chrg != "NULL" ? $request->total_chrg : NULL,
+                            'financial_class' => isset($request->financial_class) && $request->financial_class != "NULL" ? $request->financial_class : NULL,
+                            'primary_insur_carrier' => isset($request->primary_insur_carrier) && $request->primary_insur_carrier != "NULL" ? $request->primary_insur_carrier : NULL,
+                            'primary_insur_group' => isset($request->primary_insur_group) && $request->primary_insur_group != "NULL" ? $request->primary_insur_group : NULL,
+                            'current_insur_carrier' => isset($request->current_insur_carrier) && $request->current_insur_carrier != "NULL" ? $request->current_insur_carrier : NULL,
+                            'current_insur_group' => isset($request->current_insur_group) && $request->current_insur_group != "NULL" ? $request->current_insur_group : NULL,
+                            'total_pmnt' => isset($request->total_pmnt) && $request->total_pmnt != "NULL" ? $request->total_pmnt : NULL,
+                            'total_adj' => isset($request->total_adj) && $request->total_adj != "NULL" ? $request->total_adj : NULL,
+                            'total_pv_bal' => isset($request->total_pv_bal) && $request->total_pv_bal != "NULL" ? $request->total_pv_bal : NULL,
+                            'insur_alloc' => isset($request->insur_alloc) && $request->insur_alloc != "NULL" ? $request->insur_alloc : NULL,
+                            'insur_pmnt' => isset($request->insur_pmnt) && $request->insur_pmnt != "NULL" ? $request->insur_pmnt : NULL,
+                            'insur_adj' => isset($request->insur_adj) && $request->insur_adj != "NULL" ? $request->insur_adj : NULL,
+                            'insur_pv_bal' => isset($request->insur_pv_bal) && $request->insur_pv_bal != "NULL" ? $request->insur_pv_bal : NULL,
+                            'patient_alloc' => isset($request->patient_alloc) && $request->patient_alloc != "NULL" ? $request->patient_alloc : NULL,
+                            'patient_pmnt' => isset($request->patient_pmnt) && $request->patient_pmnt != "NULL" ? $request->patient_pmnt : NULL,
+                            'patient_adj' => isset($request->patient_adj) && $request->patient_adj != "NULL" ? $request->patient_adj : NULL,
+                            'patient_pv_bal' => isset($request->patient_pv_bal) && $request->patient_pv_bal != "NULL" ? $request->patient_pv_bal : NULL,
+                            'visit_description' => isset($request->visit_description) && $request->visit_description != "NULL" ? $request->visit_description : NULL,
+                            'visit_owner' => isset($request->visit_owner) && $request->visit_owner != "NULL" ? $request->visit_owner : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                     OscotrAr::insert([
+                        'division' => isset($request->division) && $request->division != "NULL" ? $request->division : NULL,
+                        'company' => isset($request->company) && $request->company != "NULL" ? $request->company : NULL,
+                        'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                        'doctor' => isset($request->doctor) && $request->doctor != "NULL" ? $request->doctor : NULL,
+                        'patient_internal_id' => isset($request->patient_internal_id) && $request->patient_internal_id != "NULL" ? $request->patient_internal_id : NULL,
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'ticket_number' => isset($request->ticket_number) && $request->ticket_number != "NULL" ? $request->ticket_number : NULL,
+                        'total_chrg' => isset($request->total_chrg) && $request->total_chrg != "NULL" ? $request->total_chrg : NULL,
+                        'financial_class' => isset($request->financial_class) && $request->financial_class != "NULL" ? $request->financial_class : NULL,
+                        'primary_insur_carrier' => isset($request->primary_insur_carrier) && $request->primary_insur_carrier != "NULL" ? $request->primary_insur_carrier : NULL,
+                        'primary_insur_group' => isset($request->primary_insur_group) && $request->primary_insur_group != "NULL" ? $request->primary_insur_group : NULL,
+                        'current_insur_carrier' => isset($request->current_insur_carrier) && $request->current_insur_carrier != "NULL" ? $request->current_insur_carrier : NULL,
+                        'current_insur_group' => isset($request->current_insur_group) && $request->current_insur_group != "NULL" ? $request->current_insur_group : NULL,
+                        'total_pmnt' => isset($request->total_pmnt) && $request->total_pmnt != "NULL" ? $request->total_pmnt : NULL,
+                        'total_adj' => isset($request->total_adj) && $request->total_adj != "NULL" ? $request->total_adj : NULL,
+                        'total_pv_bal' => isset($request->total_pv_bal) && $request->total_pv_bal != "NULL" ? $request->total_pv_bal : NULL,
+                        'insur_alloc' => isset($request->insur_alloc) && $request->insur_alloc != "NULL" ? $request->insur_alloc : NULL,
+                        'insur_pmnt' => isset($request->insur_pmnt) && $request->insur_pmnt != "NULL" ? $request->insur_pmnt : NULL,
+                        'insur_adj' => isset($request->insur_adj) && $request->insur_adj != "NULL" ? $request->insur_adj : NULL,
+                        'insur_pv_bal' => isset($request->insur_pv_bal) && $request->insur_pv_bal != "NULL" ? $request->insur_pv_bal : NULL,
+                        'patient_alloc' => isset($request->patient_alloc) && $request->patient_alloc != "NULL" ? $request->patient_alloc : NULL,
+                        'patient_pmnt' => isset($request->patient_pmnt) && $request->patient_pmnt != "NULL" ? $request->patient_pmnt : NULL,
+                        'patient_adj' => isset($request->patient_adj) && $request->patient_adj != "NULL" ? $request->patient_adj : NULL,
+                        'patient_pv_bal' => isset($request->patient_pv_bal) && $request->patient_pv_bal != "NULL" ? $request->patient_pv_bal : NULL,
+                        'visit_description' => isset($request->visit_description) && $request->visit_description != "NULL" ? $request->visit_description : NULL,
+                        'visit_owner' => isset($request->visit_owner) && $request->visit_owner != "NULL" ? $request->visit_owner : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record reinserted Successfully']);
+                }
+                
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function orthopaedicSpineCenterOfTheRockiesArDuplicates(Request $request)
+    {
+        try {
+                OscotrArDuplicates::insert([
+                       'division' => isset($request->division) && $request->division != "NULL" ? $request->division : NULL,
+                        'company' => isset($request->company) && $request->company != "NULL" ? $request->company : NULL,
+                        'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                        'doctor' => isset($request->doctor) && $request->doctor != "NULL" ? $request->doctor : NULL,
+                        'patient_internal_id' => isset($request->patient_internal_id) && $request->patient_internal_id != "NULL" ? $request->patient_internal_id : NULL,
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'ticket_number' => isset($request->ticket_number) && $request->ticket_number != "NULL" ? $request->ticket_number : NULL,
+                        'total_chrg' => isset($request->total_chrg) && $request->total_chrg != "NULL" ? $request->total_chrg : NULL,
+                        'financial_class' => isset($request->financial_class) && $request->financial_class != "NULL" ? $request->financial_class : NULL,
+                        'primary_insur_carrier' => isset($request->primary_insur_carrier) && $request->primary_insur_carrier != "NULL" ? $request->primary_insur_carrier : NULL,
+                        'primary_insur_group' => isset($request->primary_insur_group) && $request->primary_insur_group != "NULL" ? $request->primary_insur_group : NULL,
+                        'current_insur_carrier' => isset($request->current_insur_carrier) && $request->current_insur_carrier != "NULL" ? $request->current_insur_carrier : NULL,
+                        'current_insur_group' => isset($request->current_insur_group) && $request->current_insur_group != "NULL" ? $request->current_insur_group : NULL,
+                        'total_pmnt' => isset($request->total_pmnt) && $request->total_pmnt != "NULL" ? $request->total_pmnt : NULL,
+                        'total_adj' => isset($request->total_adj) && $request->total_adj != "NULL" ? $request->total_adj : NULL,
+                        'total_pv_bal' => isset($request->total_pv_bal) && $request->total_pv_bal != "NULL" ? $request->total_pv_bal : NULL,
+                        'insur_alloc' => isset($request->insur_alloc) && $request->insur_alloc != "NULL" ? $request->insur_alloc : NULL,
+                        'insur_pmnt' => isset($request->insur_pmnt) && $request->insur_pmnt != "NULL" ? $request->insur_pmnt : NULL,
+                        'insur_adj' => isset($request->insur_adj) && $request->insur_adj != "NULL" ? $request->insur_adj : NULL,
+                        'insur_pv_bal' => isset($request->insur_pv_bal) && $request->insur_pv_bal != "NULL" ? $request->insur_pv_bal : NULL,
+                        'patient_alloc' => isset($request->patient_alloc) && $request->patient_alloc != "NULL" ? $request->patient_alloc : NULL,
+                        'patient_pmnt' => isset($request->patient_pmnt) && $request->patient_pmnt != "NULL" ? $request->patient_pmnt : NULL,
+                        'patient_adj' => isset($request->patient_adj) && $request->patient_adj != "NULL" ? $request->patient_adj : NULL,
+                        'patient_pv_bal' => isset($request->patient_pv_bal) && $request->patient_pv_bal != "NULL" ? $request->patient_pv_bal : NULL,
+                        'visit_description' => isset($request->visit_description) && $request->visit_description != "NULL" ? $request->visit_description : NULL,
+                        'visit_owner' => isset($request->visit_owner) && $request->visit_owner != "NULL" ? $request->visit_owner : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
         }
     }
 
