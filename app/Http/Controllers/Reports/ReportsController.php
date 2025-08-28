@@ -487,7 +487,7 @@ class ReportsController extends Controller
                 foreach ($error_data as $data) {
                     $decodePrjName = Helpers::projectName($data->project_id);
                     $decodedClientName = $decodePrjName ? Helpers::projectName($data->project_id)->aims_project_name : '--';
-                     $decodedsubProjectName = $data->sub_project_id == NULL ? '--' : $decodePrjName && (Helpers::subProjectName($data->project_id, $data->sub_project_id) != null ?Helpers::subProjectName($data->project_id, $data->sub_project_id)->sub_project_name : null);dd(Helpers::subProjectName($data->project_id, $data->sub_project_id)->sub_project_name,$decodedsubProjectName,$decodePrjName,$data->project_id, $data->sub_project_id);
+                     $decodedsubProjectName = $data->sub_project_id == NULL ? '--' : $decodePrjName && (Helpers::subProjectName($data->project_id, $data->sub_project_id) != null ? Helpers::subProjectName($data->project_id, $data->sub_project_id) : null);dd(Helpers::subProjectName($data->project_id, $data->sub_project_id)->sub_project_name,$decodedsubProjectName,$decodePrjName,$data->project_id, $data->sub_project_id);
                     // $decodedsubProjectName = $request->sub_project_id == null ? 'project' :($request->project_id != null ? (Helpers::subProjectName($request->project_id, $request->sub_project_id) != null ?Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name : null) : null);
                     $errorStatusCode = $data->error_status_code != NULL ? $data->error_status_code : '--';
                     $errorDate =  $data->error_date != NULL ? date('m/d/Y g:i A', strtotime($data->error_date)) : '--';
