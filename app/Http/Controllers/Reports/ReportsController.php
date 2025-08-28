@@ -489,7 +489,7 @@ class ReportsController extends Controller
                     $decodedClientName = $decodePrjName ? Helpers::projectName($data->project_id)->aims_project_name : '--';
                     // $decodedsubProjectName = $data->sub_project_id == NULL ? '--' : $decodePrjName && (Helpers::subProjectName($data->project_id, $data->sub_project_id) != null ?Helpers::subProjectName($data->project_id, $data->sub_project_id)->sub_project_name : null);
                     // $decodedsubProjectName = $request->sub_project_id == null ? 'project' :($request->project_id != null ? (Helpers::subProjectName($request->project_id, $request->sub_project_id) != null ?Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name : null) : null);
-                    $decodedsubProjectName = $data->sub_project_id == null ? '--': (Helpers::subProjectName($data->project_id, $data->sub_project_id) != null ? Helpers::subProjectName($data->project_id, $data->sub_project_id)->sub_project_name : null);
+                    $decodedsubProjectName = $data->sub_project_id == null ? '--': ($decodedClientName != '--' && Helpers::subProjectName($data->project_id, $data->sub_project_id) != null ? Helpers::subProjectName($data->project_id, $data->sub_project_id)->sub_project_name : '--');
 
                     $errorStatusCode = $data->error_status_code != NULL ? $data->error_status_code : '--';
                     $errorDate =  $data->error_date != NULL ? date('m/d/Y g:i A', strtotime($data->error_date)) : '--';
