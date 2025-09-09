@@ -2435,7 +2435,7 @@ class ProjectController extends Controller
     }
 
     public function backendUploadTemplateExeFile(Request $request){
-        try {dd($request->all());
+        try {
             $attributes = [
                 'project_id' => isset($request->project_id) ? $request->project_id : NULL,
                 'sub_project_id' => isset($request->sub_project_id) && $request->sub_project_id != "NULL" ? $request->sub_project_id : NULL,
@@ -2448,7 +2448,7 @@ class ProjectController extends Controller
                 'sub_project_id' => isset($request->sub_project_id) && $request->sub_project_id != "NULL" ? $request->sub_project_id : NULL
             ];
 
-            $formExists = formConfiguration::where($prjwhereAttributes)->exists();
+            $formExists = formConfiguration::where($prjwhereAttributes)->exists();dd($formExists);
             $prjExists = project::where($prjwhereAttributes)->exists();dd($prjExists,$formExists);
             if ($prjExists && $formExists) {
                 $currentDate = Carbon::now()->format('Y-m-d');
