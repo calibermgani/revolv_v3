@@ -2293,10 +2293,16 @@ class ProjectController extends Controller
     public function productionInsert(Request $request) {
         try {
             $prjDetails = $request->project_id ? Helpers::projectName($request->project_id) : null;
-            $decodedClientName = $prjDetails?->project_name;
-            $decodedSubProjectName = $request->sub_project_id
-                ? Helpers::subProjectName($request->project_id, $request->sub_project_id)?->sub_project_name
-                : 'project';
+            $decodedClientName = $prjDetails != null ? $prjDetails->project_name : null;
+            $decodedSubProjectName = $request->sub_project_id && $request->project_id 
+                ? Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name
+                : null;
+            if($decodedClientName == null || $decodedSubProjectName == null) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Project name not found."  
+                ], 404);
+            }
 
             $table_name = Str::slug(Str::lower($decodedClientName . '_' . $decodedSubProjectName), '_');
             $modelName = Str::studly($table_name);
