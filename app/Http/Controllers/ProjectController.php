@@ -2435,7 +2435,7 @@ class ProjectController extends Controller
     }
 
     public function backendUploadTemplateExeFile(Request $request){
-        try {
+        try {dd($request->all());
             $attributes = [
                 'project_id' => isset($request->project_id) ? $request->project_id : NULL,
                 'sub_project_id' => isset($request->sub_project_id) && $request->sub_project_id != "NULL" ? $request->sub_project_id : NULL,
