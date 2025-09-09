@@ -2478,12 +2478,10 @@ class ProjectController extends Controller
                     $projectsCurrent = [];
                     $projectsCurrent['project'] = $prjoectName;
                     $projectsCurrent['file_name'] = $attributes['file_name'];
-                    // $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'backend production file upload to mail id')->first();
-                    // $toMailId = explode(",", $toMail->cc_emails);
-                    $toMailId = "vijayalaxmi@caliberfocus.com";
-                    $ccMailId = "vijayalaxmi@caliberfocus.com";
-                    // $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'backend production file upload cc mail id')->first();
-                    // $ccMailId = explode(",", $ccMail->cc_emails);
+                    $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'backend upload template to email id')->first();
+                    $toMailId = explode(",", $toMail->cc_emails);                   
+                    $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'backend upload template cc email id')->first();
+                    $ccMailId = explode(",", $ccMail->cc_emails);
 
                     $mailDate = Carbon::now()->format('m/d/Y');
                     $mailHeader = $prjoectName . " - Backend Upload Template Successfully Executed - " . $mailDate;
