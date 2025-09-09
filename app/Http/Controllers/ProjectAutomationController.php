@@ -5356,9 +5356,45 @@ public function NexTrustBillingArDuplicates(Request $request)
                     ]);
                         return response()->json(['message' => 'Record Inserted Successfully']);
             } else {
-                $duplicateRecord  =  RocAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
-                if ($duplicateRecord) {
-                    $duplicateRecord->update([
+                $duplicateRecords =  RocAr::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL, 
+                            'c_id' => isset($request->c_id) && $request->c_id != "NULL" ? $request->c_id : NULL, 
+                            'claim_form_name' => isset($request->claim_form_name) && $request->claim_form_name != "NULL" ? $request->claim_form_name : NULL, 
+                            'created' => isset($request->created) && $request->created != "NULL" ? $request->created : NULL, 
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL, 
+                            'sts' => isset($request->sts) && $request->sts != "NULL" ? $request->sts : NULL, 
+                            'account_id' => isset($request->account_id) && $request->account_id != "NULL" ? $request->account_id : NULL, 
+                            'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL, 
+                            'payor_name' => isset($request->payor_name) && $request->payor_name != "NULL" ? $request->payor_name : NULL, 
+                            'denial_code' => isset($request->denial_code) && $request->denial_code != "NULL" ? $request->denial_code : NULL, 
+                            'subscriber_id' => isset($request->subscriber_id) && $request->subscriber_id != "NULL" ? $request->subscriber_id : NULL, 
+                            'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
+                            'billed_amt' => isset($request->billed_amt) && $request->billed_amt != "NULL" ? $request->billed_amt : NULL,
+                            'outstanding_amt' => isset($request->outstanding_amt) && $request->outstanding_amt != "NULL" ? $request->outstanding_amt : NULL,
+                            'billing_prov_npi' => isset($request->billing_prov_npi) && $request->billing_prov_npi != "NULL" ? $request->billing_prov_npi : NULL,
+                            'svc_prov_npi' => isset($request->svc_prov_npi) && $request->svc_prov_npi != "NULL" ? $request->svc_prov_npi : NULL,
+                            'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                            'timely_filing_deadline_date' => isset($request->timely_filing_deadline_date) && $request->timely_filing_deadline_date != "NULL" ? $request->timely_filing_deadline_date : NULL,
+                            'wq_entry_date' => isset($request->wq_entry_date) && $request->wq_entry_date != "NULL" ? $request->wq_entry_date : NULL,
+                            'department_name' => isset($request->department_name) && $request->department_name != "NULL" ? $request->department_name : NULL,
+                            'rev_location_name' => isset($request->rev_location_name) && $request->rev_location_name != "NULL" ? $request->rev_location_name : NULL,
+                            'pos_name' => isset($request->pos_name) && $request->pos_name != "NULL" ? $request->pos_name : NULL,
+                            'days_in_wq' => isset($request->days_in_wq) && $request->days_in_wq != "NULL" ? $request->days_in_wq : NULL,
+                            'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
+                            'current_payer_icn' => isset($request->current_payer_icn) && $request->current_payer_icn != "NULL" ? $request->current_payer_icn : NULL,
+                            'suggested_initial_follow_up_date' => isset($request->suggested_initial_follow_up_date) && $request->suggested_initial_follow_up_date != "NULL" ? $request->suggested_initial_follow_up_date : NULL,
+                            //'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                 } else {
+                     RocAr::insert([
                         'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL, 
                         'c_id' => isset($request->c_id) && $request->c_id != "NULL" ? $request->c_id : NULL, 
                         'claim_form_name' => isset($request->claim_form_name) && $request->claim_form_name != "NULL" ? $request->claim_form_name : NULL, 
@@ -5385,13 +5421,13 @@ public function NexTrustBillingArDuplicates(Request $request)
                         'date_of_birth' => isset($request->date_of_birth) && $request->date_of_birth != "NULL" ? $request->date_of_birth : NULL,
                         'current_payer_icn' => isset($request->current_payer_icn) && $request->current_payer_icn != "NULL" ? $request->current_payer_icn : NULL,
                         'suggested_initial_follow_up_date' => isset($request->suggested_initial_follow_up_date) && $request->suggested_initial_follow_up_date != "NULL" ? $request->suggested_initial_follow_up_date : NULL,
-                        //'invoke_date' => date('Y-m-d'),
+                        'invoke_date' => date('Y-m-d'),
                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
-                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        'chart_status' => "CE_Assigned",
                     ]);
+                    return response()->json(['message' => 'Record Reinserted Successfully']);
                 }
-                return response()->json(['message' => 'Existing Record Updated Successfully']);
             }
         } catch (\Exception $e) {
             $e->getMessage();
