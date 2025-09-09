@@ -35,6 +35,8 @@ use App\Jobs\GetProjSubPrjJob;
 use App\Models\QualitySampling;
 use App\Models\formConfiguration;
 use App\Models\InventoryExeFile;
+use App\Mail\ResolvBackEndTemplateUploadFile;
+use App\Models\BackEndUploadTemplateExeFile;
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
@@ -2432,6 +2434,74 @@ class ProjectController extends Controller
         }
     }
 
+    public function backendUploadTemplateExeFile(Request $request){
+        try {
+            $attributes = [
+                'project_id' => isset($request->project_id) ? $request->project_id : NULL,
+                'sub_project_id' => isset($request->sub_project_id) && $request->sub_project_id != "NULL" ? $request->sub_project_id : NULL,
+                'file_name' => isset($request->file_name) ? $request->file_name : NULL,
+                'exe_date' => now()->format('Y-m-d H:i:s'),
+                'upload_status'=>  'yes'
+            ];
+            $prjwhereAttributes = [
+                'project_id' => isset($request->project_id) ? $request->project_id : NULL,
+                'sub_project_id' => isset($request->sub_project_id) && $request->sub_project_id != "NULL" ? $request->sub_project_id : NULL
+            ];
 
+            $formExists = formConfiguration::where($prjwhereAttributes)->exists();
+            $prjExists = project::where($prjwhereAttributes)->exists();
+            if ($prjExists && $formExists) {
+                $currentDate = Carbon::now()->format('Y-m-d');
+                if (isset($request->project_id)) {
+                    $projectId = $request->project_id;
+                    $prjDetails = Helpers::projectName($projectId);
+                    $clientName = $prjDetails ? $prjDetails->project_name : null;
+                    $aimsClientName = $prjDetails ? $prjDetails->aims_project_name : null;
+                    if (isset($request->sub_project_id) && $request->sub_project_id != "NULL" && $request->sub_project_id != NULL) {
+                        if($clientName != NULL && $aimsClientName != NULL) {
+                            $subProjectId = $request->sub_project_id;
+                            $subProjectName = Helpers::subProjectName($projectId, $subProjectId)->sub_project_name;
+                            $table_name = Str::slug((Str::lower($clientName) . '_' . Str::lower($subProjectName)), '_');
+                            $prjoectName = $aimsClientName . ' - ' . $subProjectName;
+                        } else {
+                            $projectId = $table_name = NULL;
+                        }
+                    } else {
+                        $subProjectId = NULL;
+                        $subProjectText = "project";
+                        $table_name = Str::slug((Str::lower($clientName) . '_' . Str::lower($subProjectText)), '_');
+                        $prjoectName = $aimsClientName;
+                    }
+                } else {
+                    $projectId = $table_name = NULL;
+                }               
+                    $projectsCurrent = [];
+                    $projectsCurrent['project'] = $prjoectName;
+                    $projectsCurrent['file_name'] = $attributes['file_name'];
+                    // $toMail = CCEmailIds::select('cc_emails')->where('cc_module', 'backend production file upload to mail id')->first();
+                    // $toMailId = explode(",", $toMail->cc_emails);
+                    $toMailId = "vijayalaxmi@caliberfocus.com";
+                    $ccMailId = "vijayalaxmi@caliberfocus.com";
+                    // $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'backend production file upload cc mail id')->first();
+                    // $ccMailId = explode(",", $ccMail->cc_emails);
+
+                    $mailDate = Carbon::now()->format('m/d/Y');
+                    $mailHeader = $prjoectName . " - Backend Upload Template Successfully Executed - " . $mailDate;
+                
+                    BackEndUploadTemplateExeFile::create($attributes);
+                    if (isset($toMailId) && !empty($toMailId)) {
+                        try {
+                            Mail::to($toMailId)->cc($ccMailId)->send(new ResolvBackEndTemplateUploadFile($mailHeader, $projectsCurrent));
+                            Log::info($prjoectName . "mail sent ");
+                        } catch (\Exception $e) {
+                            Log::error('Mail sending failed: ' . $e->getMessage());
+                        }
+                    }
+                    return response()->json(['message' => 'BackEnd Upload Template File Inserted Successfully']);                        
+              }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
 
 }

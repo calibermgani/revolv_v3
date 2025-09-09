@@ -212,4 +212,5 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('production_auto_close', 'App\Http\Controllers\ProjectController@productionAutoClose');
     Route::any('alter_table_chart_status_column', 'App\Http\Controllers\ProjectController@alterTableChartStatusColumn');
      Route::any('production_insert', 'App\Http\Controllers\ProjectController@productionInsert');
+     Route::any('backend_upload_template_exe_file', 'App\Http\Controllers\ProjectController@backendUploadTemplateExeFile');
 });
