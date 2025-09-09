@@ -2448,8 +2448,8 @@ class ProjectController extends Controller
                 'sub_project_id' => isset($request->sub_project_id) && $request->sub_project_id != "NULL" ? $request->sub_project_id : NULL
             ];
 
-            $formExists = formConfiguration::where($prjwhereAttributes)->exists();dd($formExists);
-            $prjExists = project::where($prjwhereAttributes)->exists();dd($prjExists,$formExists);
+            $formExists = formConfiguration::where($prjwhereAttributes)->exists();
+            $prjExists = project::where('project_id', $request->project_id)->exists();
             if ($prjExists && $formExists) {
                 $currentDate = Carbon::now()->format('Y-m-d');
                 if (isset($request->project_id)) {
