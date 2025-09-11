@@ -62,6 +62,8 @@ use App\Models\ThcAr;
 use App\Models\ThcArDuplicates;
 use App\Models\CrmhsAr;
 use App\Models\CrmhsArDuplicates;
+use App\Models\RcsaAr;
+use App\Models\RcsaArDuplicates;
 class ProjectAuthAutomationController extends Controller
 {
     public function aopsPreAuthVerification(Request $request)
@@ -3904,5 +3906,109 @@ class ProjectAuthAutomationController extends Controller
         }
     }
 
-    
+    public function riverCitySkinAndAestheticsAR(Request $request) {
+        try {
+            $attributes = [
+                'insurance_balance' => isset($request->insurance_balance) && $request->insurance_balance != "NULL" ? $request->insurance_balance : NULL,
+                 'visit' => isset($request->visit) && $request->visit != "NULL" ? $request->visit : NULL,
+                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+             ];         
+
+            $duplicateRecordExisting  =  RcsaAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                RcsaAr::insert([
+                    'insurance_balance' => isset($request->insurance_balance) && $request->insurance_balance != "NULL" ? $request->insurance_balance : NULL,
+                    'past_due_days' => isset($request->past_due_days) && $request->past_due_days != "NULL" ? $request->past_due_days : NULL,
+                    'visit' => isset($request->visit) && $request->visit != "NULL" ? $request->visit : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                    'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                    'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                    'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                    'last_date' => isset($request->last_date) && $request->last_date != "NULL" ? $request->last_date : NULL,
+                    'last_action' => isset($request->last_action) && $request->last_action != "NULL" ? $request->last_action : NULL,
+                    'followup_date' => isset($request->followup_date) && $request->followup_date != "NULL" ? $request->followup_date : NULL,
+                    'followup_action' => isset($request->followup_action) && $request->followup_action != "NULL" ? $request->followup_action : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                ]);
+                return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords  =  RcsaAr::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'insurance_balance' => isset($request->insurance_balance) && $request->insurance_balance != "NULL" ? $request->insurance_balance : NULL,
+                            'past_due_days' => isset($request->past_due_days) && $request->past_due_days != "NULL" ? $request->past_due_days : NULL,
+                            'visit' => isset($request->visit) && $request->visit != "NULL" ? $request->visit : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                            'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                            'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                            'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                            'last_date' => isset($request->last_date) && $request->last_date != "NULL" ? $request->last_date : NULL,
+                            'last_action' => isset($request->last_action) && $request->last_action != "NULL" ? $request->last_action : NULL,
+                            'followup_date' => isset($request->followup_date) && $request->followup_date != "NULL" ? $request->followup_date : NULL,
+                            'followup_action' => isset($request->followup_action) && $request->followup_action != "NULL" ? $request->followup_action : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                     RcsaAr::insert([
+                        'insurance_balance' => isset($request->insurance_balance) && $request->insurance_balance != "NULL" ? $request->insurance_balance : NULL,
+                        'past_due_days' => isset($request->past_due_days) && $request->past_due_days != "NULL" ? $request->past_due_days : NULL,
+                        'visit' => isset($request->visit) && $request->visit != "NULL" ? $request->visit : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                        'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                        'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                        'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                        'last_date' => isset($request->last_date) && $request->last_date != "NULL" ? $request->last_date : NULL,
+                        'last_action' => isset($request->last_action) && $request->last_action != "NULL" ? $request->last_action : NULL,
+                        'followup_date' => isset($request->followup_date) && $request->followup_date != "NULL" ? $request->followup_date : NULL,
+                        'followup_action' => isset($request->followup_action) && $request->followup_action != "NULL" ? $request->followup_action : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record reinserted Successfully']);
+                }                
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function riverCitySkinAndAestheticsARDuplicates(Request $request){
+        try {
+            RcsaArDuplicates::insert([
+                'insurance_balance' => isset($request->insurance_balance) && $request->insurance_balance != "NULL" ? $request->insurance_balance : NULL,
+                'past_due_days' => isset($request->past_due_days) && $request->past_due_days != "NULL" ? $request->past_due_days : NULL,
+                'visit' => isset($request->visit) && $request->visit != "NULL" ? $request->visit : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                'facility' => isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                'last_date' => isset($request->last_date) && $request->last_date != "NULL" ? $request->last_date : NULL,
+                'last_action' => isset($request->last_action) && $request->last_action != "NULL" ? $request->last_action : NULL,
+                'followup_date' => isset($request->followup_date) && $request->followup_date != "NULL" ? $request->followup_date : NULL,
+                'followup_action' => isset($request->followup_action) && $request->followup_action != "NULL" ? $request->followup_action : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
 }

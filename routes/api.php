@@ -204,6 +204,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('thc_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@theHeritageClinicARDuplicates');
     Route::any('crmhs_ar', 'App\Http\Controllers\ProjectAuthAutomationController@columbiaRiverMentalHealthServiceAR');
     Route::any('crmhs_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@columbiaRiverMentalHealthServiceARDuplicates');
+    Route::any('rcsa_ar', 'App\Http\Controllers\ProjectAuthAutomationController@riverCitySkinAndAestheticsAR');
+    Route::any('rcsa_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@riverCitySkinAndAestheticsArARDuplicates');
     Route::any('get_project_columns', 'App\Http\Controllers\FormController@getProjectColumns');
 
 
