@@ -3978,7 +3978,7 @@ class ProjectAuthAutomationController extends Controller
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
                         'chart_status' => "CE_Assigned",
                     ]);
-                    return response()->json(['message' => 'Record reinserted Successfully']);
+                    return response()->json(['message' => 'Record Reinserted Successfully']);
                 }                
             }
         } catch (\Exception $e) {
