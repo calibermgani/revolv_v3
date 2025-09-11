@@ -20,8 +20,8 @@ class FormController extends Controller
     public function formConfigurationList() {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
             try {
-                    $formConfiguration = formConfiguration::groupBy(['project_id', 'sub_project_id'])
-                                            ->select('project_id', 'sub_project_id', DB::raw('GROUP_CONCAT(label_name) as label_names'))
+                    $formConfiguration = formConfiguration::groupBy(['project_id', 'sub_project_id','project_type'])
+                                            ->select('project_id', 'sub_project_id', DB::raw('GROUP_CONCAT(label_name) as label_names'),'project_type')
                                             ->get();
                return view('Form.formConfigList',compact('formConfiguration'));
             } catch (\Exception $e) {
