@@ -30,6 +30,7 @@
                                 <th width="15%">Project Name</th>
                                 <th width="10%">Sub Project Name</th>
                                 <th>Column Fields</th>
+                                <th>Project Type</th>
                                 <th width="3%"></th>
                             </tr>
                         </thead>
@@ -64,6 +65,7 @@
                                         <td width="15%"><input type="hidden" value="{{$data->project_id}}">{{ $projectName->aims_project_name }}</td>
                                         <td width="10%"><input type="hidden" value="{{$data->sub_project_id}}">{{ $subProjectName == '--' ? '--' : $subProjectName->sub_project_name }}</td>
                                         <td style="word-wrap: break-word;white-space: normal;overflow-wrap: break-word;word-break: break-word; ">{{$data->label_names}}</td>
+                                        <td style="word-wrap: break-word;white-space: normal;overflow-wrap: break-word;word-break: break-word; ">{{$data->project_type != null ? 'Open Access' : 'Automation'}}</td>
                                         <td class="project_delete" data-value="{{$loop->iteration}}" width="3%"><i
                                             class="fa fas fa-trash text-danger icon-circle2 ml-1 mt-0 record_delete"></i></a></td>
                                     </tr>
