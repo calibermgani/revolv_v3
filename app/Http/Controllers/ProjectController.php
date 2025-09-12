@@ -2415,8 +2415,8 @@ class ProjectController extends Controller
                 $callChartData['project_id'] = $request->project_id;
                 $callChartData['sub_project_id'] = $request->sub_project_id;
                 $callChartData['record_id'] = $parentRecord->id;
-                $callChartData['start_time'] = $data['ar_at'];
-                $callChartData['end_time'] = $data['ar_at'];
+                $callChartData['start_time'] = $data['ar_at'] != null ? $data['ar_at'] : Carbon::now()->format('Y-m-d H:i:s');    
+                $callChartData['end_time'] = $data['ar_at']  != null ? $data['ar_at'] :  Carbon::now()->format('Y-m-d H:i:s');   
                 $callChartData['work_time'] = "00:00:00";
                 $callChartData['record_status'] = "CE_Completed";
                 $modelClass::create($data);
