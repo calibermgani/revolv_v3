@@ -1924,8 +1924,8 @@ class ProjectController extends Controller
                 $toMailId = $toMail != null ? explode(",", $toMail->cc_emails) : null;
                 $ccMail = CCEmailIds::select('cc_emails')->where('cc_module', 'resolv work cc email')->first();
                 $ccMailId = $ccMail != null ? explode(",", $ccMail->cc_emails) : null;    
-                // $toMailId = ["vijayalaxmi@caliberfocus.com"];
-                // $ccMailId = ["vijayalaxmi@caliberfocus.com"];
+                $toMailId = ["vijayalaxmi@caliberfocus.com"];
+                $ccMailId = ["vijayalaxmi@caliberfocus.com"];
                 $yesterday = Carbon::yesterday();
                 if ($yesterday->isSaturday()) {
                     $yesterday = $yesterday->subDay(1); // Friday
@@ -1935,8 +1935,8 @@ class ProjectController extends Controller
                 
                 $today = Carbon::today();
                 $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y');
-                $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
-                $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
+                $yesterDayStartDate = $yesterday->setTime(6, 0, 0)->toDateTimeString();
+                $yesterDayEndDate = $today->setTime(5, 59, 0)->toDateTimeString();
                 $projects = collect($this->getProjects());
                 $projectsPending = []; 
                 $projectIds = $subProjectIds = [];
