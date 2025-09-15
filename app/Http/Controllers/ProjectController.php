@@ -1551,23 +1551,23 @@ class ProjectController extends Controller
                 } else {
                     $currentTime = Carbon::now(); 
                     Log::info("Current time: {$currentTime}");
-                   if ($currentTime->hour < 17) {
-                        if ($currentTime->hour < 5) {
-                            // Before 5 PM: Yesterday 5 PM to Current Time
-                            $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
-                            $endTime = $currentTime;
-                        } else if($currentTime->hour > 5 && $currentTime->hour < 17){
-                            // Before 5 PM: Today 5 PM to Current Time
-                            $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
-                            $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
-                        }
-                    } else {
-                        // After 5 PM: Today 5 PM to Current Time
-                        $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
-                        $endTime = $currentTime;
-                    }
-                    //   $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
-                    //   $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
+                    // if ($currentTime->hour < 17) {
+                    //     if ($currentTime->hour < 5) {
+                    //         // Before 5 PM: Yesterday 5 PM to Current Time
+                    //         $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                    //         $endTime = $currentTime;
+                    //     } else if($currentTime->hour > 5 && $currentTime->hour < 17){
+                    //         // Before 5 PM: Today 5 PM to Current Time
+                    //         $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                    //         $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
+                    //     }
+                    // } else {
+                    //     // After 5 PM: Today 5 PM to Current Time
+                    //     $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
+                    //     $endTime = $currentTime;
+                    // }
+                      $startTime = Carbon::yesterday()->setHour(8)->setMinute(0)->setSecond(0);
+                      $endTime = Carbon::today()->setHour(8)->setMinute(0)->setSecond(0);
                 }
 
                 // Generate time slots dynamically
@@ -1684,23 +1684,23 @@ class ProjectController extends Controller
                 $startTime =  Carbon::parse($request['startTime']);
                 $endTime = Carbon::parse($request['endTime']);
             } else {
-                if ($currentTime->hour < 17) {
-                    if ($currentTime->hour < 5) {
-                        // Before 5 PM: Yesterday 5 PM to Current Time
-                        $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
-                        $endTime = $currentTime;
-                    } else if($currentTime->hour > 5 && $currentTime->hour < 17){
-                        // Before 5 PM: Today 5 PM to Current Time
-                        $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
-                        $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
-                    }
-                } else {
-                    // After 5 PM: Today 5 PM to Current Time
-                    $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
-                    $endTime = $currentTime;
-                }
-                // $startTime = Carbon::yesterday()->setHour(6)->setMinute(0)->setSecond(0);
-                // $endTime = Carbon::today()->setHour(6)->setMinute(0)->setSecond(0);
+                // if ($currentTime->hour < 17) {
+                //     if ($currentTime->hour < 5) {
+                //         // Before 5 PM: Yesterday 5 PM to Current Time
+                //         $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                //         $endTime = $currentTime;
+                //     } else if($currentTime->hour > 5 && $currentTime->hour < 17){
+                //         // Before 5 PM: Today 5 PM to Current Time
+                //         $startTime = Carbon::yesterday()->setHour(17)->setMinute(0)->setSecond(0);
+                //         $endTime = Carbon::today()->setHour(5)->setMinute(0)->setSecond(0);
+                //     }
+                // } else {
+                //     // After 5 PM: Today 5 PM to Current Time
+                //     $startTime = Carbon::today()->setHour(17)->setMinute(0)->setSecond(0);
+                //     $endTime = $currentTime;
+                // }
+                $startTime = Carbon::yesterday()->setHour(8)->setMinute(0)->setSecond(0);
+                $endTime = Carbon::today()->setHour(8)->setMinute(0)->setSecond(0);
             }
                $timeSlots = [];
                $slotStart = $startTime->copy();
@@ -1832,8 +1832,8 @@ class ProjectController extends Controller
                     $yesterday = $yesterday->subDay(2); // Friday
                     $today = $today->subDay(2);
                 }
-                $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
-                $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
+                $yesterDayStartDate = $yesterday->setTime(8, 0, 0)->toDateTimeString();
+                $yesterDayEndDate = $today->setTime(7, 59, 0)->toDateTimeString();
                 $projects = collect($this->getProjects());
                 $projectsPending = []; 
                 $projectIds = $subProjectIds = [];
@@ -1946,8 +1946,8 @@ class ProjectController extends Controller
                 }               
                
                 $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y');
-                $yesterDayStartDate = $yesterday->setTime(17, 0, 0)->toDateTimeString();
-                $yesterDayEndDate = $today->setTime(8, 0, 0)->toDateTimeString();
+                $yesterDayStartDate = $yesterday->setTime(8, 0, 0)->toDateTimeString();
+                $yesterDayEndDate = $today->setTime(7, 59, 0)->toDateTimeString();
                 $projects = collect($this->getProjects());
                 $projectsPending = []; 
                 $projectIds = $subProjectIds = [];

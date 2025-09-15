@@ -128,8 +128,8 @@ class ReportsController extends Controller
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)).'_datas','_');
                 if (isset($request->work_date) && !empty($request->work_date)) {
                     $work_date = explode(' - ', $request->work_date);
-                    $start_date = date('Y-m-d 06:00:00', strtotime($work_date[0]));
-                    $end_date = date('Y-m-d 05:59:00', strtotime($work_date[1] . ' +1 day'));
+                    $start_date = date('Y-m-d 08:00:00', strtotime($work_date[0]));
+                    $end_date = date('Y-m-d 07:59:00', strtotime($work_date[1] . ' +1 day'));
                 }else{
                     $start_date = "";
                     $end_date = "";
@@ -775,8 +775,8 @@ class ReportsController extends Controller
                 $finalData = [];
 
                 foreach ($workingDates as $date) {
-                    $start_date = $date . " 06:00:00"; // Start time for the date
-                    $end_date = date('Y-m-d', strtotime($date . ' +1 day')) . " 05:59:00"; // End time for the next day
+                    $start_date = $date . " 08:00:00"; // Start time for the date
+                    $end_date = date('Y-m-d', strtotime($date . ' +1 day')) . " 07:59:00"; // End time for the next day
                 
                     foreach ($productionReportArray as $employee) {
                         $final_work_time = [];
@@ -883,8 +883,8 @@ class ReportsController extends Controller
                     }
                     if (isset($request->work_date) && !empty($request->work_date)) {
                         $work_date = explode(' - ', $request->work_date);
-                        $startTime = date('Y-m-d 06:00:00', strtotime($work_date[0]));
-                        $endTime = date('Y-m-d 05:59:00', strtotime($work_date[1] . ' +1 day'));
+                        $startTime = date('Y-m-d 08:00:00', strtotime($work_date[0]));
+                        $endTime = date('Y-m-d 07:59:00', strtotime($work_date[1] . ' +1 day'));
                         $endDate = Carbon::parse($work_date[1]);
                         $startDate1 = Carbon::parse($work_date[0]);
                     } else {
@@ -902,8 +902,8 @@ class ReportsController extends Controller
                             $startDate1->addDay();
                         }
                         foreach ($allDates as $dateVal) {
-                            $currentDate = Date('Y-m-d 06:00:00', strtotime($dateVal));
-                            $toDate = date('Y-m-d 05:59:00', strtotime($dateVal . ' +1 day'));
+                            $currentDate = Date('Y-m-d 08:00:00', strtotime($dateVal));
+                            $toDate = date('Y-m-d 07:59:00', strtotime($dateVal . ' +1 day'));
                             $date = Carbon::createFromDate($currentDate);
                             $worList = [];
                             if (!$date->isWeekend()) {
@@ -1094,8 +1094,8 @@ class ReportsController extends Controller
                     }
                     if (isset($request->work_date) && !empty($request->work_date)) {
                         $work_date = explode(' - ', $request->work_date);
-                        $startTime = date('Y-m-d 06:00:00', strtotime($work_date[0]));
-                        $endTime = date('Y-m-d 05:59:00', strtotime($work_date[1] . ' +1 day'));
+                        $startTime = date('Y-m-d 08:00:00', strtotime($work_date[0]));
+                        $endTime = date('Y-m-d 07:59:00', strtotime($work_date[1] . ' +1 day'));
                     }else{
                         $startTime = "";
                         $endTime = "";
