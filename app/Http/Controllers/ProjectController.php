@@ -2394,7 +2394,7 @@ class ProjectController extends Controller
             $data['qa_work_status'] = "Auto_Close";
             $data['CE_emp_id'] = ($request->filled('CE_emp_id') || $request->filled('AR_emp_id')) ? $request->input('AR_emp_id') : null;
             $data['coder_work_date'] = ($request->filled('coder_work_date') || $request->filled('ar_work_date'))
-                ? Carbon::createFromFormat('Y-m-d', $request->input('coder_work_date'))->toDateString()
+                ? Carbon::createFromFormat('Y-m-d', $request->input('ar_work_date'))->toDateString()
                 : ($data['ar_at'] ?? null);
         $dateValue = $request->input('ar_at') ?? $request->input('ar_work_date') ?? $request->input('coder_work_date');
         $data['ar_at'] = $dateValue ? Carbon::parse($dateValue)->setTime(23, 0, 0)->toDateTimeString(): null;
