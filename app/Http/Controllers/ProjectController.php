@@ -1735,6 +1735,13 @@ class ProjectController extends Controller
             if(class_exists($modelClass)){
                 $existingPrjUsers = $modelClass::where('CE_emp_id', '!=','0')->whereNotNull('CE_emp_id')->where('CE_emp_id','like','AM%')
                 ->groupBy('CE_emp_id')->pluck('CE_emp_id')->toArray(); 
+                  GetProjSubPrjJob::dispatch(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))->delay(now()->addSeconds(5));
+                    $prjTotalDetailsCacheKey = 'project_'.Helpers::encodeAndDecodeID($request->input('project_id'),'decode').Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode').'totalDetails' ;
+                    $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0);   dd($prjBillableFTE);
+                    if (!is_array($prjBillableFTE)) {
+                          $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
+                      }     
+                            $targetPerDay = (float)$prjBillableFTE['projectSLATarget'] ;    
                 foreach ($existingPrjUsers as $user) {
                     $hourlyCounts = [];
                     $reachedTarget = 0;
@@ -1760,19 +1767,14 @@ class ProjectController extends Controller
                         $hourlyCounts[] = $hourlyCount; 
                         $reachedTarget += $hourlyCount;
                     }
-                    GetProjSubPrjJob::dispatch(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))->delay(now()->addSeconds(5));
-                    $prjTotalDetailsCacheKey = 'project_'.Helpers::encodeAndDecodeID($request->input('project_id'),'decode').Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode').'totalDetails' ;
-                    $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0);   dd($prjBillableFTE);
-                    if (!is_array($prjBillableFTE)) {
-                          $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
-                      }                     
+                              
                     
                     //   if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget'])) {
                     //           $targetPerDay = ((float)$prjBillableFTE['prjBillableCount'] * (float)$prjBillableFTE['projectSLATarget']) ;
                     //    } else {
                     //       $targetPerDay =  is_array($prjBillableFTE) && ($prjBillableFTE['prjBillableCount'] == null  || $prjBillableFTE['projectSLATarget'] == null) ? '--'  : $prjBillableFTE ;
                     //    }
-                    $targetPerDay = (float)$prjBillableFTE['projectSLATarget'] ;
+              
                     if (is_numeric($reachedTarget) && is_numeric($targetPerDay) && $targetPerDay != 0 && $targetPerDay != "") {
                         $achievedPercentage = ($reachedTarget / $targetPerDay) * 100;
                     } else {
