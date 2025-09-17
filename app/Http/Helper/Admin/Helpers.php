@@ -1362,12 +1362,12 @@ class Helpers
 		$client = new Client();
 		$response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_username_by_allempid', [
 			'json' => $payload
-		]);dd('response',$response); 
+		]);
 		if ($response->getStatusCode() == 200) {
 			$data = json_decode($response->getBody(), true);
 		} else {
 			return response()->json(['error' => 'API request failed'], $response->getStatusCode());
-		}
+		}dd('response',$response,$data); 
 		if(isset($data['user_name'])){
 			$userName = $data['user_name']['user_name'];
 			return $userName;
