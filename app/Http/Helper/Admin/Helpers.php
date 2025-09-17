@@ -1358,11 +1358,11 @@ class Helpers
 		$payload = [
 			'token' => '1a32e71a46317b9cc6feb7388238c95d',
 			'user_emp_id' => $id
-		];dd('pay',$payload); 
+		];
 		$client = new Client();
 		$response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_username_by_allempid', [
 			'json' => $payload
-		]);
+		]);dd('response',$response); 
 		if ($response->getStatusCode() == 200) {
 			$data = json_decode($response->getBody(), true);
 		} else {
