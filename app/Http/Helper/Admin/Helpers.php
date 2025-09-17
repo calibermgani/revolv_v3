@@ -1353,4 +1353,28 @@ class Helpers
 		$data = ARSubStatusCode::select('id', DB::raw("concat(sub_status_code,' - ',sub_status_code_description) as substatusCode"))->where('status', 'Active')->where('id', $id)->first('substatusCode');
 		return $data;
 	}
+	public static function getUserNameByAllEmpId($id)
+	{
+		$payload = [
+			'token' => '1a32e71a46317b9cc6feb7388238c95d',
+			'user_emp_id' => $id
+		];
+		$client = new Client();
+		$response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_username_by_allempid', [
+			'json' => $payload
+		]);
+		if ($response->getStatusCode() == 200) {
+			$data = json_decode($response->getBody(), true);
+		} else {
+			return response()->json(['error' => 'API request failed'], $response->getStatusCode());
+		}
+		if(isset($data['user_name'])){
+			$userName = $data['user_name']['user_name'];
+			return $userName;
+		} else {
+			$userName = '--';
+			return $userName;
+		}
+				
+	}
 }
