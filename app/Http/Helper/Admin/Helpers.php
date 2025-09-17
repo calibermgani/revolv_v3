@@ -1367,9 +1367,9 @@ class Helpers
 			$data = json_decode($response->getBody(), true);
 		} else {
 			return response()->json(['error' => 'API request failed'], $response->getStatusCode());
-		}dd('response',$response,$data); 
+		}
 		if(isset($data['user_name'])){
-			$userName = $data['user_name']['user_name'];
+			$userName = $data['user_name'];
 			return $userName;
 		} else {
 			$userName = '--';
