@@ -1762,7 +1762,7 @@ class ProjectController extends Controller
                     }
                     GetProjSubPrjJob::dispatch(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))->delay(now()->addSeconds(5));
                     $prjTotalDetailsCacheKey = 'project_'.Helpers::encodeAndDecodeID($request->input('project_id'),'decode').Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode').'totalDetails' ;
-                    $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0);    
+                    $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0);   dd($prjBillableFTE);
                     if (!is_array($prjBillableFTE)) {
                           $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
                       }                     
