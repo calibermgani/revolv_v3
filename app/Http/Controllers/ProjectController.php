@@ -1793,7 +1793,7 @@ class ProjectController extends Controller
             usort($BodyDetails, function ($a, $b) {
                 return $a['achievedPercentage'] <=> $b['achievedPercentage'];
             });
-            
+            dd($BodyDetails);
           return view('projects.projectHourlyDetailedWeb', compact('headers', 'BodyDetails','title'));
         } catch (\Exception $e) {
             Log::error('Error in projectHourlyDetailedWeb: ' . $e->getMessage());
