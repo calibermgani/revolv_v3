@@ -1740,7 +1740,7 @@ class ProjectController extends Controller
                           $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
                       }     
                             $targetPerDay = (float)$prjBillableFTE['projectSLATarget'] ;   
-                              $userName =Helpers::getUserNameByAllEmpId($existingPrjUsers); dd($userName,'user');
+                              $userName =Helpers::getUserNameByAllEmpId($existingPrjUsers); 
                 // foreach ($existingPrjUsers as $user) {
                 //     $hourlyCounts = [];
                 //     $reachedTarget = 0;
@@ -1823,7 +1823,7 @@ class ProjectController extends Controller
                     }
 
                     $BodyDetails[] = [
-                        'user'              => $user,
+                        'user'              => $userName[$user] ?? $user,
                         'hourlyCount'       => $hourlyCounts,
                         'reachedTarget'     => $reachedTarget,
                         'slaTarget'         => $targetPerDay,
