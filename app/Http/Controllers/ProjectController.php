@@ -1785,25 +1785,48 @@ class ProjectController extends Controller
                 $maxEnd   = max(array_column($timeSlots, 'end'));
 
                 // Run one aggregated query
-                $results = $modelClass::selectRaw("
-                        CE_emp_id,
-                        HOUR($columnToUse) as hr,
-                        COUNT(*) as cnt
-                    ")
-                    ->whereIn('CE_emp_id', $existingPrjUsers)
+                // $results = $modelClass::selectRaw("
+                //         CE_emp_id,
+                //         HOUR($columnToUse) as hr,
+                //         COUNT(*) as cnt
+                //     ")
+                //     ->whereIn('CE_emp_id', $existingPrjUsers)
+                //     ->whereIn('chart_status', [
+                //         'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
+                //         'QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'
+                //     ])
+                //     ->whereBetween($columnToUse, [$minStart, $maxEnd])
+                //     ->groupBy('CE_emp_id', 'hr')
+                //     ->get();
+
+                // // Reshape results: user → hour → count
+                // $userCounts = [];
+                // foreach ($results as $row) {
+                //     $userCounts[$row->CE_emp_id][$row->hr] = $row->cnt;
+                // }
+
+                // $BodyDetails = [];
+                // foreach ($existingPrjUsers as $user) {
+                //     $hourlyCounts = [];
+                //     $reachedTarget = 0;
+
+                //     foreach ($timeSlots as $slot) {
+                //         $slotHour = (int) date('H', strtotime($slot['start'])); // take start hour
+                //         $count = $userCounts[$user][$slotHour] ?? 0;
+                //         $hourlyCounts[] = $count;
+                //         $reachedTarget += $count;
+                //     }
+                // fetch everything once
+                $allData = $modelClass::whereIn('CE_emp_id', $existingPrjUsers)
                     ->whereIn('chart_status', [
                         'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
                         'QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'
                     ])
                     ->whereBetween($columnToUse, [$minStart, $maxEnd])
-                    ->groupBy('CE_emp_id', 'hr')
-                    ->get();
+                    ->get(['CE_emp_id', $columnToUse]);
 
-                // Reshape results: user → hour → count
-                $userCounts = [];
-                foreach ($results as $row) {
-                    $userCounts[$row->CE_emp_id][$row->hr] = $row->cnt;
-                }
+                // group by user
+                $userData = $allData->groupBy('CE_emp_id');
 
                 $BodyDetails = [];
                 foreach ($existingPrjUsers as $user) {
@@ -1811,8 +1834,14 @@ class ProjectController extends Controller
                     $reachedTarget = 0;
 
                     foreach ($timeSlots as $slot) {
-                        $slotHour = (int) date('H', strtotime($slot['start'])); // take start hour
-                        $count = $userCounts[$user][$slotHour] ?? 0;
+                        $slotStart = $slot['start'];
+                        $slotEnd   = $slot['end'];
+
+                        // filter this user's data for this slot
+                        $count = $userData[$user]
+                            ->whereBetween($columnToUse, [$slotStart, $slotEnd])
+                            ->count();
+
                         $hourlyCounts[] = $count;
                         $reachedTarget += $count;
                     }
