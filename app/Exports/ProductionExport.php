@@ -78,15 +78,25 @@ class ProductionExport implements FromCollection, WithHeadings
                 } elseif ($field == 'aging_range') {
                     $exportRow[$headerField] =  $agingRange;
                 } else if($field == 'QA_status_code') {
-                     $exportRow[$headerField] = Helpers::qaStatusById($record->{$field})['status_code'] ;
+                    //  $exportRow[$headerField] = Helpers::qaStatusById($record->{$field})['status_code'] ;
+                    $statusCode = Helpers::qaStatusById($record->{$field});
+                    $exportRow[$headerField] = $statusCode['status_code'] ?? '';
                 } else if($field == 'QA_sub_status_code') {
-                     $exportRow[$headerField] = Helpers::qaSubStatusById($record->{$field})['sub_status_code'] ;
+                    $result = Helpers::qaSubStatusById($record->{$field});
+                    $exportRow[$headerField] = $result['sub_status_code'] ?? '';
+                    // $exportRow[$headerField] = Helpers::qaSubStatusById($record->{$field})['sub_status_code'] ;
                 } else if($field == 'qa_classification') {
-                     $exportRow[$headerField] = Helpers::qaClassificationById($record->{$field})['qa_classification'] ;
+                    $qaClassification = Helpers::qaClassificationById($record->{$field});
+                    $exportRow[$headerField] = $qaClassification['qa_classification'] ?? '';
+                   //  $exportRow[$headerField] = Helpers::qaClassificationById($record->{$field})['qa_classification'] ;
                 } else if($field == 'qa_category') {
-                     $exportRow[$headerField] = Helpers::qaCategoryById($record->{$field})['qa_category'] ;
+                      $qaCategory = Helpers::qaCategoryById($record->{$field});
+                      $exportRow[$headerField] = $qaCategory['qa_category'] ?? '';
+                   //  $exportRow[$headerField] = Helpers::qaCategoryById($record->{$field})['qa_category'] ;
                 } else if($field == 'qa_scope') {
-                     $exportRow[$headerField] = Helpers::qaScopeById($record->{$field})['qa_scope'] ;
+                      $qaScope = Helpers::qaScopeById($record->{$field});
+                      $exportRow[$headerField] = $qaScope['qa_scope'] ?? '';
+                   //  $exportRow[$headerField] = Helpers::qaScopeById($record->{$field})['qa_scope'] ;
                 }
                 else {
                     $exportRow[$headerField] = $record->{$field};
