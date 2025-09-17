@@ -1668,12 +1668,10 @@ class ProjectController extends Controller
     }
     public function projectDetailedInformationWeb(Request $request){
         try {
-           // $prjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->project_name ?? null;
             $prjDetails = $request->input('project_id')!= null ? Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode')) : null;
             $prjName = $prjDetails && $prjDetails != null ? $prjDetails->project_name : null;
             $aimsPrjName = $prjDetails && $prjDetails != null ? $prjDetails->aims_project_name : null;
-           // $aimsPrjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->aims_project_name ?? null;          
-            $subPrjName = Helpers::subProjectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))->sub_project_name ?? null;
+             $subPrjName = Helpers::subProjectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))->sub_project_name ?? null;
             //$prjSLATarget = (int)$this->getProjectTotalSlaTarget(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))['projectSLATarget'];
             $title = $aimsPrjName . '-' . $subPrjName;
             $tableName = Str::slug(Str::lower($prjName . '_' . $subPrjName), '_');
@@ -1742,55 +1740,96 @@ class ProjectController extends Controller
                           $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
                       }     
                             $targetPerDay = (float)$prjBillableFTE['projectSLATarget'] ;    
+                // foreach ($existingPrjUsers as $user) {
+                //     $hourlyCounts = [];
+                //     $reachedTarget = 0;
+                //     foreach ($timeSlots as $slot) {
+                //         $slotStart = $slot['start'];
+                //         $slotEnd = $slot['end'];                   
+                //         $tableName = (new $modelClass)->getTable();
+                //         $columnExists = Schema::hasColumn($tableName, 'ar_at');
+                //         $hasNonNullArAt = $columnExists && $modelClass::whereNotNull('ar_at')->exists();
+                //         $columnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                //         $hourlyCount = $modelClass::whereBetween($columnToUse, [$slotStart, $slotEnd])
+                //          ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                //         ->where('CE_emp_id', $user)
+                //         ->count();
+
+                //         $hourlyCounts[] = $hourlyCount; 
+                //         $reachedTarget += $hourlyCount;
+                //     }
+              
+                //     if (is_numeric($reachedTarget) && is_numeric($targetPerDay) && $targetPerDay != 0 && $targetPerDay != "") {
+                //         $achievedPercentage = ($reachedTarget / $targetPerDay) * 100;
+                //     } else {
+                //         // Handle errors or set a default value
+                //         $achievedPercentage = 0;
+                //     }
+                    
+                //     $BodyDetails[] = [
+                //         'user' => $user,
+                //        'hourlyCount' => $hourlyCounts, 
+                //        'reachedTarget' => $reachedTarget,
+                //        'slaTarget' => $targetPerDay,
+                //        'achievedPercentage' => $achievedPercentage
+                //    ];
+               
+                // } 
+                $tableName = (new $modelClass)->getTable();
+                $columnExists = Schema::hasColumn($tableName, 'ar_at');
+                $columnToUse = $columnExists ? 'ar_at' : 'updated_at';
+
+                // Get overall min/max time range
+                $minStart = min(array_column($timeSlots, 'start'));
+                $maxEnd   = max(array_column($timeSlots, 'end'));
+
+                // Run one aggregated query
+                $results = $modelClass::selectRaw("
+                        CE_emp_id,
+                        HOUR($columnToUse) as hr,
+                        COUNT(*) as cnt
+                    ")
+                    ->whereIn('CE_emp_id', $existingPrjUsers)
+                    ->whereIn('chart_status', [
+                        'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
+                        'QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'
+                    ])
+                    ->whereBetween($columnToUse, [$minStart, $maxEnd])
+                    ->groupBy('CE_emp_id', 'hr')
+                    ->get();
+
+                // Reshape results: user → hour → count
+                $userCounts = [];
+                foreach ($results as $row) {
+                    $userCounts[$row->CE_emp_id][$row->hr] = $row->cnt;
+                }
+
+                $BodyDetails = [];
                 foreach ($existingPrjUsers as $user) {
                     $hourlyCounts = [];
                     $reachedTarget = 0;
+
                     foreach ($timeSlots as $slot) {
-                        $slotStart = $slot['start'];
-                        $slotEnd = $slot['end'];
-                        //    $hourlyCount = $modelClass::whereBetween('updated_at', [$slotStart, $slotEnd])
-                        //     ->where('chart_status', 'CE_Completed')->where('CE_emp_id', $user)
-                        //     ->count();
-                        $tableName = (new $modelClass)->getTable();
-                        $columnExists = Schema::hasColumn($tableName, 'ar_at');
-                        $hasNonNullArAt = $columnExists && $modelClass::whereNotNull('ar_at')->exists();
-                        $columnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
-                        $hourlyCount = $modelClass::whereBetween($columnToUse, [$slotStart, $slotEnd])
-                        // ->where('chart_status', 'CE_Completed')
-                        ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
-                        //->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
-                        ->where('CE_emp_id', $user)
-                        ->count();
-
-                        //Log::info("Hourly count for {$tableName} from {$slotStart} to {$slotEnd}: {$hourlyCount}");
-
-                        $hourlyCounts[] = $hourlyCount; 
-                        $reachedTarget += $hourlyCount;
+                        $slotHour = (int) date('H', strtotime($slot['start'])); // take start hour
+                        $count = $userCounts[$user][$slotHour] ?? 0;
+                        $hourlyCounts[] = $count;
+                        $reachedTarget += $count;
                     }
-                              
-                    
-                    //   if(is_array($prjBillableFTE) && isset($prjBillableFTE['prjBillableCount'], $prjBillableFTE['projectSLATarget'])) {
-                    //           $targetPerDay = ((float)$prjBillableFTE['prjBillableCount'] * (float)$prjBillableFTE['projectSLATarget']) ;
-                    //    } else {
-                    //       $targetPerDay =  is_array($prjBillableFTE) && ($prjBillableFTE['prjBillableCount'] == null  || $prjBillableFTE['projectSLATarget'] == null) ? '--'  : $prjBillableFTE ;
-                    //    }
-              
-                    if (is_numeric($reachedTarget) && is_numeric($targetPerDay) && $targetPerDay != 0 && $targetPerDay != "") {
+
+                    $achievedPercentage = 0;
+                    if (is_numeric($reachedTarget) && is_numeric($targetPerDay) && $targetPerDay > 0) {
                         $achievedPercentage = ($reachedTarget / $targetPerDay) * 100;
-                    } else {
-                        // Handle errors or set a default value
-                        $achievedPercentage = 0;
                     }
-                    
+
                     $BodyDetails[] = [
-                        'user' => $user,
-                       'hourlyCount' => $hourlyCounts, 
-                       'reachedTarget' => $reachedTarget,
-                       'slaTarget' => $targetPerDay,
-                       'achievedPercentage' => $achievedPercentage
-                   ];
-               
-                }             
+                        'user'              => $user,
+                        'hourlyCount'       => $hourlyCounts,
+                        'reachedTarget'     => $reachedTarget,
+                        'slaTarget'         => $targetPerDay,
+                        'achievedPercentage'=> $achievedPercentage
+                    ];
+                }
+            
             }
             usort($BodyDetails, function ($a, $b) {
                 return $a['achievedPercentage'] <=> $b['achievedPercentage'];
