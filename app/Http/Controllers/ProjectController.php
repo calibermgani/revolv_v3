@@ -1739,7 +1739,7 @@ class ProjectController extends Controller
                     if (!is_array($prjBillableFTE)) {
                           $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
                       }     
-                            $targetPerDay = (float)$prjBillableFTE['projectSLATarget'] ;    
+                            $targetPerDay = (float)$prjBillableFTE['projectSLATarget'] ;   dd($existingPrjUsers); 
                               $userName =Helpers::getUserNameByAllEmpId($existingPrjUsers); dd($userName);
                 // foreach ($existingPrjUsers as $user) {
                 //     $hourlyCounts = [];
