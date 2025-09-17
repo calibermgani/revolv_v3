@@ -1667,7 +1667,7 @@ class ProjectController extends Controller
         }
     }
     public function projectDetailedInformationWeb(Request $request){
-        try {dd($request->all());
+        try {
             $prjDetails = $request->input('project_id')!= null ? Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode')) : null;
             $prjName = $prjDetails && $prjDetails != null ? $prjDetails->project_name : null;
             $aimsPrjName = $prjDetails && $prjDetails != null ? $prjDetails->aims_project_name : null;
@@ -1729,7 +1729,7 @@ class ProjectController extends Controller
 
             $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
             $BodyDetails = [];
-          
+          dd(class_exists($modelClass),$modelClass);
             if(class_exists($modelClass)){
                 $existingPrjUsers = $modelClass::where('CE_emp_id', '!=','0')->whereNotNull('CE_emp_id')->where('CE_emp_id','like','%AM%')
                 ->groupBy('CE_emp_id')->pluck('CE_emp_id')->toArray(); 
