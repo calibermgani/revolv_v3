@@ -1799,53 +1799,48 @@ class ProjectController extends Controller
                 //     ->groupBy('CE_emp_id', 'hr')
                 //     ->get();
 
-                // // Reshape results: user → hour → count
+                // Reshape results: user → hour → count
                 // $userCounts = [];
                 // foreach ($results as $row) {
                 //     $userCounts[$row->CE_emp_id][$row->hr] = $row->cnt;
                 // }
-
-                // $BodyDetails = [];
-                // foreach ($existingPrjUsers as $user) {
-                //     $hourlyCounts = [];
-                //     $reachedTarget = 0;
-
-                //     foreach ($timeSlots as $slot) {
-                //         $slotHour = (int) date('H', strtotime($slot['start'])); // take start hour
-                //         $count = $userCounts[$user][$slotHour] ?? 0;
-                //         $hourlyCounts[] = $count;
-                //         $reachedTarget += $count;
-                //     }
-                // fetch everything once
                 $allData = $modelClass::whereIn('CE_emp_id', $existingPrjUsers)
-                    ->whereIn('chart_status', [
-                        'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
-                        'QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'
-                    ])
-                    ->whereBetween($columnToUse, [$minStart, $maxEnd])
-                    ->get(['CE_emp_id', $columnToUse]);
+    ->whereIn('chart_status', [
+        'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
+        'QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'
+    ])
+    ->whereBetween($columnToUse, [$minStart, $maxEnd])
+    ->get(['CE_emp_id', $columnToUse]);
 
-                // group by user
-                $userData = $allData->groupBy('CE_emp_id');
+// group by user
+$userData = $allData->groupBy('CE_emp_id');
 
                 $BodyDetails = [];
                 foreach ($existingPrjUsers as $user) {
-                    $hourlyCounts = [];
-                    $reachedTarget = 0;
+                    // $hourlyCounts = [];
+                    // $reachedTarget = 0;
 
-                    foreach ($timeSlots as $slot) {
-                        $slotStart = $slot['start'];
-                        $slotEnd   = $slot['end'];
+                    // foreach ($timeSlots as $slot) {
+                    //     $slotHour = (int) date('H', strtotime($slot['start'])); // take start hour
+                    //     $count = $userCounts[$user][$slotHour] ?? 0;
+                    //     $hourlyCounts[] = $count;
+                    //     $reachedTarget += $count;
+                    // }
+$hourlyCounts = [];
+    $reachedTarget = 0;
 
-                        // filter this user's data for this slot
-                        $count = $userData[$user]
-                            ->whereBetween($columnToUse, [$slotStart, $slotEnd])
-                            ->count();
+    foreach ($timeSlots as $slot) {
+        $slotStart = $slot['start'];
+        $slotEnd   = $slot['end'];
 
-                        $hourlyCounts[] = $count;
-                        $reachedTarget += $count;
-                    }
+        // filter this user's data for this slot
+        $count = $userData[$user]
+            ->whereBetween($columnToUse, [$slotStart, $slotEnd])
+            ->count();
 
+        $hourlyCounts[] = $count;
+        $reachedTarget += $count;
+    }
                     $achievedPercentage = 0;
                     if (is_numeric($reachedTarget) && is_numeric($targetPerDay) && $targetPerDay > 0) {
                         $achievedPercentage = ($reachedTarget / $targetPerDay) * 100;
