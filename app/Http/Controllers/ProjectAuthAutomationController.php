@@ -624,7 +624,7 @@ class ProjectAuthAutomationController extends Controller
                  'istaction_date' => isset($request->istaction_date) && $request->istaction_date != "NULL" ? $request->istaction_date : NULL,
                  'trnsfr_type' => isset($request->trnsfr_type) && $request->trnsfr_type != "NULL" ? $request->trnsfr_type : NULL,
                  'c_status' => isset($request->c_status) && $request->c_status != "NULL" ? $request->c_status : NULL,
-                 'invoke_date' => carbon::now()->format('Y-m-d')
+                // 'invoke_date' => carbon::now()->format('Y-m-d')
              ];         
 
             $duplicateRecordExisting  =  IhAr::where($attributes)->exists();
@@ -653,9 +653,35 @@ class ProjectAuthAutomationController extends Controller
                     ]);
                         return response()->json(['message' => 'Record Inserted Successfully']);
             } else {
-                $duplicateRecord  =  IhAr::where($attributes)->where('chart_status',"CE_Assigned")->first();
-                if ($duplicateRecord) {
-                    $duplicateRecord->update([
+                $duplicateRecords  =  IhAr::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                            'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,
+                            'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'patient_dob' => isset($request->patient_dob) && $request->patient_dob != "NULL" ? $request->patient_dob : NULL,
+                            'cstm_ins_grpng' => isset($request->cstm_ins_grpng) && $request->cstm_ins_grpng != "NULL" ? $request->cstm_ins_grpng : NULL,
+                            'ins_pkg_name' => isset($request->ins_pkg_name) && $request->ins_pkg_name != "NULL" ? $request->ins_pkg_name : NULL,
+                            'ins_report_cat' => isset($request->ins_report_cat) && $request->ins_report_cat != "NULL" ? $request->ins_report_cat : NULL,
+                            'ins_pkg_type' => isset($request->ins_pkg_type) && $request->ins_pkg_type != "NULL" ? $request->ins_pkg_type : NULL,
+                            'rndrng_prvdr' => isset($request->rndrng_prvdr) && $request->rndrng_prvdr != "NULL" ? $request->rndrng_prvdr : NULL,
+                            'svc_dprtmnt' => isset($request->svc_dprtmnt) && $request->svc_dprtmnt != "NULL" ? $request->svc_dprtmnt : NULL,
+                            'currenterrorfull' => isset($request->currenterrorfull) && $request->currenterrorfull != "NULL" ? $request->currenterrorfull : NULL,
+                            'srv_bucket_total' => isset($request->srv_bucket_total) && $request->srv_bucket_total != "NULL" ? $request->srv_bucket_total : NULL,
+                            'istaction_date' => isset($request->istaction_date) && $request->istaction_date != "NULL" ? $request->istaction_date : NULL,
+                            'trnsfr_type' => isset($request->trnsfr_type) && $request->trnsfr_type != "NULL" ? $request->trnsfr_type : NULL,
+                            'c_status' => isset($request->c_status) && $request->c_status != "NULL" ? $request->c_status : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                 } else {
+                     IhAr::insert([
                         'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
                         'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,
                         'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
@@ -675,10 +701,10 @@ class ProjectAuthAutomationController extends Controller
                         'invoke_date' => date('Y-m-d'),
                         'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                         'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
-                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        'chart_status' => "CE_Assigned",
                     ]);
+                        return response()->json(['message' => 'Record Reinserted Successfully']);
                 }
-                return response()->json(['message' => 'Existing Record Updated Successfully']);
             }
         } catch (\Exception $e) {
             $e->getMessage();
@@ -724,7 +750,7 @@ class ProjectAuthAutomationController extends Controller
                  'primary_insurer_name' => isset($request->primary_insurer_name) && $request->primary_insurer_name != "NULL" ? $request->primary_insurer_name : NULL,
                  'secondary_insurer_name' => isset($request->secondary_insurer_name) && $request->secondary_insurer_name != "NULL" ? $request->secondary_insurer_name : NULL,
                  'rate' => isset($request->rate) && $request->rate != "NULL" ? $request->rate : NULL,
-                 'invoke_date' => carbon::now()->format('Y-m-d')
+                 //'invoke_date' => carbon::now()->format('Y-m-d')
              ];         
 
             $duplicateRecordExisting  =  MsChargeEntry::where($attributes)->exists();
@@ -743,22 +769,38 @@ class ProjectAuthAutomationController extends Controller
                     ]);
                         return response()->json(['message' => 'Record Inserted Successfully']);
             } else {
-                $duplicateRecord  =  MsChargeEntry::where($attributes)->where('chart_status',"CE_Assigned")->first();
-                if ($duplicateRecord) {
-                    $duplicateRecord->update([
-                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
-                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
-                        'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
-                        'primary_insurer_name' => isset($request->primary_insurer_name) && $request->primary_insurer_name != "NULL" ? $request->primary_insurer_name : NULL,
-                        'secondary_insurer_name' => isset($request->secondary_insurer_name) && $request->secondary_insurer_name != "NULL" ? $request->secondary_insurer_name : NULL,
-                        'rate' => isset($request->rate) && $request->rate != "NULL" ? $request->rate : NULL,
-                        'invoke_date' => date('Y-m-d'),
-                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
-                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
-                        'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
-                    ]);
+                $duplicateRecords  =  MsChargeEntry::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                      foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                            'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                            'primary_insurer_name' => isset($request->primary_insurer_name) && $request->primary_insurer_name != "NULL" ? $request->primary_insurer_name : NULL,
+                            'secondary_insurer_name' => isset($request->secondary_insurer_name) && $request->secondary_insurer_name != "NULL" ? $request->secondary_insurer_name : NULL,
+                            'rate' => isset($request->rate) && $request->rate != "NULL" ? $request->rate : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                        MsChargeEntry::insert([
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                            'dob' => isset($request->dob) && $request->dob != "NULL" ? $request->dob : NULL,
+                            'primary_insurer_name' => isset($request->primary_insurer_name) && $request->primary_insurer_name != "NULL" ? $request->primary_insurer_name : NULL,
+                            'secondary_insurer_name' => isset($request->secondary_insurer_name) && $request->secondary_insurer_name != "NULL" ? $request->secondary_insurer_name : NULL,
+                            'rate' => isset($request->rate) && $request->rate != "NULL" ? $request->rate : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'chart_status' => "CE_Assigned",
+                        ]);
+                        return response()->json(['message' => 'Record Reinserted Successfully']);
                 }
-                return response()->json(['message' => 'Existing Record Updated Successfully']);
             }
         } catch (\Exception $e) {
             $e->getMessage();
