@@ -1667,13 +1667,11 @@ class ProjectController extends Controller
         }
     }
     public function projectDetailedInformationWeb(Request $request){
-        try {
-           // $prjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->project_name ?? null;
+        try {dd($request->all());
             $prjDetails = $request->input('project_id')!= null ? Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode')) : null;
             $prjName = $prjDetails && $prjDetails != null ? $prjDetails->project_name : null;
             $aimsPrjName = $prjDetails && $prjDetails != null ? $prjDetails->aims_project_name : null;
-           // $aimsPrjName = Helpers::projectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'))->aims_project_name ?? null;          
-            $subPrjName = Helpers::subProjectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))->sub_project_name ?? null;
+           $subPrjName = Helpers::subProjectName(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))->sub_project_name ?? null;
             //$prjSLATarget = (int)$this->getProjectTotalSlaTarget(Helpers::encodeAndDecodeID($request->input('project_id'),'decode'),Helpers::encodeAndDecodeID($request->input('subproject_id'),'decode'))['projectSLATarget'];
             $title = $aimsPrjName . '-' . $subPrjName;
             $tableName = Str::slug(Str::lower($prjName . '_' . $subPrjName), '_');
