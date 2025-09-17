@@ -28,7 +28,7 @@
                                 <td>
                                     {{-- {{ $data['user'] != null ? $data['user'] . ' - ' . App\Http\Helper\Admin\Helpers::getUserNameByEmpId($data['user']) : '--' }} --}}
                                     {{-- {{  $data['user'] != null ? $data['user'].' - '.ucwords(strtolower($userName)) : '--' }}   --}}
-                                      {{  $data['user'] != null ? $data['user']}}
+                                      {{  $data['user'] != null ? $data['user']:'--' }}
                                 </td>
                                     @foreach ($data['hourlyCount'] as $count)
                                         <td>{{ $count }}</td>
