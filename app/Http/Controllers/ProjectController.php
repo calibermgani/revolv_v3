@@ -1729,10 +1729,10 @@ class ProjectController extends Controller
 
             $headers = collect($timeSlots)->pluck('header')->toArray(); // Extract headers
             $BodyDetails = [];
-          dd(class_exists($modelClass),$modelClass);
+          
             if(class_exists($modelClass)){
                 $existingPrjUsers = $modelClass::where('CE_emp_id', '!=','0')->whereNotNull('CE_emp_id')->where('CE_emp_id','like','%AM%')
-                ->groupBy('CE_emp_id')->pluck('CE_emp_id')->toArray(); 
+                ->groupBy('CE_emp_id')->pluck('CE_emp_id')->toArray(); dd($existingPrjUsers);
                 foreach ($existingPrjUsers as $user) {
                     $hourlyCounts = [];
                     $reachedTarget = 0;
