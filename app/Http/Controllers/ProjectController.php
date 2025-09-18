@@ -2540,11 +2540,11 @@ class ProjectController extends Controller
                 // }
 
                 $existinOriginData = $originData;   
-                unset($existinOriginData['notes'], $existinOriginData['ar_notes'], $existinOriginData['remarks'], $existinOriginData['comments'],$existinOriginData['AR_emp_id'], $existinOriginData['ar_work_date']);
+                unset($existinOriginData['notes'], $existinOriginData['ar_notes'], $existinOriginData['remarks'], $existinOriginData['comments'],$existinOriginData['AR_emp_id'], $existinOriginData['ar_work_date'], $existinOriginData['ar_at']);
                 
 
                 $existingData = $data;   
-                unset($existingData['notes'], $existingData['ar_notes'], $existingData['remarks'], $existingData['comments'],$existinOriginData['AR_emp_id'], $existinOriginData['ar_work_date']);
+                unset($existingData['notes'], $existingData['ar_notes'], $existingData['remarks'], $existingData['comments'],$existingData['AR_emp_id'], $existingData['ar_work_date'],$existingData['ar_at']);
 
                 // Check if original record exists
                 $existinOriginDataCheck = $originalModelClass::where($existinOriginData)->exists();
