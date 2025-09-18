@@ -2557,6 +2557,7 @@ class ProjectController extends Controller
                     $duplicateRecords = $originalModelClass::where($existinOriginData)->get();
                     if ($duplicateRecords->isNotEmpty()) {
                         foreach ($duplicateRecords as $duplicateRecord) {
+                            $originData['updated_at'] = carbon::now()->format('Y-m-d H:i:s');
                             $duplicateRecord->update($originData);  // ✅ fixed
                              $parentRecord = $duplicateRecord;
                         }
@@ -2564,7 +2565,7 @@ class ProjectController extends Controller
                 }
 
                 // Check if child (modelClass) record exists
-                $existingDataCheck = $originalModelClass::where($existingData)->exists();
+                $existingDataCheck = $modelClass::where($existingData)->exists();
                 if (!$existingDataCheck) {
                     // Insert into modelClass
                     if (class_exists($modelClass)) {
@@ -2585,9 +2586,10 @@ class ProjectController extends Controller
                     }
                 } else {
                     // Update existing child records
-                    $duplicateRecords = $originalModelClass::where($existingData)->get();
+                    $duplicateRecords = $modelClass::where($existingData)->get();
                     if ($duplicateRecords->isNotEmpty()) {
                         foreach ($duplicateRecords as $duplicateRecord) {
+                            $data['updated_at'] = carbon::now()->format('Y-m-d H:i:s');
                             $duplicateRecord->update($data);  // ✅ fixed
                         }
                     }
