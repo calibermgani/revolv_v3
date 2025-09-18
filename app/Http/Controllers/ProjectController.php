@@ -2432,10 +2432,12 @@ class ProjectController extends Controller
             }
 
             // Collect validation errors
-            $errors = [];
+            $errors = [];$data = [];
             foreach ($request->except('token', 'project_id', 'sub_project_id') as $key => $value) {
                 $data[$key] = is_array($value) ? implode('_el_', $value) : $value;
             }
+            $possibleColumns = ['ar_notes', 'notes', 'remarks', 'comments'];
+            $tableColumns = \Schema::getColumnListing((new $originalModelClass)->getTable());
             // Validate AR Status Code
             if (!empty($request->ar_status_code)) {
                 $statCodes = $request->ar_status_code == '--' ? "None" : $request->ar_status_code;
@@ -2500,13 +2502,22 @@ class ProjectController extends Controller
                 : ($data['ar_at'] ?? null);
         $dateValue = $request->input('ar_at') ?? $request->input('ar_work_date') ?? $request->input('coder_work_date');
         $data['ar_at'] = $dateValue ? Carbon::parse($dateValue)->setTime(23, 0, 0)->toDateTimeString(): null;
-
+     
             $originData = $data;
             $originData['ar_notes'] = NULL;
+            $originData['notes'] = NULL;
+            $originData['comments'] = NULL;
+            $originData['remarks'] = NULL;
             $originData['ar_status_code'] = NULL;
             $originData['ar_action_code'] = NULL;
             $originData['ar_denial_codes'] = NULL;
             $originData['ar_substatus_codes'] = NULL;
+            foreach ($possibleColumns as $col) {
+                if ($request->filled($col) && in_array($col, $tableColumns)) {
+                    $data[$col] = $request->input($col);
+                }
+            }
+            
                 // Check for duplicate record
                 // $duplicate = $originalModelClass::where($originData)->first();
                 // if ($duplicate) {
