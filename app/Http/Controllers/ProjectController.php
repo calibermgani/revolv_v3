@@ -2512,11 +2512,21 @@ class ProjectController extends Controller
             $originData['ar_action_code'] = NULL;
             $originData['ar_denial_codes'] = NULL;
             $originData['ar_substatus_codes'] = NULL;
+            $noteValue = null;
             foreach ($possibleColumns as $col) {
-                if ($request->filled($col) && in_array($col, $tableColumns)) {
-                    $data[$col] = $request->input($col);
+                if ($request->filled($col)) {
+                    $noteValue = $request->input($col);
+                    break;
                 }
             }
+
+            // assign to all matching columns in the table
+            foreach ($possibleColumns as $col) {
+                if (in_array($col, $tableColumns)) {
+                    $data[$col] = $request->filled($col) ? $request->input($col) : $noteValue;
+                }
+       }
+
             
                 // Check for duplicate record
                 // $duplicate = $originalModelClass::where($originData)->first();
