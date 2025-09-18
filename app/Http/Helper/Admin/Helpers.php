@@ -517,11 +517,7 @@ class Helpers
 	public static function projectList()
 	{
 		// $data = project::where('status', 'Active')->pluck('project_name', 'id')->prepend(trans('Select Project'), '')->toArray();
-		// $data = project::where('status', 'Active')->pluck('aims_project_name', 'project_id')->prepend(trans('Select Project'), '')->toArray();
-		$data = Project::where('status', 'Active')
-		->pluck(DB::raw("CONCAT(UCASE(LEFT(LCASE(aims_project_name), 1)), SUBSTRING(LCASE(aims_project_name), 2)) as aims_project_name"), 'project_id')
-		->prepend(trans('Select Project'), '')
-		->toArray();
+		$data = project::where('status', 'Active')->pluck('aims_project_name', 'project_id')->prepend(trans('Select Project'), '')->toArray();
 		return $data;
 	}
 
