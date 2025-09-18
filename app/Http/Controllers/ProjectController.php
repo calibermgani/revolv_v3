@@ -2544,7 +2544,7 @@ class ProjectController extends Controller
                 
 
                 $existingData = $data;   
-                unset($existingData['notes'], $existingData['ar_notes'], $existingData['remarks'], $existingData['comments']);
+                unset($existingData['notes'], $existingData['ar_notes'], $existingData['remarks'], $existingData['comments']);dd($existinOriginData, $existingData);
 
                 // Check if original record exists
                 $existinOriginDataCheck = $originalModelClass::where($existinOriginData)->exists();
