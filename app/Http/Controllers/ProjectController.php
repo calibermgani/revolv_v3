@@ -2539,26 +2539,64 @@ class ProjectController extends Controller
                 //     ], 409); // 409 Conflict
                 // }
 
-            // Insert into original model
-            $parentRecord = $originalModelClass::create($originData);
+                $existinOriginData = $originData;   
+                unset($existinOriginData['notes'], $existinOriginData['ar_notes'], $existinOriginData['remarks'], $existinOriginData['comments']);
 
-            // Insert into modelClass
-            if (class_exists($modelClass)) {
-                $data['parent_id'] = $parentRecord->id;
-                $callChartData['emp_id'] =  $data['CE_emp_id'];
-                $callChartData['project_id'] = $request->project_id;
-                $callChartData['sub_project_id'] = $request->sub_project_id;
-                $callChartData['record_id'] = $parentRecord->id;
-                $callChartData['start_time'] = $data['ar_at'] != null ? $data['ar_at'] : Carbon::now()->format('Y-m-d H:i:s');    
-                $callChartData['end_time'] = $data['ar_at']  != null ? $data['ar_at'] :  Carbon::now()->format('Y-m-d H:i:s');   
-                $callChartData['work_time'] = "00:00:00";
-                $callChartData['record_status'] = "CE_Completed";
-                $modelClass::create($data);
-            CallerChartsWorkLogs::create($callChartData);
-            }
+                $existingData = $data;   
+                unset($existingData['notes'], $existingData['ar_notes'], $existingData['remarks'], $existingData['comments']);
+
+                // Check if original record exists
+                $existinOriginDataCheck = $originalModelClass::where($existinOriginData)->exists();
+
+                if (!$existinOriginDataCheck) {
+                    // Insert into original model
+                    $parentRecord = $originalModelClass::create($originData);
+                } else {
+                    // Update existing original records
+                    $duplicateRecords = $originalModelClass::where($existinOriginData)->get();
+                    if ($duplicateRecords->isNotEmpty()) {
+                        foreach ($duplicateRecords as $duplicateRecord) {
+                            $duplicateRecord->update($originData);  // ✅ fixed
+                             $parentRecord = $duplicateRecord;
+                        }
+                    }
+                }
+
+                // Check if child (modelClass) record exists
+                $existingDataCheck = $originalModelClass::where($existingData)->exists();
+
+                if (!$existingDataCheck) {
+                    // Insert into modelClass
+                    if (class_exists($modelClass)) {
+                        $data['parent_id'] = $parentRecord->id;
+                        $callChartData['emp_id'] =  $data['CE_emp_id'];
+                        $callChartData['project_id'] = $request->project_id;
+                        $callChartData['sub_project_id'] = $request->sub_project_id;
+                        $callChartData['record_id'] = $parentRecord->id;
+                        $callChartData['start_time'] = $data['ar_at'] ?? Carbon::now()->format('Y-m-d H:i:s');    
+                        $callChartData['end_time']   = $data['ar_at'] ?? Carbon::now()->format('Y-m-d H:i:s');   
+                        $callChartData['work_time'] = "00:00:00";
+                        $callChartData['record_status'] = "CE_Completed";
+
+                        $modelClass::create($data);
+                        CallerChartsWorkLogs::create($callChartData);
+
+                        return response()->json(['success' => true, 'message' => 'Record inserted.']);
+                    }
+                } else {
+                    // Update existing child records
+                    $duplicateRecords = $originalModelClass::where($existingData)->get();
+                    if ($duplicateRecords->isNotEmpty()) {
+                        foreach ($duplicateRecords as $duplicateRecord) {
+                            $duplicateRecord->update($data);  // ✅ fixed
+                        }
+                    }
+                    return response()->json(['success' => true, 'message' => 'Record updated.']);
+                }
+
         
 
-            return response()->json(['success' => true, 'message' => 'Record inserted.']);
+          
 
         } catch (\Exception $e) {
             return response()->json([
