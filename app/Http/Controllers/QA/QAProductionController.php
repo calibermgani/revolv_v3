@@ -2005,7 +2005,7 @@ class QAProductionController extends Controller
                     });
                     array_push($fields,'aging','aging_range');
                 }
-              
+           //   dd($request->all(),$fields,$exportResult);  
                 return Excel::download(new ProductionExport($fields,$exportResult), 'Resolv_'.$exStatus.'_Export.xlsx');
                 } catch (\Exception $e) {
                     log::debug($e->getMessage());
@@ -2021,5 +2021,58 @@ class QAProductionController extends Controller
         $date = \DateTime::createFromFormat($format, $value);
         return $date && $date->format($format) === $value;
     }
+
+      public function qaSamplingAssignee(Request $request) {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+
+            try {   
+                $assigneeId = $request['assigneeId'];
+                $decodedProjectName = Helpers::encodeAndDecodeID($request['clientName'], 'decode');
+                $decodedPracticeName = $request['subProjectName'] == '--' ? '--' : Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
+                $paProject = Helpers::projectName($decodedProjectName);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
+                $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
+                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
+                $modelName = Str::studly($table_name);
+                $modelClass = "App\\Models\\" . $modelName;
+                $modelClassDatas = "App\\Models\\" . $modelName.'Datas';
+                $modelHistory = "App\\Models\\" . $modelName.'History';
+                $checkedRowValues = json_decode(urldecode($request->checkedRowValues), true);
+                 if($request['selectedRecords'] == "none") { 
+                    foreach($checkedRowValues as $data) {
+                        $existingRecord = $modelClass::where('id',$data['value'])->where('chart_status','CE_Completed')
+                        ->where('qa_work_status','!=','Auto_Close')->first();
+                        $historyRecord = $existingRecord->toArray();
+                        $historyRecord['parent_id']= $historyRecord['id'];
+                        unset($historyRecord['id']);
+                        $modelHistory::create($historyRecord);
+                        $existingModelClassDatasRecord = $modelClassDatas::where('parent_id',$data['value'])->first();
+                        $existingRecord->update(['QA_emp_id' => $assigneeId,'qa_work_status' => 'Sampling']);
+                        $existingModelClassDatasRecord->update(['QA_emp_id' => $assigneeId,'qa_work_status' => 'Sampling']);                        
+                    }
+                } else {                   
+                    $query = $modelClass::query();
+                       if(isset($request['qa_emp_id']) && $request['qa_emp_id'] != '' && $request['qa_emp_id'] != 'null') {
+                            $ids = $query->where('chart_status','CE_Completed')
+                            ->where('qa_work_status','!=','Auto_Close')
+                            ->where('QA_emp_id','=',$request['qa_emp_id'])
+                            ->pluck('id'); 
+                        } else {
+                            $ids = $query->where('chart_status','CE_Completed')
+                            ->where('qa_work_status','!=','Auto_Close')
+                            ->get()->pluck('id');
+                        }
+                    $modelClass::whereIn('id', $ids)->update(['QA_emp_id' => $assigneeId]);
+                    $modelClassDatas::whereIn('parent_id', $ids)->update(['QA_emp_id' => $assigneeId]);
+                 }   
+                return response()->json(['success' => true]);
+            } catch (\Exception $e) {
+                log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
+
     
 }
