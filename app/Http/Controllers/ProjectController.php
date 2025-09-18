@@ -2564,7 +2564,7 @@ class ProjectController extends Controller
                 }
 
                 // Check if child (modelClass) record exists
-                $existingDataCheck = $originalModelClass::where($existingData)->exists();
+                $existingDataCheck = $originalModelClass::where($existingData)->exists();dd($existingDataCheck, $existingData, $originalModelClass, $data,$originData,$existinOriginDataCheck);
 
                 if (!$existingDataCheck) {
                     // Insert into modelClass
