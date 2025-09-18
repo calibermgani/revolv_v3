@@ -2541,6 +2541,7 @@ class ProjectController extends Controller
 
                 $existinOriginData = $originData;   
                 unset($existinOriginData['notes'], $existinOriginData['ar_notes'], $existinOriginData['remarks'], $existinOriginData['comments']);
+                
 
                 $existingData = $data;   
                 unset($existingData['notes'], $existingData['ar_notes'], $existingData['remarks'], $existingData['comments']);
@@ -2563,7 +2564,7 @@ class ProjectController extends Controller
                 }
 
                 // Check if child (modelClass) record exists
-                $existingDataCheck = $originalModelClass::where($existingData)->exists();
+                $existingDataCheck = $originalModelClass::where($existingData)->exists();dd($existinOriginData, $existingData, $existingDataCheck, $existinOriginDataCheck);
 
                 if (!$existingDataCheck) {
                     // Insert into modelClass
