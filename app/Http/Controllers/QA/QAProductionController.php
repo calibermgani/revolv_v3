@@ -2005,7 +2005,6 @@ class QAProductionController extends Controller
                     });
                     array_push($fields,'aging','aging_range');
                 }
-           //   dd($request->all(),$fields,$exportResult);  
                 return Excel::download(new ProductionExport($fields,$exportResult), 'Resolv_'.$exStatus.'_Export.xlsx');
                 } catch (\Exception $e) {
                     log::debug($e->getMessage());
