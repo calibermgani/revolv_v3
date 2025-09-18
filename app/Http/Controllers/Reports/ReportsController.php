@@ -22,6 +22,8 @@ use App\Models\ProjectReason;
 use App\Models\formConfiguration;
 use App\Exports\userProjectExport;
 use Maatwebsite\Excel\Facades\Excel;
+
+ini_set('max_execution_time', 300);
 class ReportsController extends Controller
 {
     public function reporstIndex(){
