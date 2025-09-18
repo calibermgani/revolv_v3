@@ -2461,26 +2461,78 @@ class ProjectController extends Controller
             }
 
             // Validate AR Denial Code
+            // if (!empty($request->ar_denial_codes)) {
+            //     $denialCodes = $request->ar_denial_codes == '--' ? "N" : $request->ar_denial_codes;
+            //     $denial = \App\Models\ARDenialCode::where('denial_code', $denialCodes)->first();
+            //     if (!$denial) {
+            //         $errors['ar_denial_codes'] = "Invalid denial code: {$request->ar_denial_codes}";
+            //     } else {
+            //         $data['ar_denial_codes'] = $denial->id;
+            //     }
+            // }
             if (!empty($request->ar_denial_codes)) {
-                $denialCodes = $request->ar_denial_codes == '--' ? "N" : $request->ar_denial_codes;
-                $denial = \App\Models\ARDenialCode::where('denial_code', $denialCodes)->first();
-                if (!$denial) {
-                    $errors['ar_denial_codes'] = "Invalid denial code: {$request->ar_denial_codes}";
+                // Handle "--" as default
+                if ($request->ar_denial_codes == '--') {
+                    $denialCode = "N";
+                    $denialDesc = "None";
+                } else {
+                    // Split into "code" and "description"
+                    // Example: "CO-1 - Claim/Service Denied;"
+                    $parts = preg_split("/\s*[-–]\s*/", $request->ar_denial_codes, 2);
+
+                    $denialCode = trim($parts[0] ?? '');
+                    $denialDesc = trim($parts[1] ?? '');
+                }
+
+                    $denial = \App\Models\ARDenialCode::where('denial_code', $denialCode)
+                                ->where('code_description', $denialDesc)
+                                ->first();
+                
+
+                if (empty($denial)) {
+                    $errors['ar_denial_codes'] = "Invalid denial code or description: {$request->ar_denial_codes}";
                 } else {
                     $data['ar_denial_codes'] = $denial->id;
                 }
             }
+             if (!empty($request->ar_substatus_codes)) {
+                // Handle "--" as default
+                if ($request->ar_substatus_codes == '--') {
+                    $subStatusCode = "N";
+                    $subStatusCodeDesc = "None";
+                } else {
+                    // Split into "code" and "description"
+                    // Example: "CO-1 - Claim/Service Denied;"
+                    $parts = preg_split("/\s*[-–]\s*/", $request->ar_substatus_codes, 2);
 
-            // Validate AR Substatus Code
-            if (!empty($request->ar_substatus_codes)) {
-                $subStatusCodes = $request->ar_substatus_codes == '--' ? "None" : $request->ar_substatus_codes;
-                $substatus = \App\Models\ARSubStatusCode::where('sub_status_code_description', $subStatusCodes)->first();
-                if (!$substatus) {
-                    $errors['ar_substatus_codes'] = "Invalid substatus code: { $request->ar_substatus_codes}";
+                    $subStatusCode = trim($parts[0] ?? '');
+                    $subStatusCodeDesc = trim($parts[1] ?? '');
+                }
+
+                    $substatus = \App\Models\ARSubStatusCode::where('sub_status_code', $subStatusCode)
+                                ->where('sub_status_code_description', $subStatusCodeDesc)
+                                ->first();
+                
+
+                if (empty($substatus)) {
+                    $errors['ar_substatus_codes'] = "Invalid substatus code or description: {$request->ar_substatus_codes}";
                 } else {
                     $data['ar_substatus_codes'] = $substatus->id;
                 }
             }
+
+
+
+            // Validate AR Substatus Code
+            // if (!empty($request->ar_substatus_codes)) {
+            //     $subStatusCodes = $request->ar_substatus_codes == '--' ? "None" : $request->ar_substatus_codes;
+            //     $substatus = \App\Models\ARSubStatusCode::where('sub_status_code_description', $subStatusCodes)->first();
+            //     if (!$substatus) {
+            //         $errors['ar_substatus_codes'] = "Invalid substatus code: { $request->ar_substatus_codes}";
+            //     } else {
+            //         $data['ar_substatus_codes'] = $substatus->id;
+            //     }
+            // }
 
             // If any validation fails, return to Python
             if (!empty($errors)) {
