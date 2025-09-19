@@ -90,6 +90,16 @@ Route::any('get_claim_History', 'App\Http\Controllers\ProductionController@getCl
 Route::any('projects_claim_find/{clientName}/{subProjectName}', 'App\Http\Controllers\ProductionController@prjClaimFind')->name('claimFind');
 Route::get('/run-commands', 'App\Http\Controllers\FormController@runCommands')->name('run.commands');
 Route::any('pendingtab_status_update', 'App\Http\Controllers\ProductionController@pendingTabStatusUpdate');
+//Route::any('reports/project_report_tracking', 'App\Http\Controllers\Reports\ReportsController@projectReportTracking');
+// Start tracking + trigger background process
+Route::post('reports/project_report_tracking', 'App\Http\Controllers\Reports\ReportsController@projectReportTracking');
+
+// Poll status only
+Route::get('reports/project_report_tracking_status/{project_id}/{sub_project_id}', 'App\Http\Controllers\Reports\ReportsController@projectReportTrackingStatus');
+
+// Fetch final result (once ready)
+Route::get('reports/report_client_columns_list_result/{project_id}/{sub_project_id}', 'App\Http\Controllers\Reports\ReportsController@reportClientColumnsListResult');
+
 
 Route::group(['prefix' => 'qa_production'], function () {
     Route::any('qa_clients', 'App\Http\Controllers\QA\QAProductionController@clients')->name('qaClients');

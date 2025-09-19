@@ -23,6 +23,7 @@ use App\Models\formConfiguration;
 use App\Exports\userProjectExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\ReportTracking;
+use Illuminate\Support\Facades\Storage;
 
 ini_set('max_execution_time', 300);
 class ReportsController extends Controller
@@ -117,38 +118,106 @@ class ReportsController extends Controller
             return redirect('/');
         }
     }
+public function projectReportTracking(Request $request) {
+    // Clear any old record
+    ReportTracking::where('project_id', $request["project_id"])
+        ->where('sub_project_id', $request["sub_project_id"])
+        ->forceDelete();
 
-    public function reportClientColumnsList(Request $request) {
+    // Insert new "Start" record
+    $reportTracking = ReportTracking::create([
+        'project_id'     => $request["project_id"],
+        'sub_project_id' => $request["sub_project_id"],
+        'fetch_status'   => 'Start',
+        'request_date'   => Carbon::now()->format('Y-m-d'),
+    ]);
+    $inputValues = $request->all();
+    // Run heavy process in background
+    dispatch(function () use ($inputValues, $reportTracking) {
+        try {
+            // Generate HTML (your existing logic unchanged)
+            $response = $this->reportClientColumnsList($inputValues);
+            $data     = $response->getData(true);
+
+            // Save result to storage/cache/db
+            Storage::put("reports/report_{$reportTracking->id}.json", json_encode($data));
+
+            // Mark as End
+            $reportTracking->update(['fetch_status' => 'End']);
+        } catch (\Exception $e) {
+            $reportTracking->update(['fetch_status' => 'Error']);
+            \Log::error("Project Report Tracking failed: ".$e->getMessage());
+        }
+    });
+    $tracking = ReportTracking::where('project_id',  $request["project_id"])
+        ->where('sub_project_id',  $request["sub_project_id"])
+        ->latest()
+        ->first();
+    return response()->json([
+        'success' => true,
+        'status' => $tracking ? $tracking->fetch_status : 'NotFound',
+        'tracking_id' => $reportTracking->id,
+        'message' => 'Processing started',
+    ]);
+}
+
+// public function projectReportTrackingStatus($project_id, $sub_project_id)
+// {
+//     $tracking = ReportTracking::where('project_id', $project_id)
+//         ->where('sub_project_id', $sub_project_id)
+//         ->latest()
+//         ->first();
+
+//     return response()->json([
+//         'status' => $tracking ? $tracking->fetch_status : 'NotFound',
+//     ]);
+// }
+
+public function reportClientColumnsListResult($project_id, $sub_project_id){
+    $tracking = ReportTracking::where('project_id', $project_id)
+        ->where('sub_project_id', $sub_project_id)
+        ->latest()
+        ->first();
+
+    if (!$tracking) {
+        return response()->json(['success' => false, 'message' => 'No tracking record found']);
+    }
+
+    $file = "reports/report_{$tracking->id}.json";
+    if (Storage::exists($file)) {
+        return response()->json(json_decode(Storage::get($file), true));
+    }
+
+    return response()->json(['success' => false, 'message' => 'Result not ready']);
+}
+
+
+
+    public function reportClientColumnsList($request) {
 
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
             $client = new Client(['verify' => false]);
             try {
-                $paProject = Helpers::projectName($request->project_id);
+                $paProject = Helpers::projectName($request["project_id"]);
                 $decodedClientName = $paProject ? $paProject->project_name : null;
-                //$decodedClientName = Helpers::projectName($request->project_id)->project_name;
-               // $decodedsubProjectName = $request->sub_project_id == null ? 'project' :Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name;
-                $decodedsubProjectName = $request->sub_project_id == null ? 'project' :($request->project_id != null ? (Helpers::subProjectName($request->project_id, $request->sub_project_id) != null ?Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name : null) : null);
+                //$decodedClientName = Helpers::projectName($request["project_id"])->project_name;
+               // $decodedsubProjectName = $request["sub_project_id"] == null ? 'project' :Helpers::subProjectName($request["project_id"], $request["sub_project_id"])->sub_project_name;
+                $decodedsubProjectName = $request["sub_project_id"] == null ? 'project' :($request["project_id"] != null ? (Helpers::subProjectName($request["project_id"], $request["sub_project_id"]) != null ?Helpers::subProjectName($request["project_id"], $request["sub_project_id"])->sub_project_name : null) : null);
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)).'_datas','_');
-                if (isset($request->work_date) && !empty($request->work_date)) {
-                    $work_date = explode(' - ', $request->work_date);
+                if (isset($request["work_date"]) && !empty($request["work_date"])) {
+                    $work_date = explode(' - ', $request["work_date"]);
                     $start_date = date('Y-m-d 08:00:00', strtotime($work_date[0]));
                     $end_date = date('Y-m-d 07:59:00', strtotime($work_date[1] . ' +1 day'));
                 }else{
                     $start_date = "";
                     $end_date = "";
                 }
-                ReportTracking::where('project_id', $request['project_id'])->where('sub_project_id', $request['sub_project_id'])->forcedelete();
-                $reportTracking = [];
-                $reportTracking['project_id'] = $request->project_id;
-                $reportTracking['sub_project_id'] = $request->sub_project_id;
-                $reportTracking['fetch_status'] = 'Start';
-                $reportTracking['request_date'] =  carbon::now()->format('Y-m-d');
-                 ReportTracking::create($reportTracking);
-                if (isset($request->checkedValues)) {
-                    if ($request->checkedValues[0] === 'all') {
-                        $checkedValues = array_diff($request->checkedValues, ['all']);
+               
+                if (isset($request["checkedValues"])) {
+                    if ($request["checkedValues"][0] === 'all') {
+                        $checkedValues = array_diff($request["checkedValues"], ['all']);
                     }else{
-                        $checkedValues = $request->checkedValues;
+                        $checkedValues = $request["checkedValues"];
                     }
                     $columnsHeader = implode(',', $checkedValues);
                     $columns = [
@@ -169,8 +238,8 @@ class ReportsController extends Controller
                     }
                     // $client_data = DB::table($table_name)
                     //     ->select($columns)
-                    //     ->where('caller_charts_work_logs.project_id', '=', $request->project_id)
-                    //     ->where('caller_charts_work_logs.sub_project_id', '=', $request->sub_project_id)
+                    //     ->where('caller_charts_work_logs.project_id', '=', $request["project_id"])
+                    //     ->where('caller_charts_work_logs.sub_project_id', '=', $request["sub_project_id"])
                     //     ->join('caller_charts_work_logs', 'caller_charts_work_logs.record_id', '=', $table_name . '.parent_id')
                     //     ->where(function ($query) use ($start_date, $end_date) {
                     //         if (!empty($start_date) && !empty($end_date)) {
@@ -214,8 +283,8 @@ class ReportsController extends Controller
                             $join->on('caller_charts_work_logs.record_id', '=', $table_name . '.parent_id');
                         })
                         ->select($columns)
-                        ->where('caller_charts_work_logs.project_id', '=', $request->project_id)
-                        ->where('caller_charts_work_logs.sub_project_id', '=', $request->sub_project_id)
+                        ->where('caller_charts_work_logs.project_id', '=', $request["project_id"])
+                        ->where('caller_charts_work_logs.sub_project_id', '=', $request["sub_project_id"])
                         ->when(!empty($start_date) && !empty($end_date), function ($query) use ($start_date, $end_date) {
                             $query->whereBetween('caller_charts_work_logs.start_time', [$start_date, $end_date]);
                         })
@@ -228,7 +297,7 @@ class ReportsController extends Controller
                         ->get();
                 } else {
                     $client_data = [];
-                }//dd($client_data);
+                }
                 // if (count($client_data) > 0) {
                 $body_info = '<table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter" id="report_list"><thead><tr>';
                 $additionalValues = ['aging','aging_range'];
@@ -422,10 +491,6 @@ class ReportsController extends Controller
                 // } else {
                 //     $body_info = '<p>No data available</p>';
                 // }
-                 $reportTracking['fetch_status'] = 'End';
-                 $reportTrackingList = ReportTracking::where('project_id', $request['project_id'])->where('sub_project_id', $request['sub_project_id'])->first();
-                 $reportTrackingList->update($reportTracking);
-             
                 return response()->json([
                     'success' => true,
                     'body_info' => $body_info,
@@ -1571,6 +1636,274 @@ class ReportsController extends Controller
         }
     }
 
+    public function reportClientColumnsList1(Request $request) {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+            $client = new Client(['verify' => false]);
+            try {
+                $paProject = Helpers::projectName($request->project_id);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
+                $decodedsubProjectName = $request->sub_project_id == null ? 'project' :($request->project_id != null ? (Helpers::subProjectName($request->project_id, $request->sub_project_id) != null ?Helpers::subProjectName($request->project_id, $request->sub_project_id)->sub_project_name : null) : null);
+                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)).'_datas','_');
+                if (isset($request->work_date) && !empty($request->work_date)) {
+                    $work_date = explode(' - ', $request->work_date);
+                    $start_date = date('Y-m-d 08:00:00', strtotime($work_date[0]));
+                    $end_date = date('Y-m-d 07:59:00', strtotime($work_date[1] . ' +1 day'));
+                }else{
+                    $start_date = "";
+                    $end_date = "";
+                }              
+                if (isset($request->checkedValues)) {
+                    if ($request->checkedValues[0] === 'all') {
+                        $checkedValues = array_diff($request->checkedValues, ['all']);
+                    }else{
+                        $checkedValues = $request->checkedValues;
+                    }
+                    $columnsHeader = implode(',', $checkedValues);
+                    $columns = [
+                        DB::raw($columnsHeader),
+                        "caller_charts_work_logs.work_time",
+                        "caller_charts_work_logs.record_status"
+                    ];
+                    
+                    // Check if the columns exist in the table
+                    if (Schema::hasColumn($table_name, 'qa_cpt_trends')) {
+                        $columns[] = 'qa_cpt_trends';
+                    }
+                    if (Schema::hasColumn($table_name, 'qa_icd_trends')) {
+                        $columns[] = 'qa_icd_trends';
+                    }
+                    if (Schema::hasColumn($table_name, 'qa_modifiers')) {
+                        $columns[] = 'qa_modifiers';
+                    }
+                        $latestWorkLogs = DB::table(DB::raw('
+                            (
+                                SELECT *, 
+                                    ROW_NUMBER() OVER (
+                                        PARTITION BY record_id, project_id, sub_project_id, record_status 
+                                        ORDER BY start_time DESC
+                                    ) AS row_num
+                                FROM caller_charts_work_logs
+                            ) as ranked_logs
+                        '))
+                        ->where('row_num', 1);
 
-   
+                    $client_data = DB::table($table_name)
+                        ->joinSub($latestWorkLogs, 'caller_charts_work_logs', function ($join) use ($table_name) {
+                            $join->on('caller_charts_work_logs.record_id', '=', $table_name . '.parent_id');
+                        })
+                        ->select($columns)
+                        ->where('caller_charts_work_logs.project_id', '=', $request->project_id)
+                        ->where('caller_charts_work_logs.sub_project_id', '=', $request->sub_project_id)
+                        ->when(!empty($start_date) && !empty($end_date), function ($query) use ($start_date, $end_date) {
+                            $query->whereBetween('caller_charts_work_logs.start_time', [$start_date, $end_date]);
+                        })
+                        ->when(!empty($request->user), function ($query) use ($request) {
+                            $query->where(function ($q) use ($request) {
+                                $q->where('CE_emp_id', $request->user)
+                                ->orWhere('QA_emp_id', $request->user);
+                            });
+                        })
+                        ->get();
+                } else {
+                    $client_data = [];
+                }
+                $body_info = '<table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter" id="report_list"><thead><tr>';
+                $additionalValues = ['aging','aging_range'];
+                $checkedValues = array_merge($checkedValues, $additionalValues);
+                $checkedValues[] = 'work_hours'; $agingCount = $agingRange = null;
+                foreach ($checkedValues as $key => $header) {
+                    if ($header == 'chart_status') {
+                        $body_info .= '<th>Charge Status </th>';
+                    } else if ($header == 'CE_emp_id') {
+                        $body_info .= '<th>AR Emp Id </th>';
+                    } else if ($header == 'ce_hold_reason') {
+                        $body_info .= '<th>AR Hold Reason </th>';
+                    } else if($header == "coder_work_date") {
+                        $body_info .= '<th>AR Work Date</th>';
+                    } else if($header == "coder_rework_status") {
+                        $body_info .= '<th>AR Rework Status</th>';
+                    } else if($header == "coder_rework_reason") {
+                        $body_info .= '<th>AR Rework Reason</th>';
+                    } else if($header == "coder_error_count") {
+                        $body_info .= '<th>AR Error Count</th>';
+                    } else if($header == "ar_status_code") {
+                        $body_info .= '<th>Status Code</th>';
+                    } else if($header == "ar_action_code") {
+                        $body_info .= '<th>Action Code</th>';
+                    } else if($header == "ar_denial_codes") {
+                        $body_info .= '<th>Denial Code</th>';
+                    } else if($header == "ar_substatus_codes") {
+                        $body_info .= '<th>Sub Status Code</th>';
+                    }
+                        else {
+                        $body_info .= '<th>' . ucwords(str_replace(['_else_', '_'], ['/', ' '], $header)) . '</th>';
+                    }
+                }
+                $body_info .= '</tr></thead><tbody>';
+
+                foreach ($client_data as $row) {
+                    
+                    $body_info .= '<tr>';
+                    foreach ($checkedValues as $header) {
+                        $data = isset($row->{$header}) && !empty($row->{$header}) ? $row->{$header} : "--";
+                        if ($header == 'QA_status_code') {
+                            if ($data != '--') {
+                                $data = Helpers::qaStatusById($data)['status_code'];
+                            } else {
+                                $data;
+                            }
+                        }
+                        if ($header == 'QA_sub_status_code') {
+                            if ($data != '--') {
+                                $data = Helpers::qaSubStatusById($data)['sub_status_code'];
+                            } else {
+                                $data;
+                            }
+                        }
+                        if ($header == 'qa_classification') {
+                            if ($data != '--') {
+                                $data = Helpers::qaClassificationById($data)['qa_classification'];
+                            } else {
+                                $data;
+                            }
+                        }
+                        if ($header == 'qa_category') {
+                            if ($data != '--') {
+                                $data = Helpers::qaCategoryById($data)['qa_category'];
+                            } else {
+                                $data;
+                            }
+                        }
+                        if ($header == 'qa_scope') {
+                            if ($data != '--') {
+                                $data = Helpers::qaScopeById($data)['qa_scope'];
+                            } else {
+                                $data;
+                            }
+                        }
+                        if ($header == 'ar_status_code') {
+                            if ($data != '--' && $data != null) {
+                                $status = Helpers::arStatusById($data);
+                                $data = $status != null ? $status['status_code'] : $data;
+                            } else {
+                                $data;
+                            }
+                        }
+                        if ($header == 'ar_action_code') {
+                            if ($data != '--' && $data != null) {
+                                $action = Helpers::arActionById($data);
+                                $data = $action != null ? $action['action_code'] : $data;
+                            } else {
+                                $data;
+                            }
+                        } 
+                        if ($header == 'ar_denial_codes') {
+                            if ($data != '--' && $data != null) {
+                                $denial = Helpers::arDenialById($data);
+                                $data = $denial != null ? $denial['denialCode'] : $data;
+                            } else {
+                                $data;
+                            }
+                        }
+                        if ($header == 'ar_substatus_codes') {
+                            if ($data != '--' && $data != null) {
+                                $denial = Helpers::arSubStatusById($data);
+                                $data = $denial != null ? $denial['substatusCode'] : $data;
+                            } else {
+                                $data;
+                            }
+                        }
+                        if ($header === 'chart_status') {
+                            $recordStatus = $row->{'record_status'};
+                                if (strpos($recordStatus, 'CE_') === 0) {
+                                    $data = str_replace('CE_', 'AR ', $recordStatus);
+                            } elseif (strpos($recordStatus, 'QA_') === 0) {
+                                $data = str_replace('QA_', 'QA ', $recordStatus);
+                            } elseif (strpos($recordStatus, 'QA_') === 0) {
+                                $data = str_replace('QA_', 'QA ', $recordStatus);
+                            } else {
+                                $data =  str_replace('_', ' ',$recordStatus);
+                                $data = ucwords($data);
+                            }
+                        }
+                        if ($header === 'qa_work_status') {
+                            $data = str_replace('_', ' ', $data);
+                        }
+                        if ($header === 'work_hours') {
+                                $data =isset($row->work_time) && !empty($row->work_time) ? $row->work_time : "--";
+                        }
+                        if (strpos($data, '_el_') !== false) {
+                            $data = str_replace('_el_', ' , ', $data);
+                        } else {
+                            $data = $data;
+                        }
+                        if ($header === 'qa_work_date' && ($row->{'record_status'} == "QA_Completed")) {
+                            $data = $data != '--' ? date('m/d/y',strtotime($data)) : '--';
+                        } else if ($header === 'qa_work_date') {
+                            $data =  '--';
+                        }
+                        if ($header === 'invoke_date') {
+                                $data = date('m/d/y',strtotime($data));
+                        }
+                        if ($header === 'coder_work_date' && ($row->{'record_status'} == "CE_Completed")) {
+                            $data = $data != '--' ? date('m/d/y',strtotime($data)) : '--';
+                        } else if ($header === 'coder_work_date') {
+                            $data =  '--';
+                        }
+                        if ($header === 'coder_cpt_trends' && ($row->{'qa_cpt_trends'} == NULL)) {
+                            $data = $data ;
+                        } else if ($header === 'coder_cpt_trends' && ($row->{'qa_cpt_trends'} != NULL)) {
+                            $data = isset($row->{'qa_cpt_trends'}) && !empty($row->{'qa_cpt_trends'}) ? $row->{'qa_cpt_trends'} : "--";
+                            if (strpos($data, '_el_') !== false) {
+                                $data = str_replace('_el_', ' , ', $data);
+                            } else {
+                                $data = $data;
+                            }
+                        }                       
+                        if ($header === 'dos') {
+                            $data = $data != '--' ? date('m/d/y',strtotime($data)) : '--';
+                            $dosDate = Carbon::parse($row->{'dos'});
+                            $currentDate = Carbon::now();
+                            $agingCount = $dosDate->diffInDays($currentDate);
+                            if ($agingCount <= 30) {
+                                $agingRange = '0-30';
+                            } elseif ($agingCount <= 60) {
+                                $agingRange ='31-60';
+                            } elseif ($agingCount <= 90) {
+                                $agingRange = '61-90';
+                            } elseif ($agingCount <= 120) {
+                                $agingRange = '91-120';
+                            } elseif ($agingCount <= 180) {
+                                $agingRange = '121-180';
+                            } elseif ($agingCount <= 365) {
+                                $agingRange = '181-365';
+                            } else {
+                            $agingRange = '365+';
+                            }
+                        } 
+                        if ($header === 'aging') {
+                            $data = $agingCount;
+                        }
+                        if ($header === 'aging_range') {
+                            $data = $agingRange;
+                        }
+                        $body_info .= '<td class="wrap-text">' . $data . '</td>';
+                    }
+                    $body_info .= '</tr>';
+                }
+
+                $body_info .= '</tbody></table>';                 
+                return response()->json([
+                    'success' => true,
+                    'body_info' => $body_info,
+                ]);
+
+            } catch (Exception $e) {
+                log::debug($e->getMessage());
+            }
+        } else {
+            return redirect('/');
+        }
+    }
+    
 }
