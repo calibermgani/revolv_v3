@@ -22,6 +22,7 @@ use App\Models\ProjectReason;
 use App\Models\formConfiguration;
 use App\Exports\userProjectExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\ReportTracking;
 
 ini_set('max_execution_time', 300);
 class ReportsController extends Controller
@@ -136,6 +137,13 @@ class ReportsController extends Controller
                     $start_date = "";
                     $end_date = "";
                 }
+                ReportTracking::where('project_id', $request['project_id'])->where('sub_project_id', $request['sub_project_id'])->forcedelete();
+                $reportTracking = [];
+                $reportTracking['project_id'] = $request->project_id;
+                $reportTracking['sub_project_id'] = $request->sub_project_id;
+                $reportTracking['fetch_status'] = 'Start';
+                $reportTracking['request_date'] =  carbon::now()->format('Y-m-d');
+                 ReportTracking::create($reportTracking);
                 if (isset($request->checkedValues)) {
                     if ($request->checkedValues[0] === 'all') {
                         $checkedValues = array_diff($request->checkedValues, ['all']);
@@ -414,11 +422,15 @@ class ReportsController extends Controller
                 // } else {
                 //     $body_info = '<p>No data available</p>';
                 // }
-
+                 $reportTracking['fetch_status'] = 'End';
+                 $reportTrackingList = ReportTracking::where('project_id', $request['project_id'])->where('sub_project_id', $request['sub_project_id'])->first();
+                 $reportTrackingList->update($reportTracking);
+             
                 return response()->json([
                     'success' => true,
                     'body_info' => $body_info,
                 ]);
+
             } catch (Exception $e) {
                 log::debug($e->getMessage());
             }
