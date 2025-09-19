@@ -118,60 +118,53 @@ class ReportsController extends Controller
             return redirect('/');
         }
     }
-// public function projectReportTracking(Request $request) {
-//     // Clear any old record
-//     ReportTracking::where('project_id', $request["project_id"])
-//         ->where('sub_project_id', $request["sub_project_id"])
-//         ->forceDelete();
+public function projectReportTracking(Request $request) {
+    // Clear any old record
+    ReportTracking::where('project_id', $request["project_id"])
+        ->where('sub_project_id', $request["sub_project_id"])
+        ->forceDelete();
 
-//     // Insert new "Start" record
-//     $reportTracking = ReportTracking::create([
-//         'project_id'     => $request["project_id"],
-//         'sub_project_id' => $request["sub_project_id"],
-//         'fetch_status'   => 'Start',
-//         'request_date'   => Carbon::now()->format('Y-m-d'),
-//     ]);
-//     $inputValues = $request->all();
-//     // Run heavy process in background
-//     dispatch(function () use ($inputValues, $reportTracking) {
-//         try {
-//             // Generate HTML (your existing logic unchanged)
-//             $response = $this->reportClientColumnsList($inputValues);
-//             $data     = $response->getData(true);
+    // Insert new "Start" record
+    $reportTracking = ReportTracking::create([
+        'project_id'     => $request["project_id"],
+        'sub_project_id' => $request["sub_project_id"],
+        'fetch_status'   => 'Start',
+        'request_date'   => Carbon::now()->format('Y-m-d'),
+    ]);
+    $inputValues = $request->all();
+    // Run heavy process in background
+    dispatch(function () use ($inputValues, $reportTracking) {
+        try {
+            // Generate HTML (your existing logic unchanged)
+            $response = $this->reportClientColumnsList($inputValues);          
+        } catch (\Exception $e) {
+            $reportTracking->update(['fetch_status' => 'Error']);
+            \Log::error("Project Report Tracking failed: ".$e->getMessage());
+        }
+    });
+    $tracking = ReportTracking::where('project_id',  $request["project_id"])
+        ->where('sub_project_id',  $request["sub_project_id"])
+        ->latest()
+        ->first();
+    return response()->json([
+        'success' => true,
+       // 'status' => $tracking ? $tracking->fetch_status : 'NotFound',
+        //'tracking_id' => $reportTracking->id,
+        'message' => 'Processing started',
+    ]);
+}
 
-//             // Save result to storage/cache/db
-//             Storage::put("reports/report_{$reportTracking->id}.json", json_encode($data));
+public function projectReportTrackingStatus($project_id, $sub_project_id)
+{
+    $tracking = ReportTracking::where('project_id', $project_id)
+        ->where('sub_project_id', $sub_project_id)
+        ->latest()
+        ->first();
 
-//             // Mark as End
-//             $reportTracking->update(['fetch_status' => 'End']);
-//         } catch (\Exception $e) {
-//             $reportTracking->update(['fetch_status' => 'Error']);
-//             \Log::error("Project Report Tracking failed: ".$e->getMessage());
-//         }
-//     });
-//     $tracking = ReportTracking::where('project_id',  $request["project_id"])
-//         ->where('sub_project_id',  $request["sub_project_id"])
-//         ->latest()
-//         ->first();
-//     return response()->json([
-//         'success' => true,
-//         'status' => $tracking ? $tracking->fetch_status : 'NotFound',
-//         'tracking_id' => $reportTracking->id,
-//         'message' => 'Processing started',
-//     ]);
-// }
-
-// public function projectReportTrackingStatus($project_id, $sub_project_id)
-// {
-//     $tracking = ReportTracking::where('project_id', $project_id)
-//         ->where('sub_project_id', $sub_project_id)
-//         ->latest()
-//         ->first();
-
-//     return response()->json([
-//         'status' => $tracking ? $tracking->fetch_status : 'NotFound',
-//     ]);
-// }
+    return response()->json([
+        'status' => $tracking ? $tracking->fetch_status : 'NotFound',
+    ]);
+}
 
 public function reportClientColumnsListResult($project_id, $sub_project_id){
     $tracking = ReportTracking::where('project_id', $project_id)
@@ -193,7 +186,7 @@ public function reportClientColumnsListResult($project_id, $sub_project_id){
 
 
 
-    public function reportClientColumnsList(Request $request) {
+    public function reportClientColumnsList($request) {
 
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
             $client = new Client(['verify' => false]);
@@ -491,10 +484,23 @@ public function reportClientColumnsListResult($project_id, $sub_project_id){
                 // } else {
                 //     $body_info = '<p>No data available</p>';
                 // }
-                return response()->json([
+                
+                $response = response()->json([
                     'success' => true,
                     'body_info' => $body_info,
                 ]);
+                  $data     = $response->getData(true);
+                    $reportTracking = ReportTracking::where('project_id', $request["project_id"])
+        ->where('sub_project_id', $request["sub_project_id"])
+        ->latest()
+        ->first();
+
+
+            // Save result to storage/cache/db
+            Storage::put("reports/report_{$reportTracking->id}.json", json_encode($data));
+
+            // Mark as End
+            $reportTracking->update(['fetch_status' => 'End']);
 
             } catch (Exception $e) {
                 log::debug($e->getMessage());
