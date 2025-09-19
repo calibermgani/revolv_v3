@@ -132,20 +132,21 @@ public function projectReportTracking(Request $request) {
         'request_date'   => Carbon::now()->format('Y-m-d'),
     ]);
     $inputValues = $request->all();
+      $this->reportClientColumnsList($inputValues);       
     // Run heavy process in background
-    dispatch(function () use ($inputValues, $reportTracking) {
-        try {
-            // Generate HTML (your existing logic unchanged)
-            $response = $this->reportClientColumnsList($inputValues);          
-        } catch (\Exception $e) {
-            $reportTracking->update(['fetch_status' => 'Error']);
-            \Log::error("Project Report Tracking failed: ".$e->getMessage());
-        }
-    });
-    $tracking = ReportTracking::where('project_id',  $request["project_id"])
-        ->where('sub_project_id',  $request["sub_project_id"])
-        ->latest()
-        ->first();
+    // dispatch(function () use ($inputValues, $reportTracking) {
+    //     try {
+    //         // Generate HTML (your existing logic unchanged)
+    //         $response = $this->reportClientColumnsList($inputValues);          
+    //     } catch (\Exception $e) {
+    //         $reportTracking->update(['fetch_status' => 'Error']);
+    //         \Log::error("Project Report Tracking failed: ".$e->getMessage());
+    //     }
+    // });
+    // $tracking = ReportTracking::where('project_id',  $request["project_id"])
+    //     ->where('sub_project_id',  $request["sub_project_id"])
+    //     ->latest()
+    //     ->first();
     return response()->json([
         'success' => true,
        // 'status' => $tracking ? $tracking->fetch_status : 'NotFound',
