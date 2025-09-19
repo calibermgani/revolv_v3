@@ -134,15 +134,15 @@ public function projectReportTracking(Request $request) {
     $inputValues = $request->all();
       $this->reportClientColumnsList($inputValues);       
     // Run heavy process in background
-    // dispatch(function () use ($inputValues, $reportTracking) {
-    //     try {
-    //         // Generate HTML (your existing logic unchanged)
-    //         $response = $this->reportClientColumnsList($inputValues);          
-    //     } catch (\Exception $e) {
-    //         $reportTracking->update(['fetch_status' => 'Error']);
-    //         \Log::error("Project Report Tracking failed: ".$e->getMessage());
-    //     }
-    // });
+    dispatch(function () use ($inputValues, $reportTracking) {
+        try {
+            // Generate HTML (your existing logic unchanged)
+            $response = $this->reportClientColumnsList($inputValues);          
+        } catch (\Exception $e) {
+            $reportTracking->update(['fetch_status' => 'Error']);
+            \Log::error("Project Report Tracking failed: ".$e->getMessage());
+        }
+    });
     // $tracking = ReportTracking::where('project_id',  $request["project_id"])
     //     ->where('sub_project_id',  $request["sub_project_id"])
     //     ->latest()
