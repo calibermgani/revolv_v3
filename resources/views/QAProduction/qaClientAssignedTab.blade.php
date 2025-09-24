@@ -27,6 +27,29 @@ use Carbon\Carbon;
                     </div>
                     <div class="col-md-6">
                         <div class="row" style="justify-content: flex-end;margin-right:1.4rem">
+                            @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)
+                                    @php
+                                        $clientId = App\Http\Helper\Admin\Helpers::encodeAndDecodeID($clientName, 'decode');
+                                        $prjTotalArList = App\Http\Helper\Admin\Helpers::getArResourceName($clientId);
+                                    @endphp    
+                                    
+                    
+                                    <div class="mb-lg-0 mb-6">
+                                        <fieldset class="form-group mb-0 white-smoke-disabled">
+                                            {!! Form::select('assignee_ar_name', ['' => 'Work Log'] + $prjTotalArList, null, [
+                                                'class' => 'form-control kt_select2_assignee_ar',
+                                                'id' => 'assigneeArDropdown',
+                                                'style' => 'width: 100%;'
+                                            ]) !!}
+                                        </fieldset>
+                                    </div>    
+                                    <div class="mb-lg-0 mb-6" id="play_btn_reset"  title="Claims Refresh">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-arrow-clockwise mt-2" viewBox="0 0 16 16" style="cursor: pointer;display:none" id="ply_btn_svg">
+                                            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+                                            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+                                            </svg>
+                                    </div>
+                             @endif
 
                             @if (
                                 $loginEmpId == 'Admin' ||
@@ -4138,6 +4161,59 @@ use Carbon\Carbon;
                                     }
                             });
 
+                        });
+                        $(document).on('change', '#assigneeArDropdown', function() {               
+                            $('#ply_btn_svg').css('display', 'block');
+                        });
+                        $(document).on('click', '#play_btn_reset', function() {
+                            assigneeAr = $('#assigneeArDropdown').val(); 
+                            $.ajaxSetup({
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                                        'content')
+                                }
+                            });
+                            swal.fire({
+                                text: "Do you want to enable claims?",
+                                icon: "success",
+                                buttonsStyling: false,
+                                showCancelButton: true,
+                                confirmButtonText: "Yes",
+                                cancelButtonText: "No",
+                                customClass: {
+                                    confirmButton: "btn font-weight-bold btn-white-black",
+                                    cancelButton: "btn font-weight-bold  btn-light-danger",
+                                }
+
+                            }).then(function(result) {
+                                if (result.value == true) {
+                                    $.ajax({
+                                        url: "{{ url('project_call_chart_work_logs_reset') }}",
+                                        method: 'POST',
+                                        data: {
+                                            clientName: clientName,
+                                            subProjectName: subProjectName,
+                                            assigneeAr:assigneeAr,
+                                        },
+                                        success: function(response) {
+                                            if (response.success == true) {
+                                                js_notification('success',
+                                                    'Claims enabled successfully');
+                                            } else if(response.success == false) {
+                                                js_notification('error', response.message);
+                                            } else {
+                                                js_notification('error', 'Something went wrong');
+                                            }
+                                            setTimeout(function() {
+                                                location.reload();
+                                            }, 2000);
+                                        },
+                                    });
+
+                                } else {
+                                    location.reload();
+                                }
+                            });
                         });
         })
 
