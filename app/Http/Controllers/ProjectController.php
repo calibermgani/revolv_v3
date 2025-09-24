@@ -2478,7 +2478,7 @@ class ProjectController extends Controller
                 } else {
                     // Split into "code" and "description"
                     // Example: "CO-1 - Claim/Service Denied;"
-                    $parts = preg_split("/\s*[-–]\s*/", $request->ar_denial_codes, 2);
+                    $parts = preg_split("/\s+-\s+/", $request->ar_denial_codes, 2);
 
                     $denialCode = trim($parts[0] ?? '');
                     $denialDesc = trim($parts[1] ?? '');
@@ -2503,7 +2503,7 @@ class ProjectController extends Controller
                 } else {
                     // Split into "code" and "description"
                     // Example: "CO-1 - Claim/Service Denied;"
-                    $parts = preg_split("/\s*[-–]\s*/", $request->ar_substatus_codes, 2);
+                    $parts = preg_split("/\s+-\s+/", $request->ar_substatus_codes, 2);
 
                     $subStatusCode = trim($parts[0] ?? '');
                     $subStatusCodeDesc = trim($parts[1] ?? '');
