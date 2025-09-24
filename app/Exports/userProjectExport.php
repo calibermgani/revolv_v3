@@ -96,7 +96,7 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
                                     ->where('CE_emp_id', $project['emp_id'])
                                     ->whereIn('chart_status', [
                                         'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
-                                        'AR_non_workable','Revoke','QA_Assigned','QA_Inprocess','QA_Pending',
+                                       'QA_Assigned','QA_Inprocess','QA_Pending',
                                         'QA_Completed','QA_Clarification','QA_Hold'
                                     ])
                                     ->count();
