@@ -24,6 +24,7 @@ use App\Exports\userProjectExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\ReportTracking;
 use Illuminate\Support\Facades\Storage;
+use App\Jobs\ProcessProjectReport;
 
 ini_set('max_execution_time', 300);
 class ReportsController extends Controller
@@ -172,7 +173,43 @@ class ReportsController extends Controller
 //         'status' => $tracking ? $tracking->fetch_status : 'NotFound',
 //     ]);
 // }
+  public function projectReportTracking(Request $request)
+    {
+        // Remove previous tracking records
+        ReportTracking::where('project_id', $request->project_id)
+            ->where('sub_project_id', $request->sub_project_id)
+            ->forceDelete();
 
+        // Create new tracking
+        $reportTracking = ReportTracking::create([
+            'project_id'     => $request->project_id,
+            'sub_project_id' => $request->sub_project_id,
+            'fetch_status'   => 'Start',
+            'request_date'   => now()->format('Y-m-d'),
+        ]);
+
+        // Dispatch job to run asynchronously
+        ProcessProjectReport::dispatch($request->all(), $reportTracking);
+
+        return response()->json([
+            'success' => true,
+            'status' => $reportTracking->fetch_status,
+            'tracking_id' => $reportTracking->id,
+            'message' => 'Processing started',
+        ]);
+    }
+
+    public function projectReportTrackingStatus($project_id, $sub_project_id)
+    {
+        $tracking = ReportTracking::where('project_id', $project_id)
+            ->where('sub_project_id', $sub_project_id)
+            ->latest()
+            ->first();
+
+        return response()->json([
+            'status' => $tracking ? $tracking->fetch_status : 'NotFound',
+        ]);
+    }
 public function reportClientColumnsListResult($project_id, $sub_project_id){
     $tracking = ReportTracking::where('project_id', $project_id)
         ->where('sub_project_id', $sub_project_id)
