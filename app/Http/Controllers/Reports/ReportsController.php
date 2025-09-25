@@ -294,6 +294,10 @@ public function reportClientColumnsListResult($project_id, $sub_project_id){
                                 ->orWhere('QA_emp_id', $request->user);
                             });
                         })
+                        ->when(!empty($request->client_status), function ($query) use ($request) {
+                             $query->where('chart_status', $request->client_status);
+                            // $query->where('caller_charts_work_logs.record_status', $request->client_status);
+                        })
                         ->get();
                 } else {
                     $client_data = [];
