@@ -28,7 +28,7 @@ class ProcessProjectReport
 
             // Call controller method
             $controller = app(\App\Http\Controllers\Reports\ReportsController::class);
-            $response = $controller->reportClientColumnsList($request);
+            $response = $controller->reportClientBulkColumnsList($request);
 
             // Save report HTML/JSON
             Storage::put("reports/report_{$this->trackingId}.json", json_encode($response->getData(true)));

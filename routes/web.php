@@ -194,6 +194,12 @@ Route::group(['prefix' => 'qa_production'], function () {
 
     });
     Route::any('sampling_columns_list', 'App\Http\Controllers\SettingController@getSamplingColumnsList');
+    // Route::get('/get-question', 'App\Http\Controllers\ProductionController@getQuestion')->name('get.question');
+    // Route::post('/save-question-answer', 'App\Http\Controllers\ProductionController@saveQuestionAnswer')->name('save.question.answer');
+    // Route::post('/fetch-sub-question', 'App\Http\Controllers\ProductionController@fetchSubQuestion')->name('fetch.sub.question');
+    Route::any('bulk_reports', 'App\Http\Controllers\Reports\ReportsController@bulkReportsIndex');
+
+
 Auth::routes();
 // });
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
