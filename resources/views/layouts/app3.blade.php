@@ -125,6 +125,7 @@
     @include('layouts/footer_script')
 </body>
 @include('layouts/flashMessage')
+{{-- @include('layouts/questionAndAnswers') --}}
 
 </html>
 <script>
@@ -152,11 +153,28 @@
         });
 
         // jQuery AJAX loader
+        // $(function () {
+        //     $(document).ajaxStart(function () {
+        //         $('#global-loader').css({ display: 'flex', opacity: 1 });
+        //     }).ajaxStop(function () {
+        //         $('#global-loader').fadeOut(300);
+        //     });
+        // });
         $(function () {
-            $(document).ajaxStart(function () {
-                $('#global-loader').css({ display: 'flex', opacity: 1 });
+            $(document).ajaxStart(function (event, xhr, settings) {
+                // Check if it's NOT the polling API
+                if (!window.currentAjaxUrl || !window.currentAjaxUrl.includes("project_report_tracking_status")) {
+                    $('#global-loader').css({ display: 'flex', opacity: 1 });
+                }
             }).ajaxStop(function () {
-                $('#global-loader').fadeOut(300);
+                if (!window.currentAjaxUrl || !window.currentAjaxUrl.includes("project_report_tracking_status")) {
+                    $('#global-loader').fadeOut(300);
+                }
+            });
+
+            // Capture each AJAX request URL
+            $(document).ajaxSend(function (event, jqXHR, options) {
+                window.currentAjaxUrl = options.url;
             });
         });
 
