@@ -286,8 +286,8 @@ public function reportClientColumnsListResult($project_id, $sub_project_id){
                         ->where('caller_charts_work_logs.project_id', '=', $request["project_id"])
                         ->where('caller_charts_work_logs.sub_project_id', '=', $request["sub_project_id"])
                         ->when(!empty($start_date) && !empty($end_date), function ($query) use ($start_date, $end_date,$table_name) {
-                            // $query->whereBetween('caller_charts_work_logs.start_time', [$start_date, $end_date]);
-                            $query->whereBetween($table_name.'.updated_at', [$start_date, $end_date]);
+                             $query->whereBetween('caller_charts_work_logs.start_time', [$start_date, $end_date]);
+                           // $query->whereBetween($table_name.'.updated_at', [$start_date, $end_date]);
                         })
                         ->when(!empty($request->user), function ($query) use ($request) {
                             $query->where(function ($q) use ($request) {
@@ -296,8 +296,8 @@ public function reportClientColumnsListResult($project_id, $sub_project_id){
                             });
                         })
                         ->when(!empty($request->client_status), function ($query) use ($request) {
-                             $query->where('chart_status', $request->client_status);
-                            // $query->where('caller_charts_work_logs.record_status', $request->client_status);
+                           //  $query->where('chart_status', $request->client_status);
+                             $query->where('caller_charts_work_logs.record_status', $request->client_status);
                         })
                         ->get();
                 } else {
