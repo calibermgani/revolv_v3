@@ -549,7 +549,7 @@
                                                 });
                                         }
                                     });
-                            }, 300); // poll every 1 minute
+                            }, 5000); // poll every 1 minute
                         }
                     }
                 });
