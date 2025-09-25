@@ -632,12 +632,13 @@
                                             });
 
                                             table.buttons().container().appendTo($('.dataTables_wrapper .col-md-6.text-right'));
-                                            KTApp.unblock('#reportModal');
+                                           
                                         }
                                     });
                             }
                         });
                 }, 1000); // poll every 5 seconds
+                 KTApp.unblock('#reportModal');
             }
         }
     });
