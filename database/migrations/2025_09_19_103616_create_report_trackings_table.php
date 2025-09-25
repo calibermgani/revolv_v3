@@ -18,6 +18,7 @@ class CreateReportTrackingsTable extends Migration
             $table->string('project_id')->nullable();
             $table->string('sub_project_id')->nullable();
             $table->string('fetch_status')->nullable()->enum('Start','End')->default('Start');
+            $table->json('request_data')->nullable();
             $table->dateTime('request_date')->nullable();
             $table->timestamps();
             $table->softDeletes();

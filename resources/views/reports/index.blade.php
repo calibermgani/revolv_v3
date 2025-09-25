@@ -318,154 +318,154 @@
                 $('.daterange').val('');
             });
 
-            $(document).on('click', '#project_assign_save', function() {
-                var isSelectAllChecked = $('#select_all_columns').prop('checked');
-                var project_id = $('#project_id').val();
-                var sub_project_id = $('#sub_project_id').val();
-                var work_date = $('#work_date').val();
-                var client_status =  $('#client_status').val();
-                var user =  $('#user').val();
-                var checkedValues = [];
-                $('.header_columns').find('input[type="checkbox"]:checked').each(function() {
-                    checkedValues.push($(this).val());
-                });
-                KTApp.block('#reportModal', {
-                    overlayColor: '#000000',
-                    state: 'danger',
-                    opacity: 0.1,
-                    message: 'Fetching...',
-                });
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
+            // $(document).on('click', '#project_assign_save', function() {
+            //     var isSelectAllChecked = $('#select_all_columns').prop('checked');
+            //     var project_id = $('#project_id').val();
+            //     var sub_project_id = $('#sub_project_id').val();
+            //     var work_date = $('#work_date').val();
+            //     var client_status =  $('#client_status').val();
+            //     var user =  $('#user').val();
+            //     var checkedValues = [];
+            //     $('.header_columns').find('input[type="checkbox"]:checked').each(function() {
+            //         checkedValues.push($(this).val());
+            //     });
+            //     KTApp.block('#reportModal', {
+            //         overlayColor: '#000000',
+            //         state: 'danger',
+            //         opacity: 0.1,
+            //         message: 'Fetching...',
+            //     });
+            //     $.ajaxSetup({
+            //         headers: {
+            //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            //         }
+            //     });
 
-                         if(isSelectAllChecked == true) {
-                                    swal.fire({
-                                        text: "Do you want to generate all custom fields?",
-                                        icon: "success",
-                                        buttonsStyling: false,
-                                        showCancelButton: true,
-                                        confirmButtonText: "Yes",
-                                        cancelButtonText: "No",
-                                        reverseButtons: true,
-                                        customClass: {
-                                            confirmButton: "btn font-weight-bold btn-white-black",
-                                            cancelButton: "btn font-weight-bold btn-light-danger",
-                                        }
+            //              if(isSelectAllChecked == true) {
+            //                         swal.fire({
+            //                             text: "Do you want to generate all custom fields?",
+            //                             icon: "success",
+            //                             buttonsStyling: false,
+            //                             showCancelButton: true,
+            //                             confirmButtonText: "Yes",
+            //                             cancelButtonText: "No",
+            //                             reverseButtons: true,
+            //                             customClass: {
+            //                                 confirmButton: "btn font-weight-bold btn-white-black",
+            //                                 cancelButton: "btn font-weight-bold btn-light-danger",
+            //                             }
 
-                                    }).then(function(result) {
-                                        if (result.value == true) {
-                                            $.ajax({
-                                                type: "POST",
-                                                url: "{{ url('reports/report_client_columns_list') }}",
-                                                data: {
-                                                    project_id: project_id,
-                                                    sub_project_id: sub_project_id,
-                                                    work_date: work_date,
-                                                    client_status:client_status,
-                                                    user:user,
-                                                    checkedValues: checkedValues
-                                                },
-                                                success: function(res) {
-                                                    if (res.body_info) {
-                                                        $('#reportModal').modal('hide');
-                                                        $('#generateReportClass').hide();
-                                                        $('#listData').show();
-                                                        $('#reportTable').html(res.body_info);
-                                                        var table = $('#report_list').DataTable({
-                                                            processing: true,
-                                                            lengthChange: false,
-                                                            clientSide: true,
-                                                            searching: true,
-                                                            pageLength: 20,
-                                                            scrollCollapse: true,
-                                                            scrollX: true,
-                                                            "initComplete": function(settings, json) {
-                                                                $('body').find('.dataTables_scrollBody').addClass("scrollbar");
-                                                                $('body').find('.dataTables_scrollBody').css("margin-top",'-0.3rem','important');
-                                                            },
-                                                            language: {
-                                                                "search": '',
-                                                                "searchPlaceholder": "   Search",
-                                                            },
-                                                            buttons: [{
-                                                                "extend": 'excel',
-                                                                "text": `<span data-dismiss="modal" data-toggle="tooltip" data-placement="left" data-original-title="Export" style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="12" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
-                                                                    </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></span>`,
-                                                                "className": 'btn btn-primary-export text-white',
-                                                                "title": 'Resolv',
-                                                                "filename": 'resolv_report',
-                                                            }],
-                                                            dom: "<'row'<'col-md-6 text-left'f><'col-md-6 text-right'B>>" + "<'row'<'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>",
-                                                        })
-                                                        table.buttons().container().appendTo($('.dataTables_wrapper .col-md-6.text-right'));
-                                                        KTApp.unblock('#reportModal');
-                                                    }else{
+            //                         }).then(function(result) {
+            //                             if (result.value == true) {
+            //                                 $.ajax({
+            //                                     type: "POST",
+            //                                     url: "{{ url('reports/report_client_columns_list') }}",
+            //                                     data: {
+            //                                         project_id: project_id,
+            //                                         sub_project_id: sub_project_id,
+            //                                         work_date: work_date,
+            //                                         client_status:client_status,
+            //                                         user:user,
+            //                                         checkedValues: checkedValues
+            //                                     },
+            //                                     success: function(res) {
+            //                                         if (res.body_info) {
+            //                                             $('#reportModal').modal('hide');
+            //                                             $('#generateReportClass').hide();
+            //                                             $('#listData').show();
+            //                                             $('#reportTable').html(res.body_info);
+            //                                             var table = $('#report_list').DataTable({
+            //                                                 processing: true,
+            //                                                 lengthChange: false,
+            //                                                 clientSide: true,
+            //                                                 searching: true,
+            //                                                 pageLength: 20,
+            //                                                 scrollCollapse: true,
+            //                                                 scrollX: true,
+            //                                                 "initComplete": function(settings, json) {
+            //                                                     $('body').find('.dataTables_scrollBody').addClass("scrollbar");
+            //                                                     $('body').find('.dataTables_scrollBody').css("margin-top",'-0.3rem','important');
+            //                                                 },
+            //                                                 language: {
+            //                                                     "search": '',
+            //                                                     "searchPlaceholder": "   Search",
+            //                                                 },
+            //                                                 buttons: [{
+            //                                                     "extend": 'excel',
+            //                                                     "text": `<span data-dismiss="modal" data-toggle="tooltip" data-placement="left" data-original-title="Export" style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="12" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
+            //                                                         </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></span>`,
+            //                                                     "className": 'btn btn-primary-export text-white',
+            //                                                     "title": 'Resolv',
+            //                                                     "filename": 'resolv_report',
+            //                                                 }],
+            //                                                 dom: "<'row'<'col-md-6 text-left'f><'col-md-6 text-right'B>>" + "<'row'<'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>",
+            //                                             })
+            //                                             table.buttons().container().appendTo($('.dataTables_wrapper .col-md-6.text-right'));
+            //                                             KTApp.unblock('#reportModal');
+            //                                         }else{
 
-                                                    }
-                                                },
-                                                error: function(jqXHR, exception) {
-                                                }
-                                            });
-                                    } else {  }
-                                    });
-                            } else {
-                                $.ajax({
-                                    type: "POST",
-                                    url: "{{ url('reports/report_client_columns_list') }}",
-                                    data: {
-                                        project_id: project_id,
-                                        sub_project_id: sub_project_id,
-                                        work_date: work_date,
-                                        client_status:client_status,
-                                        user:user,
-                                        checkedValues: checkedValues
-                                    },
-                                    success: function(res) {
-                                        if (res.body_info) {
-                                            $('#reportModal').modal('hide');
-                                            $('#generateReportClass').hide();
-                                            $('#listData').show();
-                                            $('#reportTable').html(res.body_info);
-                                            var table = $('#report_list').DataTable({
-                                                processing: true,
-                                                lengthChange: false,
-                                                clientSide: true,
-                                                searching: true,
-                                                pageLength: 20,
-                                                scrollCollapse: true,
-                                                scrollX: true,
-                                                "initComplete": function(settings, json) {
-                                                    $('body').find('.dataTables_scrollBody').addClass("scrollbar");
-                                                    $('body').find('.dataTables_scrollBody').css("margin-top",'-0.3rem','important');
-                                                },
-                                                language: {
-                                                    "search": '',
-                                                    "searchPlaceholder": "   Search",
-                                                },
-                                                buttons: [{
-                                                    "extend": 'excel',
-                                                    "text": `<span data-dismiss="modal" data-toggle="tooltip" data-placement="left" data-original-title="Export" style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="12" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
-                                                        </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></span>`,
-                                                    "className": 'btn btn-primary-export text-white',
-                                                    "title": 'Resolv',
-                                                    "filename": 'resolv_report',
-                                                }],
-                                                dom: "<'row'<'col-md-6 text-left'f><'col-md-6 text-right'B>>" + "<'row'<'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>",
-                                            })
-                                            table.buttons().container().appendTo($('.dataTables_wrapper .col-md-6.text-right'));
-                                            KTApp.unblock('#reportModal');
-                                        }else{
+            //                                         }
+            //                                     },
+            //                                     error: function(jqXHR, exception) {
+            //                                     }
+            //                                 });
+            //                         } else {  }
+            //                         });
+            //                 } else {
+            //                     $.ajax({
+            //                         type: "POST",
+            //                         url: "{{ url('reports/report_client_columns_list') }}",
+            //                         data: {
+            //                             project_id: project_id,
+            //                             sub_project_id: sub_project_id,
+            //                             work_date: work_date,
+            //                             client_status:client_status,
+            //                             user:user,
+            //                             checkedValues: checkedValues
+            //                         },
+            //                         success: function(res) {
+            //                             if (res.body_info) {
+            //                                 $('#reportModal').modal('hide');
+            //                                 $('#generateReportClass').hide();
+            //                                 $('#listData').show();
+            //                                 $('#reportTable').html(res.body_info);
+            //                                 var table = $('#report_list').DataTable({
+            //                                     processing: true,
+            //                                     lengthChange: false,
+            //                                     clientSide: true,
+            //                                     searching: true,
+            //                                     pageLength: 20,
+            //                                     scrollCollapse: true,
+            //                                     scrollX: true,
+            //                                     "initComplete": function(settings, json) {
+            //                                         $('body').find('.dataTables_scrollBody').addClass("scrollbar");
+            //                                         $('body').find('.dataTables_scrollBody').css("margin-top",'-0.3rem','important');
+            //                                     },
+            //                                     language: {
+            //                                         "search": '',
+            //                                         "searchPlaceholder": "   Search",
+            //                                     },
+            //                                     buttons: [{
+            //                                         "extend": 'excel',
+            //                                         "text": `<span data-dismiss="modal" data-toggle="tooltip" data-placement="left" data-original-title="Export" style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="12" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
+            //                                             </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></span>`,
+            //                                         "className": 'btn btn-primary-export text-white',
+            //                                         "title": 'Resolv',
+            //                                         "filename": 'resolv_report',
+            //                                     }],
+            //                                     dom: "<'row'<'col-md-6 text-left'f><'col-md-6 text-right'B>>" + "<'row'<'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>",
+            //                                 })
+            //                                 table.buttons().container().appendTo($('.dataTables_wrapper .col-md-6.text-right'));
+            //                                 KTApp.unblock('#reportModal');
+            //                             }else{
 
-                                        }
-                                    },
-                                    error: function(jqXHR, exception) {
-                                    }
-                                });
-                 }
-            });
+            //                             }
+            //                         },
+            //                         error: function(jqXHR, exception) {
+            //                         }
+            //                     });
+            //      }
+            // });
             //    $(document).on('click', '#project_assign_save', function() {
             //     var project_id = $('#project_id').val();
             //     var sub_project_id = $('#sub_project_id').val();
@@ -554,6 +554,95 @@
             //         }
             //     });
             //    });
+            $(document).on('click', '#project_assign_save', function() {
+    var project_id = $('#project_id').val();
+    var sub_project_id = $('#sub_project_id').val();
+    var work_date = $('#work_date').val();
+    var client_status = $('#client_status').val();
+    var user = $('#user').val();
+    var checkedValues = [];
+
+    $('.header_columns').find('input[type="checkbox"]:checked').each(function() {
+        checkedValues.push($(this).val());
+    });
+
+    KTApp.block('#reportModal', {
+        overlayColor: '#000000',
+        state: 'danger',
+        opacity: 0.1,
+        message: 'Processing started...',
+    });
+
+    $.ajax({
+        type: "POST",
+        url: "{{ url('reports/project_report_tracking') }}",
+        data: {
+            project_id: project_id,
+            sub_project_id: sub_project_id,
+            work_date: work_date,
+            client_status: client_status,
+            user: user,
+            checkedValues: checkedValues,
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(res) {
+            if (res.success) {
+                // Polling every 5 seconds
+                var interval = setInterval(function() {
+                    $.get("{{ url('reports/project_report_tracking_status') }}/" + project_id + "/" + sub_project_id,
+                        function(statusRes) {
+                            if (statusRes.status === "End") {
+                                clearInterval(interval);
+
+                                // Fetch final result
+                                $.get("{{ url('reports/report_client_columns_list_result') }}/" + project_id + "/" + sub_project_id,
+                                    function(dataRes) {
+                                        if (dataRes.body_info) {
+                                            $('#reportModal').modal('hide');
+                                            $('#generateReportClass').hide();
+                                            $('#listData').show();
+                                            $('#reportTable').html(dataRes.body_info);
+
+                                            var table = $('#report_list').DataTable({
+                                                processing: true,
+                                                lengthChange: false,
+                                                clientSide: true,
+                                                searching: true,
+                                                pageLength: 20,
+                                                scrollCollapse: true,
+                                                scrollX: true,
+                                                initComplete: function(settings, json) {
+                                                    $('body').find('.dataTables_scrollBody').addClass("scrollbar");
+                                                    $('body').find('.dataTables_scrollBody').css("margin-top",'-0.3rem','important');
+                                                },
+                                                language: {
+                                                    search: '',
+                                                    searchPlaceholder: "Search",
+                                                },
+                                                buttons: [{
+                                                    extend: 'excel',
+                                                    text: 'Export',
+                                                    className: 'btn btn-primary-export text-white',
+                                                    title: 'Resolv',
+                                                    filename: 'resolv_report',
+                                                }],
+                                                dom: "<'row'<'col-md-6 text-left'f><'col-md-6 text-right'B>>" +
+                                                    "<'row'<'col-md-12't>>" +
+                                                    "<'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>",
+                                            });
+
+                                            table.buttons().container().appendTo($('.dataTables_wrapper .col-md-6.text-right'));
+                                            KTApp.unblock('#reportModal');
+                                        }
+                                    });
+                            }
+                        });
+                }, 1000); // poll every 5 seconds
+            }
+        }
+    });
+});
+
         });
     </script>
 @endpush

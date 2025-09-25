@@ -173,60 +173,67 @@ class ReportsController extends Controller
 //         'status' => $tracking ? $tracking->fetch_status : 'NotFound',
 //     ]);
 // }
-  public function projectReportTracking(Request $request)
+     public function projectReportTracking(Request $request)
     {
-        // Remove previous tracking records
+        // Clear old tracking
         ReportTracking::where('project_id', $request->project_id)
             ->where('sub_project_id', $request->sub_project_id)
             ->forceDelete();
 
-        // Create new tracking
+        // Save tracking with request data
         $reportTracking = ReportTracking::create([
             'project_id'     => $request->project_id,
             'sub_project_id' => $request->sub_project_id,
             'fetch_status'   => 'Start',
             'request_date'   => now()->format('Y-m-d'),
+            'request_data'   => json_encode($request->all()), // Store full request
         ]);
 
-        // Dispatch job to run asynchronously
-        ProcessProjectReport::dispatch($request->all(), $reportTracking);
-
-        return response()->json([
-            'success' => true,
-            'status' => $reportTracking->fetch_status,
+        // Return response immediately
+        $response = response()->json([
+            'success'     => true,
+            'status'      => $reportTracking->fetch_status,
             'tracking_id' => $reportTracking->id,
-            'message' => 'Processing started',
+            'message'     => 'Processing started',
         ]);
+
+        // Schedule job after response
+    register_shutdown_function(function() use ($reportTracking) {
+        $job = new \App\Jobs\ProcessProjectReport($reportTracking->id);
+        $job->handle();
+    });
+
+    return $response;
     }
 
-    public function projectReportTrackingStatus($project_id, $sub_project_id)
+ public function projectReportTrackingStatus($projectId, $subProjectId)
     {
-        $tracking = ReportTracking::where('project_id', $project_id)
-            ->where('sub_project_id', $sub_project_id)
+        $tracking = ReportTracking::where('project_id', $projectId)
+            ->where('sub_project_id', $subProjectId)
             ->latest()
             ->first();
 
         return response()->json([
-            'status' => $tracking ? $tracking->fetch_status : 'NotFound',
+            'status' => $tracking->fetch_status ?? 'NotFound'
         ]);
     }
-public function reportClientColumnsListResult($project_id, $sub_project_id){
-    $tracking = ReportTracking::where('project_id', $project_id)
-        ->where('sub_project_id', $sub_project_id)
-        ->latest()
-        ->first();
 
-    if (!$tracking) {
-        return response()->json(['success' => false, 'message' => 'No tracking record found']);
+    // Get final report result
+    public function reportClientColumnsListResult($projectId, $subProjectId)
+    {
+        $tracking = ReportTracking::where('project_id', $projectId)
+            ->where('sub_project_id', $subProjectId)
+            ->latest()
+            ->first();
+
+        if (!$tracking || $tracking->fetch_status !== 'End') {
+            return response()->json(['body_info' => null]);
+        }
+
+        $reportData = json_decode(file_get_contents(storage_path("app/reports/report_{$tracking->id}.json")), true);
+
+        return response()->json($reportData);
     }
-
-    $file = "reports/report_{$tracking->id}.json";
-    if (Storage::exists($file)) {
-        return response()->json(json_decode(Storage::get($file), true));
-    }
-
-    return response()->json(['success' => false, 'message' => 'Result not ready']);
-}
 
 
 

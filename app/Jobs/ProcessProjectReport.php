@@ -2,52 +2,45 @@
 
 namespace App\Jobs;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use App\Models\ReportTracking;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-use App\Models\ReportTracking;
 use Illuminate\Http\Request;
 
-class ProcessProjectReport implements ShouldQueue
+class ProcessProjectReport
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    protected $trackingId;
 
-    protected $inputValues;
-    protected $reportTracking;
-
-    /**
-     * Create a new job instance.
-     */
-    public function __construct(array $inputValues, ReportTracking $reportTracking)
+    public function __construct($trackingId)
     {
-        $this->inputValues = $inputValues;
-        $this->reportTracking = $reportTracking;
+        $this->trackingId = $trackingId;
     }
 
-    /**
-     * Execute the job.
-     */
-public function handle()
-{
-    try {
-        $controller = app(\App\Http\Controllers\Reports\ReportsController::class);
+    public function handle()
+    {
+        $reportTracking = ReportTracking::find($this->trackingId);
+        if (!$reportTracking) return;
 
-        // Wrap the array in a Request object
-        $request = new Request($this->inputValues);
+        try {
+            // Reconstruct the request
+            $requestData = json_decode($reportTracking->request_data, true);
+            $request = new Request($requestData);
 
-        $response = $controller->reportClientColumnsList($request);
+            // Call controller method
+            $controller = app(\App\Http\Controllers\Reports\ReportsController::class);
+            $response = $controller->reportClientColumnsList($request);
 
-        // Save HTML report to storage
-        Storage::put("reports/report_{$this->reportTracking->id}.json", json_encode($response->getData(true)));
+            // Save report HTML/JSON
+            Storage::put("reports/report_{$this->trackingId}.json", json_encode($response->getData(true)));
 
-        $this->reportTracking->update(['fetch_status' => 'End']);
-    } catch (\Exception $e) {
-        $this->reportTracking->update(['fetch_status' => 'Error']);
-        Log::error("Report processing failed: ".$e->getMessage());
+            // Update status
+            $reportTracking->fetch_status = 'End';
+            $reportTracking->save();
+
+        } catch (\Exception $e) {
+            Log::error("Error processing report {$this->trackingId}: ".$e->getMessage());
+            $reportTracking->fetch_status = 'Error';
+            $reportTracking->save();
+        }
     }
-}
 }
