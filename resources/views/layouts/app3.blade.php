@@ -196,7 +196,7 @@ const resetTimeout = () => {
 // Initial timeout set on page load
 resetTimeout();
 document.addEventListener("click", function (e) {
-    const target = e.target.closest("a, button");
+    const target = e.target.closest("a, button,div,span");
 
     if (!target) return;
 
