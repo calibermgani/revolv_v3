@@ -359,7 +359,10 @@
                             sub_project_id: $('#sub_project_list').val(),
                             user_name: $('#manager_name').val()
                         }
-                        window.location.href = "{{ URL::to('report/user_project_report_export') }}?" + $.param(query)
+                        window.location.href = "{{ URL::to('report/user_project_report_export') }}?" + $.param(query);
+                          setTimeout(() => {
+                            $('#global-loader').fadeOut(300);
+                        }, 300);
                     });
 
                 $(document).on('click', '#form_submit', function(e) {
