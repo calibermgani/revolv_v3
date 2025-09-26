@@ -362,7 +362,7 @@
                         window.location.href = "{{ URL::to('report/user_project_report_export') }}?" + $.param(query);
                           setTimeout(() => {
                             $('#global-loader').fadeOut(300);
-                        }, 300);
+                        }, 5000);
                     });
 
                 $(document).on('click', '#form_submit', function(e) {
