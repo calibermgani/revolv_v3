@@ -25,6 +25,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Models\ReportTracking;
 use Illuminate\Support\Facades\Storage;
 use App\Jobs\ProcessProjectReport;
+use App\Exports\BulkProdcutionExport;
 
 ini_set('max_execution_time', 300);
 class ReportsController extends Controller
@@ -1968,5 +1969,97 @@ class ReportsController extends Controller
             return redirect('/');
         }
     }
+    public function bulkReportExportIndex(){
+        return view('reports.bulkReportExport');
+    }
+    public function reportClientBulkColumnsListExport(Request $request){
+        if (!Session::get('loginDetails') || !Session::get('loginDetails')['userDetail']['emp_id']) {
+            return redirect('/');
+        }
+
+        $paProject = Helpers::projectName($request["project_id"]);
+        $decodedClientName = $paProject ? $paProject->project_name : null;
+
+        $decodedsubProjectName = $request["sub_project_id"] == null ? 'project' :
+            (Helpers::subProjectName($request["project_id"], $request["sub_project_id"])->sub_project_name ?? null);
+
+        $table_name = Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)).'_datas','_');
+
+        // Handle checked values
+        if (isset($request["checkedValues"])) {
+            if ($request["checkedValues"][0] === 'all') {
+                $checkedValues = array_diff($request["checkedValues"], ['all']);
+            } else {
+                $checkedValues = $request["checkedValues"];
+            }
+
+            $columns = $checkedValues;
+
+            // Always include mandatory fields
+            $columns[] = "caller_charts_work_logs.work_time";
+            $columns[] = "caller_charts_work_logs.record_status";
+
+            // Add optional if exist
+            if (Schema::hasColumn($table_name, 'qa_cpt_trends')) $columns[] = 'qa_cpt_trends';
+            if (Schema::hasColumn($table_name, 'qa_icd_trends')) $columns[] = 'qa_icd_trends';
+            if (Schema::hasColumn($table_name, 'qa_modifiers')) $columns[] = 'qa_modifiers';
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No columns selected'
+            ]);
+        }
+
+        $fileName = 'report_'.$decodedClientName.'_'.$decodedsubProjectName.'_'.time().'.xlsx';
+
+        // Use Excel export
+        return Excel::download(
+            new BulkProdcutionExport($request->all(), $table_name, $columns),
+            $fileName
+        );
+    }
+
+    public function projectBulkReportTracking(Request $request) {
+        // Clear old tracking
+        ReportTracking::where('project_id', $request->project_id)
+            ->where('sub_project_id', $request->sub_project_id)
+            ->forceDelete();
+
+        // Save tracking with request data
+        $reportTracking = ReportTracking::create([
+            'project_id'     => $request->project_id,
+            'sub_project_id' => $request->sub_project_id,
+            'fetch_status'   => 'Start',
+            'request_date'   => now()->format('Y-m-d'),
+            'request_data'   => json_encode($request->all()),
+        ]);
+
+        // Schedule job after response
+        register_shutdown_function(function() use ($reportTracking) {
+            $job = new \App\Jobs\BulkProdcutionReport($reportTracking->id);
+            $job->handle();
+        });
+
+        return response()->json([
+            'success'     => true,
+            'status'      => $reportTracking->fetch_status,
+            'tracking_id' => $reportTracking->id,
+            'message'     => 'Processing started',
+        ]);
+    }
+
+    public function projectBulkReportTrackingStatus($projectId, $subProjectId) {
+        $tracking = ReportTracking::where('project_id', $projectId)
+            ->where('sub_project_id', $subProjectId)
+            ->latest()
+            ->first();
+
+        return response()->json([
+            'status' => $tracking->fetch_status ?? 'NotFound'
+        ]);
+    }
+
+
+    
    
 }
