@@ -379,77 +379,77 @@
             //         });
             // });
             $(document).on('click', '#project_assign_save', function () {
-    var project_id = $('#project_id').val();
-    var sub_project_id = $('#sub_project_id').val();
-    var work_date = $('#work_date').val();
-    var client_status = $('#client_status').val();
-    var user = $('#user').val();
-    var checkedValues = [];
+                var project_id = $('#project_id').val();
+                var sub_project_id = $('#sub_project_id').val();
+                var work_date = $('#work_date').val();
+                var client_status = $('#client_status').val();
+                var user = $('#user').val();
+                var checkedValues = [];
 
-    $('.header_columns').find('input[type="checkbox"]:checked').each(function () {
-        checkedValues.push($(this).val());
-    });
+                $('.header_columns').find('input[type="checkbox"]:checked').each(function () {
+                    checkedValues.push($(this).val());
+                });
 
-    KTApp.block('#reportModal', {
-        overlayColor: '#000000',
-        state: 'danger',
-        opacity: 0.1,
-        message: 'Processing started...',
-    });
+                KTApp.block('#reportModal', {
+                    overlayColor: '#000000',
+                    state: 'danger',
+                    opacity: 0.1,
+                    message: 'Processing started...',
+                });
 
-    $.ajax({
-        type: "POST",
-        url: "{{ url('reports/project_report_tracking') }}",
-        data: {
-            project_id: project_id,
-            sub_project_id: sub_project_id,
-            work_date: work_date,
-            client_status: client_status,
-            user: user,
-            checkedValues: checkedValues,
-            _token: $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function (res) {
-            if (res.success) {
-                // Polling every 5 seconds for job completion
-                var interval = setInterval(function () {
-                    $.get("{{ url('reports/project_report_tracking_status') }}/" + project_id + "/" + sub_project_id,
-                        function (statusRes) {
-                            if (statusRes.status === "End") {
-                                clearInterval(interval);
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url('reports/project_report_tracking') }}",
+                    data: {
+                        project_id: project_id,
+                        sub_project_id: sub_project_id,
+                        work_date: work_date,
+                        client_status: client_status,
+                        user: user,
+                        checkedValues: checkedValues,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (res) {
+                        if (res.success) {
+                            // Polling every 5 seconds for job completion
+                            var interval = setInterval(function () {
+                                $.get("{{ url('reports/project_report_tracking_status') }}/" + project_id + "/" + sub_project_id,
+                                    function (statusRes) {
+                                        if (statusRes.status === "End") {
+                                            clearInterval(interval);
 
-                                // Build download URL
-                                var downloadUrl = "{{ url('reports/report_client_bulk_columns_list') }}?" + $.param({
-                                    project_id: project_id,
-                                    sub_project_id: sub_project_id,
-                                    work_date: work_date,
-                                    client_status: client_status,
-                                    user: user,
-                                    checkedValues: checkedValues
-                                });
+                                            // Build download URL
+                                            var downloadUrl = "{{ url('reports/report_client_bulk_columns_list') }}?" + $.param({
+                                                project_id: project_id,
+                                                sub_project_id: sub_project_id,
+                                                work_date: work_date,
+                                                client_status: client_status,
+                                                user: user,
+                                                checkedValues: checkedValues
+                                            });
 
-                                // Hide modal
-                                $('#reportModal').modal('hide');
-                                $('#generateReportClass').show();
-                               // $('#listData').show();
+                                            // Hide modal
+                                            $('#reportModal').modal('hide');
+                                            $('#generateReportClass').show();
+                                        // $('#listData').show();
 
-                                // Trigger download automatically
-                                var link = document.createElement('a');
-                                link.href = downloadUrl;console.log(link.href,'link.href');
-                                
-                                link.download = ''; // let server define filename
-                                document.body.appendChild(link);
-                                link.click();
-                                document.body.removeChild(link);
+                                            // Trigger download automatically
+                                            var link = document.createElement('a');
+                                            link.href = downloadUrl;console.log(link.href,'link.href');
+                                            
+                                            link.download = ''; // let server define filename
+                                            document.body.appendChild(link);
+                                            link.click();
+                                            document.body.removeChild(link);
 
-                                KTApp.unblock('#reportModal');
-                            }
-                        });
-                }, 5000); // poll every 5 seconds
-            }
-        }
-    });
-});
+                                            KTApp.unblock('#reportModal');
+                                        }
+                                    });
+                            }, 5000); // poll every 5 seconds
+                        }
+                    }
+                });
+           });
 
 
 

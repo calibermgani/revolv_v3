@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromGenerator;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use App\Http\Helper\Admin\Helpers;
+use Carbon\Carbon;
 
 class BulkProdcutionExport implements FromGenerator, WithHeadings, WithMapping
 {
@@ -69,9 +71,97 @@ class BulkProdcutionExport implements FromGenerator, WithHeadings, WithMapping
     public function map($row): array
     {
         $mapped = [];
+        $agingCount = null;
+        $agingRange = null;
+
         foreach ($this->columns as $col) {
-            $mapped[] = $row->{$col} ?? '--';
+            $data = $row->{$col} ?? '--';
+
+            // ---- Mirror your controller’s transformations ----
+            if ($col === 'QA_status_code' && $data !== '--') {
+                $data = Helpers::qaStatusById($data)['status_code'] ?? $data;
+            }
+            if ($col === 'QA_sub_status_code' && $data !== '--') {
+                $data = Helpers::qaSubStatusById($data)['sub_status_code'] ?? $data;
+            }
+            if ($col === 'qa_classification' && $data !== '--') {
+                $data = Helpers::qaClassificationById($data)['qa_classification'] ?? $data;
+            }
+            if ($col === 'qa_category' && $data !== '--') {
+                $data = Helpers::qaCategoryById($data)['qa_category'] ?? $data;
+            }
+            if ($col === 'qa_scope' && $data !== '--') {
+                $data = Helpers::qaScopeById($data)['qa_scope'] ?? $data;
+            }
+            if ($col === 'ar_status_code' && $data !== '--' && $data !== null) {
+                $status = Helpers::arStatusById($data);
+                $data = $status['status_code'] ?? $data;
+            }
+            if ($col === 'ar_action_code' && $data !== '--' && $data !== null) {
+                $action = Helpers::arActionById($data);
+                $data = $action['action_code'] ?? $data;
+            }
+            if ($col === 'ar_denial_codes' && $data !== '--' && $data !== null) {
+                $denial = Helpers::arDenialById($data);
+                $data = $denial['denialCode'] ?? $data;
+            }
+            if ($col === 'ar_substatus_codes' && $data !== '--' && $data !== null) {
+                $sub = Helpers::arSubStatusById($data);
+                $data = $sub['substatusCode'] ?? $data;
+            }
+            if ($col === 'chart_status') {
+                $recordStatus = $row->{'record_status'};
+                if (strpos($recordStatus, 'CE_') === 0) {
+                    $data = str_replace('CE_', 'AR ', $recordStatus);
+                } elseif (strpos($recordStatus, 'QA_') === 0) {
+                    $data = str_replace('QA_', 'QA ', $recordStatus);
+                } else {
+                    $data = ucwords(str_replace('_', ' ', $recordStatus));
+                }
+            }
+            if ($col === 'qa_work_status') {
+                $data = str_replace('_', ' ', $data);
+            }
+            if ($col === 'work_hours') {
+                $data = $row->work_time ?? '--';
+            }
+            if ($col === 'qa_work_date') {
+                $data = ($row->{'record_status'} == "QA_Completed" && $data !== '--')
+                    ? date('m/d/y', strtotime($data))
+                    : '--';
+            }
+            if ($col === 'coder_work_date') {
+                $data = ($row->{'record_status'} == "CE_Completed" && $data !== '--')
+                    ? date('m/d/y', strtotime($data))
+                    : '--';
+            }
+            if ($col === 'dos' && $data !== '--') {
+                $data = date('m/d/y', strtotime($data));
+                $dosDate = Carbon::parse($row->{'dos'});
+                $agingCount = $dosDate->diffInDays(Carbon::now());
+                if ($agingCount <= 30) $agingRange = '0-30';
+                elseif ($agingCount <= 60) $agingRange = '31-60';
+                elseif ($agingCount <= 90) $agingRange = '61-90';
+                elseif ($agingCount <= 120) $agingRange = '91-120';
+                elseif ($agingCount <= 180) $agingRange = '121-180';
+                elseif ($agingCount <= 365) $agingRange = '181-365';
+                else $agingRange = '365+';
+            }
+            if ($col === 'aging') {
+                $data = $agingCount;
+            }
+            if ($col === 'aging_range') {
+                $data = $agingRange;
+            }
+
+            // replace "_el_" with ","
+            if (strpos($data, '_el_') !== false) {
+                $data = str_replace('_el_', ' , ', $data);
+            }
+
+            $mapped[] = $data;
         }
+
         return $mapped;
     }
 }
