@@ -195,5 +195,23 @@ const resetTimeout = () => {
 
 // Initial timeout set on page load
 resetTimeout();
+document.addEventListener("click", function (e) {
+    const target = e.target.closest("a, button");
+
+    if (!target) return;
+
+    // Match common export routes (adjust keywords if needed)
+    const href = target.getAttribute("href") || target.getAttribute("data-href") || "";
+    
+    if (href.includes("export") || href.includes("download") || href.includes("javascript:void(0)")) {
+        // Show loader
+        $('#global-loader').css({ display: 'flex', opacity: 1 });
+
+        // Hide loader after a few seconds (download prompt already started)
+        setTimeout(() => {
+            $('#global-loader').fadeOut(300);
+        }, 3000); // adjust time depending on your file size
+    }
+});
 
 </script>
