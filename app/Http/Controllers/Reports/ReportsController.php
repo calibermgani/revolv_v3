@@ -28,6 +28,7 @@ use App\Jobs\ProcessProjectReport;
 use App\Exports\BulkProdcutionExport;
 
 ini_set('max_execution_time', 300);
+ini_set('memory_limit', '2G');
 class ReportsController extends Controller
 {
     public function reporstIndex(){

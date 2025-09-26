@@ -175,6 +175,7 @@
             $(document).on('click', '#reportModalBtn', function(e) {
                 $('#reportModal').modal('show');
                 $('#project_assign_body').show();
+                  $('#no_data').hide();
                 $('#headers_modal').hide();
             });
 
@@ -429,12 +430,13 @@
 
                                 // Hide modal
                                 $('#reportModal').modal('hide');
-                                $('#generateReportClass').hide();
-                                $('#listData').show();
+                                $('#generateReportClass').show();
+                               // $('#listData').show();
 
                                 // Trigger download automatically
                                 var link = document.createElement('a');
-                                link.href = downloadUrl;
+                                link.href = downloadUrl;console.log(link.href,'link.href');
+                                
                                 link.download = ''; // let server define filename
                                 document.body.appendChild(link);
                                 link.click();
