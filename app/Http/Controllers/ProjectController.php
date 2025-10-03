@@ -2502,7 +2502,7 @@ class ProjectController extends Controller
                     $subStatusCodeDesc = "None";
                 } else {
                     // Split into "code" and "description"
-                    // Example: "CO-1 - Claim/Service Denied;"
+                    // Example: "N - None;"
                     $parts = preg_split("/\s+-\s+/", $request->ar_substatus_codes, 2);
 
                     $subStatusCode = trim($parts[0] ?? '');
