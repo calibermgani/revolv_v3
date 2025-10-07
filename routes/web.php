@@ -202,6 +202,14 @@ Route::group(['prefix' => 'qa_production'], function () {
     Route::any('reports/report_client_bulk_columns_list', 'App\Http\Controllers\Reports\ReportsController@reportClientBulkColumnsListExport');
     Route::post('reports/project_bulk_report_tracking', 'App\Http\Controllers\Reports\ReportsController@projectBulkReportTracking');
     Route::get('reports/project_bulk_report_tracking_status/{project_id}/{sub_project_id}', 'App\Http\Controllers\Reports\ReportsController@projectBulkReportTrackingStatus');
+    Route::get('reports/download_bulk_report', 'App\Http\Controllers\Reports\ReportsController@downloadBulkReport');
+    // Route::get('clear-cache', function() {
+    //     $exitCode = Artisan::call('cache:clear');
+    //     // return what you want
+    // });
+        Route::get('/reports/bulk', 'App\Http\Controllers\Reports\ReportsController@bulkProductionReports')->name('reports.bulk');
+        Route::match(['get','post'],'/reports/bulk/columns', 'App\Http\Controllers\Reports\ReportsController@bulkProductionReportsColumns')->name('reports.bulk.columns');
+        Route::any('bulk_export', 'App\Http\Controllers\Reports\ReportsController@bulkExport');
 
 
 
