@@ -124,6 +124,7 @@ Route::group(['prefix' => 'qa_production'], function () {
     Route::any('qa_class_cat_scope', 'App\Http\Controllers\QA\QAProductionController@qaClassCatScope');
     Route::any('quality_export', 'App\Http\Controllers\QA\QAProductionController@qualityExport');
     Route::any('qa_sampling_assignee', 'App\Http\Controllers\QA\QAProductionController@qaSamplingAssignee');
+     Route::any('all_sampling_assignee', 'App\Http\Controllers\QA\QAProductionController@allSamplingAssignee');
 });
 
 

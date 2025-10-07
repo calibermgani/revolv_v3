@@ -289,6 +289,12 @@ use Carbon\Carbon;
                     </div>
               
                     {!! Form::close() !!}
+                       @php
+                            $pageSelectedRecord = ($unAssignedProjectDetails->lastItem() - $unAssignedProjectDetails->firstItem()) + 1;
+                        @endphp
+                        <p id="select_p1" style="text-align:center;display:none">All {{$pageSelectedRecord}} {{$pageSelectedRecord == 1 ? 'record on this page is selected' : 'records on this page are selected'}} . <a style="color:#6993FF !important;cursor:pointer !important" id="select_all_status">Select all {{$unAssignedProjectDetails->total()}} records</a></p>
+                        <p id="clear_p1" style="text-align:center;display:none">All {{$unAssignedProjectDetails->total()}} records are selected.<a style="color:#6993FF !important;cursor:pointer !important" id="clear_all_status">Clear Selection.</a></p>
+                     
                 <div class="card-body py-0 px-7">
                     <input type="hidden" value={{ $clientName }} id="clientName">
                     <input type="hidden" value={{ $subProjectName }} id="subProjectName">
@@ -2836,14 +2842,19 @@ use Carbon\Carbon;
                 var isChecked = $(this).prop('checked');
                 $(".checkBoxClass").prop('checked', isChecked);
                 var table = $('#client_assigned_list').DataTable();
+                var noOfPages = @json($unAssignedProjectDetails->lastPage());
                 for (var i = 0; i < table.page.info().pages; i++) {
                     table.page(i).draw(false); // Switch to page i
                     $(".checkBoxClass").prop('checked', isChecked); // Select checkboxes on the current page
                 }
                 if ($(this).prop('checked') == true && $('.checkBoxClass:checked').length > 0) {
                     $('#assigneeDropdown').prop('disabled', false);
+                    if(noOfPages > 1){
+                       $('#select_p1').css('display', 'block');
+                    }           
                     assigneeDropdown();
                 } else {
+                    $('#select_p1').css('display','none');
                     $('#assigneeDropdown').prop('disabled', true);
 
                 }
@@ -2855,8 +2866,11 @@ use Carbon\Carbon;
                         .length;
                     if (allCheckboxesChecked) {
                         $("#ckbCheckAll").prop('checked', $(this).prop('checked'));
+                          $('#select_p1').css('display','block');
                     } else {
                         $("#ckbCheckAll").prop('checked', false);
+                        $('#select_p1').css('display','none');
+                        $('#clear_p1').css('display','none');
                     }
                     $('#assigneeDropdown').prop('disabled', !(anyCheckboxChecked || allCheckboxesChecked));
                     if ($(this).prop('checked') == true) {
@@ -2864,6 +2878,19 @@ use Carbon\Carbon;
                     }
                 // });
             }
+            $('#select_all_status').click(function() {
+                $('#select_p1').css('display','none');
+                $('#clear_p1').css('display','block');
+               
+            });
+            $('#clear_all_status').click(function() {
+                var isChecked = false;
+                $("#ckbCheckAll").prop('checked', isChecked);
+                $(".checkBoxClass").prop('checked', isChecked);
+                $('#clear_p1').css('display','none');              
+                $('#assigneeDropdown').prop('disabled', true);       
+               
+            });
 
             function attachCheckboxHandlers() {
                 $('.checkBoxClass').off('change').on('change', handleCheckboxChange);
@@ -2922,6 +2949,14 @@ use Carbon\Carbon;
                             'content')
                     }
                 });
+                    var selectId = $('#select_p1').css('display');
+                    var clearId = $('#clear_p1').css('display');
+                    var formData = $('#formSearch').serialize();
+                        formData += '&checkedRowValues=' + encodeURIComponent(JSON.stringify(checkedRowValues));
+                        formData += '&clientName=' + clientName;
+                        formData += '&subProjectName=' + subProjectName;
+                        formData += '&assigneeId=' + assigneeId;
+                        formData += '&selectedRecords=' + clearId;
                 swal.fire({
                     text: "Do you want to assign?",
                     icon: "success",
@@ -2937,14 +2972,15 @@ use Carbon\Carbon;
                 }).then(function(result) {
                     if (result.value == true) {
                         $.ajax({
-                            url: "{{ url('qa_production/sampling_assignee') }}",
+                            url: "{{ url('qa_production/all_sampling_assignee') }}",
                             method: 'POST',
-                            data: {
-                                assigneeId: assigneeId,
-                                checkedRowValues: checkedRowValues,
-                                clientName: clientName,
-                                subProjectName: subProjectName
-                            },
+                            // data: {
+                            //     assigneeId: assigneeId,
+                            //     checkedRowValues: checkedRowValues,
+                            //     clientName: clientName,
+                            //     subProjectName: subProjectName
+                            // },
+                            data: formData,
                             success: function(response) {
                                 if (response.success == true) {
                                     js_notification('success',

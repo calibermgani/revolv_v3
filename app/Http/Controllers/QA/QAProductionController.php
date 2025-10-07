@@ -2072,6 +2072,79 @@ class QAProductionController extends Controller
             return redirect('/');
         }
     }
+   public function allSamplingAssignee(Request $request){
+    if (Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
+        try {
+            $assigneeId = $request['assigneeId'];
+            $decodedProjectName = Helpers::encodeAndDecodeID($request['clientName'], 'decode');
+            $decodedPracticeName = $request['subProjectName'] == '--' ? '--' : Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
+            $paProject = Helpers::projectName($decodedProjectName);
+            $decodedClientName = $paProject ? $paProject->project_name : null;
+
+            $decodedsubProjectName = $decodedPracticeName == '--'
+                ? 'project'
+                : Helpers::subProjectName($decodedProjectName, $decodedPracticeName)->sub_project_name;
+
+            $table_name = Str::slug((Str::lower($decodedClientName) . '_' . Str::lower($decodedsubProjectName)), '_');
+            $modelName = Str::studly($table_name);
+            $modelClass = "App\\Models\\" . $modelName;
+            $modelClassDatas = "App\\Models\\" . $modelName . 'Datas';
+            $modelHistory = "App\\Models\\" . $modelName . 'History';
+            $checkedRowValues = json_decode(urldecode($request->checkedRowValues), true);
+            if ($request['selectedRecords'] == "none") {
+                foreach($checkedRowValues as $data) {
+                    $existingRecord = $modelClass::where('id',$data['value'])->first();
+                    $historyRecord = $existingRecord->toArray();
+                    $historyRecord['parent_id']= $historyRecord['id'];
+                    unset($historyRecord['id']);
+                    $modelHistory::create($historyRecord);
+                    $existingModelClassDatasRecord = $modelClassDatas::where('parent_id',$data['value'])->first();
+                    $existingRecord->update(['QA_emp_id' => $assigneeId,'qa_work_status' => 'Sampling','chart_status' => 'CE_Completed']);
+                    $existingModelClassDatasRecord->update(['QA_emp_id' => $assigneeId,'qa_work_status' => 'Sampling','chart_status' => 'CE_Completed']);
+                    
+                }
+            } else {
+                // Get all eligible CE_Completed records
+                $ids = $modelClass::where('chart_status', 'CE_Completed')
+                    ->whereNull('qa_work_status')
+                    ->pluck('id')
+                    ->toArray();
+
+                if (!empty($ids)) {
+                    foreach ($ids as $id) {
+                        $existingRecord = $modelClass::find($id);
+                        if (!$existingRecord) continue;
+
+                        // Create history record
+                        $historyRecord = $existingRecord->toArray();
+                        $historyRecord['parent_id'] = $historyRecord['id'];
+                        unset($historyRecord['id']);
+                        $modelHistory::create($historyRecord);
+                    }
+
+                    // Bulk update both tables
+                    $modelClass::whereIn('id', $ids)->update([
+                        'QA_emp_id' => $assigneeId,
+                        'qa_work_status' => 'Sampling',
+                        'chart_status' => 'CE_Completed'
+                    ]);
+
+                    $modelClassDatas::whereIn('parent_id', $ids)->update([
+                        'QA_emp_id' => $assigneeId,
+                        'qa_work_status' => 'Sampling',
+                        'chart_status' => 'CE_Completed'
+                    ]);
+                }
+            }
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            Log::debug($e->getMessage());
+        }
+    } else {
+        return redirect('/');
+    }
+}
 
     
 }

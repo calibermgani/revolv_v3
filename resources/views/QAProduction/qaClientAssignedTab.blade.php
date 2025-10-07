@@ -3020,8 +3020,7 @@ use Carbon\Carbon;
                 $("#ckbCheckAll").prop('checked', isChecked);
                 $(".checkBoxClass").prop('checked', isChecked);
                 $('#clear_p1').css('display','none');              
-                $('#assigneeDropdown').prop('disabled', true);
-                $('#workable_dropdown').prop('disabled', true);               
+                $('#assigneeDropdown').prop('disabled', true);        
                
             });
             function attachCheckboxHandlers() {
