@@ -73,16 +73,18 @@ class ProjectController extends Controller
                     project::create($prjData);
                 }
             }
-            subproject::truncate();
+            //subproject::truncate();
             foreach ($subProjects as $data) {
                 $subPrjData['project_id'] = $data['project_id'];
                 $subPrjData['sub_project_id'] = $data['sub_project_id'];
                 $subPrjData['sub_project_name'] = $data['sub_project_name'];
+                $subPrjData['new_sub_project_name'] = $data['new_sub_project_name'];
                 $subPrjData['added_by'] = 1;
                 $subPrjDetails = subproject::where('project_id', $subPrjData['project_id'])->where('sub_project_id', $subPrjData['sub_project_id'])->first();
                 if ($subPrjDetails) {
                     $subPrjDetails->update($subPrjData);
                 } else {
+                    $subPrjData['sub_project_name'] = $data['new_sub_project_name'];
                     subproject::create($subPrjData);
                 }
             }

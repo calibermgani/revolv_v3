@@ -11,7 +11,7 @@ class subproject extends Model
     use SoftDeletes;
 
     protected $table ='subprojects';
-    protected $fillable = ['project_id','sub_project_id','sub_project_name','added_by','status'];
+    protected $fillable = ['project_id','sub_project_id','sub_project_name','added_by','status','new_sub_project_name'];
 
     public function clientName(){
         return $this->hasOne('App\Models\project','id','project_id');

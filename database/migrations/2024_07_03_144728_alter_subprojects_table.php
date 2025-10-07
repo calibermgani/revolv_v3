@@ -14,7 +14,7 @@ class AlterSubprojectsTable extends Migration
     public function up()
     {
         Schema::table('subprojects', function (Blueprint $table) {
-            $table->string('aims_sub_project_name')->nullable()->after('sub_project_id');
+            $table->text('new_sub_project_name')->nullable()->after('sub_project_name');
        });
     }
 
@@ -26,7 +26,7 @@ class AlterSubprojectsTable extends Migration
     public function down()
     {
         Schema::table('subprojects', function (Blueprint $table) {
-            $table->dropColumn('aims_sub_project_name');
+            $table->dropColumn('new_sub_project_name');
         });
     }
 }
