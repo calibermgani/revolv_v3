@@ -1956,7 +1956,7 @@ class ReportsController extends Controller
  public function bulkProductionReports()
     {
         // Empty paginator so Blade pagination methods don’t error
-        $emptyPaginator = new LengthAwarePaginator([], 0, 2, 1, [
+        $emptyPaginator = new LengthAwarePaginator([], 0, 20, 1, [
             'path' => Paginator::resolveCurrentPath()
         ]);
 
@@ -2053,10 +2053,11 @@ class ReportsController extends Controller
                                 $query->where('caller_charts_work_logs.record_status', $request->client_status);
                             });
 
-                    $completedProjectDetails = $query->paginate(20)->appends($request->except('page'));
+                    $completedProjectDetails = $query;
                 }
             }
-
+            $completedProjectDetails = $completedProjectDetails->paginate(20);
+           
             // AJAX Response
             if ($request->ajax()) {
                 return response()->json([
