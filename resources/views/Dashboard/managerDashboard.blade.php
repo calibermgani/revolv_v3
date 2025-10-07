@@ -426,16 +426,41 @@
                                     </div>
                                 </div>
                             </div>   
-                                <div class="col-lg-1">
+                                {{-- <div class="col-lg-1">
                                     <div class="row form-group">
                                         <div class="col-md-12">
                                             <button type="submit" class="search_btn" id="project_inventory_upload_search"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                                                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
                                               </svg></button>   
-                                            {{-- <button type="button" class="btn btn-light-danger" data-dismiss="modal">Close</button>                                            --}}
                                         </div>
                                     </div>
-                                </div>                     
+                                </div>--}}
+                                <div class="col-lg-1">
+                                <div class="row">
+                                    <div class="col-lg-6 text-center">
+                                        <button type="submit" class="search_btn mb-1" id="project_inventory_upload_search" title="Search">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                                class="bi bi-search" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="col-lg-6 text-center">
+                                        <button type="button" id="clear_submit" class="search_btn" title="Refresh"
+                                            style="color:#191C24;background-color:white;border-color:white;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                                class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd"
+                                                    d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z" />
+                                                <path
+                                                    d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+ 
                         </div>
                         <div class="card-body" style="padding-top: 0.25rem;">
                             <div class="table-responsive" id="mDashboard_inventory_upload">
@@ -1084,6 +1109,18 @@
                 inventoryUploadList(project_id,sub_project_id,work_date);
               
             });
+             $(document).on('click','#clear_submit',function(){
+                $('#project_id').val('').trigger('change.select2');
+                $('#sub_project_id').val('').trigger('change.select2');
+                $('#scope_id').val('').trigger('change.select2');
+                $('#speciality_id').val('').trigger('change.select2');
+                $('#search_date').val('');
+               var project_id = null;
+                var sub_project_id = null;            
+              var work_date = moment().startOf('month').format('MM/DD/YYYY') + ' - ' + moment().endOf('month').format('MM/DD/YYYY');
+                $('#search_date').val(work_date);
+                inventoryUploadList(project_id,sub_project_id,work_date);                      
+            });    
             function inventoryUploadList(project_id,sub_project_id,work_date) {
                 $.ajaxSetup({
                     headers: {
