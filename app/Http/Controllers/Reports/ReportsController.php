@@ -2159,6 +2159,8 @@ class ReportsController extends Controller
                     $exportResult = $query->get();
                 }
             }
+            $exportResult = $exportResult ?? [];
+            $columnsHeader = $columnsHeader ?? [];
         //   array_push($columnsHeader,'aging','aging_range');
             
             return Excel::download(new ProductionBulkExport($columnsHeader,$exportResult), 'Resolv_Bulk_Report.xlsx');
@@ -2259,9 +2261,15 @@ class ReportsController extends Controller
                     }
                 }
             //   array_push($columnsHeader,'aging','aging_range');
-              return $exportResult;
-                return Excel::download(new ProductionBulkExport($columnsHeader,$exportResult), 'Resolv_Bulk_Report.xlsx');
-
+               $exportResult = $exportResult ?? [];
+               $columnsHeader = $columnsHeader ?? [];
+                   $result = array(
+                        'code' => 200,
+                        'message' => 'success',
+                        'columnsHeader' => $columnsHeader,
+                        'exportResult' => $exportResult
+                    );
+                     return $result;
             } catch (\Exception $e) {
                 Log::error($e->getMessage());
                 return back()->with('error', 'Something went wrong.');
