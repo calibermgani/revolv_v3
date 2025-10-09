@@ -2074,8 +2074,10 @@ class ReportsController extends Controller
         }
     }
     public function bulkExport(Request $request)    {
-            $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
-            $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+            // $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
+            // $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+             $project_id = $request->project_id;
+            $sub_project_id =$request->sub_project_id;
 
             $columnsHeader = [];
          
