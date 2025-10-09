@@ -2156,7 +2156,7 @@ class ReportsController extends Controller
                                         $query->where('caller_charts_work_logs.record_status', $request->client_status);
                                 });
 
-                        $exportResult = $query->get();
+                        $exportResult = $query->get();dd($exportResult);
                            return $exportResult;
                     }
                 }
