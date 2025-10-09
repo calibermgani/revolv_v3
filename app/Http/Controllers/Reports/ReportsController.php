@@ -2083,10 +2083,10 @@ class ReportsController extends Controller
                             $work_date = explode(' - ', $request["work_date"]);
                             $start_date = date('Y-m-d 08:00:00', strtotime($work_date[0]));
                             $end_date = date('Y-m-d 07:59:00', strtotime($work_date[1] . ' +1 day'));
-                    }else{
-                            $start_date = "";
-                            $end_date = "";
-                        }
+            }else{
+                    $start_date = "";
+                    $end_date = "";
+                }
                     
             try {
                 // Project & subproject names
@@ -2157,10 +2157,11 @@ class ReportsController extends Controller
                                 });
 
                         $exportResult = $query->get();
+                           return $exportResult;
                     }
                 }
             //   array_push($columnsHeader,'aging','aging_range');
-                return $exportResult;
+             
                 return Excel::download(new ProductionBulkExport($columnsHeader,$exportResult), 'Resolv_Bulk_Report.xlsx');
 
             } catch (\Exception $e) {
