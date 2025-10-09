@@ -2078,7 +2078,7 @@ class ReportsController extends Controller
             $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
 
             $columnsHeader = [];
-            
+            $exportResult = [];
             if (isset($request["work_date"]) && !empty($request["work_date"])) {
                             $work_date = explode(' - ', $request["work_date"]);
                             $start_date = date('Y-m-d 08:00:00', strtotime($work_date[0]));
