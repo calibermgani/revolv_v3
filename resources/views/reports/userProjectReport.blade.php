@@ -123,8 +123,7 @@
                      } else {
                         $startDate = Carbon::now()->startOfMonth()->format('Y-m-d');
                         $endDate = Carbon::now()->format('Y-m-d');;
-                     }dd($startDate,$endDate,$workDate);
-
+                     }
 
                         $period = CarbonPeriod::create($startDate, $endDate)->filter(function ($date) {
                             return !in_array($date->dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY]);
