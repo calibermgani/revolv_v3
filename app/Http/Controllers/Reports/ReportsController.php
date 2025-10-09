@@ -2074,6 +2074,102 @@ class ReportsController extends Controller
         }
     }
     public function bulkExport(Request $request)    {
+        $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
+        $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+
+        $columnsHeader = [];
+        
+        if (isset($request["work_date"]) && !empty($request["work_date"])) {
+                        $work_date = explode(' - ', $request["work_date"]);
+                        $start_date = date('Y-m-d 08:00:00', strtotime($work_date[0]));
+                        $end_date = date('Y-m-d 07:59:00', strtotime($work_date[1] . ' +1 day'));
+                }else{
+                        $start_date = "";
+                        $end_date = "";
+                    }
+                
+        try {
+            // Project & subproject names
+            $paProject = Helpers::projectName($project_id);
+            $decodedClientName = $paProject->project_name ?? null;
+
+            $decodedSubProjectName = '';
+            if ($project_id && $sub_project_id) {
+                $sub = Helpers::subProjectName($project_id, $sub_project_id);
+                $decodedSubProjectName = $sub->sub_project_name ?? '';
+            }
+
+            if ($decodedClientName && $decodedSubProjectName) {
+                $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName) . '_datas', '_');
+
+                if (Schema::hasTable($table_name)) {
+                    $allColumns = array_column(DB::select("DESCRIBE `$table_name`"), 'Field');
+                    $excludeCols = [
+                        'QA_required_sampling','QA_followup_date','annex_coder_trends','annex_qa_trends',
+                        'qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                        'CE_status_code','CE_sub_status_code','CE_followup_date',
+                        'updated_at','created_at','deleted_at','cpt_trends','icd_trends','modifiers','parent_id','id'
+                    ];
+
+                    $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
+                    $columnsHeader[] = 'work_time';
+                    $columnsHeader[] = 'record_status';
+
+                    $selectCols = array_map(fn($col) => "$table_name.$col", array_diff($columnsHeader, ['work_time', 'record_status']));
+                    $selectCols[] = 'caller_charts_work_logs.work_time';
+                    $selectCols[] = 'caller_charts_work_logs.record_status';
+
+                    foreach (['qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers'] as $qaCol) {
+                        if (Schema::hasColumn($table_name, $qaCol)) {
+                            $selectCols[] = "$table_name.$qaCol";
+                        }
+                    }
+
+                    $latestWorkLogs = DB::table(DB::raw('
+                        (
+                            SELECT *, 
+                                ROW_NUMBER() OVER (
+                                    PARTITION BY record_id, project_id, sub_project_id, record_status 
+                                    ORDER BY start_time DESC
+                                ) AS row_num
+                            FROM caller_charts_work_logs
+                        ) as ranked_logs
+                    '))->where('row_num', 1);
+                    $query = DB::table($table_name)
+                            ->joinSub($latestWorkLogs, 'caller_charts_work_logs', function ($join) use ($table_name) {
+                                $join->on('caller_charts_work_logs.record_id', '=', $table_name . '.parent_id');
+                            })
+                        ->select($selectCols)
+                            ->where('caller_charts_work_logs.project_id', '=', $project_id)
+                            ->where('caller_charts_work_logs.sub_project_id', '=', $sub_project_id)
+                            ->when(!empty($start_date) && !empty($end_date), function ($query) use ($start_date, $end_date,$table_name) {
+                                $query->whereBetween('caller_charts_work_logs.start_time', [$start_date, $end_date]);
+                            // $query->whereBetween($table_name.'.updated_at', [$start_date, $end_date]);
+                            })
+                            ->when(!empty($request->user), function ($query) use ($request) {
+                                $query->where(function ($q) use ($request) {
+                                    $q->where('CE_emp_id', $request->user)
+                                    ->orWhere('QA_emp_id', $request->user);
+                                });
+                            })
+                            ->when(!empty($request->client_status), function ($query) use ($request) {
+                                    $query->where('caller_charts_work_logs.record_status', $request->client_status);
+                            });
+
+                    $exportResult = $query->get();
+                }
+            }
+        //   array_push($columnsHeader,'aging','aging_range');
+            
+            return Excel::download(new ProductionBulkExport($columnsHeader,$exportResult), 'Resolv_Bulk_Report.xlsx');
+
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return back()->with('error', 'Something went wrong.');
+        }
+    }
+
+    public function bulkExportApi(Request $request)    {
             // $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
             // $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
              $project_id = $request->project_id;
@@ -2171,6 +2267,7 @@ class ReportsController extends Controller
                 return back()->with('error', 'Something went wrong.');
             }
     }
+
 
     
    
