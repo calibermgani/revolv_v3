@@ -126,7 +126,7 @@
                      }
 
                         $period = CarbonPeriod::create($startDate, $endDate)->filter(function ($date) {
-                            return !in_array($date->dayOfWeek, [Carbon::SUNDAY]);
+                            return !in_array($date->dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY]);
                         });
                     $dates = [];
                     foreach ($period as $date) {
