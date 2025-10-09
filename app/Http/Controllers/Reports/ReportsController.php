@@ -2104,7 +2104,7 @@ class ReportsController extends Controller
                 if ($decodedClientName && $decodedSubProjectName) {
                     $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName) . '_datas', '_');
 
-                    if (Schema::hasTable($table_name)) {dd($table_name);
+                    if (Schema::hasTable($table_name)) {
                         $allColumns = array_column(DB::select("DESCRIBE `$table_name`"), 'Field');
                         $excludeCols = [
                             'QA_required_sampling','QA_followup_date','annex_coder_trends','annex_qa_trends',
@@ -2159,11 +2159,11 @@ class ReportsController extends Controller
                                 });
 
                         $exportResult = $query->get();
-                           return $exportResult;
+                          
                     }
                 }
             //   array_push($columnsHeader,'aging','aging_range');
-             
+              return $exportResult;
                 return Excel::download(new ProductionBulkExport($columnsHeader,$exportResult), 'Resolv_Bulk_Report.xlsx');
 
             } catch (\Exception $e) {
