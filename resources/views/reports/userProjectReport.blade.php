@@ -132,7 +132,7 @@
                     foreach ($period as $date) {
                         $dates[] = $date->format('Y-m-d');
                    }
-                         
+                         dd($dates,$prjDetailsList);
 
                 @endphp
 
