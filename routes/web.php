@@ -214,6 +214,12 @@ Route::group(['prefix' => 'qa_production'], function () {
 
 
 
+        Route::get('/bulk','App\Http\Controllers\Reports\ReportsController@bulkIndex')
+                ->name('reports.bulk.index');
+            Route::post('/bulk/columns','App\Http\Controllers\Reports\ReportsController@getBulkColumns')
+                ->name('reports.bulk.columns');
+
+
 
 Auth::routes();
 // });
