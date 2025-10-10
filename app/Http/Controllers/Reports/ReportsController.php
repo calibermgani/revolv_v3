@@ -2450,12 +2450,12 @@ class ReportsController extends Controller
                     ) as ranked_logs'))->where('row_num', 1);
 
                     $query = DB::table($table_name)
-                        ->joinSub($latestWorkLogs, 'caller_charts_work_logs', function ($join) use ($table_name) {
-                            $join->on('caller_charts_work_logs.record_id', '=', $table_name . '.parent_id');
-                        })
+                        // ->joinSub($latestWorkLogs, 'caller_charts_work_logs', function ($join) use ($table_name) {
+                        //     $join->on('caller_charts_work_logs.record_id', '=', $table_name . '.parent_id');
+                        // })
                         ->select($selectCols)
-                        ->where('caller_charts_work_logs.project_id', '=', $project_id)
-                        ->where('caller_charts_work_logs.sub_project_id', '=', $sub_project_id)
+                        // ->where('caller_charts_work_logs.project_id', '=', $project_id)
+                        // ->where('caller_charts_work_logs.sub_project_id', '=', $sub_project_id)
                         ->when(!empty($start_date) && !empty($end_date), function ($query) use ($start_date, $end_date) {
                             $query->whereBetween('caller_charts_work_logs.start_time', [$start_date, $end_date]);
                         })
