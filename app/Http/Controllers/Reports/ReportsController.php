@@ -33,6 +33,7 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Exports\BulkReportExport;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use App\Models\CallerChartsWorkLogs;
 
 
 ini_set('max_execution_time', 300);
@@ -2499,124 +2500,91 @@ class ReportsController extends Controller
     //         ]);
     //     }
     // }
-    public function getBulkColumns(Request $request)
-{
-    try {
-        $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
-        $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
-
-        $columnsHeader = [];
-
-        $start_date = $end_date = null;
-        if (!empty($request["work_date"])) {
-            $work_date = explode(' - ', $request["work_date"]);
-            $start_date = date('Y-m-d 08:00:00', strtotime($work_date[0]));
-            $end_date = date('Y-m-d 07:59:00', strtotime($work_date[1] . ' +1 day'));
-        }
-
-        $paProject = Helpers::projectName($project_id);
-        $decodedClientName = $paProject->project_name ?? null;
-
-        $decodedSubProjectName = '';
-        if ($project_id && $sub_project_id) {
-            $sub = Helpers::subProjectName($project_id, $sub_project_id);
-            $decodedSubProjectName = $sub->sub_project_name ?? '';
-        }
-
-        if ($decodedClientName && $decodedSubProjectName) {
-            $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName) . '_datas', '_');
-
-            if (Schema::hasTable($table_name)) {
-                // Get all columns from the table
-                $allColumns = array_column(DB::select("DESCRIBE `$table_name`"), 'Field');
-
-                // Exclude unwanted columns
-                $excludeCols = [
-                    'QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends',
-                    'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers',
-                    'CE_status_code', 'CE_sub_status_code', 'CE_followup_date',
-                     'created_at', 'deleted_at', 'cpt_trends', 'icd_trends',
-                    'modifiers'
-                ];
-
-                // Filtered columns
-                $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
-
-                if (empty($columnsHeader)) {
-                    return response()->json(['error' => true, 'message' => 'No columns found in this table']);
-                }
-
-                // Always add a unique ID column for DataTables
-                $selectCols = array_map(fn($col) => "$table_name.$col", $columnsHeader);
-                $selectCols[] = "$table_name.parent_id as id";
-
-                // Main query
-                $query = DB::table($table_name)->select($selectCols);
-
-                // Filters
-                if ($start_date && $end_date && in_array('coder_work_date', $allColumns)) {
-                    $query->whereBetween("$table_name.updated_at", [$start_date, $end_date]);
-                }
-
-                if (!empty($request->user)) {
-                    $query->where(function($q) use ($request) {
-                        $q->where('CE_emp_id', $request->user)
-                          ->orWhere('QA_emp_id', $request->user);
-                    });
-                }
-
-                if (!empty($request->client_status) && in_array('chart_status', $allColumns)) {
-                    $query->where('chart_status', $request->client_status);
-                }
-                $columnsHeader[] = 'work_hours';
-                return DataTables::of($query)
-                            ->addColumn('work_hours', function ($row) use ($project_id, $sub_project_id) {
-                                $record_id = $row->parent_id ?? null;
-                                $record_status = $row->chart_status ?? null;
-                                $recordUpdatedAt = $row->updated_at ?? null;
-                        
-                                $workHours = Helpers::callLogRecordWorkTime($project_id, $sub_project_id, $record_id, $record_status,$recordUpdatedAt);
-                        
-                           
-                                // Return the work_hours value (or whatever you want displayed in this column)
-                                return $workHours != null ? $workHours['work_time'] ?? '--' : '--';
-                            })
-                        ->editColumn('coder_work_date', function ($row) {
-                            return $row->coder_work_date ? date('Y/m/d', strtotime($row->coder_work_date)) : '--';
-                        })
-                         ->editColumn('ar_status_code', function ($row) {
-                            if ($row->ar_status_code != '--' && $row->ar_status_code != null) {
-                                $status = Helpers::arStatusById($row->ar_status_code);
-                                $row->ar_status_code = $status != null ? $status['status_code'] :  $row->ar_status_code;
-                            } else {
-                                $row->ar_status_code = '--';
-                           
-                        }
-                        return $row->ar_status_code;
-                           // return $row->ar_status_code ? date('Y/m/d', strtotime($row->coder_work_date)) : '--';
-                        })
-                        ->setRowId(function ($row) {
-                            return $row->id; // use custom unique column
-                        })
-                        ->addIndexColumn()
-                        ->with('columnsHeader', $columnsHeader)
-                        ->make(true);
-            
-                    // ->setRowId(fn($row) => $row->id) // use parent_id as unique id
-                    // ->addIndexColumn()
-                    // ->with('columnsHeader', $columnsHeader)
-                    // ->make(true);
-            }
-        }
-
-        return response()->json(['error' => true, 'message' => 'Table not found']);
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => true,
-            'message' => $e->getMessage(),
-        ]);
-    }
-}
+//    public function getBulkColumns(Request $request){
+//     try {
+//         $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
+//         $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+ 
+//         $columnsHeader = [];
+ 
+//         $start_date = $end_date = null;
+//         if (!empty($request["work_date"])) {
+//             $work_date = explode(' - ', $request["work_date"]);
+//             $start_date = date('Y-m-d 08:00:00', strtotime($work_date[0]));
+//             $end_date = date('Y-m-d 07:59:00', strtotime($work_date[1] . ' +1 day'));
+//         }
+ 
+//         $paProject = Helpers::projectName($project_id);
+//         $decodedClientName = $paProject->project_name ?? null;
+ 
+//         $decodedSubProjectName = '';
+//         if ($project_id && $sub_project_id) {
+//             $sub = Helpers::subProjectName($project_id, $sub_project_id);
+//             $decodedSubProjectName = $sub->sub_project_name ?? '';
+//         }
+ 
+//         if ($decodedClientName && $decodedSubProjectName) {
+//             $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName) . '_datas', '_');
+ 
+//             if (Schema::hasTable($table_name)) {
+//                 // Get all columns from the table
+//                 $allColumns = array_column(DB::select("DESCRIBE `$table_name`"), 'Field');
+ 
+//                 // Exclude unwanted columns
+//                 $excludeCols = [
+//                     'QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends',
+//                     'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers',
+//                     'CE_status_code', 'CE_sub_status_code', 'CE_followup_date',
+//                     'updated_at', 'created_at', 'deleted_at', 'cpt_trends', 'icd_trends',
+//                     'modifiers'
+//                 ];
+ 
+//                 // Filtered columns
+//                 $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
+ 
+//                 if (empty($columnsHeader)) {
+//                     return response()->json(['error' => true, 'message' => 'No columns found in this table']);
+//                 }
+ 
+//                 // Always add a unique ID column for DataTables
+//                 $selectCols = array_map(fn($col) => "$table_name.$col", $columnsHeader);
+//                 $selectCols[] = "$table_name.parent_id as id";
+ 
+//                 // Main query
+//                 $query = DB::table($table_name)->select($selectCols);
+ 
+//                 // Filters
+//                 if ($start_date && $end_date && in_array('coder_work_date', $allColumns)) {
+//                     $query->whereBetween("$table_name.updated_at", [$start_date, $end_date]);
+//                 }
+ 
+//                 if (!empty($request->user)) {
+//                     $query->where(function($q) use ($request) {
+//                         $q->where('CE_emp_id', $request->user)
+//                           ->orWhere('QA_emp_id', $request->user);
+//                     });
+//                 }
+ 
+//                 if (!empty($request->client_status) && in_array('chart_status', $allColumns)) {
+//                     $query->where('chart_status', $request->client_status);
+//                 }
+ 
+//                 return DataTables::of($query)
+//                     ->setRowId(fn($row) => $row->id) // use parent_id as unique id
+//                     ->addIndexColumn()
+//                     ->with('columnsHeader', $columnsHeader)
+//                     ->make(true);
+//             }
+//         }
+ 
+//         return response()->json(['error' => true, 'message' => 'Table not found']);
+//     } catch (\Exception $e) {
+//         return response()->json([
+//             'error' => true,
+//             'message' => $e->getMessage(),
+//         ]);
+//     }
+//    }
 
 
 
@@ -2783,7 +2751,118 @@ public function exportBulkReport(Request $request)
         }
     }, 'bulk_report.xlsx');
 }
+  public function getBulkColumns(Request $request)
+{
+    try {
+        $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
+        $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+ 
+        $columnsHeader = [];
+ 
+        $start_date = $end_date = null;
+        if (!empty($request["work_date"])) {
+            $work_date = explode(' - ', $request["work_date"]);
+            $start_date = date('Y-m-d 08:00:00', strtotime($work_date[0]));
+            $end_date = date('Y-m-d 07:59:00', strtotime($work_date[1] . ' +1 day'));
+        }
+ 
+        $paProject = Helpers::projectName($project_id);
+        $decodedClientName = $paProject->project_name ?? null;
+ 
+        $decodedSubProjectName = '';
+        if ($project_id && $sub_project_id) {
+            $sub = Helpers::subProjectName($project_id, $sub_project_id);
+            $decodedSubProjectName = $sub->sub_project_name ?? '';
+        }
+ 
+        if ($decodedClientName && $decodedSubProjectName) {
+            $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName) . '_datas', '_');
+ 
+       if (Schema::hasTable($table_name)) {
+                $allColumns = array_column(DB::select("DESCRIBE `$table_name`"), 'Field');
 
+                $excludeCols = [
+                    'QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends',
+                    'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers',
+                    'CE_status_code', 'CE_sub_status_code', 'CE_followup_date',
+                    'created_at', 'deleted_at', 'cpt_trends', 'icd_trends','updated_at',
+                    'modifiers'
+                ];
+
+                $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
+                if (empty($columnsHeader)) {
+                    return response()->json(['error' => true, 'message' => 'No columns found in this table']);
+                }
+
+                $selectCols = array_map(fn($col) => "$table_name.$col", $columnsHeader);
+                $selectCols[] = "$table_name.parent_id as id";
+
+                $query = DB::table($table_name)->select($selectCols);
+
+                // --- Filters ---
+                if ($start_date && $end_date && in_array('coder_work_date', $allColumns)) {
+                    $query->whereBetween("$table_name.updated_at", [$start_date, $end_date]);
+                }
+
+                if (!empty($request->user)) {
+                    $query->where(function ($q) use ($request) {
+                        $q->where('CE_emp_id', $request->user)
+                        ->orWhere('QA_emp_id', $request->user);
+                    });
+                }
+
+                if (!empty($request->client_status) && in_array('chart_status', $allColumns)) {
+                    $query->where('chart_status', $request->client_status);
+                }
+
+                // ✅ 1. Preload all work logs in one query
+                $workLogs = CallerChartsWorkLogs::select('record_id', 'record_status', 'work_time')
+                    ->where('project_id', $project_id)
+                    ->where('sub_project_id', $sub_project_id)
+                    ->when($start_date && $end_date, fn($q) => $q->whereBetween('start_time', [$start_date, $end_date]))
+                    ->orderBy('id', 'desc')
+                    ->get();
+
+                // ✅ 2. Create quick lookup by record_id + record_status
+                $workLogsMap = $workLogs->groupBy(function ($item) {
+                    return $item->record_id . '|' . $item->record_status;
+                })->map(fn($group) => $group->first()->work_time);
+
+                // Add the computed column in header
+                $columnsHeader[] = 'work_hours';
+
+                // ✅ 3. Use the preloaded map in DataTable
+                return DataTables::of($query)
+                    ->addColumn('work_hours', function ($row) use ($workLogsMap) {
+                        $key = ($row->parent_id ?? '') . '|' . ($row->chart_status ?? '');
+                        return $workLogsMap[$key] ?? '--';
+                    })
+                    ->editColumn('coder_work_date', function ($row) {
+                        return $row->coder_work_date ? date('Y/m/d', strtotime($row->coder_work_date)) : '--';
+                    })
+                    ->editColumn('ar_status_code', function ($row) {
+                        if (!empty($row->ar_status_code) && $row->ar_status_code != '--') {
+                            $status = Helpers::arStatusById($row->ar_status_code);
+                            return $status['status_code'] ?? $row->ar_status_code;
+                        }
+                        return '--';
+                    })
+                    ->setRowId(fn($row) => $row->id)
+                    ->addIndexColumn()
+                    ->with('columnsHeader', $columnsHeader)
+                    ->make(true);
+            }
+
+        }
+ 
+        return response()->json(['error' => true, 'message' => 'Table not found']);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => true,
+            'message' => $e->getMessage(),
+        ]);
+    }
+}
 
     
    
