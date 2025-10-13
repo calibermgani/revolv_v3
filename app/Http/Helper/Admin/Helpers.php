@@ -1411,9 +1411,9 @@ class Helpers
     //         ->get()->toArray();
 	// 	return $data;
 	// }
-	public static function callLogRecordWorkTime($project_id, $sub_project_id, $record_id,$record_status)    {
+	public static function callLogRecordWorkTime($project_id, $sub_project_id, $record_id,$record_status,$recordUpdatedAt)    {
         $data = CallerChartsWorkLogs::
-        where('project_id', $project_id)->where('sub_project_id', $sub_project_id)->where('record_id', $record_id)->where('record_status', $record_status)
+        where('project_id', $project_id)->where('sub_project_id', $sub_project_id)->where('record_id', $record_id)->where('record_status', $record_status)->where('start_time', '<=', $recordUpdatedAt)
         ->orderBy('id', 'desc')
         ->first('work_time');
         return $data;

@@ -2535,7 +2535,7 @@ class ReportsController extends Controller
                     'QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends',
                     'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers',
                     'CE_status_code', 'CE_sub_status_code', 'CE_followup_date',
-                    'updated_at', 'created_at', 'deleted_at', 'cpt_trends', 'icd_trends',
+                     'created_at', 'deleted_at', 'cpt_trends', 'icd_trends',
                     'modifiers'
                 ];
 
@@ -2573,8 +2573,9 @@ class ReportsController extends Controller
                             ->addColumn('work_hours', function ($row) use ($project_id, $sub_project_id) {
                                 $record_id = $row->parent_id ?? null;
                                 $record_status = $row->chart_status ?? null;
+                                $recordUpdatedAt = $row->updated_at ?? null;
                         
-                                $workHours = Helpers::callLogRecordWorkTime($project_id, $sub_project_id, $record_id, $record_status);
+                                $workHours = Helpers::callLogRecordWorkTime($project_id, $sub_project_id, $record_id, $record_status,$recordUpdatedAt);
                         
                            
                                 // Return the work_hours value (or whatever you want displayed in this column)
