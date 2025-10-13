@@ -37,6 +37,8 @@ use App\Models\NonWorkableReason;
 use Illuminate\Support\Str;
 use App\Models\ARDenialCode;
 use App\Models\ARSubStatusCode;
+// use App\Models\question;
+use App\Models\CallerChartsWorkLogs;
 
 class Helpers
 {
@@ -1385,4 +1387,36 @@ class Helpers
 		}
 				
 	}
+	// public static function getQuestion($statusId)	{
+	// 	$data = question::where('status', 'Active')->where('ar_status_id', $statusId)->pluck('question_text', 'id')->toArray();
+	// 	return $data;
+	// }
+	// public static function getQuestionById($id)	{
+	// 	$data = question::where('status', 'Active')->where('id', $id)->first('question_text');
+	// 	return $data;
+	// }
+	// public static function getQuestionWithSubQeustion($statusId)	{
+	// 	// $data = question::where('status', 'Active')->where('ar_status_id', $statusId)->pluck('question_text', 'id')->toArray();
+	// 	 $data = \DB::table('questions')
+    //         ->leftJoin('sub_questions', function($join) use ($statusId) {
+    //             $join->on('questions.id', '=', 'sub_questions.question_id')
+    //                ->where('questions.ar_status_id', $statusId);
+    //         })
+    //         ->where('questions.ar_status_id', $statusId)
+    //         ->select(
+    //             'questions.id as question_id',
+    //             'questions.question_text',
+	// 			'sub_questions.question_type as sub_question_type'
+    //         )
+    //         ->get()->toArray();
+	// 	return $data;
+	// }
+	public static function callLogRecordWorkTime($project_id, $sub_project_id, $record_id,$record_status)    {
+        $data = CallerChartsWorkLogs::
+        where('project_id', $project_id)->where('sub_project_id', $sub_project_id)->where('record_id', $record_id)->where('record_status', $record_status)
+        ->orderBy('id', 'desc')
+        ->first('work_time');
+        return $data;
+    }
+
 }

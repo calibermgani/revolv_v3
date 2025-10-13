@@ -2568,12 +2568,43 @@ class ReportsController extends Controller
                 if (!empty($request->client_status) && in_array('chart_status', $allColumns)) {
                     $query->where('chart_status', $request->client_status);
                 }
-
+                $columnsHeader[] = 'work_hours';
                 return DataTables::of($query)
-                    ->setRowId(fn($row) => $row->id) // use parent_id as unique id
-                    ->addIndexColumn()
-                    ->with('columnsHeader', $columnsHeader)
-                    ->make(true);
+                            ->addColumn('work_hours', function ($row) use ($project_id, $sub_project_id) {
+                                $record_id = $row->parent_id ?? null;
+                                $record_status = $row->chart_status ?? null;
+                        
+                                $workHours = Helpers::callLogRecordWorkTime($project_id, $sub_project_id, $record_id, $record_status);
+                        
+                           
+                                // Return the work_hours value (or whatever you want displayed in this column)
+                                return $workHours != null ? $workHours['work_time'] ?? '--' : '--';
+                            })
+                        ->editColumn('coder_work_date', function ($row) {
+                            return $row->coder_work_date ? date('Y/m/d', strtotime($row->coder_work_date)) : '--';
+                        })
+                         ->editColumn('ar_status_code', function ($row) {
+                            if ($row->ar_status_code != '--' && $row->ar_status_code != null) {
+                                $status = Helpers::arStatusById($row->ar_status_code);
+                                $row->ar_status_code = $status != null ? $status['status_code'] :  $row->ar_status_code;
+                            } else {
+                                $row->ar_status_code = '--';
+                           
+                        }
+                        return $row->ar_status_code;
+                           // return $row->ar_status_code ? date('Y/m/d', strtotime($row->coder_work_date)) : '--';
+                        })
+                        ->setRowId(function ($row) {
+                            return $row->id; // use custom unique column
+                        })
+                        ->addIndexColumn()
+                        ->with('columnsHeader', $columnsHeader)
+                        ->make(true);
+            
+                    // ->setRowId(fn($row) => $row->id) // use parent_id as unique id
+                    // ->addIndexColumn()
+                    // ->with('columnsHeader', $columnsHeader)
+                    // ->make(true);
             }
         }
 

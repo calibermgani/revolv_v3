@@ -57,7 +57,7 @@
 
             <div class="form-footer d-flex justify-content-between align-items-center w-100 px-4 pb-3">
                 <div>
-                    <button type="button" id="exportExcel" class="btn btn-success">Export Excel</button>
+                    {{-- <button type="button" id="exportExcel" class="btn btn-success">Export Excel</button> --}}
 
                     <button class="btn btn-light-danger" id="filter_clear" type="button">Clear</button>&nbsp;
                     <button type="submit" class="btn btn-white-black font-weight-bold" id="formUpdate_save">Submit</button>
@@ -312,6 +312,7 @@ $(document).ready(function() {
                     paging: true,
                     searching: true,
                     scrollX: true,
+                    pageLength: 50,
                     ajax: {
                         url: "{{ route('reports.bulk.columns') }}",
                         type: "POST",
@@ -351,35 +352,35 @@ $(document).ready(function() {
         $('.select2').val('').trigger('change');
         if (table) table.clear().draw();
     });
-    $('#exportExcel').on('click', function() {
-    if (!$('#project_id').val() || !$('#sub_project_id').val()) {
-        alert('Please select Project and Sub Project.');
-        return;
-    }
+    // $('#exportExcel').on('click', function() {
+    //     if (!$('#project_id').val() || !$('#sub_project_id').val()) {
+    //         alert('Please select Project and Sub Project.');
+    //         return;
+    //     }
 
-    let formData = new FormData();
-    formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
-    formData.append('clientName', btoa($('#project_id').val()));
-    formData.append('subProjectName', btoa($('#sub_project_id').val()));
-    formData.append('work_date', $('#work_date').val());
-    formData.append('user', $('#user').val());
-    formData.append('client_status', $('#client_status').val());
+    //     let formData = new FormData();
+    //     formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+    //     formData.append('clientName', btoa($('#project_id').val()));
+    //     formData.append('subProjectName', btoa($('#sub_project_id').val()));
+    //     formData.append('work_date', $('#work_date').val());
+    //     formData.append('user', $('#user').val());
+    //     formData.append('client_status', $('#client_status').val());
 
-    // Trigger file download
-    fetch("{{ route('reports.bulk.export') }}", {
-        method: 'POST',
-        body: formData
-    }).then(response => response.blob())
-      .then(blob => {
-          let url = window.URL.createObjectURL(blob);
-          let a = document.createElement('a');
-          a.href = url;
-          a.download = 'bulk_report.xlsx';
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-      });
-});
+    //     // Trigger file download
+    //     fetch("{{ route('reports.bulk.export') }}", {
+    //         method: 'POST',
+    //         body: formData
+    //     }).then(response => response.blob())
+    //     .then(blob => {
+    //         let url = window.URL.createObjectURL(blob);
+    //         let a = document.createElement('a');
+    //         a.href = url;
+    //         a.download = 'bulk_report.xlsx';
+    //         document.body.appendChild(a);
+    //         a.click();
+    //         a.remove();
+    //     });
+    // });
 
 });
 
