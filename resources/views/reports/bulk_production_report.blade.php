@@ -313,7 +313,6 @@ $(document).ready(function() {
                     searching: true,
                     scrollX: true,
                     pageLength: 50,
-                    lengthMenu: [10, 25, 50, 100],
                     ajax: {
                         url: "{{ route('reports.bulk.columns') }}",
                         type: "POST",
