@@ -2524,7 +2524,7 @@ class ReportsController extends Controller
         }
  
         if ($decodedClientName && $decodedSubProjectName) {
-            $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName) . '_datas', '_');
+            $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName), '_');
  
             if (Schema::hasTable($table_name)) {
                 // Get all columns from the table
@@ -2548,7 +2548,7 @@ class ReportsController extends Controller
  
                 // Always add a unique ID column for DataTables
                 $selectCols = array_map(fn($col) => "$table_name.$col", $columnsHeader);
-                $selectCols[] = "$table_name.parent_id as id";
+                $selectCols[] = "$table_name.id as id";
  
                 // Main query
                 $query = DB::table($table_name)->select($selectCols);
