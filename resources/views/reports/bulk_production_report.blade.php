@@ -57,8 +57,7 @@
 
             <div class="form-footer d-flex justify-content-between align-items-center w-100 px-4 pb-3">
                 <div>
-                    {{-- <button type="button" id="exportExcel" class="btn btn-success">Export Excel</button> --}}
-
+                    <button type="button" class="btn btn-success" id="exportExcel">Export Excel</button>
                     <button class="btn btn-light-danger" id="filter_clear" type="button">Clear</button>&nbsp;
                     <button type="submit" class="btn btn-white-black font-weight-bold" id="formUpdate_save">Submit</button>
                 </div>
@@ -77,170 +76,17 @@
     </div>
 </div>
 @endsection
+
 @push('view.scripts')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
 <script src="https://cdn.jsdelivr.net/npm/moment/moment.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-
-<!-- ✅ Core DataTables -->
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-<!-- ✅ DataTables Buttons + Export dependencies -->
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-
-
 <script>
-// $(document).ready(function() {
-
-//     // Date Range Picker
-//     $('.daterange').daterangepicker({
-//         startDate: moment().startOf('month'),
-//         endDate: moment().endOf('month'),
-//         ranges: {
-//             'Today': [moment(), moment()],
-//             'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-//         }
-//     });
-
-//          $(document).on('change', '#project_id', function() {
-//                 KTApp.block('#reportModal', {
-//                     overlayColor: '#000000',
-//                     state: 'danger',
-//                     opacity: 0.1,
-//                     message: 'Fetching...',
-//                 });
-//                 var project_id = $(this).val();
-//                 $.ajaxSetup({
-//                     headers: {
-//                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-//                     }
-//                 });
-//                 $.ajax({
-//                     type: "POST",
-//                     url: "{{ url('reports/get_sub_projects') }}",
-//                     data: {
-//                         project_id: project_id
-//                     },
-//                     success: function(res) {
-//                         $("#sub_project_id").val(res.subProject);
-//                         var sla_options = '<option value="">-- Select --</option>';
-//                         $.each(res.subProject, function(key, value) {
-//                             sla_options = sla_options + '<option value="' + key + '">' +
-//                                 value +
-//                                 '</option>';
-//                         });
-//                         $("#sub_project_id").html(sla_options);
-//                         $("#user").val(res.resource);
-//                         var user_options = '<option value="">Select User</option>';
-//                         $.each(res.resource, function(key, value) {
-//                             user_options = user_options + '<option value="' + key +
-//                                 '">' + value +
-//                                 '</option>';
-//                         });
-//                         $("#user").html(user_options);
-//                         KTApp.unblock('#reportModal');
-//                     },
-//                     error: function(jqXHR, exception) {}
-//                 });
-//             });
-//     var table;
-
-//     function initDataTable() {
-//         if (table) {
-//             table.destroy();
-//             $('#bulk_list').empty().append('<thead><tr id="bulk_columns"><th>Loading...</th></tr></thead>');
-//         }
-
-//         table = $('#bulk_list').DataTable({
-//             processing: true,
-//             serverSide: true,
-//             paging: true,
-//             searching: true,
-//             scrollX: true,
-//             ajax: {
-//                 url: "{{ route('reports.bulk.columns') }}",
-//                 type: "POST",
-//                 data: function (d) {
-//                     d._token = $('meta[name="csrf-token"]').attr('content');
-//                     d.clientName = btoa($('#project_id').val());
-//                     d.subProjectName = btoa($('#sub_project_id').val());
-//                     d.work_date = $('#work_date').val();
-//                     d.user = $('#user').val();
-//                     d.client_status = $('#client_status').val();
-//                 },
-//                 dataSrc: function (json) {
-//                     if (json.columnsHeader && json.columnsHeader.length > 0) {
-//                         let headerRow = '';
-//                         $.each(json.columnsHeader, function (i, col) {
-//                             let label = col.replace(/_else_/g, '/').replace(/_/g, ' ');
-//                             label = label.replace(/\b\w/g, l => l.toUpperCase());
-//                             headerRow += '<th>' + label + '</th>';
-//                         });
-//                         $('#bulk_columns').html(headerRow);
-
-//                         const columns = json.columnsHeader.map(c => ({
-//                             data: c,
-//                             name: c,
-//                             defaultContent: '--',
-//                             render: function(data) { return data ?? '--'; }
-//                         }));
-
-//                         table.clear();
-//                         table.destroy();
-//                         table = $('#bulk_list').DataTable({
-//                             processing: true,
-//                             serverSide: true,
-//                             paging: true,
-//                             searching: true,
-//                             scrollX: true,
-//                             ajax: {
-//                                 url: "{{ route('reports.bulk.columns') }}",
-//                                 type: "POST",
-//                                 data: function (d) {
-//                                     d._token = $('meta[name="csrf-token"]').attr('content');
-//                                     d.clientName = btoa($('#project_id').val());
-//                                     d.subProjectName = btoa($('#sub_project_id').val());
-//                                     d.work_date = $('#work_date').val();
-//                                     d.user = $('#user').val();
-//                                     d.client_status = $('#client_status').val();
-//                                 }
-//                             },
-//                             columns: columns
-//                         });
-//                     }
-//                     return json.data;
-//                 }
-//             },
-//             columns: [{ data: 'id', defaultContent: '' }]
-//         });
-//     }
-
-//     $('#formUpdate_save').on('click', function(e) {
-//         e.preventDefault();
-//         if (!$('#project_id').val() || !$('#sub_project_id').val()) {
-//             alert('Please select Project and Sub Project.');
-//             return;
-//         }
-//         initDataTable();
-//     });
-
-//     $('#filter_clear').on('click', function() {
-//         $('#filterForm')[0].reset();
-//         $('.select2').val('').trigger('change');
-//         if (table) table.clear().draw();
-//     });
-// });
 $(document).ready(function() {
-
-    // Date Range Picker
     $('.daterange').daterangepicker({
         startDate: moment().startOf('month'),
         endDate: moment().endOf('month'),
@@ -250,41 +96,29 @@ $(document).ready(function() {
         }
     });
 
-    // Fetch subprojects when project changes
-    $(document).on('change', '#project_id', function() {
+    // Fetch subprojects and users
+    $('#project_id').on('change', function() {
         var project_id = $(this).val();
         $.ajax({
             type: "POST",
             url: "{{ url('reports/get_sub_projects') }}",
-            data: {
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                project_id: project_id
-            },
+            data: {_token: $('meta[name="csrf-token"]').attr('content'), project_id},
             success: function(res) {
-                var sla_options = '<option value="">-- Select --</option>';
-                $.each(res.subProject, function(key, value) {
-                    sla_options += `<option value="${key}">${value}</option>`;
-                });
-                $("#sub_project_id").html(sla_options);
+                let subOptions = '<option value="">-- Select --</option>';
+                $.each(res.subProject, (k,v)=>subOptions+=`<option value="${k}">${v}</option>`);
+                $("#sub_project_id").html(subOptions);
 
-                var user_options = '<option value="">Select User</option>';
-                $.each(res.resource, function(key, value) {
-                    user_options += `<option value="${key}">${value}</option>`;
-                });
-                $("#user").html(user_options);
+                let userOptions = '<option value="">Select User</option>';
+                $.each(res.resource, (k,v)=>userOptions+=`<option value="${k}">${v}</option>`);
+                $("#user").html(userOptions);
             }
         });
     });
 
     let table;
-
     function initDataTable() {
-        if (table) {
-            table.destroy();
-            $('#bulk_list').empty().append('<thead><tr id="bulk_columns"><th>Loading...</th></tr></thead>');
-        }
+        if(table){ table.destroy(); $('#bulk_list').empty().append('<thead><tr id="bulk_columns"><th>Loading...</th></tr></thead>'); }
 
-        // First, fetch columnsHeader from controller
         $.ajax({
             url: "{{ route('reports.bulk.columns') }}",
             type: "POST",
@@ -296,112 +130,60 @@ $(document).ready(function() {
                 user: $('#user').val(),
                 client_status: $('#client_status').val()
             },
-            success: function(json) {
-                if (!json.columnsHeader || json.columnsHeader.length === 0) {
-                    alert('No columns found for this project/subproject.');
-                    return;
-                }
+            success: function(json){
+                if(!json.columnsHeader || !json.columnsHeader.length){ alert('No columns found.'); return; }
 
-                // Build table header
                 let headerRow = '';
-                const columns = json.columnsHeader.map(c => {
-                    let label = c.replace(/_else_/g, '/').replace(/_/g, ' ');
-                    label = label.replace(/\b\w/g, l => l.toUpperCase());
+                const columns = json.columnsHeader.map(c=>{
+                    let label = c.replace(/_else_/g,'/').replace(/_/g,' ');
+                    label = label.replace(/\b\w/g,l=>l.toUpperCase());
                     headerRow += `<th>${label}</th>`;
-                    return {
-                        data: c,
-                        name: c,
-                        defaultContent: '--',
-                        render: function(data) { return data ?? '--'; }
-                    };
+                    return {data:c, name:c, defaultContent:'--', render: data=>data??'--'};
                 });
                 $('#bulk_columns').html(headerRow);
 
-                // Initialize DataTable
-                // table = $('#bulk_list').DataTable({
-                //     processing: true,
-                //     serverSide: true,
-                //     paging: true,
-                //     searching: true,
-                //     scrollX: true,
-                //     pageLength: 50,
-                //     ajax: {
-                //         url: "{{ route('reports.bulk.columns') }}",
-                //         type: "POST",
-                //         data: function(d) {
-                //             d._token = $('meta[name="csrf-token"]').attr('content');
-                //             d.clientName = btoa($('#project_id').val());
-                //             d.subProjectName = btoa($('#sub_project_id').val());
-                //             d.work_date = $('#work_date').val();
-                //             d.user = $('#user').val();
-                //             d.client_status = $('#client_status').val();
-                //         }
-                //     },
-                //     columns: columns,
-                //     order: [] // disable default ordering
-                // });
                 table = $('#bulk_list').DataTable({
-                processing: true,
-                serverSide: true,
-                paging: true,
-                searching: true,
-                scrollX: true,
-                pageLength: 50,
-                ajax: {
-                    url: "{{ route('reports.bulk.columns') }}",
-                    type: "POST",
-                    data: function(d) {
-                        d._token = $('meta[name="csrf-token"]').attr('content');
-                        d.clientName = btoa($('#project_id').val());
-                        d.subProjectName = btoa($('#sub_project_id').val());
-                        d.work_date = $('#work_date').val();
-                        d.user = $('#user').val();
-                        d.client_status = $('#client_status').val();
-                    }
-                },
-                columns: columns,
-                dom: 'Bfrtip',
-                buttons: [
-                    {
-                        extend: 'excelHtml5',
-                        text: 'Export to Excel',
-                        title: 'Bulk Production Report',
-                        className: 'btn btn-success',
-                        exportOptions: {
-                            columns: ':visible'
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: "{{ route('reports.bulk.columns') }}",
+                        type: "POST",
+                        data: function(d){
+                            d._token = $('meta[name="csrf-token"]').attr('content');
+                            d.clientName = btoa($('#project_id').val());
+                            d.subProjectName = btoa($('#sub_project_id').val());
+                            d.work_date = $('#work_date').val();
+                            d.user = $('#user').val();
+                            d.client_status = $('#client_status').val();
                         }
-                    }
-                ],
-                order: []
-            });
-
-            },
-            error: function(err) {
-                console.log(err);
-                alert('Error fetching columns.');
+                    },
+                    columns: columns,
+                    scrollX: true,
+                    pageLength: 50,
+                    order: [],
+                });
             }
         });
     }
 
-    // Submit button
-    $('#formUpdate_save').on('click', function(e) {
+    $('#formUpdate_save').click(function(e){
         e.preventDefault();
-        if (!$('#project_id').val() || !$('#sub_project_id').val()) {
-            alert('Please select Project and Sub Project.');
-            return;
-        }
+        if(!$('#project_id').val() || !$('#sub_project_id').val()){ alert('Select Project/Sub Project'); return; }
         initDataTable();
     });
 
-    // Clear filters
-    $('#filter_clear').on('click', function() {
+    $('#filter_clear').click(function(){
         $('#filterForm')[0].reset();
-        $('.select2').val('').trigger('change');
-        if (table) table.clear().draw();
+        if(table) table.clear().draw();
     });
-  
+
+    // Excel Export
+    $('#exportExcel').click(function(){
+        if(!$('#project_id').val() || !$('#sub_project_id').val()){ alert('Select Project/Sub Project'); return; }
+        const url = `{{ url('reports/export_bulk_report') }}?clientName=${btoa($('#project_id').val())}&subProjectName=${btoa($('#sub_project_id').val())}`;
+        window.location.href = url;
+    });
 
 });
-
 </script>
 @endpush
