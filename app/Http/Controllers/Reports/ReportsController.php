@@ -30,6 +30,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use App\Exports\ProductionBulkExport;
 use Yajra\DataTables\Facades\DataTables;
+use App\Exports\BulkReportExport;
 
 
 ini_set('max_execution_time', 300);
@@ -2588,6 +2589,36 @@ class ReportsController extends Controller
     public function bulkIndex(){
         return view('reports.bulk_production_report');
     }
+
+
+
+public function exportBulkReport(Request $request)
+{
+    $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
+    $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+
+    $paProject = Helpers::projectName($project_id);
+    $decodedClientName = $paProject->project_name ?? null;
+
+    $decodedSubProjectName = '';
+    if ($project_id && $sub_project_id) {
+        $sub = Helpers::subProjectName($project_id, $sub_project_id);
+        $decodedSubProjectName = $sub->sub_project_name ?? '';
+    }
+
+    if (!$decodedClientName || !$decodedSubProjectName) {
+        return back()->with('error', 'Invalid project or subproject.');
+    }
+
+    $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName) . '_datas', '_');
+
+    if (!Schema::hasTable($table_name)) {
+        return back()->with('error', 'Table not found.');
+    }
+
+    return Excel::download(new BulkReportExport($table_name, $request), 'Bulk_Report_' . now()->format('Ymd_His') . '.xlsx');
+}
+
     
    
 }

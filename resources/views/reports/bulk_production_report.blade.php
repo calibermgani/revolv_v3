@@ -57,6 +57,8 @@
 
             <div class="form-footer d-flex justify-content-between align-items-center w-100 px-4 pb-3">
                 <div>
+                    <button type="button" id="export_excel" class="btn btn-success">Export Excel</button>
+
                     <button class="btn btn-light-danger" id="filter_clear" type="button">Clear</button>&nbsp;
                     <button type="submit" class="btn btn-white-black font-weight-bold" id="formUpdate_save">Submit</button>
                 </div>
@@ -349,6 +351,39 @@ $(document).ready(function() {
         $('.select2').val('').trigger('change');
         if (table) table.clear().draw();
     });
+    $('#export_excel').on('click', function() {
+    if (!$('#project_id').val() || !$('#sub_project_id').val()) {
+        alert('Please select Project and Sub Project.');
+        return;
+    }
+
+    const formData = {
+        _token: $('meta[name="csrf-token"]').attr('content'),
+        clientName: btoa($('#project_id').val()),
+        subProjectName: btoa($('#sub_project_id').val()),
+        work_date: $('#work_date').val(),
+        user: $('#user').val(),
+        client_status: $('#client_status').val()
+    };
+
+    $.ajax({
+        url: "{{ route('reports.bulk.export') }}",
+        type: "POST",
+        data: formData,
+        xhrFields: { responseType: 'blob' },
+        success: function(blob) {
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = 'Bulk_Report.xlsx';
+            link.click();
+        },
+        error: function(err) {
+            alert('Error generating Excel report');
+            console.error(err);
+        }
+    });
+});
+
 });
 
 </script>

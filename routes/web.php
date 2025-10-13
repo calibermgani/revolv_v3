@@ -218,6 +218,8 @@ Route::group(['prefix' => 'qa_production'], function () {
                 ->name('reports.bulk.index');
             Route::post('/bulk/columns','App\Http\Controllers\Reports\ReportsController@getBulkColumns')
                 ->name('reports.bulk.columns');
+                Route::post('reports/bulk/export', 'App\Http\Controllers\Reports\ReportsController@exportBulkReport')->name('reports.bulk.export');
+
 
 
 
