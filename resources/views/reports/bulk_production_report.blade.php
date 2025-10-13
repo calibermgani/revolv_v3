@@ -77,13 +77,25 @@
     </div>
 </div>
 @endsection
-
 @push('view.scripts')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
 <script src="https://cdn.jsdelivr.net/npm/moment/moment.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+<!-- ✅ Core DataTables -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<!-- ✅ DataTables Buttons + Export dependencies -->
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
 
 <script>
 // $(document).ready(function() {
@@ -387,35 +399,7 @@ $(document).ready(function() {
         $('.select2').val('').trigger('change');
         if (table) table.clear().draw();
     });
-    // $('#exportExcel').on('click', function() {
-    //     if (!$('#project_id').val() || !$('#sub_project_id').val()) {
-    //         alert('Please select Project and Sub Project.');
-    //         return;
-    //     }
-
-    //     let formData = new FormData();
-    //     formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
-    //     formData.append('clientName', btoa($('#project_id').val()));
-    //     formData.append('subProjectName', btoa($('#sub_project_id').val()));
-    //     formData.append('work_date', $('#work_date').val());
-    //     formData.append('user', $('#user').val());
-    //     formData.append('client_status', $('#client_status').val());
-
-    //     // Trigger file download
-    //     fetch("{{ route('reports.bulk.export') }}", {
-    //         method: 'POST',
-    //         body: formData
-    //     }).then(response => response.blob())
-    //     .then(blob => {
-    //         let url = window.URL.createObjectURL(blob);
-    //         let a = document.createElement('a');
-    //         a.href = url;
-    //         a.download = 'bulk_report.xlsx';
-    //         document.body.appendChild(a);
-    //         a.click();
-    //         a.remove();
-    //     });
-    // });
+  
 
 });
 
