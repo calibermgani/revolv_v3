@@ -351,38 +351,44 @@ $(document).ready(function() {
         $('.select2').val('').trigger('change');
         if (table) table.clear().draw();
     });
-    $('#export_excel').on('click', function() {
-    if (!$('#project_id').val() || !$('#sub_project_id').val()) {
-        alert('Please select Project and Sub Project.');
-        return;
-    }
-
-    const formData = {
-        _token: $('meta[name="csrf-token"]').attr('content'),
-        clientName: btoa($('#project_id').val()),
-        subProjectName: btoa($('#sub_project_id').val()),
-        work_date: $('#work_date').val(),
-        user: $('#user').val(),
-        client_status: $('#client_status').val()
-    };
-
-    $.ajax({
-        url: "{{ route('reports.bulk.export') }}",
-        type: "POST",
-        data: formData,
-        xhrFields: { responseType: 'blob' },
-        success: function(blob) {
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = 'Bulk_Report.xlsx';
-            link.click();
-        },
-        error: function(err) {
-            alert('Error generating Excel report');
-            console.error(err);
+    $('#export_excel').on('click', function () {
+        if (!$('#project_id').val() || !$('#sub_project_id').val()) {
+            alert('Please select Project and Sub Project.');
+            return;
         }
+
+        const formData = {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            clientName: btoa($('#project_id').val()),
+            subProjectName: btoa($('#sub_project_id').val()),
+            work_date: $('#work_date').val(),
+            user: $('#user').val(),
+            client_status: $('#client_status').val(),
+        };
+
+        const $btn = $(this);
+        $btn.prop('disabled', true).text('Exporting...');
+
+        $.ajax({
+            url: "{{ route('reports.bulk.export') }}",
+            type: "POST",
+            data: formData,
+            xhrFields: { responseType: 'blob' },
+            success: function (data) {
+                const blob = new Blob([data]);
+                const link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'bulk_production_report.xlsx';
+                link.click();
+                $btn.prop('disabled', false).text('Export Excel');
+            },
+            error: function (xhr) {
+                alert('Error generating Excel file');
+                $btn.prop('disabled', false).text('Export Excel');
+            }
+        });
     });
-});
+
 
 });
 

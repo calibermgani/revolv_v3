@@ -2591,33 +2591,70 @@ class ReportsController extends Controller
     }
 
 
+    public function exportBulkReport(Request $request) {
+        try {
+            $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
+            $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
 
-public function exportBulkReport(Request $request)
-{
-    $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
-    $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+            $start_date = $end_date = null;
+            if (!empty($request["work_date"])) {
+                $work_date = explode(' - ', $request["work_date"]);
+                $start_date = date('Y-m-d 08:00:00', strtotime($work_date[0]));
+                $end_date = date('Y-m-d 07:59:00', strtotime($work_date[1] . ' +1 day'));
+            }
 
-    $paProject = Helpers::projectName($project_id);
-    $decodedClientName = $paProject->project_name ?? null;
+            $paProject = Helpers::projectName($project_id);
+            $decodedClientName = $paProject->project_name ?? null;
 
-    $decodedSubProjectName = '';
-    if ($project_id && $sub_project_id) {
-        $sub = Helpers::subProjectName($project_id, $sub_project_id);
-        $decodedSubProjectName = $sub->sub_project_name ?? '';
+            $decodedSubProjectName = '';
+            if ($project_id && $sub_project_id) {
+                $sub = Helpers::subProjectName($project_id, $sub_project_id);
+                $decodedSubProjectName = $sub->sub_project_name ?? '';
+            }
+
+            if ($decodedClientName && $decodedSubProjectName) {
+                $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName) . '_datas', '_');
+
+                if (Schema::hasTable($table_name)) {
+                    $allColumns = array_column(DB::select("DESCRIBE `$table_name`"), 'Field');
+                    $excludeCols = [
+                        'QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends',
+                        'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers',
+                        'CE_status_code', 'CE_sub_status_code', 'CE_followup_date',
+                        'updated_at', 'created_at', 'deleted_at', 'cpt_trends', 'icd_trends', 'modifiers'
+                    ];
+
+                    $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
+
+                    // Build export query
+                    $query = DB::table($table_name)->select($columnsHeader);
+
+                    if ($start_date && $end_date && in_array('updated_at', $allColumns)) {
+                        $query->whereBetween("$table_name.updated_at", [$start_date, $end_date]);
+                    }
+
+                    if (!empty($request->user)) {
+                        $query->where(function($q) use ($request) {
+                            $q->where('CE_emp_id', $request->user)
+                            ->orWhere('QA_emp_id', $request->user);
+                        });
+                    }
+
+                    if (!empty($request->client_status) && in_array('chart_status', $allColumns)) {
+                        $query->where('chart_status', $request->client_status);
+                    }
+
+                    // ✅ Stream the Excel file to avoid 504 timeout
+                    $fileName = 'bulk_production_report_' . date('Y_m_d_H_i_s') . '.xlsx';
+                    return Excel::download(new BulkReportExport($query, $columnsHeader), $fileName);
+                }
+            }
+
+            return response()->json(['error' => true, 'message' => 'Table not found']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => true, 'message' => $e->getMessage()]);
+        }
     }
-
-    if (!$decodedClientName || !$decodedSubProjectName) {
-        return back()->with('error', 'Invalid project or subproject.');
-    }
-
-    $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName) . '_datas', '_');
-
-    if (!Schema::hasTable($table_name)) {
-        return back()->with('error', 'Table not found.');
-    }
-
-    return Excel::download(new BulkReportExport($table_name, $request), 'Bulk_Report_' . now()->format('Ymd_His') . '.xlsx');
-}
 
     
    

@@ -1,59 +1,33 @@
 <?php
-
 namespace App\Exports;
 
-use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\Exportable;
-use Illuminate\Http\Request;
+use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Database\Query\Builder;
 
-class BulkReportExport implements FromQuery, WithHeadings
+class BulkReportExport implements FromQuery, WithHeadings, Responsable
 {
-    use Exportable;
+    use \Maatwebsite\Excel\Concerns\Exportable;
 
-    protected $table_name, $request;
+    protected $query;
+    protected $columns;
 
-    public function __construct($table_name, Request $request)
+    public function __construct(Builder $query, array $columns)
     {
-        $this->table_name = $table_name;
-        $this->request = $request;
+        $this->query = $query;
+        $this->columns = $columns;
     }
 
- public function query()
-{
-    $table = $this->table_name;
-    $allColumns = array_column(DB::select("DESCRIBE `$table`"), 'Field');
-
-    $query = DB::table($table)->select($allColumns);
-
-    if (!empty($this->request->user)) {
-        $query->where(function($q) {
-            $q->where('CE_emp_id', $this->request->user)
-              ->orWhere('QA_emp_id', $this->request->user);
-        });
+    public function query()
+    {
+        // ✅ Add orderBy for chunking
+        $firstCol = $this->columns[0] ?? 'id';
+        return $this->query->orderBy($firstCol, 'asc');
     }
-
-    if (!empty($this->request->client_status) && in_array('chart_status', $allColumns)) {
-        $query->where('chart_status', $this->request->client_status);
-    }
-
-    // ✅ Add orderBy — required by chunking in FromQuery
-    if (in_array('id', $allColumns)) {
-        $query->orderBy('id', 'asc');
-    } else {
-        // If table has no 'id' column, use the first column as a fallback
-        $query->orderBy($allColumns[0], 'asc');
-    }
-
-    return $query;
-}
-
 
     public function headings(): array
     {
-        $table = $this->table_name;
-        $columns = array_column(DB::select("DESCRIBE `$table`"), 'Field');
-        return $columns;
+        return array_map(fn($col) => ucfirst(str_replace('_', ' ', $col)), $this->columns);
     }
 }
