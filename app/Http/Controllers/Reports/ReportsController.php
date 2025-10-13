@@ -2816,17 +2816,32 @@ public function exportBulkReport(Request $request)
                 }
 
                 // ✅ 1. Preload all work logs in one query
-                $workLogs = CallerChartsWorkLogs::select('record_id', 'record_status', 'work_time')
+                // $workLogs = CallerChartsWorkLogs::select('record_id', 'record_status', 'work_time')
+                //     ->where('project_id', $project_id)
+                //     ->where('sub_project_id', $sub_project_id)
+                //     ->when($start_date && $end_date, fn($q) => $q->whereBetween('start_time', [$start_date, $end_date]))
+                //     ->orderBy('id', 'desc')
+                //     ->get();
+                $workLogsMap = collect();
+                DB::table('caller_charts_work_logs')
+                    ->select('record_id', 'record_status', 'work_time')
                     ->where('project_id', $project_id)
                     ->where('sub_project_id', $sub_project_id)
-                    ->when($start_date && $end_date, fn($q) => $q->whereBetween('start_time', [$start_date, $end_date]))
+                    ->whereBetween('start_time', [$start_date, $end_date])
                     ->orderBy('id', 'desc')
-                    ->get();
+                    ->cursor()
+                    ->each(function ($row) use ($workLogsMap) {
+                        $key = $row->record_id . '|' . $row->record_status;
+                        if (!$workLogsMap->has($key)) {
+                            $workLogsMap->put($key, $row->work_time);
+                        }
+                    });
+
 
                 // ✅ 2. Create quick lookup by record_id + record_status
-                $workLogsMap = $workLogs->groupBy(function ($item) {
-                    return $item->record_id . '|' . $item->record_status;
-                })->map(fn($group) => $group->first()->work_time);
+                // $workLogsMap = $workLogs->groupBy(function ($item) {
+                //     return $item->record_id . '|' . $item->record_status;
+                // })->map(fn($group) => $group->first()->work_time);
 
                 // Add the computed column in header
                 $columnsHeader[] = 'work_hours';
