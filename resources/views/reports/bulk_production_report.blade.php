@@ -306,28 +306,63 @@ $(document).ready(function() {
                 $('#bulk_columns').html(headerRow);
 
                 // Initialize DataTable
+                // table = $('#bulk_list').DataTable({
+                //     processing: true,
+                //     serverSide: true,
+                //     paging: true,
+                //     searching: true,
+                //     scrollX: true,
+                //     pageLength: 50,
+                //     ajax: {
+                //         url: "{{ route('reports.bulk.columns') }}",
+                //         type: "POST",
+                //         data: function(d) {
+                //             d._token = $('meta[name="csrf-token"]').attr('content');
+                //             d.clientName = btoa($('#project_id').val());
+                //             d.subProjectName = btoa($('#sub_project_id').val());
+                //             d.work_date = $('#work_date').val();
+                //             d.user = $('#user').val();
+                //             d.client_status = $('#client_status').val();
+                //         }
+                //     },
+                //     columns: columns,
+                //     order: [] // disable default ordering
+                // });
                 table = $('#bulk_list').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    paging: true,
-                    searching: true,
-                    scrollX: true,
-                    pageLength: 50,
-                    ajax: {
-                        url: "{{ route('reports.bulk.columns') }}",
-                        type: "POST",
-                        data: function(d) {
-                            d._token = $('meta[name="csrf-token"]').attr('content');
-                            d.clientName = btoa($('#project_id').val());
-                            d.subProjectName = btoa($('#sub_project_id').val());
-                            d.work_date = $('#work_date').val();
-                            d.user = $('#user').val();
-                            d.client_status = $('#client_status').val();
+                processing: true,
+                serverSide: true,
+                paging: true,
+                searching: true,
+                scrollX: true,
+                pageLength: 50,
+                ajax: {
+                    url: "{{ route('reports.bulk.columns') }}",
+                    type: "POST",
+                    data: function(d) {
+                        d._token = $('meta[name="csrf-token"]').attr('content');
+                        d.clientName = btoa($('#project_id').val());
+                        d.subProjectName = btoa($('#sub_project_id').val());
+                        d.work_date = $('#work_date').val();
+                        d.user = $('#user').val();
+                        d.client_status = $('#client_status').val();
+                    }
+                },
+                columns: columns,
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Export to Excel',
+                        title: 'Bulk Production Report',
+                        className: 'btn btn-success',
+                        exportOptions: {
+                            columns: ':visible'
                         }
-                    },
-                    columns: columns,
-                    order: [] // disable default ordering
-                });
+                    }
+                ],
+                order: []
+            });
+
             },
             error: function(err) {
                 console.log(err);
