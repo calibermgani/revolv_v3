@@ -30,7 +30,7 @@ use App\Jobs\GetProjJob;
 use Illuminate\Support\Facades\Cache;
 use App\Jobs\GetSubPrjJob;
 use App\Models\ClaimHistoryUniqueColumn;
-
+// use App\Models\QuestionAndAnswer;
 
 ini_set('memory_limit', '1024M');
 ini_set('max_execution_time', 120);
@@ -2594,6 +2594,8 @@ class ProductionController extends Controller
                                 $exStatus = str_replace('CE_', '', $request['chart_status']);
                              } else if(str_contains($request['chart_status'],'AR_')) {
                                 $exStatus = str_replace('AR_', '', $request['chart_status']);
+                             } else if($request['chart_status'] == 'Revoke') {
+                                $exStatus = 'Rework';
                              } else {
                                 $exStatus = $request['chart_status'];
                              }
@@ -2616,6 +2618,8 @@ class ProductionController extends Controller
                             $exStatus = str_replace('CE_', '', $request['chart_status']);
                          } else if(str_contains($request['chart_status'],'AR_')) {
                             $exStatus = str_replace('AR_', '', $request['chart_status']);
+                         } else if($request['chart_status'] == 'Revoke') {
+                                $exStatus = 'Rework';
                          } else {
                             $exStatus = $request['chart_status'];
                          }
@@ -3669,4 +3673,134 @@ class ProductionController extends Controller
             return redirect('/');
         }
     }
+    // public function getQuestion(Request $request){
+    //     $statusCode = $request->status_code;
+    //       $questions = [];
+    //     // return multiple questions as array
+    //     $questions = \App\Http\Helper\Admin\Helpers::getQuestion($statusCode); 
+    //     //return $questions;
+    //     return response()->json([
+    //         'questions' => $questions ?? []
+    //     ]);
+    // }
+    
+    // public function getQuestion(Request $request) {
+    //     $statusCode = $request->status_code;
+    //     $decodedProjectId = Helpers::encodeAndDecodeID($request->project_id ?? '', 'decode');
+    //     $decodedSubPrjId = $request->sub_project_id == '--' ? '--' : Helpers::encodeAndDecodeID($request->sub_project_id ?? '', 'decode');
+
+    //     // 🔹 Check if already answered
+    //     // $existingAnswers = QuestionAndAnswer::where('project_id', $decodedProjectId)
+    //     //     ->where('sub_project_id', $decodedSubPrjId)
+    //     //     ->where('ar_status_id', $statusCode)
+    //     //     ->get();
+    //     $existingAnswersExists = QuestionAndAnswer::where('project_id', $decodedProjectId)
+    //         ->where('sub_project_id', $decodedSubPrjId)
+    //         ->where('ar_status_id', $statusCode)
+    //         ->get();
+
+    //     if ($existingAnswersExists->isNotEmpty()) {
+    //         $existingAnswers = \DB::table('questions')
+    //             ->leftJoin('question_and_answers', function($join) use ($decodedProjectId, $decodedSubPrjId, $statusCode) {
+    //                 $join->on('questions.id', '=', 'question_and_answers.question_id')
+    //                     ->where('question_and_answers.project_id', $decodedProjectId)
+    //                     ->where('question_and_answers.sub_project_id', $decodedSubPrjId)
+    //                     ->where('question_and_answers.ar_status_id', $statusCode);
+    //             })
+    //             ->where('questions.ar_status_id', $statusCode)
+    //             ->select(
+    //                 'questions.id as question_id',
+    //                 'questions.question_text',
+    //                 'question_and_answers.answer_text',
+    //                 'question_and_answers.project_id',
+    //                 'question_and_answers.sub_project_id',
+    //                 'question_and_answers.record_id'
+    //             )
+    //             ->get();
+    //         return response()->json([
+    //             'already_answered' => true,
+    //             'status_code' => $statusCode,
+    //             'saved' => $existingAnswers->map(function($item,$statusCode) {
+    //                 $questionText = $item->question_id != NULL ?  Helpers::getQuestionById($item->question_id)->question_text : '--';   
+    //                 return [
+    //                     'question_id' => $item->question_id,
+    //                     'question' => $questionText, // if relation exists
+    //                     'answer'   => $item->answer_text,
+    //                 ];
+    //             }),
+    //         ]);
+    //     }
+
+    //     // 🔹 If no answers, get fresh questions
+    //     $questions = \App\Http\Helper\Admin\Helpers::getQuestionWithSubQeustion($statusCode);
+
+    //     return response()->json([
+    //         'already_answered' => false,
+    //         'questions' => $questions ?? []
+    //     ]);
+    // }
+    // public function saveQuestionAnswer(Request $request) {
+    //     $statusCode = $request->status_code;
+    //     $questions = $request->questions; // array of [id, text, answer]
+    //     $decodedProjectId = Helpers::encodeAndDecodeID($request->project_id, 'decode');
+    //     $decodedSubPrjId = $request->sub_project_id == '--' ? '--' :Helpers::encodeAndDecodeID($request->sub_project_id, 'decode');
+    //     $saved = [];
+
+    //     foreach ($questions as $q) {
+    //         $saved[] = [
+    //             'question_id' => $q['id'],
+    //             'question' => $q['text'],
+    //             'answer'   => $q['answer'],
+    //             'question_id' => $q['id'],
+    //         ];
+    //         $answer = [
+    //             'project_id' => $decodedProjectId,
+    //             'sub_project_id' => $decodedSubPrjId,
+    //             'record_id' => $request->record_id,
+    //             'ar_status_id' => $statusCode,
+    //             'question_id' => $q['id'],
+    //             'answer_text'   => $q['answer'],           
+    //         ];
+    //         $existing = QuestionAndAnswer::where('project_id', $decodedProjectId)->where('sub_project_id', $decodedSubPrjId)->where('ar_status_id', $statusCode)->where('question_id', $q['id'])->first();
+    //         if ($existing) {
+    //             $existing->update($answer);
+    //         } else {
+    //             QuestionAndAnswer::create($answer); 
+    //         }
+        
+
+        
+    //     }
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'status_code' => $statusCode,
+    //         'saved' => $saved
+    //     ]);
+    // }
+    // public function fetchSubQuestion(Request $request)
+    // {
+    //     $questionId = $request->input('question_id');
+
+    //     // Example: fetch sub question from DB (adjust according to your schema)
+    //     $subQuestion = \DB::table('sub_questions')
+    //         ->where('question_id', $questionId)
+    //         ->value('sub_question_text');
+
+    //     if ($subQuestion) {
+    //         return response()->json([
+    //             'success' => true,
+    //             'sub_question_text' => $subQuestion
+    //         ]);
+    //     }
+
+    //     return response()->json([
+    //         'success' => false,
+    //         'message' => 'No sub question found.'
+    //     ], 404);
+    // }
+
+
+
+
 }
