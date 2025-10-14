@@ -1060,7 +1060,7 @@ use Carbon\Carbon;
                                                                 'QA_Pending' => 'Pending',
                                                                 'QA_Completed' => 'Completed',
                                                                 'QA_Hold' => 'Hold',
-                                                                'Revoke' =>'Revoke'
+                                                                'Revoke' =>'Rework'
                                                             ],
                                                             null,
                                                             [

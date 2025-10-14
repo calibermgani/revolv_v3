@@ -916,7 +916,7 @@ use Carbon\Carbon;
                                                              'CE_Pending' => 'Pending',
                                                              'CE_Completed' => 'Completed',
                                                              // 'CE_Clarification' => 'Clarification',
-                                                             'Revoke'=>'Revoke',
+                                                             'Revoke'=>'Rework',
                                                              'CE_Hold' => 'Hold',
                                                              'AR_non_workable'=>'Non Workable',
                                                               'Rebuttal'=>'Rebuttal',
