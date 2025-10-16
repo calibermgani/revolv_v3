@@ -171,7 +171,7 @@ class ProductionController extends Controller
                $decodedPracticeName = $subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($subProjectName, 'decode');
               // $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
                $paProject = Helpers::projectName($decodedProjectName);
-               $decodedClientName = $paProject ? $paProject->project_name : null;d($decodedClientName,$decodedProjectName,$decodedPracticeName);
+               $decodedClientName = $paProject ? $paProject->project_name : null;dd($decodedClientName,$decodedProjectName,$decodedPracticeName);
                $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName);
                if($decodedsubProjectName != null &&  $decodedsubProjectName != 'project') {
                 $decodedsubProjectName= $decodedsubProjectName->sub_project_name;
