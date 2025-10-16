@@ -1223,7 +1223,7 @@ class ReportsController extends Controller
             try {   
             
             if ($request->work_date != null && ($request->user_name != null || $request->project_id != null || ($request->project_id != null && $request->sub_project_id != null) )) { 
-                if($request->work_date != null && $request->user_name != null) {
+                if($request->work_date != null && $request->user_name != null) {dd('if');
                     if($request->user_name) {
                         $userName = $request->user_name;
                     } else {
@@ -1258,7 +1258,7 @@ class ReportsController extends Controller
                             $userName =  $request['user_name'] ?? '';  
                             $projectId = null;
                             $subProjectId = null; 
-                }else if($request->work_date != null && ($request->project_id != null || $request->sub_project_id != null)) {
+                }else if($request->work_date != null && ($request->project_id != null || $request->sub_project_id != null)) {dd('else if1');
                         if($request->project_id) {
                             $project_id = $request->project_id;
                         } else {
@@ -1275,7 +1275,7 @@ class ReportsController extends Controller
                             $sub_project_id = null;
                         }
                         // Fetching project details from external API
-                    $payload = [
+                        $payload = [
                             'token' => '1a32e71a46317b9cc6feb7388238c95d',
                             "projectId" => $request['project_id'] ?? '',
                             "subProjectId" => $request['sub_project_id'] ?? null,
