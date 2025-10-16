@@ -175,7 +175,7 @@ class ProductionController extends Controller
                $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName);
                if($decodedsubProjectName != null &&  $decodedsubProjectName != 'project') {
                 $decodedsubProjectName= $decodedsubProjectName->sub_project_name;
-               }
+               }dd($decodedClientName,$decodedsubProjectName);
                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                $columnsHeader=[];
                if (Schema::hasTable($table_name)) {
