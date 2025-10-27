@@ -2853,13 +2853,13 @@ class ProjectController extends Controller
                                         ->whereIn('CE_emp_id', $existingPrjUsers)
                                         ->whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                         ->groupBy('CE_emp_id', 'hr')
-                                        ->get();dd($results);
+                                        ->get();
 
                                     // Reshape results: user → hour → count
                                     $userCounts = [];
                                     foreach ($results as $row) {
                                         $userCounts[$row->CE_emp_id][$row->hr] = $row->cnt;
-                                    }dd($userCounts);
+                                    }dd($userCounts,$results);
 
                                     // $BodyDetails = [];
                                     // foreach ($existingPrjUsers as $user) {
