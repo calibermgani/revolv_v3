@@ -216,6 +216,7 @@ Route::group(['prefix' => 'projects'], function() {
      Route::any('production_insert', 'App\Http\Controllers\ProjectController@productionInsert');
      Route::any('backend_upload_template_exe_file', 'App\Http\Controllers\ProjectController@backendUploadTemplateExeFile');
        Route::any('bulk_excel_export', 'App\Http\Controllers\Reports\ReportsController@bulkExportApi');
+       Route::any('project_day_wise_aims_production', 'App\Http\Controllers\ProjectController@projectDayWiseAimsProduction');
 
 
 });
