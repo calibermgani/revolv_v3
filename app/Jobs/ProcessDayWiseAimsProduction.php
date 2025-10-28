@@ -81,7 +81,7 @@ class ProcessDayWiseAimsProduction implements ShouldQueue
                         // ----- Caller work logs -----
                         $callChartResults = CallerChartsWorkLogs::selectRaw("
                                 emp_id, COUNT(*) as call_cnt,
-                                SEC_TO_TIME(SUM(TIME_TO_SEC(work_time))) as work_hours
+                                DATE_FORMAT(SEC_TO_TIME(SUM(TIME_TO_SEC(work_time))), '%H:%i:%s') as work_hours
                             ")
                             ->whereIn('emp_id', $existingPrjUsers)
                             ->where('project_id', $project['id'])
