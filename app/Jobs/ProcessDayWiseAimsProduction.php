@@ -71,7 +71,7 @@ class ProcessDayWiseAimsProduction implements ShouldQueue
                         $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
 
                         // ----- Query results -----
-                        $results = $modelClass::selectRaw("CE_emp_id, COUNT(*) as cnt")
+                        $arData = $modelClass::selectRaw("CE_emp_id, COUNT(*) as cnt")
                             ->whereIn('CE_emp_id', $existingPrjUsers)
                             ->whereBetween($arColumnToUse, [$this->startDate, $this->endDate])
                             ->groupBy('CE_emp_id')
@@ -94,7 +94,7 @@ class ProcessDayWiseAimsProduction implements ShouldQueue
                         $BodyDetails[] = [
                             'project_id' => $project['id'],
                             'sub_project_id' => $subKey,
-                            'results' => $results,
+                            'arData' => $arData,
                             'callChartResults' => $callChartResults,
                             'workDate' => $this->workDate,
                         ];
