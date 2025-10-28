@@ -2786,13 +2786,13 @@ class ProjectController extends Controller
                                          $BodyDetails[] = [
                                         'results'     => $results,
                                         'workDate'=> $yesterday->format('Y-m-d'),
-                                    ];dd($BodyDetails);
-                                  return $BodyDetails;
+                                    ];
+                                 
                                 // Reshape results: user → hour → count
-                                $userCounts = [];
-                                foreach ($results as $row) {
-                                    $userCounts[$row->CE_emp_id] = $row->cnt;
-                                }dd($userCounts,$results);
+                                // $userCounts = [];
+                                // foreach ($results as $row) {
+                                //     $userCounts[$row->CE_emp_id] = $row->cnt;
+                                // }dd($userCounts,$results);
 
                                 // $BodyDetails = [];
                                 // foreach ($existingPrjUsers as $user) {
@@ -2822,6 +2822,7 @@ class ProjectController extends Controller
         
                             }  
                         }
+                         return $BodyDetails;
                 }
                 // return ['data' => $projectData, 'ids' => $project_id];
             });
