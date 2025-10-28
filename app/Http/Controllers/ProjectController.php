@@ -2731,75 +2731,99 @@ class ProjectController extends Controller
         }
     }
 
-    public function projectDayWiseAimsProduction() {
-        try {               
-            $yesterday = Carbon::yesterday();
-                $today = Carbon::today();
-            if ($yesterday->isSaturday()) {
-                $yesterday = $yesterday->subDay(1); // Friday
-                $today = $today->subDay(1);
-            } elseif ($yesterday->isSunday()) {
-                $yesterday = $yesterday->subDay(2); // Friday
-                $today = $today->subDay(2);
-            }               
-            
-            $yesterDayStartDate = $yesterday->setTime(8, 0, 0)->toDateTimeString();
-            $yesterDayEndDate = $today->setTime(7, 59, 0)->toDateTimeString();
-            $projects = collect($this->getProjects());
-            $BodyDetails = []; 
-            $projectIds = $subProjectIds = [];
-            $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$BodyDetails, &$projectIds, &$subProjectIds) {
+  public function projectDayWiseAimsProduction(){
+    try {
+        $yesterday = Carbon::yesterday();
+        $today = Carbon::today();
+
+        if ($yesterday->isSaturday()) {
+            $yesterday = $yesterday->subDay(1); // Friday
+            $today = $today->subDay(1);
+        } elseif ($yesterday->isSunday()) {
+            $yesterday = $yesterday->subDay(2); // Friday
+            $today = $today->subDay(2);
+        }
+
+        $yesterDayStartDate = $yesterday->copy()->setTime(8, 0, 0)->toDateTimeString();
+        $yesterDayEndDate   = $today->copy()->setTime(7, 59, 0)->toDateTimeString();
+
+        $projects = collect($this->getProjects());
+        $BodyDetails = [];
+
+        $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate, $today, $yesterday, &$BodyDetails) {
+            try {
                 $prjDetails = Helpers::projectName($project['id']);
-                $prjName = $prjDetails ? $prjDetails->project_name : null;
-                if ($prjName !== null) {
-                    $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
+                $prjName = $prjDetails?->project_name;
+
+                if ($prjName) {
+                    $subProjects = count($project['subprject_name']) > 0
+                        ? $project['subprject_name']
+                        : ['project'];
 
                     foreach ($subProjects as $subKey => $subProject) {
                         $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
-                        $modelClass = "App\\Models\\" . Str::studly($tableName);                     
-                        if(class_exists($modelClass)) {                          
-                            $existingPrjUsers = $modelClass::where('CE_emp_id', '!=','0')->whereNotNull('CE_emp_id')->where('CE_emp_id','like','%AM%')->groupBy('CE_emp_id')->pluck('CE_emp_id')->toArray(); 
+                        $modelClass = "App\\Models\\" . Str::studly($tableName);
+
+                        if (class_exists($modelClass)) {
+                            $existingPrjUsers = $modelClass::where('CE_emp_id', '!=', '0')
+                                ->whereNotNull('CE_emp_id')
+                                ->where('CE_emp_id', 'like', '%AM%')
+                                ->groupBy('CE_emp_id')
+                                ->pluck('CE_emp_id')
+                                ->toArray();
+
                             $arColumnExists = Schema::hasColumn($tableName, 'ar_at');
                             $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
                             $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
-                                GetProjSubPrjJob::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
-                                $prjTotalDetailsCacheKey = 'project_'.$project['id'].$subKey.'totalDetails' ;
-                                $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0); 
-                                if (!is_array($prjBillableFTE)) {
-                                    $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
-                                }
-                                $results = $modelClass::selectRaw("
-                                        CE_emp_id,
-                                        COUNT(*) as cnt
-                                    ")
-                                    ->whereIn('CE_emp_id', $existingPrjUsers)
-                                    ->whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
-                                    ->groupBy('CE_emp_id')
-                                    ->get()->toArray();
 
-                                    $BodyDetails[] = [
-                                        'results'     => $results,
-                                        'workDate'=> $yesterday->format('Y-m-d'),
-                                    ];dd($BodyDetails);
-        
-                            }  
+                            // Dispatch background job
+                            GetProjSubPrjJob::dispatch($project['id'], $subKey)->delay(now()->addSeconds(5));
+
+                            $prjTotalDetailsCacheKey = 'project_' . $project['id'] . $subKey . 'totalDetails';
+                            $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0);
+
+                            if (!is_array($prjBillableFTE)) {
+                                $prjBillableFTE = [
+                                    'prjMgrName' => '--',
+                                    'prjBillableCount' => '--',
+                                    'projectSLATarget' => '--'
+                                ];
+                            }
+
+                            $results = $modelClass::selectRaw("CE_emp_id, COUNT(*) as cnt")
+                                ->whereIn('CE_emp_id', $existingPrjUsers)
+                                ->whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
+                                ->groupBy('CE_emp_id')
+                                ->get()
+                                ->toArray();
+
+                            $BodyDetails[] = [
+                                'project_id' => $project['id'],
+                                'sub_project_id' => $subKey,
+                                'results' => $results,
+                                'workDate' => $yesterday->format('Y-m-d'),
+                            ];
                         }
-                       
+                    }
                 }
-            });dd($BodyDetails);
-        
-                $prjDetails = array(
-                    'code' => 200,
-                    'message' => 'success',
-                    'prjDetailsList' => $BodyDetails
-                );
-                $return_value = Response::json($prjDetails);
-            return $return_value;
-         
-        } catch (\Exception $e) {
-            Log::error('Error in ProjectWorkMail: ' . $e->getMessage());
-            Log::debug($e->getMessage());
-        }
-    } 
+            } catch (\Exception $innerEx) {
+                Log::error("Inner loop error for project {$project['id']}: " . $innerEx->getMessage());
+            }
+        });
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'success',
+            'prjDetailsList' => $BodyDetails,
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Error in projectDayWiseAimsProduction: ' . $e->getMessage());
+        return response()->json([
+            'code' => 500,
+            'message' => 'Server error: ' . $e->getMessage(),
+        ]);
+    }
+}
 
 }
