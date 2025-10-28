@@ -2811,7 +2811,7 @@ class ProjectController extends Controller
                                 'results' => $results,
                                 'callChartResults' => $callChartResults,
                                 'workDate' => $yesterday->format('Y-m-d'),
-                            ];dd($BodyDetails);
+                            ];
                         }
                     }
                 }
