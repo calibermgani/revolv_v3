@@ -2785,7 +2785,7 @@ class ProjectController extends Controller
 
                                     $BodyDetails[] = [
                                         'results'     => $results,
-                                       // 'workDate'=> $yesterday->format('Y-m-d'),
+                                        'workDate'=> $yesterday->format('Y-m-d'),
                                     ];dd($BodyDetails);
         
                             }  
