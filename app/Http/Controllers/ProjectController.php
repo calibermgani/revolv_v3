@@ -2753,7 +2753,7 @@ class ProjectController extends Controller
         $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate, $today, $yesterday, &$BodyDetails) {
             try {
                 $prjDetails = Helpers::projectName($project['id']);
-                $prjName = $prjDetails?->project_name;
+                $prjName = $prjDetails->project_name;
 
                 if ($prjName) {
                     $subProjects = count($project['subprject_name']) > 0
