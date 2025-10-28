@@ -2783,6 +2783,13 @@ class ProjectController extends Controller
                                     ->groupBy('CE_emp_id')
                                     ->get()->toArray();dd($results);
 
+                                         $BodyDetails[] = [
+                                        'user'              => $userName[$user] ?? $user,
+                                        'results'     => $results,
+                                        'yesterDayStartDate'=> $yesterDayStartDate,
+                                        'yesterDayEndDate'=> $yesterDayEndDate
+                                    ];dd($BodyDetails);
+
                                 // Reshape results: user → hour → count
                                 $userCounts = [];
                                 foreach ($results as $row) {
