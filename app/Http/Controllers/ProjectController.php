@@ -2746,9 +2746,9 @@ class ProjectController extends Controller
             $yesterDayStartDate = $yesterday->setTime(8, 0, 0)->toDateTimeString();
             $yesterDayEndDate = $today->setTime(7, 59, 0)->toDateTimeString();
             $projects = collect($this->getProjects());
-            $projectsPending = []; 
+            $BodyDetails = []; 
             $projectIds = $subProjectIds = [];
-            $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$projectsPending, &$projectIds, &$subProjectIds) {
+            $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$BodyDetails, &$projectIds, &$subProjectIds) {
                 $prjDetails = Helpers::projectName($project['id']);
                 $prjName = $prjDetails ? $prjDetails->project_name : null;
                 if ($prjName !== null) {
@@ -2783,63 +2783,25 @@ class ProjectController extends Controller
                                     ->groupBy('CE_emp_id')
                                     ->get()->toArray();
 
-                                         $BodyDetails[] = [
+                                    $BodyDetails[] = [
                                         'results'     => $results,
                                         'workDate'=> $yesterday->format('Y-m-d'),
                                     ];
-                                 
-                                // Reshape results: user → hour → count
-                                // $userCounts = [];
-                                // foreach ($results as $row) {
-                                //     $userCounts[$row->CE_emp_id] = $row->cnt;
-                                // }dd($userCounts,$results);
-
-                                // $BodyDetails = [];
-                                // foreach ($existingPrjUsers as $user) {
-                                //     $hourlyCounts = [];
-                                //     $reachedTarget = 0;
-
-                                //     foreach ($timeSlots as $slot) {
-                                //         $slotHour = (int) date('H', strtotime($slot['start'])); // take start hour
-                                //         $count = $userCounts[$user][$slotHour] ?? 0;
-                                //         $hourlyCounts[] = $count;
-                                //         $reachedTarget += $count;
-                                //     }
-
-                                //     $achievedPercentage = 0;
-                                //     if (is_numeric($reachedTarget) && is_numeric($targetPerDay) && $targetPerDay > 0) {
-                                //         $achievedPercentage = ($reachedTarget / $targetPerDay) * 100;
-                                //     }
-
-                                //     $BodyDetails[] = [
-                                //         'user'              => $userName[$user] ?? $user,
-                                //         'hourlyCount'       => $hourlyCounts,
-                                //         'reachedTarget'     => $reachedTarget,
-                                //         'slaTarget'         => $targetPerDay,
-                                //         'achievedPercentage'=> $achievedPercentage
-                                //     ];
-                                // }
         
                             }  
                         }
-                         return $BodyDetails;
+                       
                 }
-                // return ['data' => $projectData, 'ids' => $project_id];
             });
-            GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
-            GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
+        
                 $prjDetails = array(
                     'code' => 200,
                     'message' => 'success',
-                    'prjDetailsList' => $projectsPending
+                    'prjDetailsList' => $BodyDetails
                 );
                 $return_value = Response::json($prjDetails);
             return $return_value;
-            if($toMailId != null && $ccMailId != null) {                   
-                Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday,$projectIds,$subProjectIds));
-            }
-
-            Log::info('ProjectWorkMail executed successfully.');
+         
         } catch (\Exception $e) {
             Log::error('Error in ProjectWorkMail: ' . $e->getMessage());
             Log::debug($e->getMessage());
