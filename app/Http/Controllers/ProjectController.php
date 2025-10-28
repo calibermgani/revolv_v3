@@ -2776,7 +2776,6 @@ class ProjectController extends Controller
                                 // Run one aggregated query
                                 $results = $modelClass::selectRaw("
                                         CE_emp_id,
-                                        HOUR($columnToUse) as hr,
                                         COUNT(*) as cnt
                                     ")
                                     ->whereIn('CE_emp_id', $existingPrjUsers)
@@ -2787,7 +2786,7 @@ class ProjectController extends Controller
                                 // Reshape results: user → hour → count
                                 $userCounts = [];
                                 foreach ($results as $row) {
-                                    $userCounts[$row->CE_emp_id][$row->hr] = $row->cnt;
+                                    $userCounts[$row->CE_emp_id] = $row->cnt;
                                 }dd($userCounts,$results);
 
                                 // $BodyDetails = [];
