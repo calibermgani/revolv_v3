@@ -2731,185 +2731,114 @@ class ProjectController extends Controller
         }
     }
 
-        public function projectDayWiseAimsProduction() {
-            try {               
-                $yesterday = Carbon::yesterday();
-                 $today = Carbon::today();
-                if ($yesterday->isSaturday()) {
-                    $yesterday = $yesterday->subDay(1); // Friday
-                    $today = $today->subDay(1);
-                } elseif ($yesterday->isSunday()) {
-                    $yesterday = $yesterday->subDay(2); // Friday
-                    $today = $today->subDay(2);
-                }               
-               
-               $yesterDayStartDate = $yesterday->setTime(8, 0, 0)->toDateTimeString();
-                $yesterDayEndDate = $today->setTime(7, 59, 0)->toDateTimeString();
-                $projects = collect($this->getProjects());
-                $projectsPending = []; 
-                $projectIds = $subProjectIds = [];
-                $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$projectsPending, &$projectIds, &$subProjectIds) {
-                    $prjDetails = Helpers::projectName($project['id']);
-                    $prjName = $prjDetails ? $prjDetails->project_name : null;
-                    if ($prjName !== null) {
-                        $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
-    
-                        foreach ($subProjects as $subKey => $subProject) {
-                            $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
-                            $modelClass = "App\\Models\\" . Str::studly($tableName);
-                            
-                            // if (class_exists($modelClass)) {
-                            //     $tableName = (new $modelClass)->getTable();
-                            //     $existingPrjUsers = $modelClass::where('CE_emp_id', '!=','0')->whereNotNull('CE_emp_id')->where('CE_emp_id','like','%AM%')->groupBy('CE_emp_id')->pluck('CE_emp_id')->toArray(); 
-                            //     $arColumnExists = Schema::hasColumn($tableName, 'ar_at');
-                            //     $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
-                            //     $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
-    
-                            //     $qaColumnExists = Schema::hasColumn($tableName, 'qa_at');
-                            //     $hasNonNullQaAt = $qaColumnExists && $modelClass::whereNotNull('qa_at')->exists();
-                            //     $qaColumnToUse = $hasNonNullQaAt ? 'qa_at' : 'updated_at';
-                            //       $aCount = InventoryExeFile::whereBetween('exe_date', [$yesterDayStartDate, $yesterDayEndDate])
-                            //                 ->where('project_id', $project['id'])
-                            //                  ->where('sub_project_id', $subKey)
-                            //                  ->count();
-                            //     $cCount = $modelClass::whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
-                            //                  ->count();
-                            //     $qCount = $modelClass::whereBetween($qaColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
-                            //                 ->where('chart_status', 'QA_Completed')->count();
-                            //     $productionARCount = $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today, $arColumnToUse) {
-                            //         $query->where(function ($subQuery) use ($yesterDayStartDate, $yesterDayEndDate, $arColumnToUse) {
-                            //             $subQuery->whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
-                            //                         ->whereIn('chart_status', [
-                            //                             'CE_Inprocess',
-                            //                             'CE_Pending',
-                            //                             'CE_Completed',
-                            //                             'CE_Clarification',
-                            //                             'CE_Hold'
-                            //                         ]);
-                            //         })
-                            //         ->orWhere(function ($subQuery) use ($yesterday, $today) {
-                            //             $subQuery->where('chart_status', 'QA_Completed')
-                            //                         ->where(function ($nestedQuery) use ($yesterday, $today) {
-                            //                             $nestedQuery->whereDate('coder_work_date', $yesterday)
-                            //                                         ->orWhereDate('coder_work_date', $today);
-                            //                         });
-                            //         });
-                            //     })
-                            //     ->groupBy('CE_emp_id')
-                            //     ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate])
-                            //     ->select('CE_emp_id')
-                            //     ->get()
-                            //     ->count();
-                                        
-                            //     $productionQACount = $modelClass::whereBetween($qaColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
-                            //         ->whereIn('chart_status', ['QA_Assigned', 'QA_Inprocess', 'QA_Pending', 'QA_Completed', 'QA_Clarification', 'QA_Hold'])
-                            //         ->whereNotNull('QA_emp_id')
-                            //         ->distinct('QA_emp_id')
-                            //         ->count('QA_emp_id'); 
-    
-                            //     $projectsPending[] = [
-                            //         'project' => $project['client_name'] . '-' . $subProject,
-                            //         'Chats or inverntoryUploader' => $aCount,
-                            //         'Coder or prodution_count' => $cCount,
-                            //         'QA' => $qCount,
-                            //         'prodcution_ar or production_users_ar' => $productionARCount,
-                            //         'prodcution_qa or qa_Count' => $productionQACount,
-                            //         'project_id' => $project['id'], // Store project ID
-                            //         'sub_project_id' => $subKey,
-                            //         'yesterDayStartDate' => $yesterDayStartDate,
-                            //         'yesterDayEndDate' => $yesterDayEndDate
-                            //     ];
-                            //     $projectIds[] = $project['id'];
-                            //     $subProjectIds[] = $subKey;
-                            // }
+    public function projectDayWiseAimsProduction() {
+        try {               
+            $yesterday = Carbon::yesterday();
+                $today = Carbon::today();
+            if ($yesterday->isSaturday()) {
+                $yesterday = $yesterday->subDay(1); // Friday
+                $today = $today->subDay(1);
+            } elseif ($yesterday->isSunday()) {
+                $yesterday = $yesterday->subDay(2); // Friday
+                $today = $today->subDay(2);
+            }               
+            
+            $yesterDayStartDate = $yesterday->setTime(8, 0, 0)->toDateTimeString();
+            $yesterDayEndDate = $today->setTime(7, 59, 0)->toDateTimeString();
+            $projects = collect($this->getProjects());
+            $projectsPending = []; 
+            $projectIds = $subProjectIds = [];
+            $projects->each(function ($project) use ($yesterDayStartDate, $yesterDayEndDate,$today,$yesterday, &$projectsPending, &$projectIds, &$subProjectIds) {
+                $prjDetails = Helpers::projectName($project['id']);
+                $prjName = $prjDetails ? $prjDetails->project_name : null;
+                if ($prjName !== null) {
+                    $subProjects = count($project['subprject_name']) > 0 ? $project['subprject_name'] : ['project'];
 
-                              if(class_exists($modelClass)){
-                                    $existingPrjUsers = $modelClass::where('CE_emp_id', '!=','0')->whereNotNull('CE_emp_id')->where('CE_emp_id','like','%AM%')
-                                    ->groupBy('CE_emp_id')->pluck('CE_emp_id')->toArray(); 
-                                            $tableName = (new $modelClass)->getTable();
-                                $existingPrjUsers = $modelClass::where('CE_emp_id', '!=','0')->whereNotNull('CE_emp_id')->where('CE_emp_id','like','%AM%')->groupBy('CE_emp_id')->pluck('CE_emp_id')->toArray(); 
-                                $arColumnExists = Schema::hasColumn($tableName, 'ar_at');
-                                $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
-                                $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
-                                    GetProjSubPrjJob::dispatch(Helpers::encodeAndDecodeID($project['id']),Helpers::encodeAndDecodeID($subKey))->delay(now()->addSeconds(5));
-                                    $prjTotalDetailsCacheKey = 'project_'.Helpers::encodeAndDecodeID($project['id']).Helpers::encodeAndDecodeID($subKey).'totalDetails' ;
-                                    $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0);   
-                                    if (!is_array($prjBillableFTE)) {
-                                        $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
-                                    }     
-                                    $targetPerDay = (float)$prjBillableFTE['projectSLATarget'] ;   
-                                    $userName =Helpers::getUserNameByAllEmpId($existingPrjUsers); 
-                                    $tableName = (new $modelClass)->getTable();
-                                    $columnExists = Schema::hasColumn($tableName, 'ar_at');
-                                    $columnToUse = $columnExists ? 'ar_at' : 'updated_at';
+                    foreach ($subProjects as $subKey => $subProject) {
+                        $tableName = Str::slug(Str::lower($prjName . '_' . $subProject), '_');
+                        $modelClass = "App\\Models\\" . Str::studly($tableName);                     
+                        if(class_exists($modelClass)) {                          
+                            $existingPrjUsers = $modelClass::where('CE_emp_id', '!=','0')->whereNotNull('CE_emp_id')->where('CE_emp_id','like','%AM%')->groupBy('CE_emp_id')->pluck('CE_emp_id')->toArray(); 
+                            $arColumnExists = Schema::hasColumn($tableName, 'ar_at');
+                            $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
+                            $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                                GetProjSubPrjJob::dispatch($project['id'],$subKey)->delay(now()->addSeconds(5));
+                                $prjTotalDetailsCacheKey = 'project_'.$project['id'].$subKey.'totalDetails' ;
+                                $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0); 
+                                if (!is_array($prjBillableFTE)) {
+                                    $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
+                                }     
+                                $targetPerDay = (float)$prjBillableFTE['projectSLATarget'] ;
+                                $userName =Helpers::getUserNameByAllEmpId($existingPrjUsers); 
+                                $tableName = (new $modelClass)->getTable();
+                                $columnExists = Schema::hasColumn($tableName, 'ar_at');
+                                $columnToUse = $columnExists ? 'ar_at' : 'updated_at';                            
+                                // Run one aggregated query
+                                $results = $modelClass::selectRaw("
+                                        CE_emp_id,
+                                        HOUR($columnToUse) as hr,
+                                        COUNT(*) as cnt
+                                    ")
+                                    ->whereIn('CE_emp_id', $existingPrjUsers)
+                                    ->whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
+                                    ->groupBy('CE_emp_id', 'hr')
+                                    ->get();
 
-                              
-                                    // Run one aggregated query
-                                    $results = $modelClass::selectRaw("
-                                            CE_emp_id,
-                                            HOUR($columnToUse) as hr,
-                                            COUNT(*) as cnt
-                                        ")
-                                        ->whereIn('CE_emp_id', $existingPrjUsers)
-                                        ->whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
-                                        ->groupBy('CE_emp_id', 'hr')
-                                        ->get();
+                                // Reshape results: user → hour → count
+                                $userCounts = [];
+                                foreach ($results as $row) {
+                                    $userCounts[$row->CE_emp_id][$row->hr] = $row->cnt;
+                                }dd($userCounts,$results);
 
-                                    // Reshape results: user → hour → count
-                                    $userCounts = [];
-                                    foreach ($results as $row) {
-                                        $userCounts[$row->CE_emp_id][$row->hr] = $row->cnt;
-                                    }dd($userCounts,$results);
+                                // $BodyDetails = [];
+                                // foreach ($existingPrjUsers as $user) {
+                                //     $hourlyCounts = [];
+                                //     $reachedTarget = 0;
 
-                                    // $BodyDetails = [];
-                                    // foreach ($existingPrjUsers as $user) {
-                                    //     $hourlyCounts = [];
-                                    //     $reachedTarget = 0;
+                                //     foreach ($timeSlots as $slot) {
+                                //         $slotHour = (int) date('H', strtotime($slot['start'])); // take start hour
+                                //         $count = $userCounts[$user][$slotHour] ?? 0;
+                                //         $hourlyCounts[] = $count;
+                                //         $reachedTarget += $count;
+                                //     }
 
-                                    //     foreach ($timeSlots as $slot) {
-                                    //         $slotHour = (int) date('H', strtotime($slot['start'])); // take start hour
-                                    //         $count = $userCounts[$user][$slotHour] ?? 0;
-                                    //         $hourlyCounts[] = $count;
-                                    //         $reachedTarget += $count;
-                                    //     }
+                                //     $achievedPercentage = 0;
+                                //     if (is_numeric($reachedTarget) && is_numeric($targetPerDay) && $targetPerDay > 0) {
+                                //         $achievedPercentage = ($reachedTarget / $targetPerDay) * 100;
+                                //     }
 
-                                    //     $achievedPercentage = 0;
-                                    //     if (is_numeric($reachedTarget) && is_numeric($targetPerDay) && $targetPerDay > 0) {
-                                    //         $achievedPercentage = ($reachedTarget / $targetPerDay) * 100;
-                                    //     }
-
-                                    //     $BodyDetails[] = [
-                                    //         'user'              => $userName[$user] ?? $user,
-                                    //         'hourlyCount'       => $hourlyCounts,
-                                    //         'reachedTarget'     => $reachedTarget,
-                                    //         'slaTarget'         => $targetPerDay,
-                                    //         'achievedPercentage'=> $achievedPercentage
-                                    //     ];
-                                    // }
-          
-                                }  
-                        }
-                    }
-                    // return ['data' => $projectData, 'ids' => $project_id];
-                });
-                GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
-                GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
-                  $prjDetails = array(
-                        'code' => 200,
-                        'message' => 'success',
-                        'prjDetailsList' => $projectsPending
-                    );
-                    $return_value = Response::json($prjDetails);
-                return $return_value;
-                if($toMailId != null && $ccMailId != null) {                   
-                    Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday,$projectIds,$subProjectIds));
-                }
+                                //     $BodyDetails[] = [
+                                //         'user'              => $userName[$user] ?? $user,
+                                //         'hourlyCount'       => $hourlyCounts,
+                                //         'reachedTarget'     => $reachedTarget,
+                                //         'slaTarget'         => $targetPerDay,
+                                //         'achievedPercentage'=> $achievedPercentage
+                                //     ];
+                                // }
         
-                Log::info('ProjectWorkMail executed successfully.');
-            } catch (\Exception $e) {
-                Log::error('Error in ProjectWorkMail: ' . $e->getMessage());
-                Log::debug($e->getMessage());
+                            }  
+                        }
+                }
+                // return ['data' => $projectData, 'ids' => $project_id];
+            });
+            GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
+            GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
+                $prjDetails = array(
+                    'code' => 200,
+                    'message' => 'success',
+                    'prjDetailsList' => $projectsPending
+                );
+                $return_value = Response::json($prjDetails);
+            return $return_value;
+            if($toMailId != null && $ccMailId != null) {                   
+                Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday,$projectIds,$subProjectIds));
             }
-        } 
+
+            Log::info('ProjectWorkMail executed successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error in ProjectWorkMail: ' . $e->getMessage());
+            Log::debug($e->getMessage());
+        }
+    } 
 
 }
