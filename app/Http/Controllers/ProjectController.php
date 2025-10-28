@@ -2796,14 +2796,18 @@ class ProjectController extends Controller
                                 ->groupBy('CE_emp_id')
                                 ->get()
                                 ->toArray();
-                                 $callChartResults = CallerChartsWorkLogs::selectRaw("emp_id, COUNT(*) as cnt")
-                                ->whereIn('emp_id', $existingPrjUsers)
-                                ->where('project_id', $project['id'])
-                                ->where('sub_project_id', $subKey)
-                                ->whereBetween('start_time', [$yesterDayStartDate, $yesterDayEndDate])
-                                ->groupBy('emp_id')
-                                ->get()
-                                ->toArray();
+                            $callChartResults = CallerChartsWorkLogs::selectRaw("
+                                emp_id,
+                                SEC_TO_TIME(SUM(TIME_TO_SEC(work_time))) as work_hours
+                            ")
+                            ->whereIn('emp_id', $existingPrjUsers)
+                            ->where('project_id', $project['id'])
+                            ->where('sub_project_id', $subKey)
+                            ->whereBetween('start_time', [$yesterDayStartDate, $yesterDayEndDate])
+                            ->groupBy('emp_id')
+                            ->get()
+                            ->toArray();
+
 
                             $BodyDetails[] = [
                                 'project_id' => $project['id'],
