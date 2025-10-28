@@ -2787,6 +2787,7 @@ class ProjectController extends Controller
                                         'results'     => $yesterday,
                                         'workDate'=> $yesterDayStartDate
                                     ];
+                                    return $BodyDetails;
 
                                 // Reshape results: user → hour → count
                                 $userCounts = [];
