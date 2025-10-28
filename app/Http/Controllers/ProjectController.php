@@ -2767,13 +2767,7 @@ class ProjectController extends Controller
                                 $prjBillableFTE = Cache::get($prjTotalDetailsCacheKey, 0); 
                                 if (!is_array($prjBillableFTE)) {
                                     $prjBillableFTE = ['prjMgrName' => '--', 'prjBillableCount' => '--', 'projectSLATarget' => '--'];
-                                }     
-                                $targetPerDay = (float)$prjBillableFTE['projectSLATarget'] ;
-                                $userName =Helpers::getUserNameByAllEmpId($existingPrjUsers); 
-                                $tableName = (new $modelClass)->getTable();
-                                $columnExists = Schema::hasColumn($tableName, 'ar_at');
-                                $columnToUse = $columnExists ? 'ar_at' : 'updated_at';                            
-                                // Run one aggregated query
+                                }
                                 $results = $modelClass::selectRaw("
                                         CE_emp_id,
                                         COUNT(*) as cnt
@@ -2786,7 +2780,7 @@ class ProjectController extends Controller
                                     $BodyDetails[] = [
                                         'results'     => $results,
                                         'workDate'=> $yesterday->format('Y-m-d'),
-                                    ];
+                                    ];dd($BodyDetails);
         
                             }  
                         }
