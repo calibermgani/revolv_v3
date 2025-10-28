@@ -2784,16 +2784,15 @@ class ProjectController extends Controller
                                     ->get()->toArray();
 
                                          $BodyDetails[] = [
-                                        'results'     => $results,
-                                        'yesterDayStartDate'=> $yesterDayStartDate,
-                                        'yesterDayEndDate'=> $yesterDayEndDate
-                                    ];dd($BodyDetails);
+                                        'results'     => $yesterday,
+                                        'workDate'=> $yesterDayStartDate
+                                    ];
 
                                 // Reshape results: user → hour → count
                                 $userCounts = [];
                                 foreach ($results as $row) {
                                     $userCounts[$row->CE_emp_id] = $row->cnt;
-                                }dd($userCounts,$results);
+                                }
 
                                 // $BodyDetails = [];
                                 // foreach ($existingPrjUsers as $user) {
