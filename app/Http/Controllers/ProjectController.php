@@ -2784,7 +2784,6 @@ class ProjectController extends Controller
                                     ->get()->toArray();
 
                                          $BodyDetails[] = [
-                                        'user'              => $userName[$user] ?? $user,
                                         'results'     => $results,
                                         'yesterDayStartDate'=> $yesterDayStartDate,
                                         'yesterDayEndDate'=> $yesterDayEndDate
