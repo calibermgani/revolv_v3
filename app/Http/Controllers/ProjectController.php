@@ -2792,7 +2792,7 @@ class ProjectController extends Controller
                         }
                        
                 }
-            });
+            });dd($BodyDetails);
         
                 $prjDetails = array(
                     'code' => 200,
