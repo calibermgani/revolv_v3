@@ -2781,7 +2781,7 @@ class ProjectController extends Controller
                                     ->whereIn('CE_emp_id', $existingPrjUsers)
                                     ->whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                     ->groupBy('CE_emp_id')
-                                    ->get();
+                                    ->get()->toArray();
 
                                 // Reshape results: user → hour → count
                                 $userCounts = [];
