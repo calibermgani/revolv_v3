@@ -69,7 +69,8 @@ use Carbon\Carbon;
                                                     ]) !!}
                                                 </fieldset>
                                             </div>
-                                        @else
+                                         @endif   
+                                        @if($loginEmpId  !== "Admin" || strpos($empDesignation, 'Manager') == false || strpos($empDesignation, 'VP') == false || strpos($empDesignation, 'Leader') == false || strpos($empDesignation, 'Team Lead') == false || strpos($empDesignation, 'CEO') == false || strpos($empDesignation, 'Vice') == false || strpos($empDesignation, 'Group Coordinator') == false)
                                                 @if($projectTypeSettings['project_type'] == 2)
                                                     <div class="d-flex align-items-center" id="add">
                                                         <button type="button" class="btn text-white mr-3 manual-clickable-row" style="background-color:#139AB3">Add</button>
@@ -830,6 +831,7 @@ use Carbon\Carbon;
                                                                                             ) !!}
                                                                                         </div>
                                                                                     </div>
+                                                                                    {{-- <div id="qa_result_ar_status_code" class="mt-3"></div> --}}
                                                                                 </div>
                                                                             {{-- @endif
                                                                             @if($statusActionShow->action_input == 1) --}}
@@ -1556,6 +1558,10 @@ use Carbon\Carbon;
     #history_tab {
         pointer-events: auto !important;
     }
+    /* .is-invalid {
+        border: 2px solid red !important;
+        background-color: #fff0f0;
+    } */
 
 
 </style>
@@ -1850,6 +1856,8 @@ use Carbon\Carbon;
                 // var record_id = $(this).closest('tr').find('td:eq(0)').text();
                 // var record_id = $(this).closest('tr').find('td:eq(1)').text();
                 var record_id =  $(this).closest('tr').find('#table_id').text();
+                // qaFormRecordId = record_id;console.log(record_id,'record_id',qaFormRecordId);
+                
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
