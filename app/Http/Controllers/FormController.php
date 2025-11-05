@@ -779,10 +779,7 @@ class FormController extends Controller
                                 DB::statement("ALTER TABLE `$tableName` ADD COLUMN `$columnName` $columnType AFTER `$afterColumn`");
                                 $dynamicModel = new DynamicModel($tableName);
                                 $dynamicModel->refreshFillableFromTable();
-                            } else {
-                                 $dynamicModel = new DynamicModel($tableName);
-                                   $dynamicModel->refreshFillableFromTable();
-                            }
+                            } 
                         }
                     }
                     $duplicateTableExists = DB::select("SHOW TABLES LIKE '$duplicateTableName'");
