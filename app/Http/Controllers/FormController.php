@@ -640,30 +640,7 @@ class FormController extends Controller
                         $requiredData['input_type_editable'] = $data['input_type_editable'][$i];
                         $requiredData['project_type'] = $data['project_type_val'];
                         $requiredData['claim_type'] = $data['claim_type_val'];
-                        $existingRecord->update($requiredData); 
-                         $columnName = Str::lower(str_replace([' ', '/'], ['_', '_else_'], $data['label_name'][$i]));
-                        if ($data['input_type'][$i] == 'text' || $data['input_type'][$i] == 'date_range') {
-                            $columns[$columnName] = 'TEXT';
-                        } else if ($data['input_type'][$i] == 'select' || $data['input_type'][$i] == 'checkbox' || $data['input_type'][$i] == 'radio') {
-                              //$enumValues = "'" . implode("','", explode(',',$data['options_name'][$i])) . "'";
-                            //$columns[$columnName] = "ENUM($enumValues)";
-                            if (!empty($data['options_name'][$i])) {
-                                $options = array_map(function ($opt) {
-                                    return str_replace("'", "''", trim($opt));
-                                }, explode(',', $data['options_name'][$i]));
-                                $enumValues = "'" . implode("','", $options) . "'";
-                                $columns[$columnName] = "ENUM($enumValues)";
-                            } else {
-                                $columns[$columnName] = "TEXT";
-                            }
-                           
-                        } else if ($data['input_type'][$i] == 'date') {
-                            $columns[$columnName] = 'DATE';
-                        } else if ($data['input_type'][$i] == 'textarea') {
-                            $columns[$columnName] = 'TEXT';
-                        } else if ($data['input_type'][$i] == 'datetime' ) {
-                            $columns[$columnName] = 'DATETIME';
-                        }                     
+                        $existingRecord->update($requiredData);                                              
                     } else {
                         $requiredData['project_id'] = $data['project_id_val'];
                         $requiredData['sub_project_id'] = $data['sub_project_id_val'] != null ? $data['sub_project_id_val'] : NULL;
