@@ -558,7 +558,7 @@ class FormController extends Controller
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userInfo'] && Session::get('loginDetails')['userInfo']['user_id'] !=null) {
             
             try {
-                DB::beginTransaction();
+              //  DB::beginTransaction();
                 $data = $request->all();
                 $additionalLabelArray = [
                         "AR Denial Codes",                    
@@ -1074,13 +1074,13 @@ class FormController extends Controller
                             }
                         }
                     }
-                       DB::commit();
+                       // DB::commit();
                   
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
             } catch (\Exception $e) {
-                 if (DB::transactionLevel() > 0) {
-                    DB::rollBack();
-                }
+                //  if (DB::transactionLevel() > 0) {
+                //     DB::rollBack();
+                // }
                  Log::error('Form configuration update failed: ' . $e->getMessage());
                 return response()->json(['error' => $e->getMessage()], 500);
                 Log::debug($e->getMessage());
