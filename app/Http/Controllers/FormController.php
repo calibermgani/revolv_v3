@@ -662,14 +662,18 @@ class FormController extends Controller
                         if ($data['input_type'][$i] == 'text' || $data['input_type'][$i] == 'date_range') {
                             $columns[$columnName] = 'TEXT';
                         } else if ($data['input_type'][$i] == 'select' || $data['input_type'][$i] == 'checkbox' || $data['input_type'][$i] == 'radio') {
-                              $enumValues = "'" . implode("','", explode(',',$data['options_name'][$i])) . "'";
+                              //$enumValues = "'" . implode("','", explode(',',$data['options_name'][$i])) . "'";
                             //$columns[$columnName] = "ENUM($enumValues)";
                             if (!empty($data['options_name'][$i])) {
-                                $enumValues = "'" . implode("','", explode(',',$data['options_name'][$i])) . "'";
+                                $options = array_map(function ($opt) {
+                                    return str_replace("'", "''", trim($opt));
+                                }, explode(',', $data['options_name'][$i]));
+                                $enumValues = "'" . implode("','", $options) . "'";
                                 $columns[$columnName] = "ENUM($enumValues)";
                             } else {
                                 $columns[$columnName] = "TEXT";
                             }
+                           
                         } else if ($data['input_type'][$i] == 'date') {
                             $columns[$columnName] = 'DATE';
                         } else if ($data['input_type'][$i] == 'textarea') {
