@@ -773,12 +773,14 @@ class FormController extends Controller
                                 FROM INFORMATION_SCHEMA.COLUMNS
                                 WHERE TABLE_NAME = '$tableName'
                                 AND COLUMN_NAME = '$columnName'
-                            ");dd('else',$columns,$columnExists,empty($columnExists),$tableName);
+                            ");
                             if (empty($columnExists)) {
                                 //DB::statement("ALTER TABLE $tableName ADD COLUMN $columnName $columnType AFTER $afterColumn");
                                 DB::statement("ALTER TABLE `$tableName` ADD COLUMN `$columnName` $columnType AFTER `$afterColumn`");
                                 $dynamicModel = new DynamicModel($tableName);
                                 $dynamicModel->refreshFillableFromTable();
+                            } else {
+                                 $dynamicModel = new DynamicModel($tableName);
                             }
                         }
                     }
