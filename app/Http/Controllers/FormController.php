@@ -712,7 +712,7 @@ class FormController extends Controller
                 $tableDataName =Str::slug($projectName->project_name.'_'.$subProjectName. '_datas','_');
                 $duplicateTableName = Str::slug($projectName->project_name . '_' . $subProjectName . '_duplicates','_');
                 $tableHistoryName = Str::slug($projectName->project_name.'_'.$subProjectName. '_history','_');
-                $tableRevokeHistoryName =Str::slug(($projectName->project_name.'_'.$subProjectName. '_revoke_history'),'_');dd($columns);
+                $tableRevokeHistoryName =Str::slug(($projectName->project_name.'_'.$subProjectName. '_revoke_history'),'_');
                 // new DynamicModel($tableName);
                 // new DynamicModel($duplicateTableName);
                 // new DynamicModel($tableDataName);
