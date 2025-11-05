@@ -66,21 +66,26 @@ class FormController extends Controller
                  $data = $request->all();
                 $additionalLabelArray = [
                     "AR Denial Codes",                    
-                    "AR SubStatus Codes"
+                    "AR SubStatus Codes",
+                    "Production Type"
                 ];
                 $additionalInputTypeArray = [
                     "text",
-                     "text"
+                     "text",
+                     "select"
                 ];
                 $additionalOptionsArray = [
                     null,
-                     null
+                    null,
+                    "Calling,Non-Calling,Webportal"
                 ];
                  $additionalUserTypeArray = [
                     "3",
+                     "3",
                      "3"
                 ];
                 $additionalInputTypeEditableArray = [
+                    "1",
                     "1",
                     "1"
 
@@ -89,19 +94,23 @@ class FormController extends Controller
                
                 $additionalFieldTypeArray = [
                     "editable",
-                    "editable"
+                    "editable",
+                     "editable"
                 ];
                 $additionalFieldType1Array = [
                     "single",
-                    "single"
+                    "single",
+                     "single"
                 ];
                 $additionalFieldType2Array = [
                     "mandatory",
-                    "non-mandatory"
+                    "non-mandatory",
+                    "mandatory"
                 ];
                 $additionalFieldType3Array = [
                     "popup_non_visible",
-                    "popup_non_visible"
+                    "popup_non_visible",
+                    "popup_visible"
                 ];
                 $data['label_name'] = array_merge($data['label_name'], $additionalLabelArray);
                 $data['input_type'] = array_merge($data['input_type'], $additionalInputTypeArray);
@@ -546,43 +555,53 @@ class FormController extends Controller
                 DB::beginTransaction();
                 $data = $request->all();
                 $additionalLabelArray = [
-                    "AR Denial Codes",
-                    "AR SubStatus Codes"
-                ];
-                $additionalInputTypeArray = [
-                    "text",
-                     "text"
-                ];
-                $additionalOptionsArray = [
-                    null,
-                    null
-                ];
-                 $additionalUserTypeArray = [
-                    "3",
-                     "3"
-                ];
-                $additionalInputTypeEditableArray = [
-                    "1",
-                     "1"
-                ];
-               
-               
-                $additionalFieldTypeArray = [
-                    "editable",
-                    "editable"
-                ];
-                $additionalFieldType1Array = [
-                    "single",
-                    "single"
-                ];
-                $additionalFieldType2Array = [
-                    "mandatory",
-                    "non-mandatory"
-                ];
-                $additionalFieldType3Array = [
-                    "popup_non_visible",
-                    "popup_non_visible" 
-                ];
+                        "AR Denial Codes",                    
+                        "AR SubStatus Codes",
+                        "Production Type"
+                    ];
+                    $additionalInputTypeArray = [
+                        "text",
+                        "text",
+                        "select"
+                    ];
+                    $additionalOptionsArray = [
+                        null,
+                        null,
+                        "Calling,Non-Calling,Webportal"
+                    ];
+                    $additionalUserTypeArray = [
+                        "3",
+                        "3",
+                        "3"
+                    ];
+                    $additionalInputTypeEditableArray = [
+                        "1",
+                        "1",
+                        "1"
+
+                    ];
+                
+                
+                    $additionalFieldTypeArray = [
+                        "editable",
+                        "editable",
+                        "editable"
+                    ];
+                    $additionalFieldType1Array = [
+                        "single",
+                        "single",
+                        "single"
+                    ];
+                    $additionalFieldType2Array = [
+                        "mandatory",
+                        "non-mandatory",
+                        "mandatory"
+                    ];
+                    $additionalFieldType3Array = [
+                        "popup_non_visible",
+                        "popup_non_visible",
+                        "popup_visible"
+                    ];
                 $data['label_name'] = array_merge($data['label_name'], $additionalLabelArray);
                 $data['input_type'] = array_merge($data['input_type_val'], $additionalInputTypeArray);
                 $data['options_name'] = array_merge($data['options_name'], $additionalOptionsArray);
