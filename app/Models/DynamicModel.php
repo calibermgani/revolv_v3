@@ -38,27 +38,27 @@ class DynamicModel extends Model
         $modelNamespace = "App/Models/{$modelName}";
         $modelFilePath = app_path("Models/{$modelName}.php");
         $modelTemplatePath = base_path('stubs/model_template.stub');
+         if (!File::exists(dirname($modelFilePath))) {
+                File::makeDirectory(dirname($modelFilePath), 0777, true, true);
+         }
+
+        if (!is_writable(dirname($modelFilePath))) {
+            chmod(dirname($modelFilePath), 0777);
+        }
 
         // Replace placeholders in the template
         $modelTemplate = File::get($modelTemplatePath);
         $modelTemplate = str_replace('{{MODEL_NAME}}', $modelName, $modelTemplate);
         $modelTemplate = str_replace('{{TABLE_PLACEHOLDER}}', $table, $modelTemplate);
         $modelTemplate = str_replace('{{SOFT_DELETES_PLACEHOLDER}}', $this->getSoftDeletesStatement(), $modelTemplate);
-        $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);
-        // ✅ Ensure the Models directory exists and is writable
-            if (!File::exists(dirname($modelFilePath))) {
-                File::makeDirectory(dirname($modelFilePath), 0777, true, true);
-            }
-
-            if (!is_writable(dirname($modelFilePath))) {
-                chmod(dirname($modelFilePath), 0777);
-            }
+        $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);           
     
-
 
         // Save the modified template as the actual model file
         File::put($modelFilePath, $modelTemplate);
-     
+        @chmod($modelFilePath, 0666);
+        @chown($modelFilePath, 'apache');
+        @chgrp($modelFilePath, 'apache');
 
         // Load the created model class
         if (File::exists($modelFilePath)) {
