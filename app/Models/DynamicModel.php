@@ -38,7 +38,7 @@ class DynamicModel extends Model
         $modelNamespace = "App/Models/{$modelName}";
         $modelFilePath = app_path("Models/{$modelName}.php");
         $modelTemplatePath = base_path('stubs/model_template.stub');
-     if (!File::exists($modelFilePath)) {
+
         // Replace placeholders in the template
         $modelTemplate = File::get($modelTemplatePath);
         $modelTemplate = str_replace('{{MODEL_NAME}}', $modelName, $modelTemplate);
@@ -49,7 +49,6 @@ class DynamicModel extends Model
         // Save the modified template as the actual model file
         File::put($modelFilePath, $modelTemplate);
        // shell_exec('/usr/bin/php /var/www/html/revolv_v3/artisan make:model App/Models/TestModel');
-     }
      
 
         // Load the created model class
