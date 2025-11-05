@@ -148,7 +148,13 @@ class FormController extends Controller
                         $columns[$columnName] = 'TEXT';
                     } else if ($data['input_type'][$i] == 'select' || $data['input_type'][$i] == 'checkbox' || $data['input_type'][$i] == 'radio') {
                         $enumValues = "'" . implode("','", explode(',',$data['options_name'][$i])) . "'";
-                        $columns[$columnName] = "ENUM($enumValues)";
+                        // $columns[$columnName] = "ENUM($enumValues)";
+                        if (!empty($data['options_name'][$i])) {
+                            $enumValues = "'" . implode("','", explode(',',$data['options_name'][$i])) . "'";
+                            $columns[$columnName] = "ENUM($enumValues)";
+                        } else {
+                            $columns[$columnName] = "TEXT";
+                        }
                     } else if ($data['input_type'][$i] == 'date') {
                         $columns[$columnName] = 'DATE';
                     } else if ($data['input_type'][$i] == 'textarea') {
@@ -504,7 +510,7 @@ class FormController extends Controller
                             }
                         }
                     }
-                    if (DB::getPdo()->inTransaction()) {
+                     if (DB::transactionLevel() > 0) {
                         DB::commit();
                     }
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
@@ -657,7 +663,13 @@ class FormController extends Controller
                             $columns[$columnName] = 'TEXT';
                         } else if ($data['input_type'][$i] == 'select' || $data['input_type'][$i] == 'checkbox' || $data['input_type'][$i] == 'radio') {
                               $enumValues = "'" . implode("','", explode(',',$data['options_name'][$i])) . "'";
-                            $columns[$columnName] = "ENUM($enumValues)";
+                            //$columns[$columnName] = "ENUM($enumValues)";
+                            if (!empty($data['options_name'][$i])) {
+                                $enumValues = "'" . implode("','", explode(',',$data['options_name'][$i])) . "'";
+                                $columns[$columnName] = "ENUM($enumValues)";
+                            } else {
+                                $columns[$columnName] = "TEXT";
+                            }
                         } else if ($data['input_type'][$i] == 'date') {
                             $columns[$columnName] = 'DATE';
                         } else if ($data['input_type'][$i] == 'textarea') {
@@ -1018,7 +1030,7 @@ class FormController extends Controller
                             }
                         }
                     }
-                   if (DB::getPdo()->inTransaction()) {
+                   if (DB::transactionLevel() > 0) {
                         DB::commit();
                     }
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
@@ -1098,7 +1110,7 @@ class FormController extends Controller
                         return response()->json(['error' => true]);
                     }
 
-                    if (DB::getPdo()->inTransaction()) {
+                    if (DB::transactionLevel() > 0) {
                         DB::commit();
                     }
                 } catch (\Exception $e) {
