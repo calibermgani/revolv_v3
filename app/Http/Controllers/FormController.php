@@ -697,9 +697,9 @@ class FormController extends Controller
                 // new DynamicModel($tableRevokeHistoryName);
                 $tableExists = DB::select("SHOW TABLES LIKE '$tableName'");
                     if (empty($tableExists)) {
-                        $createTableSQL = "CREATE TABLE $tableName (id INT AUTO_INCREMENT PRIMARY KEY";
+                        $createTableSQL = "CREATE TABLE `$tableName` (id INT AUTO_INCREMENT PRIMARY KEY";
                         foreach ($columns as $columnName => $columnType) {
-                            $createTableSQL .= ", $columnName $columnType";
+                            $createTableSQL .= ", `$columnName` $columnType";
                         }
 
                         $createTableSQL .= ", parent_id INT NULL,invoke_date DATE NULL,
@@ -743,7 +743,14 @@ class FormController extends Controller
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                             updated_at TIMESTAMP NULL,
                                             deleted_at TIMESTAMP NULL)";
-                        DB::statement($createTableSQL);
+                        try {
+                            Log::debug("Executing SQL: " . $createTableSQL);
+                            DB::statement($createTableSQL);
+                        } catch (\Exception $e) {
+                            Log::error("SQL failed: " . $createTableSQL);
+                            Log::error($e->getMessage());
+                            throw $e;
+                        }
                         $dynamicModel = new DynamicModel($tableName);
                     } else {
                         $afterColumn = 'created_at';
@@ -755,7 +762,8 @@ class FormController extends Controller
                                 AND COLUMN_NAME = '$columnName'
                             ");//dd('else',$columns,$columnExists,empty($columnExists),$tableName);
                             if (empty($columnExists)) {
-                                DB::statement("ALTER TABLE $tableName ADD COLUMN $columnName $columnType AFTER $afterColumn");
+                                //DB::statement("ALTER TABLE $tableName ADD COLUMN $columnName $columnType AFTER $afterColumn");
+                                DB::statement("ALTER TABLE `$tableName` ADD COLUMN `$columnName` $columnType AFTER `$afterColumn`");
                                 $dynamicModel = new DynamicModel($tableName);
                                 $dynamicModel->refreshFillableFromTable();
                             }
@@ -764,10 +772,10 @@ class FormController extends Controller
                     $duplicateTableExists = DB::select("SHOW TABLES LIKE '$duplicateTableName'");
 
                     if (empty($duplicateTableExists)) {
-                        $createDuplicateTableSQL = "CREATE TABLE $duplicateTableName (id INT AUTO_INCREMENT PRIMARY KEY";
+                        $createDuplicateTableSQL = "CREATE TABLE `$duplicateTableName` (id INT AUTO_INCREMENT PRIMARY KEY";
 
                         foreach ($columns as $columnName => $columnType) {
-                            $createDuplicateTableSQL .= ", $columnName $columnType";
+                            $createDuplicateTableSQL .= ", `$columnName` TEXT";
                         }
 
                         $createDuplicateTableSQL .= ", invoke_date DATE NULL,
@@ -812,19 +820,27 @@ class FormController extends Controller
                                                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                     updated_at TIMESTAMP NULL,
                                                     deleted_at TIMESTAMP NULL)";
-                        DB::statement($createDuplicateTableSQL);
+                        //DB::statement($createDuplicateTableSQL);
+                        try {
+                            Log::debug("Executing SQL: " . $createDuplicateTableSQL);
+                            DB::statement($createDuplicateTableSQL);
+                        } catch (\Exception $e) {
+                            Log::error("SQL failed: " . $createDuplicateTableSQL);
+                            Log::error($e->getMessage());
+                            throw $e;
+                        }
                         $dynamicDuplicateModel = new DynamicModel($duplicateTableName);
                     }  else {
                         $afterColumn = 'created_at';
                         foreach ($columns as $columnName => $columnType) {
-                            $columnExists = DB::select("
+                            $duplicateColumnExists = DB::select("
                                 SELECT COLUMN_NAME
                                 FROM INFORMATION_SCHEMA.COLUMNS
                                 WHERE TABLE_NAME = '$duplicateTableName'
                                 AND COLUMN_NAME = '$columnName'
                             ");
-                            if (empty($columnExists)) {
-                                DB::statement("ALTER TABLE $duplicateTableName ADD COLUMN $columnName $columnType AFTER $afterColumn");
+                            if (empty($duplicateColumnExists)) {
+                                DB::statement("ALTER TABLE `$duplicateTableName` ADD COLUMN `$columnName` $columnType AFTER `$afterColumn`");
                                 $dynamicDuplicateModel = new DynamicModel($duplicateTableName);
                                 $dynamicDuplicateModel->refreshFillableFromTable();
                             }
@@ -833,12 +849,12 @@ class FormController extends Controller
 
                     $tableDatasExists = DB::select("SHOW TABLES LIKE '$tableDataName'");
                     if (empty($tableDatasExists)) {
-                        $createTableSQL = "CREATE TABLE $tableDataName (id INT AUTO_INCREMENT PRIMARY KEY";
+                        $createDataTableSQL = "CREATE TABLE `$tableDataName` (id INT AUTO_INCREMENT PRIMARY KEY";
                         foreach ($columns as $columnName => $columnType) {
-                            $createTableSQL .= ", $columnName TEXT";
+                            $createDataTableSQL .= ", `$columnName` TEXT";
                         }
 
-                        $createTableSQL .= ", parent_id INT NULL,invoke_date DATE NULL,
+                        $createDataTableSQL .= ", parent_id INT NULL,invoke_date DATE NULL,
                                             CE_emp_id VARCHAR(255) NULL,
                                             QA_emp_id VARCHAR(255) NULL,
                                             chart_status ENUM('CE_Assigned','CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','AR_non_workable','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold','Revoke','Rebuttal','Auto_Close') DEFAULT 'CE_Assigned',
@@ -879,20 +895,28 @@ class FormController extends Controller
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                             updated_at TIMESTAMP NULL,
                                             deleted_at TIMESTAMP NULL)";
-                        DB::statement($createTableSQL);
+                        //DB::statement($createTableSQL);
+                        try {
+                            Log::debug("Executing SQL: " . $createDataTableSQL);
+                            DB::statement($createDataTableSQL);
+                        } catch (\Exception $e) {
+                            Log::error("SQL failed: " . $createDataTableSQL);
+                            Log::error($e->getMessage());
+                            throw $e;
+                        }
                         $dynamicModel = new DynamicModel($tableDataName);
                     } else {
                         $afterColumn = 'created_at';
                         foreach ($columns as $columnName => $columnType) {
-                            $columnExists = DB::select("
+                            $dataColumnExists = DB::select("
                                 SELECT COLUMN_NAME
                                 FROM INFORMATION_SCHEMA.COLUMNS
                                 WHERE TABLE_NAME = '$tableDataName'
                                 AND COLUMN_NAME = '$columnName'
                             ");
-                            if (empty($columnExists)) {
+                            if (empty($dataColumnExists)) {
 
-                                DB::statement("ALTER TABLE $tableDataName ADD COLUMN $columnName TEXT AFTER $afterColumn");
+                                DB::statement("ALTER TABLE `$tableDataName` ADD COLUMN `$columnName` TEXT AFTER `$afterColumn`");
                                 $dynamicModel = new DynamicModel($tableDataName);
                                 $dynamicModel->refreshFillableFromTable();
                             }
@@ -901,9 +925,9 @@ class FormController extends Controller
 
                     $tableHistoryExists = DB::select("SHOW TABLES LIKE '$tableHistoryName'");
                     if (empty($tableHistoryExists)) {
-                        $createTableSQL = "CREATE TABLE $tableHistoryName (id INT AUTO_INCREMENT PRIMARY KEY";
+                        $createTableSQL = "CREATE TABLE `$tableHistoryName` (id INT AUTO_INCREMENT PRIMARY KEY";
                         foreach ($columns as $columnName => $columnType) {
-                            $createTableSQL .= ", $columnName TEXT";
+                            $createTableSQL .= ", `$columnName` TEXT";
                         }
 
                         $createTableSQL .= ", parent_id INT NULL,invoke_date DATE NULL,
@@ -947,20 +971,28 @@ class FormController extends Controller
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                             updated_at TIMESTAMP NULL,
                                             deleted_at TIMESTAMP NULL)";
-                         DB::statement($createTableSQL);
+                        // DB::statement($createTableSQL);
+                         try {
+                            Log::debug("Executing SQL: " . $createTableSQL);
+                            DB::statement($createTableSQL);
+                        } catch (\Exception $e) {
+                            Log::error("SQL failed: " . $createTableSQL);
+                            Log::error($e->getMessage());
+                            throw $e;
+                        }
                         $dynamicModel = new DynamicModel($tableHistoryName);
                     } else {
                         $afterColumn = 'created_at';
                         foreach ($columns as $columnName => $columnType) {
-                            $columnExists = DB::select("
+                            $histortColumnExists = DB::select("
                                 SELECT COLUMN_NAME
                                 FROM INFORMATION_SCHEMA.COLUMNS
                                 WHERE TABLE_NAME = '$tableHistoryName'
                                 AND COLUMN_NAME = '$columnName'
                             ");
-                            if (empty($columnExists)) {
+                            if (empty($histortColumnExists)) {
 
-                                DB::statement("ALTER TABLE $tableHistoryName ADD COLUMN $columnName TEXT AFTER $afterColumn");
+                                DB::statement("ALTER TABLE `$tableHistoryName` ADD COLUMN `$columnName` TEXT AFTER `$afterColumn`");
                                 $dynamicModel = new DynamicModel($tableHistoryName);
                                 $dynamicModel->refreshFillableFromTable();
                             }
@@ -969,9 +1001,9 @@ class FormController extends Controller
 
                     $tableRevokeHistoryExists = DB::select("SHOW TABLES LIKE '$tableRevokeHistoryName'");
                     if (empty($tableRevokeHistoryExists)) {
-                        $createTableSQL = "CREATE TABLE $tableRevokeHistoryName (id INT AUTO_INCREMENT PRIMARY KEY";
+                        $createTableSQL = "CREATE TABLE `$tableRevokeHistoryName` (id INT AUTO_INCREMENT PRIMARY KEY";
                         foreach ($columns as $columnName => $columnType) {
-                            $createTableSQL .= ", $columnName TEXT";
+                            $createTableSQL .= ", `$columnName` TEXT";
                         }
 
                         $createTableSQL .= ", parent_id INT NULL,invoke_date DATE NULL,
@@ -1015,28 +1047,35 @@ class FormController extends Controller
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                             updated_at TIMESTAMP NULL,
                                             deleted_at TIMESTAMP NULL)";
-                        DB::statement($createTableSQL);
+                        //DB::statement($createTableSQL);
+                         try {
+                            Log::debug("Executing SQL: " . $createTableSQL);
+                            DB::statement($createTableSQL);
+                        } catch (\Exception $e) {
+                            Log::error("SQL failed: " . $createTableSQL);
+                            Log::error($e->getMessage());
+                            throw $e;
+                        }
                         $dynamicModel = new DynamicModel($tableRevokeHistoryName);
                     } else {
                         $afterColumn = 'created_at';
                         foreach ($columns as $columnName => $columnType) {
-                            $columnExists = DB::select("
+                            $revokeColumnExists = DB::select("
                                 SELECT COLUMN_NAME
                                 FROM INFORMATION_SCHEMA.COLUMNS
                                 WHERE TABLE_NAME = '$tableRevokeHistoryName'
                                 AND COLUMN_NAME = '$columnName'
                             ");
-                            if (empty($columnExists)) {
+                            if (empty($revokeColumnExists)) {
 
-                                DB::statement("ALTER TABLE $tableRevokeHistoryName ADD COLUMN $columnName TEXT AFTER $afterColumn");
+                                DB::statement("ALTER TABLE `$tableRevokeHistoryName` ADD COLUMN `$columnName` TEXT AFTER `$afterColumn`");
                                 $dynamicModel = new DynamicModel($tableRevokeHistoryName);
                                 $dynamicModel->refreshFillableFromTable();
                             }
                         }
                     }
-                   if (DB::transactionLevel() > 0) {
                         DB::commit();
-                    }
+                  
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
             } catch (\Exception $e) {
                  if (DB::transactionLevel() > 0) {
