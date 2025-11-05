@@ -6,24 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class DynamicModel extends Model
 {
-    protected $targetDir;
-
     public function __construct($table)
     {
+        parent::__construct();
+
         $this->setTable($table);
         $this->setFillableFromTable($table);
         $this->setGuardedFromFillable();
 
-        // detect writable location
-        $this->targetDir = is_writable(app_path('Models'))
-            ? app_path('Models')
-            : storage_path('app/Models');
-
-        // create model file (always refresh)
-        $this->createOrUpdateModelFile($table);
+        // Update or create the model file dynamically
+        $this->updateOrCreateModelFile($table);
     }
 
     protected function setFillableFromTable($table)
@@ -34,49 +30,97 @@ class DynamicModel extends Model
 
     protected function setGuardedFromFillable()
     {
-        $this->guarded = [];
+        $this->guarded = array_diff($this->getFillable(), $this->guarded);
     }
 
-    protected function createOrUpdateModelFile($table)
+    /**
+     * Creates or updates the model file in app/Models/
+     */
+    protected function updateOrCreateModelFile($table)
     {
         $modelName = Str::studly($table);
-        $modelFilePath = "{$this->targetDir}/{$modelName}.php";
-        $modelTemplatePath = base_path('stubs/model_template.stub');
+        $modelFilePath = app_path("Models/{$modelName}.php");
 
-        if (!File::exists($modelTemplatePath)) {
-            throw new \Exception("Model template not found: {$modelTemplatePath}");
+        // Ensure directory exists
+        $targetDir = dirname($modelFilePath);
+        if (!File::exists($targetDir)) {
+            File::makeDirectory($targetDir, 0777, true);
         }
 
-        // ensure directory exists
-        if (!File::exists($this->targetDir)) {
-            File::makeDirectory($this->targetDir, 0755, true);
+        // Fetch all columns
+        $columns = DB::getSchemaBuilder()->getColumnListing($table);
+        $fillableArray = "protected \$fillable = [\n    '" . implode("',\n    '", $columns) . "'\n];";
+        $softDeletesLine = in_array('deleted_at', $columns) ? "use Illuminate\\Database\\Eloquent\\SoftDeletes;\n\n    use SoftDeletes;" : '';
+
+        // If file doesn’t exist, create a new one
+        if (!File::exists($modelFilePath)) {
+            $content = <<<PHP
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+{$softDeletesLine}
+
+class {$modelName} extends Model
+{
+    {$fillableArray}
+}
+PHP;
+            File::put($modelFilePath, $content);
+            return;
         }
 
-        $modelTemplate = File::get($modelTemplatePath);
-        $modelTemplate = str_replace('{{MODEL_NAME}}', $modelName, $modelTemplate);
-        $modelTemplate = str_replace('{{TABLE_PLACEHOLDER}}', $table, $modelTemplate);
-        $modelTemplate = str_replace('{{SOFT_DELETES_PLACEHOLDER}}', $this->getSoftDeletesStatement(), $modelTemplate);
-        $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);
+        // --- If file exists, update fillable ---
+        try {
+            $content = File::get($modelFilePath);
 
-        // overwrite or create the file
-        File::put($modelFilePath, $modelTemplate);
+            // Update existing $fillable block
+            if (preg_match('/protected\s+\$fillable\s*=\s*\[[^\]]*\];/m', $content)) {
+                $content = preg_replace(
+                    '/protected\s+\$fillable\s*=\s*\[[^\]]*\];/m',
+                    $fillableArray,
+                    $content
+                );
+            } else {
+                // Insert if missing
+                $content = preg_replace(
+                    '/class\s+[A-Za-z_]+\s+extends\s+[A-Za-z_]+/',
+                    "$0\n{\n    {$fillableArray}",
+                    $content
+                );
+            }
+
+            // Ensure SoftDeletes included if deleted_at exists
+            if (in_array('deleted_at', $columns) && !str_contains($content, 'use SoftDeletes;')) {
+                $content = preg_replace(
+                    '/use Illuminate\\\\Database\\\\Eloquent\\\\Model;/',
+                    "use Illuminate\\Database\\Eloquent\\Model;\nuse Illuminate\\Database\\Eloquent\\SoftDeletes;",
+                    $content
+                );
+
+                $content = preg_replace(
+                    '/class\s+[A-Za-z_]+\s+extends\s+[A-Za-z_]+\s*\{/',
+                    "$0\n    use SoftDeletes;",
+                    $content
+                );
+            }
+
+            File::put($modelFilePath, $content);
+            Log::info("✅ Model file updated successfully: $modelFilePath");
+        } catch (\Exception $e) {
+            Log::error("❌ Failed to update model file: " . $e->getMessage());
+        }
     }
 
-    protected function getSoftDeletesStatement()
-    {
-        $hasDeletedAtColumn = in_array('deleted_at', $this->fillable);
-        return $hasDeletedAtColumn ? 'use SoftDeletes;' : '';
-    }
-
-    protected function getFillableColumnsStatement()
-    {
-        return implode(', ', array_map(fn($col) => "'{$col}'", $this->fillable));
-    }
-
+    /**
+     * Refresh fillable fields dynamically from DB
+     */
     public function refreshFillableFromTable()
     {
-        $this->setFillableFromTable($this->getTable());
+        $table = $this->getTable();
+        $this->setFillableFromTable($table);
         $this->setGuardedFromFillable();
-        $this->createOrUpdateModelFile($this->getTable()); // ✅ rewrite model file with new fields
+        $this->updateOrCreateModelFile($table);
     }
 }
