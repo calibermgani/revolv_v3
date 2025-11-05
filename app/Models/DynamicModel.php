@@ -16,7 +16,7 @@ class DynamicModel extends Model
         $this->setFillableFromTable($table);
         $this->setGuardedFromFillable();
 
-        // Create the model file dynamically
+        // Create the model file dynamically (safe with fallback)
         $this->createModelFile($table);
     }
 
@@ -34,34 +34,53 @@ class DynamicModel extends Model
     protected function createModelFile($table)
     {
         $modelName = Str::studly($table);
-        //$modelNamespace = "App\\Models\\{$modelName}";
-        $modelNamespace = "App/Models/{$modelName}";
-        $modelFilePath = app_path("Models/{$modelName}.php");
+        $preferredPath = app_path('Models');
+        $fallbackPath = storage_path('app/Models');
+
+        // ✅ 1. Choose safe writable directory
+        $targetDir = is_writable($preferredPath) ? $preferredPath : $fallbackPath;
+
+        // ✅ 2. Create directory if not exists
+        if (!File::exists($targetDir)) {
+            File::makeDirectory($targetDir, 0755, true);
+        }
+
+        $modelFilePath = "{$targetDir}/{$modelName}.php";
         $modelTemplatePath = base_path('stubs/model_template.stub');
 
-        // Replace placeholders in the template
+        if (!File::exists($modelTemplatePath)) {
+            throw new \Exception("Model template not found: {$modelTemplatePath}");
+        }
+
+        // ✅ 3. Prepare model content
         $modelTemplate = File::get($modelTemplatePath);
         $modelTemplate = str_replace('{{MODEL_NAME}}', $modelName, $modelTemplate);
         $modelTemplate = str_replace('{{TABLE_PLACEHOLDER}}', $table, $modelTemplate);
         $modelTemplate = str_replace('{{SOFT_DELETES_PLACEHOLDER}}', $this->getSoftDeletesStatement(), $modelTemplate);
         $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);
 
-        // Save the modified template as the actual model file
-        File::put($modelFilePath, $modelTemplate);
-       // shell_exec('/usr/bin/php /var/www/html/revolv_v3/artisan make:model App/Models/TestModel');
-     
+        // ✅ 4. Write model file safely
+        try {
+            File::put($modelFilePath, $modelTemplate);
+        } catch (\Exception $e) {
+            throw new \Exception("Failed to write model file to {$modelFilePath}. Error: " . $e->getMessage());
+        }
+            dd([
+            'modelFilePath' => $modelFilePath,
+            'exists' => File::exists(dirname($modelFilePath)),
+            'isWritable' => is_writable(dirname($modelFilePath)),
+            'owner' => fileowner(dirname($modelFilePath)),
+            'currentUser' => get_current_user(),
+        ],File::exists($modelFilePath) && str_contains($targetDir, 'app/Models'));
 
-        // Load the created model class
-        if (File::exists($modelFilePath)) {
+
+        // ✅ 5. Load the created model class (only if inside app/Models)
+        if (File::exists($modelFilePath) && str_contains($targetDir, 'app/Models')) {
             require_once $modelFilePath;
         }
-        //shell_exec("/usr/bin/php /var/www/html/revolv_v3/artisan make:model {$modelNamespace}");
 
-        // Run the Artisan command to make the model
-        Artisan::call('make:model', [
-            'name' => $modelNamespace,
-            '--no-interaction' => true,
-        ]);
+        // ⚠️ Remove artisan shell_exec to avoid duplicate model creation
+        // shell_exec("/usr/bin/php /var/www/html/revolv_v3/artisan make:model {$modelNamespace}");
     }
 
     // Override the create method to prevent the default record insertion
@@ -69,19 +88,16 @@ class DynamicModel extends Model
     {
         return parent::query()->create($attributes);
     }
+
     protected function getSoftDeletesStatement()
     {
-        // Check if the table has 'deleted_at' column
         $hasDeletedAtColumn = in_array('deleted_at', $this->fillable);
-
         return $hasDeletedAtColumn ? 'use SoftDeletes;' : '';
     }
 
     protected function getFillableColumnsStatement()
     {
-        return implode(', ', array_map(function ($column) {
-            return "'{$column}'";
-        }, $this->fillable));
+        return implode(', ', array_map(fn($column) => "'{$column}'", $this->fillable));
     }
 
     public function refreshFillableFromTable()
