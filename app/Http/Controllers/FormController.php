@@ -558,7 +558,7 @@ class FormController extends Controller
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userInfo'] && Session::get('loginDetails')['userInfo']['user_id'] !=null) {
             
             try {
-                DB::beginTransaction();
+              //  DB::beginTransaction();
                 $data = $request->all();
                 $additionalLabelArray = [
                         "AR Denial Codes",                    
@@ -644,10 +644,8 @@ class FormController extends Controller
                          $columnName = Str::lower(str_replace([' ', '/'], ['_', '_else_'], $data['label_name'][$i]));
                         if ($data['input_type'][$i] == 'text' || $data['input_type'][$i] == 'date_range') {
                             $columns[$columnName] = 'TEXT';
-                        } else if ($data['input_type'][$i] == 'select' || $data['input_type'][$i] == 'checkbox' || $data['input_type'][$i] == 'radio') {
-                          
-                                $columns[$columnName] = "TEXT";
-                            
+                        } else if ($data['input_type'][$i] == 'select' || $data['input_type'][$i] == 'checkbox' || $data['input_type'][$i] == 'radio') {                          
+                                $columns[$columnName] = "TEXT";                          
                            
                         } else if ($data['input_type'][$i] == 'date') {
                             $columns[$columnName] = 'DATE';
@@ -1089,13 +1087,13 @@ class FormController extends Controller
                             }
                         }
                     }
-                        DB::commit();
+                       // DB::commit();
                   
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
             } catch (\Exception $e) {
-                 if (DB::transactionLevel() > 0) {
-                    DB::rollBack();
-                }
+                //  if (DB::transactionLevel() > 0) {
+                //     DB::rollBack();
+                // }
                  Log::error('Form configuration update failed: ' . $e->getMessage());
                 return response()->json(['error' => $e->getMessage()], 500);
                 Log::debug($e->getMessage());
