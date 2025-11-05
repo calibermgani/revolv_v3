@@ -54,13 +54,13 @@ class DynamicModel extends Model
         if (File::exists($modelFilePath)) {
             require_once $modelFilePath;
         }
-        //shell_exec("/usr/bin/php \var\www\html/revolv_v3/artisan make:model {$modelNamespace}");
+        shell_exec("/usr/bin/php \var\www\html/revolv_v3/artisan make:model {$modelNamespace}");
 
-       
-        Artisan::call('make:model', [
-            'name' => $modelNamespace,
-            '--no-interaction' => true,
-        ]);
+        // Run the Artisan command to make the model
+        // Artisan::call('make:model', [
+        //     'name' => $modelNamespace,
+        //     '--no-interaction' => true,
+        // ]);
     }
 
     // Override the create method to prevent the default record insertion
