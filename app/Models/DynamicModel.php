@@ -37,7 +37,7 @@ class DynamicModel extends Model
         //$modelNamespace = "App\\Models\\{$modelName}";
         $modelNamespace = "App/Models/{$modelName}";
         $modelFilePath = app_path("Models/{$modelName}.php");
-        $modelTemplatePath = base_path('stubs/model_template.stub');
+        $modelTemplatePath = base_path('stubs/model_template.stub');dd($modelNamespace, $modelFilePath, $modelTemplatePath,File::exists($modelFilePath));
      if (!File::exists($modelFilePath)) {
         // Replace placeholders in the template
         $modelTemplate = File::get($modelTemplatePath);
