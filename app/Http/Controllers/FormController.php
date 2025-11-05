@@ -558,7 +558,7 @@ class FormController extends Controller
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userInfo'] && Session::get('loginDetails')['userInfo']['user_id'] !=null) {
             
             try {
-                DB::beginTransaction();
+              //  DB::beginTransaction();
                 $data = $request->all();
                 $additionalLabelArray = [
                         "AR Denial Codes",                    
@@ -568,13 +568,12 @@ class FormController extends Controller
                     $additionalInputTypeArray = [
                         "text",
                         "text",
-                        "text"
+                        "select"
                     ];
                     $additionalOptionsArray = [
                         null,
                         null,
-                         null
-                       
+                        "Calling,Non-Calling,Webportal"
                     ];
                     $additionalUserTypeArray = [
                         "3",
@@ -642,7 +641,6 @@ class FormController extends Controller
                         $requiredData['project_type'] = $data['project_type_val'];
                         $requiredData['claim_type'] = $data['claim_type_val'];
                         $existingRecord->update($requiredData);
-                                                
                     } else {
                         $requiredData['project_id'] = $data['project_id_val'];
                         $requiredData['sub_project_id'] = $data['sub_project_id_val'] != null ? $data['sub_project_id_val'] : NULL;
@@ -762,7 +760,7 @@ class FormController extends Controller
                                 FROM INFORMATION_SCHEMA.COLUMNS
                                 WHERE TABLE_NAME = '$tableName'
                                 AND COLUMN_NAME = '$columnName'
-                            ");
+                            ");dd($columnExists);
                             if (empty($columnExists)) {
                                 //DB::statement("ALTER TABLE $tableName ADD COLUMN $columnName $columnType AFTER $afterColumn");
                                 DB::statement("ALTER TABLE `$tableName` ADD COLUMN `$columnName` $columnType AFTER `$afterColumn`");
@@ -1076,13 +1074,13 @@ class FormController extends Controller
                             }
                         }
                     }
-                       DB::commit();
+                       // DB::commit();
                   
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
             } catch (\Exception $e) {
-                 if (DB::transactionLevel() > 0) {
-                    DB::rollBack();
-                }
+                //  if (DB::transactionLevel() > 0) {
+                //     DB::rollBack();
+                // }
                  Log::error('Form configuration update failed: ' . $e->getMessage());
                 return response()->json(['error' => $e->getMessage()], 500);
                 Log::debug($e->getMessage());
