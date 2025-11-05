@@ -863,7 +863,7 @@ class FormController extends Controller
                                 AND COLUMN_NAME = '$columnName'
                             ");
                             if (empty($duplicateColumnExists)) {
-                                DB::statement("ALTER TABLE `$duplicateTableName` ADD COLUMN `$columnName` $columnType AFTER `$afterColumn`");
+                                DB::statement("ALTER TABLE `$duplicateTableName` ADD COLUMN `$columnName` TEXT AFTER `$afterColumn`");
                                 $dynamicDuplicateModel = new DynamicModel($duplicateTableName);
                                 $dynamicDuplicateModel->refreshFillableFromTable();
                             }
