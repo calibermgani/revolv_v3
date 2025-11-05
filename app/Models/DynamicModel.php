@@ -53,13 +53,7 @@ class DynamicModel extends Model
             if (!is_writable(dirname($modelFilePath))) {
                 chmod(dirname($modelFilePath), 0777);
             }
-        dd([
-            'modelFilePath' => $modelFilePath,
-            'exists' => File::exists(dirname($modelFilePath)),
-            'isWritable' => is_writable(dirname($modelFilePath)),
-            'owner' => fileowner(dirname($modelFilePath)),
-            'currentUser' => get_current_user(),
-        ]);
+  
 
 
         // Save the modified template as the actual model file
