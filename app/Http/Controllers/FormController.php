@@ -1074,7 +1074,9 @@ class FormController extends Controller
                             }
                         }
                     }
+                    if (DB::getPdo()->inTransaction()) {
                         DB::commit();
+                    }
                   
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
             } catch (\Exception $e) {
