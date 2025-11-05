@@ -781,6 +781,7 @@ class FormController extends Controller
                                 $dynamicModel->refreshFillableFromTable();
                             } else {
                                  $dynamicModel = new DynamicModel($tableName);
+                                   $dynamicModel->refreshFillableFromTable();
                             }
                         }
                     }
