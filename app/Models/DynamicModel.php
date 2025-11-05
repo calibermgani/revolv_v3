@@ -31,47 +31,94 @@ class DynamicModel extends Model
         $this->guarded = array_diff($this->getFillable(), $this->guarded);
     }
 
-    protected function createModelFile($table)
-    {
-        $modelName = Str::studly($table);
-        //$modelNamespace = "App\\Models\\{$modelName}";
-        $modelNamespace = "App/Models/{$modelName}";
-        $modelFilePath = app_path("Models/{$modelName}.php");
-        $modelTemplatePath = base_path('stubs/model_template.stub');
+    // protected function createModelFile($table)
+    // {
+    //     $modelName = Str::studly($table);
+    //     //$modelNamespace = "App\\Models\\{$modelName}";
+    //     $modelNamespace = "App/Models/{$modelName}";
+    //     $modelFilePath = app_path("Models/{$modelName}.php");
+    //     $modelTemplatePath = base_path('stubs/model_template.stub');
 
-        // Replace placeholders in the template
-        $modelTemplate = File::get($modelTemplatePath);
-        $modelTemplate = str_replace('{{MODEL_NAME}}', $modelName, $modelTemplate);
-        $modelTemplate = str_replace('{{TABLE_PLACEHOLDER}}', $table, $modelTemplate);
-        $modelTemplate = str_replace('{{SOFT_DELETES_PLACEHOLDER}}', $this->getSoftDeletesStatement(), $modelTemplate);
-        $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);
-        // ✅ Ensure the Models directory exists and is writable
-            if (!File::exists(dirname($modelFilePath))) {
-                File::makeDirectory(dirname($modelFilePath), 0777, true, true);
-            }
+    //     // Replace placeholders in the template
+    //     $modelTemplate = File::get($modelTemplatePath);
+    //     $modelTemplate = str_replace('{{MODEL_NAME}}', $modelName, $modelTemplate);
+    //     $modelTemplate = str_replace('{{TABLE_PLACEHOLDER}}', $table, $modelTemplate);
+    //     $modelTemplate = str_replace('{{SOFT_DELETES_PLACEHOLDER}}', $this->getSoftDeletesStatement(), $modelTemplate);
+    //     $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);
+    //     // ✅ Ensure the Models directory exists and is writable
+    //         if (!File::exists(dirname($modelFilePath))) {
+    //             File::makeDirectory(dirname($modelFilePath), 0777, true, true);
+    //         }
 
-            if (!is_writable(dirname($modelFilePath))) {
-                chmod(dirname($modelFilePath), 0777);
-            }
+    //         if (!is_writable(dirname($modelFilePath))) {
+    //             chmod(dirname($modelFilePath), 0777);
+    //         }
     
 
 
-        // Save the modified template as the actual model file
-        File::put($modelFilePath, $modelTemplate);
+    //     // Save the modified template as the actual model file
+    //     File::put($modelFilePath, $modelTemplate);
         
 
-        // Load the created model class
-        if (File::exists($modelFilePath)) {
-            require_once $modelFilePath;
-        }
-        shell_exec("/usr/bin/php \var\www\html/revolv_v3/artisan make:model {$modelNamespace}");
+    //     // Load the created model class
+    //     if (File::exists($modelFilePath)) {
+    //         require_once $modelFilePath;
+    //     }
+    //     shell_exec("/usr/bin/php \var\www\html/revolv_v3/artisan make:model {$modelNamespace}");
 
-        // Run the Artisan command to make the model
-        // Artisan::call('make:model', [
-        //     'name' => $modelNamespace,
-        //     '--no-interaction' => true,
-        // ]);
+    //     // Run the Artisan command to make the model
+    //     // Artisan::call('make:model', [
+    //     //     'name' => $modelNamespace,
+    //     //     '--no-interaction' => true,
+    //     // ]);
+    // }
+    protected function createModelFile($table)
+{
+    $modelName = Str::studly($table);
+    $modelFilePath = app_path("Models/{$modelName}.php");
+    $modelTemplatePath = base_path('stubs/model_template.stub');
+
+    // ✅ Step 1: Ensure directory exists
+    if (!File::exists(dirname($modelFilePath))) {
+        File::makeDirectory(dirname($modelFilePath), 0777, true, true);
     }
+
+    // ✅ Step 2: Force directory ownership & permissions (self-healing after git pull)
+    try {
+        @chown(dirname($modelFilePath), 'apache');
+        @chgrp(dirname($modelFilePath), 'apache');
+        @chmod(dirname($modelFilePath), 0777);
+    } catch (\Exception $e) {
+        // Log but don’t break execution
+        \Log::warning("Permission fix failed for Models directory: " . $e->getMessage());
+    }
+
+    // ✅ Step 3: Generate model content from template
+    $modelTemplate = File::get($modelTemplatePath);
+    $modelTemplate = str_replace('{{MODEL_NAME}}', $modelName, $modelTemplate);
+    $modelTemplate = str_replace('{{TABLE_PLACEHOLDER}}', $table, $modelTemplate);
+    $modelTemplate = str_replace('{{SOFT_DELETES_PLACEHOLDER}}', $this->getSoftDeletesStatement(), $modelTemplate);
+    $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);
+
+    // ✅ Step 4: Write file (overwrite-safe)
+    File::put($modelFilePath, $modelTemplate);
+
+    // ✅ Step 5: Fix new file permissions
+    try {
+        @chmod($modelFilePath, 0666);
+        @chown($modelFilePath, 'apache');
+        @chgrp($modelFilePath, 'apache');
+        @exec("chcon -t httpd_sys_rw_content_t " . escapeshellarg($modelFilePath));
+    } catch (\Exception $e) {
+        \Log::warning("Permission fix failed for model file {$modelName}: " . $e->getMessage());
+    }
+
+    // ✅ Step 6: Load model immediately
+    if (File::exists($modelFilePath)) {
+        require_once $modelFilePath;
+    }
+}
+
 
     // Override the create method to prevent the default record insertion
     public static function create(array $attributes = [])
