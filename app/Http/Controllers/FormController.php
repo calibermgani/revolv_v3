@@ -625,6 +625,7 @@ class FormController extends Controller
                 $columns = [];
                 for($i=0;$i<count($data['label_name']);$i++) {
                     $existingRecord = $data['sub_project_id_val'] != null ? formConfiguration::where('project_id',$data['project_id_val'])->where('sub_project_id',$data['sub_project_id_val'])->where('label_name',$data['label_name'][$i])->first() : formConfiguration::where('project_id',$data['project_id_val'])->where('label_name',$data['label_name'][$i])->first();
+                   dd($existingRecord);
                     if($existingRecord)
                     {
                         $requiredData['project_id'] = $data['project_id_val'];
