@@ -45,6 +45,14 @@ class DynamicModel extends Model
         $modelTemplate = str_replace('{{TABLE_PLACEHOLDER}}', $table, $modelTemplate);
         $modelTemplate = str_replace('{{SOFT_DELETES_PLACEHOLDER}}', $this->getSoftDeletesStatement(), $modelTemplate);
         $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);
+        // ✅ Ensure the Models directory exists and is writable
+            if (!File::exists(dirname($modelFilePath))) {
+                File::makeDirectory(dirname($modelFilePath), 0777, true, true);
+            }
+
+            if (!is_writable(dirname($modelFilePath))) {
+                chmod(dirname($modelFilePath), 0777);
+            }
         dd([
             'modelFilePath' => $modelFilePath,
             'exists' => File::exists(dirname($modelFilePath)),
