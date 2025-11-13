@@ -69,7 +69,7 @@ class ProcessDayWiseAimsProduction implements ShouldQueue
                         $arColumnExists = Schema::hasColumn($tableName, 'ar_at');
                         $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
                         $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
-
+dd($this->startDate, $this->endDate);
                         // ----- Query results -----
                         $arData = $modelClass::selectRaw("CE_emp_id, COUNT(*) as cnt")
                             ->whereIn('CE_emp_id', $existingPrjUsers)
