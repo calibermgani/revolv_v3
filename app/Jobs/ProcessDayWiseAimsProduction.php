@@ -37,8 +37,8 @@ class ProcessDayWiseAimsProduction implements ShouldQueue
             // Fetch project list from your existing helper
             $projects = collect(app('App\Http\Controllers\ProjectController')->getProjects());
             $BodyDetails = [];
-
-            $projects->each(function ($project) use (&$BodyDetails) {
+$workDate1 = "2025-11-11";
+            $projects->each(function ($project) use (&$BodyDetails, $workDate1) {
                 try {
                     $prjDetails = Helpers::projectName($project['id']);
                     $prjName = $prjDetails->project_name ?? null;
@@ -94,13 +94,13 @@ class ProcessDayWiseAimsProduction implements ShouldQueue
                             ->groupBy('emp_id')
                             ->get()
                             ->toArray();
-$workDate1 = "2025-11-11";
+
                         $BodyDetails[] = [
                             'project_id' => $project['id'],
                             'sub_project_id' => $subKey,
                             'arData' => $arData,
                             'callChartResults' => $callChartResults,
-                            'workDate' => $this->workDate,
+                            'workDate' => $workDate1,
                         ];
 
                         $duration = round(microtime(true) - $startTime, 2);
@@ -112,10 +112,10 @@ $workDate1 = "2025-11-11";
             });
 
             // Cache final results (for later retrieval)
-            $cacheKey = "aims_production_{$this->workDate}";
+            $cacheKey = "aims_production_{$workDate1}";
             Cache::put($cacheKey, $BodyDetails, now()->addHours(6));
 
-            Log::info("Completed ProcessDayWiseAimsProduction for date {$this->workDate}");
+            Log::info("Completed ProcessDayWiseAimsProduction for date {$workDate1}");
 
         } catch (\Exception $e) {
             Log::error("Error in ProcessDayWiseAimsProduction: " . $e->getMessage());
