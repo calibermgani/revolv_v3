@@ -69,14 +69,15 @@ class ProcessDayWiseAimsProduction implements ShouldQueue
                         $arColumnExists = Schema::hasColumn($tableName, 'ar_at');
                         $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
                         $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
-                        $this->startDate = "2025-11-11 08:00:00";
-                        $this->endDate = "2025-11-12 07:59:00";
+                        $startDate1 = "2025-11-11 08:00:00";
+                        $endDate1 = "2025-11-12 07:59:00";
                         //
 
                         // ----- Query results -----
                         $arData = $modelClass::selectRaw("CE_emp_id, COUNT(*) as cnt")
                             ->whereIn('CE_emp_id', $existingPrjUsers)
-                            ->whereBetween($arColumnToUse, [$this->startDate, $this->endDate])
+                            // ->whereBetween($arColumnToUse, [$this->startDate, $this->endDate])
+                            ->whereBetween($arColumnToUse, [$startDate1, $endDate1])
                             ->groupBy('CE_emp_id')
                             ->get()
                             ->toArray();
@@ -89,11 +90,11 @@ class ProcessDayWiseAimsProduction implements ShouldQueue
                             ->whereIn('emp_id', $existingPrjUsers)
                             ->where('project_id', $project['id'])
                             ->where('sub_project_id', $subKey)
-                            ->whereBetween('start_time', [$this->startDate, $this->endDate])
+                            ->whereBetween('start_time', [$startDate1, $endDate1])
                             ->groupBy('emp_id')
                             ->get()
                             ->toArray();
-
+$workDate1 = "2025-11-11";
                         $BodyDetails[] = [
                             'project_id' => $project['id'],
                             'sub_project_id' => $subKey,
