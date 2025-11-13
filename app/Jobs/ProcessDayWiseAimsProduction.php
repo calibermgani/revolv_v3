@@ -37,8 +37,8 @@ class ProcessDayWiseAimsProduction implements ShouldQueue
             // Fetch project list from your existing helper
             $projects = collect(app('App\Http\Controllers\ProjectController')->getProjects());
             $BodyDetails = [];
-$workDate1 = "2025-11-11";
-            $projects->each(function ($project) use (&$BodyDetails, $workDate1) {
+
+            $projects->each(function ($project) use (&$BodyDetails) {
                 try {
                     $prjDetails = Helpers::projectName($project['id']);
                     $prjName = $prjDetails->project_name ?? null;
@@ -69,15 +69,11 @@ $workDate1 = "2025-11-11";
                         $arColumnExists = Schema::hasColumn($tableName, 'ar_at');
                         $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
                         $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
-                        $startDate1 = "2025-11-11 08:00:00";
-                        $endDate1 = "2025-11-12 07:59:00";
-                        //
 
                         // ----- Query results -----
                         $arData = $modelClass::selectRaw("CE_emp_id, COUNT(*) as cnt")
                             ->whereIn('CE_emp_id', $existingPrjUsers)
-                            // ->whereBetween($arColumnToUse, [$this->startDate, $this->endDate])
-                            ->whereBetween($arColumnToUse, [$startDate1, $endDate1])
+                            ->whereBetween($arColumnToUse, [$this->startDate, $this->endDate])
                             ->groupBy('CE_emp_id')
                             ->get()
                             ->toArray();
@@ -90,7 +86,7 @@ $workDate1 = "2025-11-11";
                             ->whereIn('emp_id', $existingPrjUsers)
                             ->where('project_id', $project['id'])
                             ->where('sub_project_id', $subKey)
-                            ->whereBetween('start_time', [$startDate1, $endDate1])
+                            ->whereBetween('start_time', [$this->startDate, $this->endDate])
                             ->groupBy('emp_id')
                             ->get()
                             ->toArray();
@@ -100,7 +96,7 @@ $workDate1 = "2025-11-11";
                             'sub_project_id' => $subKey,
                             'arData' => $arData,
                             'callChartResults' => $callChartResults,
-                            'workDate' => $workDate1,
+                            'workDate' => $this->workDate,
                         ];
 
                         $duration = round(microtime(true) - $startTime, 2);
@@ -112,10 +108,10 @@ $workDate1 = "2025-11-11";
             });
 
             // Cache final results (for later retrieval)
-            $cacheKey = "aims_production_{$workDate1}";
+            $cacheKey = "aims_production_{$this->workDate}";
             Cache::put($cacheKey, $BodyDetails, now()->addHours(6));
 
-            Log::info("Completed ProcessDayWiseAimsProduction for date {$workDate1}");
+            Log::info("Completed ProcessDayWiseAimsProduction for date {$this->workDate}");
 
         } catch (\Exception $e) {
             Log::error("Error in ProcessDayWiseAimsProduction: " . $e->getMessage());
