@@ -72,7 +72,7 @@ class ProcessDayWiseAimsProduction implements ShouldQueue
                         $this->startDate = "2025-11-11 08:00:00";
                         $this->endDate = "2025-11-12 07:59:00";
                         //
-dd($this->startDate, $this->endDate);
+
                         // ----- Query results -----
                         $arData = $modelClass::selectRaw("CE_emp_id, COUNT(*) as cnt")
                             ->whereIn('CE_emp_id', $existingPrjUsers)
