@@ -1038,9 +1038,10 @@ class ProductionController extends Controller
                  $data['coder_work_date'] = $data['ar_at'] = NULL;
                 $autoCloseRecords = $originalModelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->get();
                 $autoCloseRecordsCount = count($autoCloseRecords);
-                $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
+                // $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
                 if( $data['chart_status'] == "CE_Completed") {
                     $data['coder_work_date'] = Carbon::now()->format('Y-m-d');
+                    $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
                     if($decodedPracticeName == NULL) {
                         $qasamplingDetailsList = QualitySampling::where('project_id', $decodedProjectName)
                          ->where('qa_percentage','!=', 0)
@@ -1169,6 +1170,7 @@ class ProductionController extends Controller
 
                 } else if( $data['chart_status'] == "Auto_Close") {
                     $data['coder_work_date'] = Carbon::now()->format('Y-m-d');
+                     $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
                     if($decodedPracticeName == NULL) {
                         // $qasamplingDetailsList = QualitySampling::where('project_id', $decodedProjectName)
                         //  ->where(function($query) use ($loginEmpId) {
@@ -1558,11 +1560,12 @@ class ProductionController extends Controller
                 // $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->get();
                 $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->get();
                 $coderCompletedRecordsCount = count($coderCompletedRecords); $data['coder_work_date'] = $data['ar_at'] = NULL;
-                $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
+               // $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
                 $autoCloseRecords = $originalModelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->get();
                 $autoCloseRecordsCount = count($autoCloseRecords);
                 if( $data['chart_status'] == "CE_Completed") {
                     $data['coder_work_date'] = Carbon::now()->format('Y-m-d');
+                     $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
                     if($decodedPracticeName == NULL) {
                         $qasamplingDetailsList = QualitySampling::where('project_id', $decodedProjectName)
                                                 ->where('qa_percentage','!=', 0)
@@ -1693,6 +1696,7 @@ class ProductionController extends Controller
                     }
                 } else if( $data['chart_status'] == "Auto_Close") {
                     $data['coder_work_date'] = Carbon::now()->format('Y-m-d');
+                     $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
                     if($decodedPracticeName == NULL) {
                         // $qasamplingDetailsList = QualitySampling::where('project_id', $decodedProjectName)
                         //                         ->where(function($query) use ($loginEmpId) {
@@ -2004,8 +2008,8 @@ class ProductionController extends Controller
                 $data['parent_id'] = $data['parentId'];
                 $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','DESC')->first();
                 $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->get();
-                $coderCompletedRecordsCount = count($coderCompletedRecords); $data['coder_work_date'] = $data['ar_at'] = NULL;
-                $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
+                $coderCompletedRecordsCount = count($coderCompletedRecords); $data['coder_work_date'] =  NULL;
+                //$data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
                 if( $data['chart_status'] == "CE_Completed" || $data['chart_status'] == "Auto_Close") {
                     $data['coder_work_date'] = Carbon::now()->format('Y-m-d');
                     $data['qa_work_status'] = "Sampling";
@@ -3069,11 +3073,12 @@ class ProductionController extends Controller
                     $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','DESC')->first();
                     $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->get();
                     $coderCompletedRecordsCount = count($coderCompletedRecords); $data['coder_work_date'] = $data['ar_at'] = NULL;
-                    $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
+                   // $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
                     $autoCloseRecords = $originalModelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->get();
                     $autoCloseRecordsCount = count($autoCloseRecords); 
                     if( $data['chart_status'] == "CE_Completed") {
                         $data['coder_work_date'] = Carbon::now()->format('Y-m-d');
+                         $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
                         if($decodedPracticeName == NULL) {
                             $qasamplingDetailsList = QualitySampling::where('project_id', $decodedProjectName)
                             ->where('qa_percentage','!=', 0)
@@ -3188,6 +3193,7 @@ class ProductionController extends Controller
 
                     }else if($data['chart_status'] == "Auto_Close") {
                         $data['coder_work_date'] = Carbon::now()->format('Y-m-d');
+                         $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
                         if($decodedPracticeName == NULL) {
                             // $qasamplingDetailsList = QualitySampling::where('project_id', $decodedProjectName)
                             // ->where(function($query) use ($loginEmpId) {

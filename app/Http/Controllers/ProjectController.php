@@ -1478,7 +1478,9 @@ class ProjectController extends Controller
                                 // $data['invoke_date'] = date('Y-m-d',strtotime($dataAssignedRows->invoke_date));
                                 $data['parent_id'] = $dataAssignedRows->id;
                                 $record = $originalModelClass::where('id', $data['parent_id'])->first();
-                                        $data['coder_work_date'] = $data['ar_at'] = Carbon::now()->format('Y-m-d');
+                                        // $data['coder_work_date'] = $data['ar_at'] = Carbon::now()->format('Y-m-d');
+                                         $data['coder_work_date'] =  Carbon::now()->format('Y-m-d');
+                                         $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
                                         // $qasamplingDetailsList = QualitySampling::where('project_id', $request->project_id)
                                         //                         ->where('sub_project_id', $request->sub_project_id)
                                         //                         ->where(function($query) use ($arEmpId) {
