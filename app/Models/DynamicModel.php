@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace App\Models;
 
@@ -7,28 +7,40 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class DynamicModel extends Model
 {
-    public function __construct($table)
+    /**
+     * Constructor: Only initialize model data,
+     * DO NOT create files or run shell commands here.
+     */
+    public function __construct($table = null)
     {
-        $this->setTable($table);
-        $this->setFillableFromTable($table);
-        $this->setGuardedFromFillable();
+        parent::__construct();
 
-        // Create the model file dynamically
-        $this->createModelFile($table);
+        if ($table) {
+            $this->setTable($table);
+            $this->setFillableFromTable($table);
+            $this->setGuardedFromFillable();
+        }
     }
 
+    /**
+     * Build fillable fields from table.
+     */
     protected function setFillableFromTable($table)
     {
         $columns = DB::getSchemaBuilder()->getColumnListing($table);
         $this->fillable = $columns;
     }
 
+    /**
+     * Guard all except fillable.
+     */
     protected function setGuardedFromFillable()
     {
-        $this->guarded = array_diff($this->getFillable(), $this->guarded);
+        $this->guarded = array_diff($this->getFillable(), []);
     }
 
     // protected function createModelFile($table)
@@ -72,67 +84,63 @@ class DynamicModel extends Model
     //     //     '--no-interaction' => true,
     //     // ]);
     // }
-    protected function createModelFile($table)
-{
-    $modelName = Str::studly($table);
-    $modelFilePath = app_path("Models/{$modelName}.php");
-    $modelTemplatePath = base_path('stubs/model_template.stub');
+    public function createModelFile($table)
+    {
+        $modelName = Str::studly($table);
+        $modelFilePath = app_path("Models/{$modelName}.php");
+        $modelTemplatePath = base_path('stubs/model_template.stub');
 
-    // ✅ Step 1: Ensure directory exists
-    if (!File::exists(dirname($modelFilePath))) {
-        File::makeDirectory(dirname($modelFilePath), 0777, true, true);
+        // Ensure Models directory exists
+        if (!File::exists(dirname($modelFilePath))) {
+            File::makeDirectory(dirname($modelFilePath), 0777, true, true);
+        }
+
+        // Load and replace template placeholders
+        $modelTemplate = File::get($modelTemplatePath);
+        $modelTemplate = str_replace('{{MODEL_NAME}}', $modelName, $modelTemplate);
+        $modelTemplate = str_replace('{{TABLE_PLACEHOLDER}}', $table, $modelTemplate);
+        $modelTemplate = str_replace('{{SOFT_DELETES_PLACEHOLDER}}', $this->getSoftDeletesStatement(), $modelTemplate);
+        $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);
+
+        // Write the model file
+        File::put($modelFilePath, $modelTemplate);
+
+        // Fix permissions
+        try {
+            @chmod($modelFilePath, 0666);
+        } catch (\Exception $e) {
+            Log::warning("Model file permission fix failed: " . $e->getMessage());
+        }
+
+        // Load the new model class immediately
+        if (File::exists($modelFilePath)) {
+            require_once $modelFilePath;
+        }
+
+        return $modelFilePath;
     }
 
-    // ✅ Step 2: Force directory ownership & permissions (self-healing after git pull)
-    try {
-        @chown(dirname($modelFilePath), 'apache');
-        @chgrp(dirname($modelFilePath), 'apache');
-        @chmod(dirname($modelFilePath), 0777);
-    } catch (\Exception $e) {
-        // Log but don’t break execution
-        \Log::warning("Permission fix failed for Models directory: " . $e->getMessage());
-    }
-
-    // ✅ Step 3: Generate model content from template
-    $modelTemplate = File::get($modelTemplatePath);
-    $modelTemplate = str_replace('{{MODEL_NAME}}', $modelName, $modelTemplate);
-    $modelTemplate = str_replace('{{TABLE_PLACEHOLDER}}', $table, $modelTemplate);
-    $modelTemplate = str_replace('{{SOFT_DELETES_PLACEHOLDER}}', $this->getSoftDeletesStatement(), $modelTemplate);
-    $modelTemplate = str_replace('{{FILLABLE_COLUMNS_PLACEHOLDER}}', $this->getFillableColumnsStatement(), $modelTemplate);
-
-    // ✅ Step 4: Write file (overwrite-safe)
-    File::put($modelFilePath, $modelTemplate);
-
-    // ✅ Step 5: Fix new file permissions
-    try {
-        @chmod($modelFilePath, 0666);
-        @chown($modelFilePath, 'apache');
-        @chgrp($modelFilePath, 'apache');
-        @exec("chcon -t httpd_sys_rw_content_t " . escapeshellarg($modelFilePath));
-    } catch (\Exception $e) {
-        \Log::warning("Permission fix failed for model file {$modelName}: " . $e->getMessage());
-    }
-
-    // ✅ Step 6: Load model immediately
-    if (File::exists($modelFilePath)) {
-        require_once $modelFilePath;
-    }
-}
-
-
-    // Override the create method to prevent the default record insertion
+    /**
+     * Override create() so it works for dynamic tables.
+     */
     public static function create(array $attributes = [])
     {
         return parent::query()->create($attributes);
     }
+
+    /**
+     * Determine if SoftDeletes should be included.
+     */
     protected function getSoftDeletesStatement()
     {
-        // Check if the table has 'deleted_at' column
-        $hasDeletedAtColumn = in_array('deleted_at', $this->fillable);
-
-        return $hasDeletedAtColumn ? 'use SoftDeletes;' : '';
+        return in_array('deleted_at', $this->fillable)
+            ? 'use SoftDeletes;'
+            : '';
     }
 
+    /**
+     * Generate fillable column list for the model file.
+     */
     protected function getFillableColumnsStatement()
     {
         return implode(', ', array_map(function ($column) {
@@ -140,10 +148,12 @@ class DynamicModel extends Model
         }, $this->fillable));
     }
 
+    /**
+     * Refresh fillable list on demand.
+     */
     public function refreshFillableFromTable()
     {
-        $table = $this->getTable();
-        $this->setFillableFromTable($table);
+        $this->setFillableFromTable($this->getTable());
         $this->setGuardedFromFillable();
     }
 }

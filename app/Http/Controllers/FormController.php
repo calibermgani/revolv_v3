@@ -219,6 +219,7 @@ class FormController extends Controller
                                             deleted_at TIMESTAMP NULL)";//dd($createTableSQL);
                         DB::statement($createTableSQL);
                         $dynamicModel = new DynamicModel($tableName);
+                        $dynamicModel->createModelFile($tableName);
                     } else {
                         $afterColumn = 'created_at';
                         foreach ($columns as $columnName => $columnType) {
@@ -289,6 +290,7 @@ class FormController extends Controller
                                                     deleted_at TIMESTAMP NULL)";
                         DB::statement($createDuplicateTableSQL);
                         $dynamicDuplicateModel = new DynamicModel($duplicateTableName);
+                        $dynamicDuplicateModel->createModelFile($duplicateTableName);
                     }  else {
                         $afterColumn = 'created_at';
                         foreach ($columns as $columnName => $columnType) {
@@ -357,6 +359,7 @@ class FormController extends Controller
                                             deleted_at TIMESTAMP NULL)";
                         DB::statement($createTableSQL);
                         $dynamicModel = new DynamicModel($tableDataName);
+                         $dynamicModel->createModelFile($tableDataName);
                     } else {
                         $afterColumn = 'created_at';
                         foreach ($columns as $columnName => $columnType) {
@@ -425,6 +428,7 @@ class FormController extends Controller
                                             deleted_at TIMESTAMP NULL)";
                         DB::statement($createTableSQL);
                         $dynamicModel = new DynamicModel($tableHistoryName);
+                        $dynamicModel->createModelFile($tableHistoryName);
                     } else {
                         $afterColumn = 'created_at';
                         foreach ($columns as $columnName => $columnType) {
@@ -493,6 +497,7 @@ class FormController extends Controller
                                             deleted_at TIMESTAMP NULL)";
                         DB::statement($createTableSQL);
                         $dynamicModel = new DynamicModel($tableRevokeHistoryName);
+                         $dynamicModel->createModelFile($tableRevokeHistoryName);
                     } else {
                         $afterColumn = 'created_at';
                         foreach ($columns as $columnName => $columnType) {
