@@ -208,6 +208,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('rcsa_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@riverCitySkinAndAestheticsArARDuplicates');
     Route::any('tqhs_adjudication', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsAdjudication');
     Route::any('tqhs_adjudication_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsAdjudicationDuplicates');
+    Route::any('tqhs_coding_to_billing', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsCodingToBilling');
+    Route::any('tqhs_coding_to_billing_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsCodingToBillingDuplicates');
     Route::any('get_project_columns', 'App\Http\Controllers\FormController@getProjectColumns');
 
 
