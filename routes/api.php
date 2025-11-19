@@ -210,6 +210,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('tqhs_adjudication_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsAdjudicationDuplicates');
     Route::any('tqhs_coding_to_billing', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsCodingToBilling');
     Route::any('tqhs_coding_to_billing_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@tqhsCodingToBillingDuplicates');
+    Route::any('helixona_ar', 'App\Http\Controllers\ProjectAuthAutomationController@helixonaAR');
+    Route::any('helixona_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@helixonaARDuplicates');
     Route::any('get_project_columns', 'App\Http\Controllers\FormController@getProjectColumns');
 
 

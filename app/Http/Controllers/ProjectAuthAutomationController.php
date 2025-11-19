@@ -67,7 +67,8 @@ use App\Models\RcsaArDuplicates;
 use App\Models\TqhsAdjudication;
 use App\Models\TqhsAdjudicationDuplicates;
 use App\Models\TqhsCodingToBilling; 
-use App\Models\TqhsCodingToBillingDuplicates;  
+use App\Models\HslAr;  
+use App\Models\HslArDuplicates;
 class ProjectAuthAutomationController extends Controller
 {
     public function aopsPreAuthVerification(Request $request)
@@ -4611,6 +4612,121 @@ class ProjectAuthAutomationController extends Controller
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
                     'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+     public function helixonaAR(Request $request) {
+        try {
+            $attributes = [
+                'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL
+             ];        
+ 
+            $duplicateRecordExisting  =  HslAr::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                HslAr::insert([
+                    'account_id' => isset($request->account_id) && $request->account_id != "NULL" ? $request->account_id : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                    'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                    'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                    'office' => isset($request->office) && $request->office != "NULL" ? $request->office : NULL,
+                    'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed : NULL,
+                    'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                    'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                    'pmts_or_adjs' => isset($request->pmts_or_adjs) && $request->pmts_or_adjs != "NULL" ? $request->pmts_or_adjs : NULL,
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                    'first_edi_date' => isset($request->first_edi_date) && $request->first_edi_date != "NULL" ? $request->first_edi_date : NULL,
+                    'last_edi_date' => isset($request->last_edi_date) && $request->last_edi_date != "NULL" ? $request->last_edi_date : NULL,
+                    'billing_status' => isset($request->billing_status) && $request->billing_status != "NULL" ? $request->billing_status : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+                ]);
+                return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords  =  HslAr::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'account_id' => isset($request->account_id) && $request->account_id != "NULL" ? $request->account_id : NULL,
+                            'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                            'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                            'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                            'office' => isset($request->office) && $request->office != "NULL" ? $request->office : NULL,
+                            'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed : NULL,
+                            'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                            'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                            'pmts_or_adjs' => isset($request->pmts_or_adjs) && $request->pmts_or_adjs != "NULL" ? $request->pmts_or_adjs : NULL,
+                            'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                            'first_edi_date' => isset($request->first_edi_date) && $request->first_edi_date != "NULL" ? $request->first_edi_date : NULL,
+                            'last_edi_date' => isset($request->last_edi_date) && $request->last_edi_date != "NULL" ? $request->last_edi_date : NULL,
+                            'billing_status' => isset($request->billing_status) && $request->billing_status != "NULL" ? $request->billing_status : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                     HslAr::insert([
+                        'account_id' => isset($request->account_id) && $request->account_id != "NULL" ? $request->account_id : NULL,
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                        'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                        'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                        'office' => isset($request->office) && $request->office != "NULL" ? $request->office : NULL,
+                        'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed : NULL,
+                        'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                        'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                        'pmts_or_adjs' => isset($request->pmts_or_adjs) && $request->pmts_or_adjs != "NULL" ? $request->pmts_or_adjs : NULL,
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                        'first_edi_date' => isset($request->first_edi_date) && $request->first_edi_date != "NULL" ? $request->first_edi_date : NULL,
+                        'last_edi_date' => isset($request->last_edi_date) && $request->last_edi_date != "NULL" ? $request->last_edi_date : NULL,
+                        'billing_status' => isset($request->billing_status) && $request->billing_status != "NULL" ? $request->billing_status : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record Reinserted Successfully']);
+                }                
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function helixonaARDuplicates(Request $request){
+        try {
+            HslArDuplicates::insert([
+                'account_id' => isset($request->account_id) && $request->account_id != "NULL" ? $request->account_id : NULL,
+                'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                'insurance' => isset($request->insurance) && $request->insurance != "NULL" ? $request->insurance : NULL,
+                'provider' => isset($request->provider) && $request->provider != "NULL" ? $request->provider : NULL,
+                'office' => isset($request->office) && $request->office != "NULL" ? $request->office : NULL,
+                'billed' => isset($request->billed) && $request->billed != "NULL" ? $request->billed : NULL,
+                'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                'pmts_or_adjs' => isset($request->pmts_or_adjs) && $request->pmts_or_adjs != "NULL" ? $request->pmts_or_adjs : NULL,
+                'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                'first_edi_date' => isset($request->first_edi_date) && $request->first_edi_date != "NULL" ? $request->first_edi_date : NULL,
+                'last_edi_date' => isset($request->last_edi_date) && $request->last_edi_date != "NULL" ? $request->last_edi_date : NULL,
+                'billing_status' => isset($request->billing_status) && $request->billing_status != "NULL" ? $request->billing_status : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
             ]);
             return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
         } catch (\Exception $e) {
