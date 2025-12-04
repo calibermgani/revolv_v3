@@ -810,7 +810,7 @@ class FormController extends Controller
                             if (empty($columnExists)) {
                                 //DB::statement("ALTER TABLE $tableName ADD COLUMN $columnName $columnType AFTER $afterColumn");
                                 DB::statement("ALTER TABLE `$tableName` ADD COLUMN `$columnName` $columnType AFTER `$afterColumn`");
-                                $dynamicModel = new DynamicModel($tableName);
+                                $dynamicModel = new UpdateDynamicModel($tableName);
                                 $dynamicModel->refreshFillableFromTable();
                             }
                         }
@@ -887,7 +887,7 @@ class FormController extends Controller
                             ");
                             if (empty($duplicateColumnExists)) {
                                 DB::statement("ALTER TABLE `$duplicateTableName` ADD COLUMN `$columnName` $columnType AFTER `$afterColumn`");
-                                $dynamicDuplicateModel = new DynamicModel($duplicateTableName);
+                                $dynamicDuplicateModel = new UpdateDynamicModel($duplicateTableName);
                                 $dynamicDuplicateModel->refreshFillableFromTable();
                             }
                         }
@@ -963,7 +963,7 @@ class FormController extends Controller
                             if (empty($dataColumnExists)) {
 
                                 DB::statement("ALTER TABLE `$tableDataName` ADD COLUMN `$columnName` $columnType AFTER `$afterColumn`");
-                                $dynamicModel = new DynamicModel($tableDataName);
+                                $dynamicModel = new UpdateDynamicModel($tableDataName);
                                 $dynamicModel->refreshFillableFromTable();
                             }
                         }
@@ -1039,7 +1039,7 @@ class FormController extends Controller
                             if (empty($histortColumnExists)) {
 
                                 DB::statement("ALTER TABLE `$tableHistoryName` ADD COLUMN `$columnName` $columnType AFTER `$afterColumn`");
-                                $dynamicModel = new DynamicModel($tableHistoryName);
+                                $dynamicModel = new UpdateDynamicModel($tableHistoryName);
                                 $dynamicModel->refreshFillableFromTable();
                             }
                         }
@@ -1115,7 +1115,7 @@ class FormController extends Controller
                             if (empty($revokeColumnExists)) {
 
                                 DB::statement("ALTER TABLE `$tableRevokeHistoryName` ADD COLUMN `$columnName` $columnType AFTER `$afterColumn`");
-                                $dynamicModel = new DynamicModel($tableRevokeHistoryName);
+                                $dynamicModel = new UpdateDynamicModel($tableRevokeHistoryName);
                                 $dynamicModel->refreshFillableFromTable();
                             }
                         }
