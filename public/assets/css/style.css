@@ -5705,7 +5705,7 @@ input[type="button"].btn-block {
 .nav-tabs .nav-item.show .nav-link {
     color: #464E5F;
     background-color: #ffffff;
-    border-color: #E5EAEE #E5EAEE #ffffff;
+    border-color: #139AB3;
 }
 
 .nav-tabs .dropdown-menu {
@@ -53333,7 +53333,8 @@ button {
     transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, -webkit-box-shadow 0.15s ease;
     transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
     transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, -webkit-box-shadow 0.15s ease;
-    color: #6993FF;
+    color: #ffffff;
+    background-color: #139AB3;
 }
 
 .nav .show>.nav-link .nav-text,

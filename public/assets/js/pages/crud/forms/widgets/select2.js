@@ -284,6 +284,9 @@ var KTSelect2 = function() {
             $('.kt_select2_substatus_modal').select2({
                 placeholder: "Select Substatus"
             });
+             $('.kt_select2_scenario_modal').select2({
+                placeholder: "Select Scenario"
+            });
         });
         $('#myModal_multiline').on('shown.bs.modal', function () {
              $('.kt_select2_denial_1_modal').select2({
@@ -297,6 +300,9 @@ var KTSelect2 = function() {
             });
              $('.kt_select2_substatus_1_modal').select2({
                 placeholder: "Select Substatus"
+            });
+              $('.kt_select2_scenario_multiline_modal').select2({
+                placeholder: "Select Scenario"
             });
           
         });

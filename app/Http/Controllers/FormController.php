@@ -15,6 +15,7 @@ use App\Models\DynamicModel;
 use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Models\UpdateDynamicModel;
 class FormController extends Controller
 {
     public function formConfigurationList() {
@@ -67,27 +68,37 @@ class FormController extends Controller
                 $additionalLabelArray = [
                     "AR Denial Codes",                    
                     "AR SubStatus Codes",
-                    "Production Type"
+                    "Production Type",
+                    "Question Json",
+                     "Scenario"
                 ];
                 $additionalInputTypeArray = [
                     "text",
                      "text",
-                     "select"
+                     "select",
+                     "longtext",
+                     "text"
                 ];
                 $additionalOptionsArray = [
                     null,
                     null,
-                    "Calling,Non-Calling,Webportal"
+                    "Calling,Non-Calling,Webportal",
+                    null,
+                    null
                 ];
                  $additionalUserTypeArray = [
                     "3",
+                     "3",
+                     "3",
                      "3",
                      "3"
                 ];
                 $additionalInputTypeEditableArray = [
                     "1",
                     "1",
-                    "1"
+                    "1",
+                    "3",
+                    "3"
 
                 ];
                
@@ -95,22 +106,30 @@ class FormController extends Controller
                 $additionalFieldTypeArray = [
                     "editable",
                     "editable",
-                     "editable"
+                    "editable",
+                    "non_editable",
+                    "non_editable"
                 ];
                 $additionalFieldType1Array = [
                     "single",
                     "single",
-                     "single"
+                    "single",
+                    "single",
+                    "single"
                 ];
                 $additionalFieldType2Array = [
                     "mandatory",
                     "non-mandatory",
-                    "mandatory"
+                    "mandatory",
+                    "non-mandatory",
+                    "non-mandatory"
                 ];
                 $additionalFieldType3Array = [
                     "popup_non_visible",
                     "popup_non_visible",
-                    "popup_visible"
+                    "popup_visible",
+                    "popup_non_visible",
+                    "popup_non_visible"
                 ];
                 $data['label_name'] = array_merge($data['label_name'], $additionalLabelArray);
                 $data['input_type'] = array_merge($data['input_type'], $additionalInputTypeArray);
@@ -161,7 +180,9 @@ class FormController extends Controller
                         $columns[$columnName] = 'TEXT';
                     } else if ($data['input_type'][$i] == 'datetime' ) {
                         $columns[$columnName] = 'DATETIME';
-                    }
+                    } else if ($data['input_type'][$i] == 'longtext' ) {
+                            $columns[$columnName] = 'longtext';
+                    }  
                 }
                 $subProjectName = $data['sub_project_id'] != null ? $subProjectArray->sub_project_name : 'project';
                 $tableName = Str::slug(($projectName->project_name.'_'.$subProjectName),'_');
@@ -311,12 +332,12 @@ class FormController extends Controller
 
                     $tableDatasExists = DB::select("SHOW TABLES LIKE '$tableDataName'");
                     if (empty($tableDatasExists)) {
-                        $createTableSQL = "CREATE TABLE $tableDataName (id INT AUTO_INCREMENT PRIMARY KEY";
+                        $createDataTableSQL = "CREATE TABLE $tableDataName (id INT AUTO_INCREMENT PRIMARY KEY";
                         foreach ($columns as $columnName => $columnType) {
-                            $createTableSQL .= ", $columnName TEXT";
+                            $createDataTableSQL .= ", $columnName TEXT";
                         }
 
-                        $createTableSQL .= ", parent_id INT NULL,invoke_date DATE NULL,
+                        $createDataTableSQL .= ", parent_id INT NULL,invoke_date DATE NULL,
                                             CE_emp_id VARCHAR(255) NULL,
                                             QA_emp_id VARCHAR(255) NULL,
                                             chart_status ENUM('CE_Assigned','CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','AR_non_workable','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold','Revoke','Rebuttal','Auto_Close') DEFAULT 'CE_Assigned',
@@ -357,7 +378,7 @@ class FormController extends Controller
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                             updated_at TIMESTAMP NULL,
                                             deleted_at TIMESTAMP NULL)";
-                        DB::statement($createTableSQL);
+                        DB::statement($createDataTableSQL);
                         $dynamicModel = new DynamicModel($tableDataName);
                          $dynamicModel->createModelFile($tableDataName);
                     } else {
@@ -371,7 +392,7 @@ class FormController extends Controller
                             ");
                             if (empty($columnExists)) {
 
-                                DB::statement("ALTER TABLE $tableDataName ADD COLUMN $columnName TEXT AFTER $afterColumn");
+                                DB::statement("ALTER TABLE $tableDataName ADD COLUMN $columnName $columnType AFTER $afterColumn");
                                 $dynamicModel = new DynamicModel($tableDataName);
                                 $dynamicModel->refreshFillableFromTable();
                             }
@@ -380,12 +401,12 @@ class FormController extends Controller
 
                     $tableHistoryExists = DB::select("SHOW TABLES LIKE '$tableHistoryName'");
                     if (empty($tableHistoryExists)) {
-                        $createTableSQL = "CREATE TABLE $tableHistoryName (id INT AUTO_INCREMENT PRIMARY KEY";
+                        $createTableHistorySQL = "CREATE TABLE $tableHistoryName (id INT AUTO_INCREMENT PRIMARY KEY";
                         foreach ($columns as $columnName => $columnType) {
-                            $createTableSQL .= ", $columnName TEXT";
+                            $createTableHistorySQL .= ", $columnName TEXT";
                         }
 
-                        $createTableSQL .= ", parent_id INT NULL,invoke_date DATE NULL,
+                        $createTableHistorySQL .= ", parent_id INT NULL,invoke_date DATE NULL,
                                             CE_emp_id VARCHAR(255) NULL,
                                             QA_emp_id VARCHAR(255) NULL,
                                             chart_status ENUM('CE_Assigned','CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','AR_non_workable','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold','Revoke','Rebuttal','Auto_Close') DEFAULT 'CE_Assigned',
@@ -426,7 +447,7 @@ class FormController extends Controller
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                             updated_at TIMESTAMP NULL,
                                             deleted_at TIMESTAMP NULL)";
-                        DB::statement($createTableSQL);
+                        DB::statement($createTableHistorySQL);
                         $dynamicModel = new DynamicModel($tableHistoryName);
                         $dynamicModel->createModelFile($tableHistoryName);
                     } else {
@@ -440,7 +461,7 @@ class FormController extends Controller
                             ");
                             if (empty($columnExists)) {
 
-                                DB::statement("ALTER TABLE $tableHistoryName ADD COLUMN $columnName TEXT AFTER $afterColumn");
+                                DB::statement("ALTER TABLE $tableHistoryName ADD COLUMN $columnName $columnType AFTER $afterColumn");
                                 $dynamicModel = new DynamicModel($tableHistoryName);
                                 $dynamicModel->refreshFillableFromTable();
                             }
@@ -449,12 +470,12 @@ class FormController extends Controller
 
                     $tableRevokeHistoryExists = DB::select("SHOW TABLES LIKE '$tableRevokeHistoryName'");
                     if (empty($tableRevokeHistoryExists)) {
-                        $createTableSQL = "CREATE TABLE $tableRevokeHistoryName (id INT AUTO_INCREMENT PRIMARY KEY";
+                        $createRevokeTableSQL = "CREATE TABLE $tableRevokeHistoryName (id INT AUTO_INCREMENT PRIMARY KEY";
                         foreach ($columns as $columnName => $columnType) {
-                            $createTableSQL .= ", $columnName TEXT";
+                            $createRevokeTableSQL .= ", $columnName TEXT";
                         }
 
-                        $createTableSQL .= ", parent_id INT NULL,invoke_date DATE NULL,
+                        $createRevokeTableSQL .= ", parent_id INT NULL,invoke_date DATE NULL,
                                             CE_emp_id VARCHAR(255) NULL,
                                             QA_emp_id VARCHAR(255) NULL,
                                             chart_status ENUM('CE_Assigned','CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','AR_non_workable','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold','Revoke','Rebuttal','Auto_Close') DEFAULT 'CE_Assigned',
@@ -495,7 +516,7 @@ class FormController extends Controller
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                             updated_at TIMESTAMP NULL,
                                             deleted_at TIMESTAMP NULL)";
-                        DB::statement($createTableSQL);
+                        DB::statement($createRevokeTableSQL);
                         $dynamicModel = new DynamicModel($tableRevokeHistoryName);
                          $dynamicModel->createModelFile($tableRevokeHistoryName);
                     } else {
@@ -509,7 +530,7 @@ class FormController extends Controller
                             ");
                             if (empty($columnExists)) {
 
-                                DB::statement("ALTER TABLE $tableRevokeHistoryName ADD COLUMN $columnName TEXT AFTER $afterColumn");
+                                DB::statement("ALTER TABLE $tableRevokeHistoryName ADD COLUMN $columnName $columnType AFTER $afterColumn");
                                 $dynamicModel = new DynamicModel($tableRevokeHistoryName);
                                 $dynamicModel->refreshFillableFromTable();
                             }
@@ -568,19 +589,27 @@ class FormController extends Controller
                 $additionalLabelArray = [
                         "AR Denial Codes",                    
                         "AR SubStatus Codes",
-                        "Production Type"
+                        "Production Type",
+                        "Question Json",
+                        "Scenario"
                     ];
                     $additionalInputTypeArray = [
                         "text",
                         "text",
-                        "select"
+                        "select",
+                        "longtext",
+                        "text"
                     ];
                     $additionalOptionsArray = [
                         null,
                         null,
-                        "Calling,Non-Calling,Webportal"
+                        "Calling,Non-Calling,Webportal",
+                        null,
+                        null
                     ];
                     $additionalUserTypeArray = [
+                        "3",
+                        "3",
                         "3",
                         "3",
                         "3"
@@ -588,7 +617,9 @@ class FormController extends Controller
                     $additionalInputTypeEditableArray = [
                         "1",
                         "1",
-                        "1"
+                        "1",
+                        "3",
+                        "3"
 
                     ];
                 
@@ -596,9 +627,13 @@ class FormController extends Controller
                     $additionalFieldTypeArray = [
                         "editable",
                         "editable",
-                        "editable"
+                        "editable",
+                        "non_editable",
+                        "non_editable"
                     ];
                     $additionalFieldType1Array = [
+                        "single",
+                        "single",
                         "single",
                         "single",
                         "single"
@@ -606,12 +641,16 @@ class FormController extends Controller
                     $additionalFieldType2Array = [
                         "mandatory",
                         "non-mandatory",
-                        "mandatory"
+                        "mandatory",
+                        "non-mandatory",
+                        "non-mandatory"
                     ];
                     $additionalFieldType3Array = [
                         "popup_non_visible",
                         "popup_non_visible",
-                        "popup_visible"
+                        "popup_visible",
+                        "popup_non_visible",
+                        "popup_non_visible"
                     ];
                 $data['label_name'] = array_merge($data['label_name'], $additionalLabelArray);
                 $data['input_type'] = array_merge($data['input_type_val'], $additionalInputTypeArray);
@@ -685,7 +724,9 @@ class FormController extends Controller
                             $columns[$columnName] = 'TEXT';
                         } else if ($data['input_type'][$i] == 'datetime' ) {
                             $columns[$columnName] = 'DATETIME';
-                        }
+                        } else if ($data['input_type'][$i] == 'longtext' ) {
+                            $columns[$columnName] = 'longtext';
+                        }  
                     }
 
                 }
@@ -845,7 +886,7 @@ class FormController extends Controller
                                 AND COLUMN_NAME = '$columnName'
                             ");
                             if (empty($duplicateColumnExists)) {
-                                DB::statement("ALTER TABLE `$duplicateTableName` ADD COLUMN `$columnName` TEXT AFTER `$afterColumn`");
+                                DB::statement("ALTER TABLE `$duplicateTableName` ADD COLUMN `$columnName` $columnType AFTER `$afterColumn`");
                                 $dynamicDuplicateModel = new DynamicModel($duplicateTableName);
                                 $dynamicDuplicateModel->refreshFillableFromTable();
                             }
@@ -921,7 +962,7 @@ class FormController extends Controller
                             ");
                             if (empty($dataColumnExists)) {
 
-                                DB::statement("ALTER TABLE `$tableDataName` ADD COLUMN `$columnName` TEXT AFTER `$afterColumn`");
+                                DB::statement("ALTER TABLE `$tableDataName` ADD COLUMN `$columnName` $columnType AFTER `$afterColumn`");
                                 $dynamicModel = new DynamicModel($tableDataName);
                                 $dynamicModel->refreshFillableFromTable();
                             }
@@ -997,7 +1038,7 @@ class FormController extends Controller
                             ");
                             if (empty($histortColumnExists)) {
 
-                                DB::statement("ALTER TABLE `$tableHistoryName` ADD COLUMN `$columnName` TEXT AFTER `$afterColumn`");
+                                DB::statement("ALTER TABLE `$tableHistoryName` ADD COLUMN `$columnName` $columnType AFTER `$afterColumn`");
                                 $dynamicModel = new DynamicModel($tableHistoryName);
                                 $dynamicModel->refreshFillableFromTable();
                             }
@@ -1073,7 +1114,7 @@ class FormController extends Controller
                             ");
                             if (empty($revokeColumnExists)) {
 
-                                DB::statement("ALTER TABLE `$tableRevokeHistoryName` ADD COLUMN `$columnName` TEXT AFTER `$afterColumn`");
+                                DB::statement("ALTER TABLE `$tableRevokeHistoryName` ADD COLUMN `$columnName` $columnType AFTER `$afterColumn`");
                                 $dynamicModel = new DynamicModel($tableRevokeHistoryName);
                                 $dynamicModel->refreshFillableFromTable();
                             }
