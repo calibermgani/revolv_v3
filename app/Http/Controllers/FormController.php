@@ -68,37 +68,37 @@ class FormController extends Controller
                 $additionalLabelArray = [
                     "AR Denial Codes",                    
                     "AR SubStatus Codes",
-                    "Production Type",
-                    "Question Json",
-                     "Scenario"
+                    "Production Type"
+                    // "Question Json",
+                    //  "Scenario"
                 ];
                 $additionalInputTypeArray = [
                     "text",
                      "text",
-                     "select",
-                     "longtext",
-                     "text"
+                     "select"
+                    //  "longtext",
+                    //  "text"
                 ];
                 $additionalOptionsArray = [
                     null,
                     null,
-                    "Calling,Non-Calling,Webportal",
-                    null,
-                    null
+                    "Calling,Non-Calling,Webportal"
+                    // null,
+                    // null
                 ];
                  $additionalUserTypeArray = [
                     "3",
                      "3",
-                     "3",
-                     "3",
                      "3"
+                    //  "3",
+                    //  "3"
                 ];
                 $additionalInputTypeEditableArray = [
                     "1",
                     "1",
-                    "1",
-                    "3",
-                    "3"
+                    "1"
+                    // "3",
+                    // "3"
 
                 ];
                
@@ -106,30 +106,30 @@ class FormController extends Controller
                 $additionalFieldTypeArray = [
                     "editable",
                     "editable",
-                    "editable",
-                    "non_editable",
-                    "non_editable"
+                    "editable"
+                    // "non_editable",
+                    // "non_editable"
                 ];
                 $additionalFieldType1Array = [
                     "single",
                     "single",
-                    "single",
-                    "single",
                     "single"
+                    // "single",
+                    // "single"
                 ];
                 $additionalFieldType2Array = [
                     "mandatory",
                     "non-mandatory",
-                    "mandatory",
-                    "non-mandatory",
-                    "non-mandatory"
+                    "mandatory"
+                    // "non-mandatory",
+                    // "non-mandatory"
                 ];
                 $additionalFieldType3Array = [
                     "popup_non_visible",
                     "popup_non_visible",
-                    "popup_visible",
-                    "popup_non_visible",
-                    "popup_non_visible"
+                    "popup_visible"
+                    // "popup_non_visible",
+                    // "popup_non_visible"
                 ];
                 $data['label_name'] = array_merge($data['label_name'], $additionalLabelArray);
                 $data['input_type'] = array_merge($data['input_type'], $additionalInputTypeArray);
