@@ -2491,7 +2491,7 @@ class ProjectController extends Controller
                 }
                      $denial = \App\Models\ARDenialCode::where('denial_code', $denialCode)
                                 ->where('code_description', $denialDesc)
-                                ->first();      dd($request->ar_denial_codes,$denialCode, $denialDesc,$denial);
+                                ->first();      
             
                 
 
