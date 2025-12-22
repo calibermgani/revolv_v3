@@ -2489,10 +2489,10 @@ class ProjectController extends Controller
                     $denialCode = trim($parts[0] ?? '');
                     $denialDesc = trim($parts[1] ?? '');
                 }
-                   dd($request->ar_denial_codes,$denialCode, $denialDesc);
-                    $denial = \App\Models\ARDenialCode::where('denial_code', $denialCode)
+                     $denial = \App\Models\ARDenialCode::where('denial_code', $denialCode)
                                 ->where('code_description', $denialDesc)
-                                ->first();
+                                ->first();      dd($request->ar_denial_codes,$denialCode, $denialDesc,$denial);
+            
                 
 
                 if (empty($denial)) {
