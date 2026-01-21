@@ -94,11 +94,12 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
                             try {
                                 $resolvCount = $modelClass::whereBetween($arColumnToUse, [$resolvStartDate, $resolvEndDate])
                                     ->where('CE_emp_id', $project['emp_id'])
-                                    ->whereIn('chart_status', [
-                                        'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
-                                       'QA_Assigned','QA_Inprocess','QA_Pending',
-                                        'QA_Completed','QA_Clarification','QA_Hold'
-                                    ])
+                                    ->where('chart_status', '!=', 'Auto_Close')
+                                    // ->whereIn('chart_status', [
+                                    //     'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
+                                    //    'QA_Assigned','QA_Inprocess','QA_Pending',
+                                    //     'QA_Completed','QA_Clarification','QA_Hold'
+                                    // ])
                                     ->count();
                             } catch (\Exception $e) {
                                 // Optional: Log the error or skip
