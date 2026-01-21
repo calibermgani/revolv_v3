@@ -74,6 +74,7 @@ class ProcessDayWiseAimsProduction implements ShouldQueue
                         $arData = $modelClass::selectRaw("CE_emp_id, COUNT(*) as cnt")
                             ->whereIn('CE_emp_id', $existingPrjUsers)
                             ->whereBetween($arColumnToUse, [$this->startDate, $this->endDate])
+                            ->where('chart_status', '!=', 'Auto_Close')
                             ->groupBy('CE_emp_id')
                             ->get()
                             ->toArray();
