@@ -685,7 +685,8 @@ class ProjectController extends Controller
                        // ->where('chart_status', 'CE_Completed')
                       //    ->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
                        // ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
-                        ->count();
+                       ->where('chart_status', '!=', 'Auto_Close')
+                       ->count();
                      
 
                         $hourlyCounts[] = $hourlyCount; // Add to the array for this project
@@ -1641,8 +1642,7 @@ class ProjectController extends Controller
                             $hourlyCount = $modelClass::whereBetween($columnToUse, [$slotStart, $slotEnd])
                             //->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
                            // ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
-                            ->count();
-
+                            ->where('chart_status', '!=', 'Auto_Close')->count();
                             $hourlyCounts[] = $hourlyCount; 
                         }
                         $mailBody[] = [
@@ -1801,6 +1801,7 @@ class ProjectController extends Controller
                     //     'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
                     //     'QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'
                     // ])
+                    ->where('chart_status', '!=', 'Auto_Close')
                     ->whereBetween($columnToUse, [$minStart, $maxEnd])
                     ->groupBy('CE_emp_id', 'hr')
                     ->get();
@@ -1915,6 +1916,7 @@ class ProjectController extends Controller
                                 $cCount = $modelClass::whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                             // ->where('chart_status', 'CE_Completed')
                                             // ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])//before logic
+                                            ->where('chart_status', '!=', 'Auto_Close')
                                             ->count();
                                 $qCount = $modelClass::whereBetween($qaColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                             ->where('chart_status', 'QA_Completed')->count();
@@ -2030,6 +2032,7 @@ class ProjectController extends Controller
                                             // ->where('chart_status', 'CE_Completed')
                                             //->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
                                             //->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                                            ->where('chart_status', '!=', 'Auto_Close')
                                             ->count();
                                 $qCount = $modelClass::whereBetween($qaColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                             ->where('chart_status', 'QA_Completed')->count();
@@ -2257,6 +2260,7 @@ class ProjectController extends Controller
                         //     'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
                         //     'QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'
                         // ])
+                        ->where('chart_status', '!=', 'Auto_Close')
                         ->whereBetween($columnToUse, [$minStart, $maxEnd])
                         ->groupBy('CE_emp_id', 'hr')
                         ->get();
