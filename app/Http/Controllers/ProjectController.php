@@ -680,13 +680,16 @@ class ProjectController extends Controller
                         $tableName = (new $modelClass)->getTable();
                         $columnExists = Schema::hasColumn($tableName, 'ar_at');
                         $hasNonNullArAt = $columnExists && $modelClass::whereNotNull('ar_at')->exists();
-                        $columnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                       // $columnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                         $columnToUse = 'ar_at';$hourlyCount = 0;
+                    if($columnExists) {
                         $hourlyCount = $modelClass::whereBetween($columnToUse, [$slotStart, $slotEnd])
                        // ->where('chart_status', 'CE_Completed')
                       //    ->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
                        // ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
-                       ->where('chart_status', '!=', 'Auto_Close')
+                      ->whereNotIn('chart_status',['Auto_Close','AR_non_workable'])
                        ->count();
+                    }
                      
 
                         $hourlyCounts[] = $hourlyCount; // Add to the array for this project
@@ -1638,11 +1641,14 @@ class ProjectController extends Controller
                             $tableName = (new $modelClass)->getTable();
                             $columnExists = Schema::hasColumn($tableName, 'ar_at');
                             $hasNonNullArAt = $columnExists && $modelClass::whereNotNull('ar_at')->exists();
-                            $columnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
-                            $hourlyCount = $modelClass::whereBetween($columnToUse, [$slotStart, $slotEnd])
-                            //->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
-                           // ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
-                            ->where('chart_status', '!=', 'Auto_Close')->count();
+                            // $columnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                            $columnToUse = 'ar_at';$hourlyCount = 0;
+                            if($columnExists) {
+                                $hourlyCount = $modelClass::whereBetween($columnToUse, [$slotStart, $slotEnd])
+                                //->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                            // ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
+                                 ->whereNotIn('chart_status',['Auto_Close','AR_non_workable'])->count();
+                            }
                             $hourlyCounts[] = $hourlyCount; 
                         }
                         $mailBody[] = [
@@ -1784,12 +1790,14 @@ class ProjectController extends Controller
                 // } 
                 $tableName = (new $modelClass)->getTable();
                 $columnExists = Schema::hasColumn($tableName, 'ar_at');
-                $columnToUse = $columnExists ? 'ar_at' : 'updated_at';
+                // $columnToUse = $columnExists ? 'ar_at' : 'updated_at';
+                $columnToUse = 'ar_at';
 
                 // Get overall min/max time range
                 $minStart = min(array_column($timeSlots, 'start'));
                 $maxEnd   = max(array_column($timeSlots, 'end'));
-
+                $results = collect();
+             if($columnExists) {
                 // Run one aggregated query
                 $results = $modelClass::selectRaw("
                         CE_emp_id,
@@ -1801,10 +1809,11 @@ class ProjectController extends Controller
                     //     'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
                     //     'QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'
                     // ])
-                    ->where('chart_status', '!=', 'Auto_Close')
+                     ->whereNotIn('chart_status',['Auto_Close','AR_non_workable'])
                     ->whereBetween($columnToUse, [$minStart, $maxEnd])
                     ->groupBy('CE_emp_id', 'hr')
                     ->get();
+             }
 
                 // Reshape results: user → hour → count
                 $userCounts = [];
@@ -1901,25 +1910,33 @@ class ProjectController extends Controller
     
                                 $arColumnExists = Schema::hasColumn($tableName, 'ar_at');
                                 $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
-                                $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                                // $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                                $arColumnToUse ='ar_at';
     
                                 $qaColumnExists = Schema::hasColumn($tableName, 'qa_at');
                                 $hasNonNullQaAt = $qaColumnExists && $modelClass::whereNotNull('qa_at')->exists();
-                                $qaColumnToUse = $hasNonNullQaAt ? 'qa_at' : 'updated_at';
+                                // $qaColumnToUse = $hasNonNullQaAt ? 'qa_at' : 'updated_at';
+                                 $qaColumnToUse = 'qa_at';
                                 
                                 // $aCount = $modelClass::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
                                 // ->where('chart_status', 'CE_Assigned')->count();
+                               $aCount = $cCount = $qCount = $productionARCount = $productionQACount = 0;
                                   $aCount = InventoryExeFile::whereBetween('exe_date', [$yesterDayStartDate, $yesterDayEndDate])
                                             ->where('project_id', $project['id'])
                                              ->where('sub_project_id', $subKey)
                                              ->count();
+                            if($arColumnExists) {
                                 $cCount = $modelClass::whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                             // ->where('chart_status', 'CE_Completed')
                                             // ->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])//before logic
-                                            ->where('chart_status', '!=', 'Auto_Close')
+                                             ->whereNotIn('chart_status',['Auto_Close','AR_non_workable'])
                                             ->count();
+                            }
+                            if($qaColumnExists) {
                                 $qCount = $modelClass::whereBetween($qaColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                             ->where('chart_status', 'QA_Completed')->count();
+                            }
+                            if($arColumnExists) {               
                                 $productionARCount = $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today,$arColumnToUse) {
                                     $query->where(function ($subQuery) use ($yesterDayStartDate, $yesterDayEndDate, $arColumnToUse) {
                                         $subQuery->whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
@@ -1944,12 +1961,14 @@ class ProjectController extends Controller
                                 ->select('CE_emp_id')
                                 ->get()
                                 ->count();
-                                        
+                            }
+                        if($qaColumnExists) {                                        
                             $productionQACount = $modelClass::whereBetween($qaColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                 ->whereIn('chart_status', ['QA_Assigned', 'QA_Inprocess', 'QA_Pending', 'QA_Completed', 'QA_Clarification', 'QA_Hold'])
                                 ->whereNotNull('QA_emp_id')
                                 ->distinct('QA_emp_id')
                                 ->count('QA_emp_id'); 
+                        }
     
                                 $projectsPending[] = [
                                     'project' => $project['client_name'] . '-' . $subProject,
@@ -2016,26 +2035,34 @@ class ProjectController extends Controller
                                 
                                 $arColumnExists = Schema::hasColumn($tableName, 'ar_at');
                                 $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
-                                $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                                // $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                                 $arColumnToUse ='ar_at';
     
                                 $qaColumnExists = Schema::hasColumn($tableName, 'qa_at');
                                 $hasNonNullQaAt = $qaColumnExists && $modelClass::whereNotNull('qa_at')->exists();
-                                $qaColumnToUse = $hasNonNullQaAt ? 'qa_at' : 'updated_at';
+                                // $qaColumnToUse = $hasNonNullQaAt ? 'qa_at' : 'updated_at';
+                                $qaColumnToUse = 'qa_at';
                                 
                                 // $aCount = $modelClass::whereBetween('created_at', [$yesterDayStartDate, $yesterDayEndDate])
                                 // ->where('chart_status', 'CE_Assigned')->count();
+                                  $aCount =   $cCount = $qCount = $productionARCount = $productionQACount = 0;
                                   $aCount = InventoryExeFile::whereBetween('exe_date', [$yesterDayStartDate, $yesterDayEndDate])
                                             ->where('project_id', $project['id'])
                                              ->where('sub_project_id', $subKey)
-                                             ->count();
+                                             ->count();                                           
+                            if($arColumnExists) {
                                 $cCount = $modelClass::whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                             // ->where('chart_status', 'CE_Completed')
                                             //->whereIn('chart_status', ['CE_Completed','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
                                             //->whereIn('chart_status', ['CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold','QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'])
-                                            ->where('chart_status', '!=', 'Auto_Close')
+                                             ->whereNotIn('chart_status',['Auto_Close','AR_non_workable'])
                                             ->count();
+                             }
+                            if($qaColumnExists) {
                                 $qCount = $modelClass::whereBetween($qaColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                             ->where('chart_status', 'QA_Completed')->count();
+                             }
+                            if($arColumnExists) {
                                 $productionARCount = $modelClass::where(function ($query) use ($yesterDayStartDate, $yesterDayEndDate, $yesterday, $today, $arColumnToUse) {
                                     $query->where(function ($subQuery) use ($yesterDayStartDate, $yesterDayEndDate, $arColumnToUse) {
                                         $subQuery->whereBetween($arColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
@@ -2060,12 +2087,14 @@ class ProjectController extends Controller
                                 ->select('CE_emp_id')
                                 ->get()
                                 ->count();
-                                        
+                            }
+                        if($qaColumnExists) {        
                             $productionQACount = $modelClass::whereBetween($qaColumnToUse, [$yesterDayStartDate, $yesterDayEndDate])
                                 ->whereIn('chart_status', ['QA_Assigned', 'QA_Inprocess', 'QA_Pending', 'QA_Completed', 'QA_Clarification', 'QA_Hold'])
                                 ->whereNotNull('QA_emp_id')
                                 ->distinct('QA_emp_id')
                                 ->count('QA_emp_id'); 
+                        }
     
                                 $projectsPending[] = [
                                     'project' => $project['client_name'] . '-' . $subProject,
@@ -2243,12 +2272,14 @@ class ProjectController extends Controller
                     // }   
                     $tableName = (new $modelClass)->getTable();
                     $columnExists = Schema::hasColumn($tableName, 'ar_at');
-                    $columnToUse = $columnExists ? 'ar_at' : 'updated_at';
+                    // $columnToUse = $columnExists ? 'ar_at' : 'updated_at';
+                    $columnToUse = 'ar_at';
 
                     // Get overall min/max time range
                     $minStart = min(array_column($timeSlots, 'start'));
                     $maxEnd   = max(array_column($timeSlots, 'end'));
-
+                    $results = collect();
+                   if($columnExists) {
                     // Run one aggregated query
                     $results = $modelClass::selectRaw("
                             CE_emp_id,
@@ -2260,10 +2291,11 @@ class ProjectController extends Controller
                         //     'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
                         //     'QA_Assigned','QA_Inprocess','QA_Pending','QA_Completed','QA_Clarification','QA_Hold'
                         // ])
-                        ->where('chart_status', '!=', 'Auto_Close')
+                        ->whereNotIn('chart_status',['Auto_Close','AR_non_workable'])
                         ->whereBetween($columnToUse, [$minStart, $maxEnd])
                         ->groupBy('CE_emp_id', 'hr')
                         ->get();
+                   }
 
                     // Reshape results: user → hour → count
                     $userCounts = [];
