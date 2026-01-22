@@ -86,21 +86,23 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
 
                         $arColumnExists = Schema::hasColumn($table_name, 'ar_at');
                         $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
-                        $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
-
+                        // $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                        $arColumnToUse = 'ar_at';
                         $resolvCount = 0;
 
                         if (class_exists($modelClass)) {
                             try {
+                              if($arColumnExists) {
                                 $resolvCount = $modelClass::whereBetween($arColumnToUse, [$resolvStartDate, $resolvEndDate])
                                     ->where('CE_emp_id', $project['emp_id'])
-                                    ->where('chart_status', '!=', 'Auto_Close')
+                                    ->whereNotIn('chart_status',['Auto_Close','AR_non_workable'])
                                     // ->whereIn('chart_status', [
                                     //     'CE_Inprocess','CE_Pending','CE_Completed','CE_Clarification','CE_Hold',
                                     //    'QA_Assigned','QA_Inprocess','QA_Pending',
                                     //     'QA_Completed','QA_Clarification','QA_Hold'
                                     // ])
                                     ->count();
+                               }
                             } catch (\Exception $e) {
                                 // Optional: Log the error or skip
                                 $resolvCount = 0;

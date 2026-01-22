@@ -68,16 +68,19 @@ class ProcessDayWiseAimsProduction implements ShouldQueue
 
                         $arColumnExists = Schema::hasColumn($tableName, 'ar_at');
                         $hasNonNullArAt = $arColumnExists && $modelClass::whereNotNull('ar_at')->exists();
-                        $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                        // $arColumnToUse = $hasNonNullArAt ? 'ar_at' : 'updated_at';
+                        $arColumnToUse = 'ar_at';$arData = [];
 
                         // ----- Query results -----
+                        if($arColumnExists) {
                         $arData = $modelClass::selectRaw("CE_emp_id, COUNT(*) as cnt")
                             ->whereIn('CE_emp_id', $existingPrjUsers)
                             ->whereBetween($arColumnToUse, [$this->startDate, $this->endDate])
-                            ->where('chart_status', '!=', 'Auto_Close')
+                            ->whereNotIn('chart_status',['Auto_Close','AR_non_workable'])
                             ->groupBy('CE_emp_id')
                             ->get()
                             ->toArray();
+                        }
 
                         // ----- Caller work logs -----
                         $callChartResults = CallerChartsWorkLogs::selectRaw("
