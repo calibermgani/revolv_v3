@@ -39,6 +39,7 @@ use App\Mail\ResolvBackEndTemplateUploadFile;
 use App\Models\BackEndUploadTemplateExeFile;
 use Illuminate\Support\Facades\Response;
 use App\Jobs\ProcessDayWiseAimsProduction;
+use App\Jobs\DateRangeWiseAimsProduction;
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
@@ -2935,5 +2936,120 @@ public function projectDayWiseAimsProduction()
         ]);
     }
 
+    public function projectDateRangeWiseAimsProduction(Request $request) {
+        try {
+            $request_values = $request->all();
+
+            if (empty($request_values['resolvProductionDateRange'])) {
+                return response()->json([
+                    'code' => 400,
+                    'message' => 'Date range required'
+                ]);
+            }
+
+            $between_dates = explode("-", $request_values['resolvProductionDateRange']);
+            $start_date = Carbon::parse(trim($between_dates[0]));
+            $end_date   = Carbon::parse(trim($between_dates[1]));
+
+            $currentDate = $start_date->copy();
+
+            while ($currentDate->lte($end_date)) {
+
+                // ❌ Skip Saturday & Sunday
+                if ($currentDate->isSaturday() || $currentDate->isSunday()) {
+                    $currentDate->addDay();
+                    continue;
+                }
+
+                // ✅ 8AM to next day 7:59AM
+                $startDate = $currentDate->copy()->setTime(8, 0, 0)->toDateTimeString();
+                $endDate   = $currentDate->copy()->addDay()->setTime(7, 59, 0)->toDateTimeString();
+
+                $workDate = $currentDate->format('Y-m-d');
+
+                // ✅ Dispatch job per date
+                DateRangeWiseAimsProduction::dispatch($startDate, $endDate, $workDate)
+                    ->delay(now()->addSeconds(2));
+
+                $currentDate->addDay();
+            }
+
+            return response()->json([
+                'code' => 202,
+                'message' => 'Jobs dispatched for all working dates'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'code' => 500,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+    public function getDateRangeAimsProductionResults($date){
+        $cacheKey = "date-range-aims-production_{$date}";
+        $data = Cache::get($cacheKey);
+
+        if (!$data) {
+            return response()->json([
+                'code' => 404,
+                'message' => "No cached results found for date {$date}.",
+            ]);
+        }
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'Success',
+            'data' => $data,
+        ]);
+    }
+    public function getDateWiseRangeResults(Request $request)
+    {
+        try {
+            $request_values = $request->all();
+
+            if (empty($request_values['resolvProductionDateRange'])) {
+                return response()->json([
+                    'code' => 400,
+                    'message' => 'Date range required'
+                ]);
+            }
+
+            $between_dates = explode("-", $request_values['resolvProductionDateRange']);
+            $start_date = Carbon::parse(trim($between_dates[0]));
+            $end_date   = Carbon::parse(trim($between_dates[1]));
+
+            $currentDate = $start_date->copy();
+            $finalData = [];
+
+            while ($currentDate->lte($end_date)) {
+
+                if ($currentDate->isSaturday() || $currentDate->isSunday()) {
+                    $currentDate->addDay();
+                    continue;
+                }
+
+                $date = $currentDate->format('Y-m-d');
+                $cacheKey = "date-range-aims-production_{$date}";
+
+                $finalData[$date] = Cache::has($cacheKey)
+                    ? Cache::get($cacheKey)
+                    : 'processing';
+
+                $currentDate->addDay();
+            }
+
+            return response()->json([
+                'code' => 200,
+                'data' => $finalData
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'code' => 500,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
 
 }

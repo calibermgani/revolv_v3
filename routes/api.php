@@ -221,11 +221,13 @@ Route::group(['prefix' => 'projects'], function() {
 
     Route::any('production_auto_close', 'App\Http\Controllers\ProjectController@productionAutoClose');
     Route::any('alter_table_chart_status_column', 'App\Http\Controllers\ProjectController@alterTableChartStatusColumn');
-     Route::any('production_insert', 'App\Http\Controllers\ProjectController@productionInsert');
-     Route::any('backend_upload_template_exe_file', 'App\Http\Controllers\ProjectController@backendUploadTemplateExeFile');
-       Route::any('bulk_excel_export', 'App\Http\Controllers\Reports\ReportsController@bulkExportApi');
-       Route::any('project_day_wise_aims_production', 'App\Http\Controllers\ProjectController@projectDayWiseAimsProduction');
-       Route::get('aims-production-results/{date}',  'App\Http\Controllers\ProjectController@getAimsProductionResults');
+    Route::any('production_insert', 'App\Http\Controllers\ProjectController@productionInsert');
+    Route::any('backend_upload_template_exe_file', 'App\Http\Controllers\ProjectController@backendUploadTemplateExeFile');
+    Route::any('bulk_excel_export', 'App\Http\Controllers\Reports\ReportsController@bulkExportApi');
+    Route::any('project_day_wise_aims_production', 'App\Http\Controllers\ProjectController@projectDayWiseAimsProduction');
+    Route::get('aims-production-results/{date}',  'App\Http\Controllers\ProjectController@getAimsProductionResults');
+    Route::any('project_daterange_wise_aims_production','App\Http\Controllers\ProjectController@projectDateRangeWiseAimsProduction');
+    Route::get('date-range-aims-production-results',  'App\Http\Controllers\ProjectController@getDateWiseRangeResults');
 
 
 
