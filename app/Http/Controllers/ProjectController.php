@@ -2963,7 +2963,7 @@ public function projectDayWiseAimsProduction()
 
                 // ✅ 8AM to next day 7:59AM
                 $startDate = $currentDate->copy()->setTime(8, 0, 0)->toDateTimeString();
-                $endDate   = $currentDate->copy()->addDay()->setTime(7, 59, 0)->toDateTimeString();
+                $endDate   = $currentDate->copy()->setTime(7, 59, 0)->toDateTimeString();
 
                 $workDate = $currentDate->format('Y-m-d');
 
