@@ -39,7 +39,7 @@ use App\Mail\ResolvBackEndTemplateUploadFile;
 use App\Models\BackEndUploadTemplateExeFile;
 use Illuminate\Support\Facades\Response;
 use App\Jobs\ProcessDayWiseAimsProduction;
-use App\Jobs\DateRangeWiseAimsProduction;
+use App\Jobs\DateRangeWiseAimsProductionUpdate;
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
@@ -2968,7 +2968,7 @@ public function projectDayWiseAimsProduction()
                 $workDate = $currentDate->format('Y-m-d');
 
                 // ✅ Dispatch job per date
-                DateRangeWiseAimsProduction::dispatch($startDate, $endDate, $workDate)
+                DateRangeWiseAimsProductionUpdate::dispatch($startDate, $endDate, $workDate)
                     ->delay(now()->addSeconds(2));
 
                 $currentDate->addDay();
