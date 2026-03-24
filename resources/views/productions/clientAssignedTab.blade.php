@@ -919,7 +919,6 @@ use Carbon\Carbon;
                                                                                     {!! Form::Select(
                                                                                         'chart_status',
                                                                                         [
-                                                                                            '' => '--Select--',
                                                                                             'CE_Pending' => 'Pending',
                                                                                             'CE_Completed' => 'Completed',
                                                                                             'CE_Hold' => 'Hold',
@@ -938,7 +937,6 @@ use Carbon\Carbon;
                                                                                     {!! Form::Select(
                                                                                         'chart_status',
                                                                                         [
-                                                                                            '' => '--Select--',
                                                                                             'CE_Inprocess' => 'Inprocess',
                                                                                             'CE_Pending' => 'Pending',
                                                                                             'CE_Completed' => 'Completed',
@@ -1459,7 +1457,6 @@ use Carbon\Carbon;
                                                                             {!! Form::Select(
                                                                                 'chart_status',
                                                                                 [
-                                                                                    '' => '--Select--',
                                                                                     'CE_Pending' => 'Pending',
                                                                                     'CE_Completed' => 'Completed',
                                                                                     'CE_Hold' => 'Hold',
