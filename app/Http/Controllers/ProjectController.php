@@ -2908,7 +2908,9 @@ public function projectDayWiseAimsProduction()
             $yesterDayStartDate,
             $yesterDayEndDate,
             $workDate
-        )->onQueue('aimsCron')->delay(now()->addSeconds(5));
+        )
+        // ->onQueue('aimsCron')
+        ->delay(now()->addSeconds(5));
 
         return response()->json([
             'code' => 202,
