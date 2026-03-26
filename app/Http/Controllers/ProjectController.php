@@ -40,6 +40,11 @@ use App\Models\BackEndUploadTemplateExeFile;
 use Illuminate\Support\Facades\Response;
 use App\Jobs\ProcessDayWiseAimsProduction;
 use App\Jobs\DateRangeWiseAimsProductionUpdate;
+use App\Jobs\DateRangeWiseAimsProduction;
+    use Illuminate\Support\Facades\Bus;
+use Illuminate\Bus\Batch;
+use Throwable;
+
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
@@ -2903,7 +2908,7 @@ public function projectDayWiseAimsProduction()
             $yesterDayStartDate,
             $yesterDayEndDate,
             $workDate
-        )->delay(now()->addSeconds(5));
+        )->onQueue('aimsCron')->delay(now()->addSeconds(5));
 
         return response()->json([
             'code' => 202,
@@ -2936,6 +2941,77 @@ public function projectDayWiseAimsProduction()
         ]);
     }
 
+
+// public function projectDateRangeWiseAimsProduction(Request $request)//Batch + Bus
+// {
+//     try {
+//         $request_values = $request->all();
+
+//         if (empty($request_values['resolvProductionDateRange'])) {
+//             return response()->json([
+//                 'code' => 400,
+//                 'message' => 'Date range required'
+//             ]);
+//         }
+
+//         $date = \Carbon\Carbon::parse(trim(explode("-", $request_values['resolvProductionDateRange'])[0]));
+
+//         if ($date->isSaturday() || $date->isSunday()) {
+//             return response()->json([
+//                 'code' => 400,
+//                 'message' => 'Weekend not allowed'
+//             ]);
+//         }
+
+//         $startDate = $date->copy()->setTime(8, 0, 0)->toDateTimeString();
+//         $endDate   = $date->copy()->addDay()->setTime(7, 59, 0)->toDateTimeString();
+//         $workDate  = $date->format('Y-m-d');
+
+//         $projects = app('App\Http\Controllers\ProjectController')->getProjects();dd($projects[0]);
+
+//         $jobs = [];
+
+//         foreach ($projects as $project) {
+//             $jobs[] = new DateRangeWiseAimsProduction(
+//                 $startDate,
+//                 $endDate,
+//                 $workDate,
+//                 $project
+//             );
+//         }
+
+//         Bus::batch($jobs)
+//             ->then(function (Batch $batch) use ($workDate) {
+
+//                 // ✅ Combine all project results
+//                 $finalData = [];
+
+//                 foreach (Cache::get("partial_{$workDate}", []) as $data) {
+//                     $finalData[] = $data;
+//                 }
+
+//                 Cache::put("date-range-aims-production_{$workDate}", $finalData, now()->addHours(6));
+
+//                 // cleanup
+//                 Cache::forget("partial_{$workDate}");
+//             })
+//             ->catch(function (Batch $batch, Throwable $e) {
+//                 Log::error("Batch failed: " . $e->getMessage());
+//             })
+//             ->dispatch();
+
+//         return response()->json([
+//             'code' => 202,
+//             'message' => 'Batch started',
+//         ]);
+
+//     } catch (\Exception $e) {
+//         return response()->json([
+//             'code' => 500,
+//             'message' => $e->getMessage()
+//         ]);
+//     }
+// }
     public function projectDateRangeWiseAimsProduction(Request $request) {
         try {
             $request_values = $request->all();
@@ -2968,7 +3044,7 @@ public function projectDayWiseAimsProduction()
                 $workDate = $currentDate->format('Y-m-d');
 
                 // ✅ Dispatch job per date
-                DateRangeWiseAimsProductionUpdate::dispatch($startDate, $endDate, $workDate)
+                DateRangeWiseAimsProduction::dispatch($startDate, $endDate, $workDate)->onQueue('aims')
                     ->delay(now()->addSeconds(2));
 
                 $currentDate->addDay();

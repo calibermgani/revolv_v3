@@ -182,7 +182,7 @@ class DateRangeWiseAimsProduction implements ShouldQueue
                     }
 
                     $callChartResults = CallerChartsWorkLogs::selectRaw("
-                            emp_id, COUNT(*) as call_cnt,
+                            emp_id,
                             DATE_FORMAT(SEC_TO_TIME(SUM(TIME_TO_SEC(work_time))), '%H:%i:%s') as work_hours
                         ")
                         ->whereIn('emp_id', $existingPrjUsers)
