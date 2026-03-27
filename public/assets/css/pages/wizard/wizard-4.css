@@ -14,7 +14,12 @@
     -ms-flex-pack: justify;
      justify-content: flex-start;;
     -ms-flex-wrap: wrap;
-    flex-wrap: wrap; }
+    /* flex-wrap: wrap;  /* old code * */
+     flex-wrap: nowrap; /* prevent wrapping */
+     overflow-x: auto;
+     color: #139AB3 !important; 
+     margin-left:16px;
+     margin-top: 10px; }
     .wizard.wizard-4 .wizard-nav .wizard-steps .wizard-step {
       display: -webkit-box;
       display: -ms-flexbox;
@@ -50,6 +55,7 @@
         color: gray;
         padding: 2rem 2.5rem;
         /* border-bottom: 1px solid #BFBFBF; */
+          padding-bottom: 0 !important;/*newly added for tab alignment*/
     }
         .wizard.wizard-4 .wizard-nav .wizard-steps .wizard-step .wizard-wrapper .wizard-number {
           font-size: 1.3rem;
@@ -87,12 +93,12 @@
       .wizard.wizard-4 .wizard-nav .wizard-steps .wizard-step[data-wizard-state="current"] {
         background-color: #ffffff;
         font-weight: bold !important;
-        border-bottom: 2px solid #139AB3; }
+        /* border-bottom: 2px solid #139AB3;  */ /*old code*/}    
         .wizard.wizard-4 .wizard-nav .wizard-steps .wizard-step[data-wizard-state="current"] .wizard-wrapper .wizard-number {
             background-color: red !important; }
         .wizard.wizard-4 .wizard-nav .wizard-steps .wizard-step[data-wizard-state="current"] .wizard-wrapper .wizard-label .wizard-title {
-
-            color: #139AB3;
+            color: #139AB3;/*old color*/  
+            color: #ffffff;
          }
   .wizard.wizard-4 [data-wizard-type="step-info"] {
     display: none; }
@@ -173,3 +179,43 @@
             flex:none;
             width:max-content;
         }
+        /*new code for scrollbar & tab alignment below code*/
+        .wizard.wizard-4 .wizard-nav .wizard-steps::-webkit-scrollbar {
+            height: 8px; /* height of horizontal scrollbar */
+        }
+
+        .wizard.wizard-4 .wizard-nav .wizard-steps::-webkit-scrollbar-track {
+            background: #f0f0f0; /* background track color */
+            border-radius: 4px;
+        }
+
+        .wizard.wizard-4 .wizard-nav .wizard-steps::-webkit-scrollbar-thumb {
+            background-color: #139AB3; /* scrollbar color */
+            border-radius: 4px;
+            border: 2px solid #f0f0f0; /* optional padding around thumb */
+        }
+
+        .wizard.wizard-4 .wizard-nav .wizard-steps::-webkit-scrollbar-thumb:hover {
+            background-color: #0d728c; /* hover color */
+        }
+        .wizard.wizard-4 .wizard-nav .wizard-steps .wizard-step {
+            white-space: nowrap;  /* prevents text from breaking */
+            flex: 0 0 auto;       /* keep step width based on content */
+        }
+
+        .wizard.wizard-4 .wizard-nav .wizard-steps .wizard-step .wizard-wrapper {
+            white-space: nowrap;  /* also prevent wrapping inside wrapper */
+        }
+        .wizard.wizard-4 .wizard-nav .wizard-steps .wizard-step[data-wizard-state="current"] .wizard-wrapper .wizard-label .wizard-title .rectangle{
+            background-color: #ffffff; /* Adjust background color as needed */
+            color: #139AB3; /* Text color */
+        }
+       .wizard.wizard-4 .wizard-nav .wizard-steps .wizard-step[data-wizard-state="current"] .wizard-wrapper {
+          background-color: #139AB3;  /* sets wrapper bg */
+          color: #ffffff;              /* sets text color inside wrapper */
+          border-radius: 19px;         /* rounded corners */
+          transition: background-color 0.3s; /* optional smooth effect */
+          padding-left: 0.5rem;
+          padding-right: 0.5rem;
+          padding-top: 0 !important;          
+       }
