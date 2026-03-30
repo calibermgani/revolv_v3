@@ -2909,7 +2909,7 @@ public function projectDayWiseAimsProduction()
             $yesterDayEndDate,
             $workDate
         )
-        // ->onQueue('aimsCron')
+        ->onQueue('aimsCron')
         ->delay(now()->addSeconds(5));
 
         return response()->json([
@@ -3064,24 +3064,7 @@ public function projectDayWiseAimsProduction()
             ]);
         }
     }
-    public function getDateRangeAimsProductionResults($date){
-        $cacheKey = "date-range-aims-production_{$date}";
-        $data = Cache::get($cacheKey);
-
-        if (!$data) {
-            return response()->json([
-                'code' => 404,
-                'message' => "No cached results found for date {$date}.",
-            ]);
-        }
-
-        return response()->json([
-            'code' => 200,
-            'message' => 'Success',
-            'data' => $data,
-        ]);
-    }
-    public function getDateWiseRangeResults(Request $request)
+       public function getDateWiseRangeResults(Request $request)
     {
         try {
             $request_values = $request->all();
