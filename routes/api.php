@@ -216,6 +216,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('smp_seleverstov_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@seleverstovMedicalPCDuplicates');
     Route::any('phhe_phoenix_heart_follow_up', 'App\Http\Controllers\ProjectAuthAutomationController@phhePhoenixHeartFollowUp');
     Route::any('phhe_phoenix_heart_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@phhePhoenixHeartFollowUpDuplicates');
+    Route::any('seci_my_spectrum_follow_up', 'App\Http\Controllers\ProjectAuthAutomationController@seciMySpectrumFollowUp');
+    Route::any('seci_my_spectrum_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@seciMySpectrumFollowUpDuplicates');
     Route::any('get_project_columns', 'App\Http\Controllers\FormController@getProjectColumns');
 
 
