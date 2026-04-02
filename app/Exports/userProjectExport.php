@@ -71,8 +71,8 @@ class userProjectExport implements FromCollection, WithHeadings, WithMapping, Wi
                         }
 
                         // Resolv Count
-                        $resolvStartDate = $date->copy()->setTime(17, 0, 0)->format('Y-m-d H:i:s');
-                        $resolvEndDate = $date->copy()->addDay()->setTime(9, 0, 0)->format('Y-m-d H:i:s');
+                        $resolvStartDate = $date->copy()->setTime(8, 0, 0)->format('Y-m-d H:i:s');
+                        $resolvEndDate = $date->copy()->addDay()->setTime(7, 59, 0)->format('Y-m-d H:i:s');
 
                         $paProject = \App\Http\Helper\Admin\Helpers::projectName($project['prj_id']);
                         $decodedClientName = $paProject ? $paProject['project_name'] : null;
