@@ -103,12 +103,12 @@ class ProjectController extends Controller
     public function getProjectShortcut($projectName)
     {
         // Remove special characters and text within parentheses
-        $projectName = preg_replace('/\s+/', ' ', $projectName); // Replace multiple spaces with a single space
-        $projectName = preg_replace('/\s*[\(\)]\s*/', ' ', $projectName); // Remove parentheses and text within them
-        $projectName = preg_replace('/[^\w\s]/', '', $projectName); // Remove non-alphanumeric characters except whitespace
+        $projectName = preg_replace('/\s+/', ' ', $projectName);
+        $projectName = preg_replace('/\s*[\(\)]\s*/', ' ', $projectName);
+        $projectName = preg_replace('/[^\w\s]/', '', $projectName);
 
         // Split the project name into words
-        $words = explode(' ', $projectName);
+         $words = array_values(array_filter(explode(' ', $projectName)));
 
         // Get the first character of each word
         $shortcut = '';
@@ -117,13 +117,64 @@ class ProjectController extends Controller
                 if (count($words) > 1) {
                     $shortcut .= strtoupper($word[0]);
                 } else {
-                    $shortcut = $word;
+                    $shortcut = strtoupper($word);
                 }
             }
         }
 
-        return $shortcut;
+        // Step 2: Get existing shortcuts from DB
+        $existing = DB::table('projects')
+            ->where('project_name', 'like', $shortcut . '%')
+            ->pluck('project_name')
+            ->toArray();
+
+        // Step 3: If unique → return
+        if (!in_array($shortcut, $existing)) {
+            return $shortcut;
+        }
+
+        // Step 4: Apply letter-based expansion (NO NUMBERS)
+        $maxLength = 5;
+
+        for ($i = 1; $i < $maxLength; $i++) {
+            $newShortcut = '';
+
+            foreach ($words as $word) {
+                $newShortcut .= strtoupper(substr($word, 0, min(strlen($word), $i + 1)));
+            }
+
+            if (!in_array($newShortcut, $existing)) {
+                return $newShortcut;
+            }
+        }
+
+        // Step 5: Final fallback (still letters only)
+        return strtoupper(substr(str_replace(' ', '', $projectName), 0, 6));
     }
+    // public function getProjectShortcutOld($projectName)
+    // {
+    //     // Remove special characters and text within parentheses
+    //     $projectName = preg_replace('/\s+/', ' ', $projectName); // Replace multiple spaces with a single space
+    //     $projectName = preg_replace('/\s*[\(\)]\s*/', ' ', $projectName); // Remove parentheses and text within them
+    //     $projectName = preg_replace('/[^\w\s]/', '', $projectName); // Remove non-alphanumeric characters except whitespace
+
+    //     // Split the project name into words
+    //     $words = explode(' ', $projectName);
+
+    //     // Get the first character of each word
+    //     $shortcut = '';
+    //     foreach ($words as $word) {
+    //         if (!empty($word)) {
+    //             if (count($words) > 1) {
+    //                 $shortcut .= strtoupper($word[0]);
+    //             } else {
+    //                 $shortcut = $word;
+    //             }
+    //         }
+    //     }
+
+    //     return $shortcut;
+    // }
     public function projectWorkMail1()
     {
         try {
