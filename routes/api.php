@@ -214,6 +214,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('helixona_ar_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@helixonaARDuplicates');
     Route::any('smp_seleverstov_follow_up', 'App\Http\Controllers\ProjectAuthAutomationController@seleverstovMedicalPC');
     Route::any('smp_seleverstov_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@seleverstovMedicalPCDuplicates');
+    Route::any('phhe_phoenix_heart_follow_up', 'App\Http\Controllers\ProjectAuthAutomationController@phhePhoenixHeartFollowUp');
+    Route::any('phhe_phoenix_heart_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@phhePhoenixHeartFollowUpDuplicates');
     Route::any('get_project_columns', 'App\Http\Controllers\FormController@getProjectColumns');
 
 
