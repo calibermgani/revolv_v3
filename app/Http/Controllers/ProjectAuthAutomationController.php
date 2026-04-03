@@ -75,6 +75,9 @@ use App\Models\PhhePhoenixHeartFollowUp;
 use App\Models\PhhePhoenixHeartFollowUpDuplicates;
 use App\Models\SeciMySpectrumFollowUp;
 use App\Models\SeciMySpectrumFollowUpDuplicates;
+use App\Models\EshExcelsiorFollowUp;
+use App\Models\EshExcelsiorFollowUpDuplicates;
+
 class ProjectAuthAutomationController extends Controller
 {
     public function aopsPreAuthVerification(Request $request)
@@ -5003,6 +5006,103 @@ class ProjectAuthAutomationController extends Controller
                 'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
                 'charge' => isset($request->charge) && $request->charge != "NULL" ? $request->charge : NULL,
                 'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                'invoke_date' => date('Y-m-d'),
+                'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+     public function EshExcelsiorFollowUp(Request $request) {
+        try {
+            $attributes = [
+                'encntr_number' => isset($request->encntr_number) && $request->encntr_number != "NULL" ? $request->encntr_number : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'total_charges' => isset($request->total_charges) && $request->total_charges != "NULL" ? $request->total_charges : NULL
+             ];        
+ 
+            $duplicateRecordExisting  =  EshExcelsiorFollowUp::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                EshExcelsiorFollowUp::insert([
+                    'patient_last_name' => isset($request->patient_last_name) && $request->patient_last_name != "NULL" ? $request->patient_last_name : NULL,
+                    'patient_first_name'=> isset($request->patient_first_name) && $request->patient_first_name != "NULL" ? $request->patient_first_name : NULL,
+                    'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                    'encntr_number' => isset($request->encntr_number) && $request->encntr_number != "NULL" ? $request->encntr_number : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'disch_date' => isset($request->disch_date) && $request->disch_date != "NULL" ? $request->disch_date : NULL,
+                    'primary_health_plan' => isset($request->primary_health_plan) && $request->primary_health_plan != "NULL" ? $request->primary_health_plan : NULL,
+                    'total_charges' => isset($request->total_charges) && $request->total_charges != "NULL" ? $request->total_charges : NULL,
+                    'current_ar_balance' => isset($request->current_ar_balance) && $request->current_ar_balance != "NULL" ? $request->current_ar_balance : NULL,
+                    'medical_services' => isset($request->medical_services) && $request->medical_services != "NULL" ? $request->medical_services : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned"
+                ]);
+                return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords  =  EshExcelsiorFollowUp::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'patient_last_name' => isset($request->patient_last_name) && $request->patient_last_name != "NULL" ? $request->patient_last_name : NULL,
+                            'patient_first_name'=> isset($request->patient_first_name) && $request->patient_first_name != "NULL" ? $request->patient_first_name : NULL,
+                            'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                            'encntr_number' => isset($request->encntr_number) && $request->encntr_number != "NULL" ? $request->encntr_number : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'disch_date' => isset($request->disch_date) && $request->disch_date != "NULL" ? $request->disch_date : NULL,
+                            'primary_health_plan' => isset($request->primary_health_plan) && $request->primary_health_plan != "NULL" ? $request->primary_health_plan : NULL,
+                            'total_charges' => isset($request->total_charges) && $request->total_charges != "NULL" ? $request->total_charges : NULL,
+                            'current_ar_balance' => isset($request->current_ar_balance) && $request->current_ar_balance != "NULL" ? $request->current_ar_balance : NULL,
+                            'medical_services' => isset($request->medical_services) && $request->medical_services != "NULL" ? $request->medical_services : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                     EshExcelsiorFollowUp::insert([
+                        'patient_last_name' => isset($request->patient_last_name) && $request->patient_last_name != "NULL" ? $request->patient_last_name : NULL,
+                        'patient_first_name'=> isset($request->patient_first_name) && $request->patient_first_name != "NULL" ? $request->patient_first_name : NULL,
+                        'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                        'encntr_number' => isset($request->encntr_number) && $request->encntr_number != "NULL" ? $request->encntr_number : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'disch_date' => isset($request->disch_date) && $request->disch_date != "NULL" ? $request->disch_date : NULL,
+                        'primary_health_plan' => isset($request->primary_health_plan) && $request->primary_health_plan != "NULL" ? $request->primary_health_plan : NULL,
+                        'total_charges' => isset($request->total_charges) && $request->total_charges != "NULL" ? $request->total_charges : NULL,
+                        'current_ar_balance' => isset($request->current_ar_balance) && $request->current_ar_balance != "NULL" ? $request->current_ar_balance : NULL,
+                        'medical_services' => isset($request->medical_services) && $request->medical_services != "NULL" ? $request->medical_services : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record Reinserted Successfully']);
+                }                
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function EshExcelsiorFollowUpDuplicates(Request $request){
+        try {
+            EshExcelsiorFollowUpDuplicates::insert([
+                'patient_last_name' => isset($request->patient_last_name) && $request->patient_last_name != "NULL" ? $request->patient_last_name : NULL,
+                'patient_first_name'=> isset($request->patient_first_name) && $request->patient_first_name != "NULL" ? $request->patient_first_name : NULL,
+                'account_number' => isset($request->account_number) && $request->account_number != "NULL" ? $request->account_number : NULL,
+                'encntr_number' => isset($request->encntr_number) && $request->encntr_number != "NULL" ? $request->encntr_number : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'disch_date' => isset($request->disch_date) && $request->disch_date != "NULL" ? $request->disch_date : NULL,
+                'primary_health_plan' => isset($request->primary_health_plan) && $request->primary_health_plan != "NULL" ? $request->primary_health_plan : NULL,
+                'total_charges' => isset($request->total_charges) && $request->total_charges != "NULL" ? $request->total_charges : NULL,
+                'current_ar_balance' => isset($request->current_ar_balance) && $request->current_ar_balance != "NULL" ? $request->current_ar_balance : NULL,
+                'medical_services' => isset($request->medical_services) && $request->medical_services != "NULL" ? $request->medical_services : NULL,
                 'invoke_date' => date('Y-m-d'),
                 'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                 'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,

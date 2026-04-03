@@ -218,6 +218,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('phhe_phoenix_heart_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@phhePhoenixHeartFollowUpDuplicates');
     Route::any('seci_my_spectrum_follow_up', 'App\Http\Controllers\ProjectAuthAutomationController@seciMySpectrumFollowUp');
     Route::any('seci_my_spectrum_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@seciMySpectrumFollowUpDuplicates');
+    Route::any('esh_excelsior_follow_up', 'App\Http\Controllers\ProjectAuthAutomationController@EshExcelsiorFollowUp');
+    Route::any('esh_excelsior_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@EshExcelsiorFollowUpDuplicates');
     Route::any('get_project_columns', 'App\Http\Controllers\FormController@getProjectColumns');
 
 
