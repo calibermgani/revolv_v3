@@ -5023,7 +5023,7 @@ class ProjectAuthAutomationController extends Controller
                 'encntr_number' => isset($request->encntr_number) && $request->encntr_number != "NULL" ? $request->encntr_number : NULL,
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
                 'total_charges' => isset($request->total_charges) && $request->total_charges != "NULL" ? $request->total_charges : NULL
-             ];        
+             ];        dd($attributes);
  
             $duplicateRecordExisting  =  EshExcelsiorFollowUp::where($attributes)->exists();
             if (!$duplicateRecordExisting) {
