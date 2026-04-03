@@ -5019,6 +5019,7 @@ class ProjectAuthAutomationController extends Controller
 
      public function eshExcelsiorFollowUp(Request $request) {
         try {
+            dd(123);
             $attributes = [
                 'encntr_number' => isset($request->encntr_number) && $request->encntr_number != "NULL" ? $request->encntr_number : NULL,
                 'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
