@@ -5025,7 +5025,7 @@ class ProjectAuthAutomationController extends Controller
                 'total_charges' => isset($request->total_charges) && $request->total_charges != "NULL" ? $request->total_charges : NULL
              ];        
  
-            $duplicateRecordExisting  =  EshExcelsiorFollowUp::where($attributes)->exists();dd($duplicateRecordExisting);
+            $duplicateRecordExisting  =  EshExcelsiorFollowUp::where($attributes)->exists();
             if (!$duplicateRecordExisting) {
                 EshExcelsiorFollowUp::insert([
                     'patient_last_name' => isset($request->patient_last_name) && $request->patient_last_name != "NULL" ? $request->patient_last_name : NULL,
@@ -5042,7 +5042,7 @@ class ProjectAuthAutomationController extends Controller
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
                     'chart_status' => "CE_Assigned"
-                ]);
+                ]);dd('sdfd');
                 return response()->json(['message' => 'Record Inserted Successfully']);
             } else {
                 $duplicateRecords  =  EshExcelsiorFollowUp::where($attributes)->where('chart_status',"CE_Assigned")->get();
