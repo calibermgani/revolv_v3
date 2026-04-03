@@ -5025,7 +5025,7 @@ public function eshExcelsiorFollowUp(Request $request) {
              ];        
  
             $duplicateRecordExisting  =  EshExcelsiorFollowUp::where($attributes)->exists();
-            if (!$duplicateRecordExisting) {dd('if');
+            if (!$duplicateRecordExisting) {
                 EshExcelsiorFollowUp::insert([
                     'patient_last_name' => isset($request->patient_last_name) && $request->patient_last_name != "NULL" ? $request->patient_last_name : NULL,
                     'patient_first_name'=> isset($request->patient_first_name) && $request->patient_first_name != "NULL" ? $request->patient_first_name : NULL,
