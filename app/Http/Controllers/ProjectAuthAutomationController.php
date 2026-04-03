@@ -5017,7 +5017,7 @@ class ProjectAuthAutomationController extends Controller
         }
     }
 
-     public function EshExcelsiorFollowUp(Request $request) {
+     public function eshExcelsiorFollowUp(Request $request) {
         try {
             $attributes = [
                 'encntr_number' => isset($request->encntr_number) && $request->encntr_number != "NULL" ? $request->encntr_number : NULL,
@@ -5090,7 +5090,7 @@ class ProjectAuthAutomationController extends Controller
             $e->getMessage();
         }
     }
-    public function EshExcelsiorFollowUpDuplicates(Request $request){
+    public function eshExcelsiorFollowUpDuplicates(Request $request){
         try {
             EshExcelsiorFollowUpDuplicates::insert([
                 'patient_last_name' => isset($request->patient_last_name) && $request->patient_last_name != "NULL" ? $request->patient_last_name : NULL,
