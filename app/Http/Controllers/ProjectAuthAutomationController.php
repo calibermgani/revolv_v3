@@ -5026,7 +5026,7 @@ class ProjectAuthAutomationController extends Controller
              ];        
  
             $duplicateRecordExisting  =  EshExcelsiorFollowUp::where($attributes)->exists();
-            if (!$duplicateRecordExisting) {dd($request->all());
+            if (!$duplicateRecordExisting) {
                 EshExcelsiorFollowUp::insert([
                     'patient_last_name' => isset($request->patient_last_name) && $request->patient_last_name != "NULL" ? $request->patient_last_name : NULL,
                     'patient_first_name'=> isset($request->patient_first_name) && $request->patient_first_name != "NULL" ? $request->patient_first_name : NULL,
