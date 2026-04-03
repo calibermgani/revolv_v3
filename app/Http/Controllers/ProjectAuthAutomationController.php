@@ -5025,7 +5025,7 @@ public function eshExcelsiorFollowUp(Request $request) {
              ];        
  
             $duplicateRecordExisting  =  EshExcelsiorFollowUp::where($attributes)->exists();
-            if (!$duplicateRecordExisting) {
+            if (!$duplicateRecordExisting) {dd('if');
                 EshExcelsiorFollowUp::insert([
                     'patient_last_name' => isset($request->patient_last_name) && $request->patient_last_name != "NULL" ? $request->patient_last_name : NULL,
                     'patient_first_name'=> isset($request->patient_first_name) && $request->patient_first_name != "NULL" ? $request->patient_first_name : NULL,
@@ -5043,7 +5043,7 @@ public function eshExcelsiorFollowUp(Request $request) {
                     'chart_status' => "CE_Assigned"
                 ]);
                 return response()->json(['message' => 'Record Inserted Successfully']);
-            } else {
+            } else {dd('jkjkjk');
                 $duplicateRecords  =  EshExcelsiorFollowUp::where($attributes)->where('chart_status',"CE_Assigned")->get();
                 if ($duplicateRecords->isNotEmpty()) {
                     foreach ($duplicateRecords as $duplicateRecord) {
