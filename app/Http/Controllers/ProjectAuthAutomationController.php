@@ -77,6 +77,8 @@ use App\Models\SeciMySpectrumFollowUp;
 use App\Models\SeciMySpectrumFollowUpDuplicates;
 use App\Models\EshExcelsiorFollowUp;
 use App\Models\EshExcelsiorFollowUpDuplicates;
+use App\Models\TwhobTwhFollowUp;
+use App\Models\TwhobTwhFollowUpDuplicates;
 
 class ProjectAuthAutomationController extends Controller
 {
@@ -5016,7 +5018,7 @@ class ProjectAuthAutomationController extends Controller
             $e->getMessage();
         }
     }
-public function eshExcelsiorFollowUp(Request $request) {
+    public function eshExcelsiorFollowUp(Request $request) {
         try {
             $attributes = [
                 'encntr_number' => isset($request->encntr_number) && $request->encntr_number != "NULL" ? $request->encntr_number : NULL,
@@ -5112,5 +5114,107 @@ public function eshExcelsiorFollowUp(Request $request) {
             $e->getMessage();
         }
     }
-  
+    public function twhobTwhFollowUp(Request $request) {
+        try {
+            $attributes = [
+                'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                'bill_id' => isset($request->bill_id) && $request->bill_id != "NULL" ? $request->bill_id : NULL
+             ];        
+ 
+            $duplicateRecordExisting  =  TwhobTwhFollowUp::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                TwhobTwhFollowUp::insert([
+                    'claim_status' => isset($request->claim_status) && $request->claim_status != "NULL" ? $request->claim_status : NULL,
+                    'coverage_type'=> isset($request->coverage_type) && $request->coverage_type != "NULL" ? $request->coverage_type : NULL,
+                    'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                    'bill_id' => isset($request->bill_id) && $request->bill_id != "NULL" ? $request->bill_id : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                    'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                    'provider' => (isset($request->provider) && $request->provider != "NULL") ? $request->provider : NULL,
+                    'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned"
+                ]);
+                return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords  =  TwhobTwhFollowUp::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'claim_status' => isset($request->claim_status) && $request->claim_status != "NULL" ? $request->claim_status : NULL,
+                            'coverage_type'=> isset($request->coverage_type) && $request->coverage_type != "NULL" ? $request->coverage_type : NULL,
+                            'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                            'bill_id' => isset($request->bill_id) && $request->bill_id != "NULL" ? $request->bill_id : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                            'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,
+                            'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                            'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                            'provider' => (isset($request->provider) && $request->provider != "NULL") ? $request->provider : NULL,
+                            'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                            'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                     TwhobTwhFollowUp::insert([
+                        'claim_status' => isset($request->claim_status) && $request->claim_status != "NULL" ? $request->claim_status : NULL,
+                        'coverage_type'=> isset($request->coverage_type) && $request->coverage_type != "NULL" ? $request->coverage_type : NULL,
+                        'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                        'bill_id' => isset($request->bill_id) && $request->bill_id != "NULL" ? $request->bill_id : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                        'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                        'provider' => (isset($request->provider) && $request->provider != "NULL") ? $request->provider : NULL,
+                        'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record Reinserted Successfully']);
+                }                
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function twhobTwhFollowUpDuplicates(Request $request){
+        try {
+            TwhobTwhFollowUpDuplicates::insert([
+                    'claim_status' => isset($request->claim_status) && $request->claim_status != "NULL" ? $request->claim_status : NULL,
+                    'coverage_type'=> isset($request->coverage_type) && $request->coverage_type != "NULL" ? $request->coverage_type : NULL,
+                    'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                    'bill_id' => isset($request->bill_id) && $request->bill_id != "NULL" ? $request->bill_id : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                    'patient_id' => isset($request->patient_id) && $request->patient_id != "NULL" ? $request->patient_id : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                    'provider' => (isset($request->provider) && $request->provider != "NULL") ? $request->provider : NULL,
+                    'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
 }
