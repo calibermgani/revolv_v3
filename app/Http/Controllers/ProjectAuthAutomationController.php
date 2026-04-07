@@ -5349,7 +5349,7 @@ class ProjectAuthAutomationController extends Controller
             if (!$duplicateRecordExisting) {
                 DmaDicksonepicnoResponseFollowUp::insert([
                     'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
-                    'score'=> isset($request->record_score) && $request->record_score != "NULL" ? $request->record_score : NULL,
+                    'score'=> isset($request->score) && $request->score != "NULL" ? $request->score : NULL,
                     'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,
                     'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                     'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
@@ -5370,7 +5370,7 @@ class ProjectAuthAutomationController extends Controller
                     foreach ($duplicateRecords as $duplicateRecord) {
                         $duplicateRecord->update([
                             'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
-                            'score'=> isset($request->record_score) && $request->record_score != "NULL" ? $request->record_score : NULL,
+                            'score'=> isset($request->score) && $request->score != "NULL" ? $request->score : NULL,
                             'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,
                             'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                             'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
@@ -5389,7 +5389,7 @@ class ProjectAuthAutomationController extends Controller
                 } else {
                      DmaDicksonepicnoResponseFollowUp::insert([
                         'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
-                        'score'=> isset($request->record_score) && $request->record_score != "NULL" ? $request->record_score : NULL,
+                        'score'=> isset($request->score) && $request->score != "NULL" ? $request->score : NULL,
                         'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,
                         'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                         'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
@@ -5414,7 +5414,7 @@ class ProjectAuthAutomationController extends Controller
         try {
             DmaDicksonepicnoResponseFollowUpDuplicates::insert([
                     'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
-                    'score'=> isset($request->record_score) && $request->record_score != "NULL" ? $request->record_score : NULL,
+                    'score'=> isset($request->score) && $request->score != "NULL" ? $request->score : NULL,
                     'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,
                     'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
                     'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
