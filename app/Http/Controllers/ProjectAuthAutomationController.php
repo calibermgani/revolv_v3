@@ -79,6 +79,10 @@ use App\Models\EshExcelsiorFollowUp;
 use App\Models\EshExcelsiorFollowUpDuplicates;
 use App\Models\TwhobTwhFollowUp;
 use App\Models\TwhobTwhFollowUpDuplicates;
+use App\Models\DmaDicksonepiclabsDenialsFollowUp;
+use App\Models\DmaDicksonepiclabsDenialsFollowUpDuplicates;
+use App\Models\DmaDicksonepicnoResponseFollowUp;
+use App\Models\DmaDicksonepicnoResponseFollowUpDuplicates;
 
 class ProjectAuthAutomationController extends Controller
 {
@@ -5207,6 +5211,218 @@ class ProjectAuthAutomationController extends Controller
                     'provider' => (isset($request->provider) && $request->provider != "NULL") ? $request->provider : NULL,
                     'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
                     'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function dmaDicksonepiclabsDenialsFollowUp(Request $request) {
+        try {
+            $attributes = [
+                'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL
+             ];        
+ 
+            $duplicateRecordExisting  =  DmaDicksonepiclabsDenialsFollowUp::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                DmaDicksonepiclabsDenialsFollowUp::insert([
+                    'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                    'record_score'=> isset($request->record_score) && $request->record_score != "NULL" ? $request->record_score : NULL,
+                    'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'payor' => isset($request->payor) && $request->payor != "NULL" ? $request->payor : NULL,
+                    'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
+                    'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+                    'outstanding_amount' => isset($request->outstanding_amount) && $request->outstanding_amount != "NULL" ? $request->outstanding_amount : NULL,
+                    'cpt' => (isset($request->cpt) && $request->cpt != "NULL") ? $request->cpt : NULL,
+                    'denial_category' => isset($request->denial_category) && $request->denial_category != "NULL" ? $request->denial_category : NULL,
+                    'reason_codes' => isset($request->reason_codes) && $request->reason_codes != "NULL" ? $request->reason_codes : NULL,
+                    'patient_mrn' => isset($request->patient_mrn) && $request->patient_mrn != "NULL" ? $request->patient_mrn : NULL,
+                    'days_active_in_wq' => isset($request->days_active_in_wq) && $request->days_active_in_wq != "NULL" ? $request->days_active_in_wq : NULL,
+                    'last_worked_date' => isset($request->last_worked_date) && $request->last_worked_date != "NULL" ? $request->last_worked_date : NULL,
+                    'billing_provider' => isset($request->billing_provider) && $request->billing_provider != "NULL" ? $request->billing_provider : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned"
+                ]);
+                return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords  =  DmaDicksonepiclabsDenialsFollowUp::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                            'record_score'=> isset($request->record_score) && $request->record_score != "NULL" ? $request->record_score : NULL,
+                            'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,
+                            'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'payor' => isset($request->payor) && $request->payor != "NULL" ? $request->payor : NULL,
+                            'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
+                            'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+                            'outstanding_amount' => isset($request->outstanding_amount) && $request->outstanding_amount != "NULL" ? $request->outstanding_amount : NULL,
+                            'cpt' => (isset($request->cpt) && $request->cpt != "NULL") ? $request->cpt : NULL,
+                            'denial_category' => isset($request->denial_category) && $request->denial_category != "NULL" ? $request->denial_category : NULL,
+                            'reason_codes' => isset($request->reason_codes) && $request->reason_codes != "NULL" ? $request->reason_codes : NULL,
+                            'patient_mrn' => isset($request->patient_mrn) && $request->patient_mrn != "NULL" ? $request->patient_mrn : NULL,
+                            'days_active_in_wq' => isset($request->days_active_in_wq) && $request->days_active_in_wq != "NULL" ? $request->days_active_in_wq : NULL,
+                            'last_worked_date' => isset($request->last_worked_date) && $request->last_worked_date != "NULL" ? $request->last_worked_date : NULL,
+                            'billing_provider' => isset($request->billing_provider) && $request->billing_provider != "NULL" ? $request->billing_provider : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                     DmaDicksonepiclabsDenialsFollowUp::insert([
+                        'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                        'record_score'=> isset($request->record_score) && $request->record_score != "NULL" ? $request->record_score : NULL,
+                        'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,
+                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'payor' => isset($request->payor) && $request->payor != "NULL" ? $request->payor : NULL,
+                        'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
+                        'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+                        'outstanding_amount' => isset($request->outstanding_amount) && $request->outstanding_amount != "NULL" ? $request->outstanding_amount : NULL,
+                        'cpt' => (isset($request->cpt) && $request->cpt != "NULL") ? $request->cpt : NULL,
+                        'denial_category' => isset($request->denial_category) && $request->denial_category != "NULL" ? $request->denial_category : NULL,
+                        'reason_codes' => isset($request->reason_codes) && $request->reason_codes != "NULL" ? $request->reason_codes : NULL,
+                        'patient_mrn' => isset($request->patient_mrn) && $request->patient_mrn != "NULL" ? $request->patient_mrn : NULL,
+                        'days_active_in_wq' => isset($request->days_active_in_wq) && $request->days_active_in_wq != "NULL" ? $request->days_active_in_wq : NULL,
+                        'last_worked_date' => isset($request->last_worked_date) && $request->last_worked_date != "NULL" ? $request->last_worked_date : NULL,
+                        'billing_provider' => isset($request->billing_provider) && $request->billing_provider != "NULL" ? $request->billing_provider : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record Reinserted Successfully']);
+                }                
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function dmaDicksonepiclabsDenialsFollowUpDuplicates(Request $request){
+        try {
+            DmaDicksonepiclabsDenialsFollowUpDuplicates::insert([
+                    'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                    'record_score'=> isset($request->record_score) && $request->record_score != "NULL" ? $request->record_score : NULL,
+                    'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'payor' => isset($request->payor) && $request->payor != "NULL" ? $request->payor : NULL,
+                    'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
+                    'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+                    'outstanding_amount' => isset($request->outstanding_amount) && $request->outstanding_amount != "NULL" ? $request->outstanding_amount : NULL,
+                    'cpt' => (isset($request->cpt) && $request->cpt != "NULL") ? $request->cpt : NULL,
+                    'denial_category' => isset($request->denial_category) && $request->denial_category != "NULL" ? $request->denial_category : NULL,
+                    'reason_codes' => isset($request->reason_codes) && $request->reason_codes != "NULL" ? $request->reason_codes : NULL,
+                    'patient_mrn' => isset($request->patient_mrn) && $request->patient_mrn != "NULL" ? $request->patient_mrn : NULL,
+                    'days_active_in_wq' => isset($request->days_active_in_wq) && $request->days_active_in_wq != "NULL" ? $request->days_active_in_wq : NULL,
+                    'last_worked_date' => isset($request->last_worked_date) && $request->last_worked_date != "NULL" ? $request->last_worked_date : NULL,
+                    'billing_provider' => isset($request->billing_provider) && $request->billing_provider != "NULL" ? $request->billing_provider : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function dmaDicksonepicnoResponseFollowUp(Request $request) {
+        try {
+            $attributes = [
+                'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL
+             ];        
+ 
+            $duplicateRecordExisting  =  DmaDicksonepicnoResponseFollowUp::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                DmaDicksonepicnoResponseFollowUp::insert([
+                    'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                    'score'=> isset($request->record_score) && $request->record_score != "NULL" ? $request->record_score : NULL,
+                    'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'payor' => isset($request->payor) && $request->payor != "NULL" ? $request->payor : NULL,
+                    'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
+                    'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+                    'outstanding_amount' => isset($request->outstanding_amount) && $request->outstanding_amount != "NULL" ? $request->outstanding_amount : NULL,
+                    'billing_provider' => isset($request->billing_provider) && $request->billing_provider != "NULL" ? $request->billing_provider : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned"
+                ]);
+                return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords  =  DmaDicksonepicnoResponseFollowUp::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                            'score'=> isset($request->record_score) && $request->record_score != "NULL" ? $request->record_score : NULL,
+                            'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,
+                            'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'payor' => isset($request->payor) && $request->payor != "NULL" ? $request->payor : NULL,
+                            'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
+                            'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+                            'outstanding_amount' => isset($request->outstanding_amount) && $request->outstanding_amount != "NULL" ? $request->outstanding_amount : NULL,
+                            'billing_provider' => isset($request->billing_provider) && $request->billing_provider != "NULL" ? $request->billing_provider : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                     DmaDicksonepicnoResponseFollowUp::insert([
+                        'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                        'score'=> isset($request->record_score) && $request->record_score != "NULL" ? $request->record_score : NULL,
+                        'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,
+                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'payor' => isset($request->payor) && $request->payor != "NULL" ? $request->payor : NULL,
+                        'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
+                        'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+                        'outstanding_amount' => isset($request->outstanding_amount) && $request->outstanding_amount != "NULL" ? $request->outstanding_amount : NULL,
+                        'billing_provider' => isset($request->billing_provider) && $request->billing_provider != "NULL" ? $request->billing_provider : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record Reinserted Successfully']);
+                }                
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function dmaDicksonepicnoResponseFollowUpDuplicates(Request $request){
+        try {
+            DmaDicksonepicnoResponseFollowUpDuplicates::insert([
+                    'queue' => isset($request->queue) && $request->queue != "NULL" ? $request->queue : NULL,
+                    'score'=> isset($request->record_score) && $request->record_score != "NULL" ? $request->record_score : NULL,
+                    'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'payor' => isset($request->payor) && $request->payor != "NULL" ? $request->payor : NULL,
+                    'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
+                    'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+                    'outstanding_amount' => isset($request->outstanding_amount) && $request->outstanding_amount != "NULL" ? $request->outstanding_amount : NULL,
+                    'billing_provider' => isset($request->billing_provider) && $request->billing_provider != "NULL" ? $request->billing_provider : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,

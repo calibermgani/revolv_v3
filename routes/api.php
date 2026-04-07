@@ -222,6 +222,10 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('esh_excelsior_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@eshExcelsiorFollowUpDuplicates');
     Route::any('twh_ob_twhfollow_up', 'App\Http\Controllers\ProjectAuthAutomationController@twhobTwhFollowUp');
     Route::any('twh_ob_twhfollow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@twhobTwhFollowUpDuplicates');
+    Route::any('dma_dickson_epic_labs_denials_follow_up', 'App\Http\Controllers\ProjectAuthAutomationController@dmaDicksonepiclabsDenialsFollowUp');
+    Route::any('dma_dickson_epic_labs_denials_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@dmaDicksonepiclabsDenialsFollowUpDuplicates');
+    Route::any('dma_dickson_epic_noRrsponse_follow_up', 'App\Http\Controllers\ProjectAuthAutomationController@dmaDicksonepicnoResponseFollowUp');
+    Route::any('dma_dickson_epic_noRrsponse_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@dmaDicksonepicnoResponseFollowUpDuplicates');
     Route::any('get_project_columns', 'App\Http\Controllers\FormController@getProjectColumns');
 
 
