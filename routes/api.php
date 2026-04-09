@@ -226,6 +226,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('dma_dickson_epic_labs_denials_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@dmaDicksonepiclabsDenialsFollowUpDuplicates');
     Route::any('dma_dickson_epic_noresponse_follow_up', 'App\Http\Controllers\ProjectAuthAutomationController@dmaDicksonepicnoResponseFollowUp');
     Route::any('dma_dickson_epic_noresponse_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@dmaDicksonepicnoResponseFollowUpDuplicates');
+    Route::any('gmhc_gmhc_follow_up', 'App\Http\Controllers\ProjectAuthAutomationController@gmhcGmhcFollowUp');
+    Route::any('gmhc_gmhc_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@gmhcGmhcFollowUpDuplicates');
     Route::any('get_project_columns', 'App\Http\Controllers\FormController@getProjectColumns');
 
 
