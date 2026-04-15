@@ -228,6 +228,10 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('dma_dickson_epic_noresponse_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@dmaDicksonepicnoResponseFollowUpDuplicates');
     Route::any('gmhc_gmhc_follow_up', 'App\Http\Controllers\ProjectAuthAutomationController@gmhcGmhcFollowUp');
     Route::any('gmhc_gmhc_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@gmhcGmhcFollowUpDuplicates');
+    Route::any('lrrl_link_little_rock_ecw_follow_up', 'App\Http\Controllers\ProjectAuthAutomationController@lrrlLinkLittleRockecwfollowUp');
+    Route::any('lrrl_link_little_rock_ecw_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@lrrlLinkLittleRockecwfollowUpDuplicates');
+    Route::any('lrrl_link_little_rock_nextgen_follow_up', 'App\Http\Controllers\ProjectAuthAutomationController@lrrlLinkLittleRocknextgenfollowUp');
+    Route::any('lrrl_link_little_rock_nextgen_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@lrrlLinkLittleRocknextgenfollowUpDuplicates');
     Route::any('get_project_columns', 'App\Http\Controllers\FormController@getProjectColumns');
 
 

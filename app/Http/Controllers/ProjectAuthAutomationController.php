@@ -85,6 +85,10 @@ use App\Models\DmaDicksonepicnoResponseFollowUp;
 use App\Models\DmaDicksonepicnoResponseFollowUpDuplicates;
 use App\Models\GmhcGmhcFollowUp;
 use App\Models\GmhcGmhcFollowUpDuplicates;
+use App\Models\LrrlLinkLittleRockecwfollowUp;
+use App\Models\LrrlLinkLittleRockecwfollowUpDuplicates;
+use App\Models\LrrlLinkLittleRocknextgenfollowUp;
+use App\Models\LrrlLinkLittleRocknextgenfollowUpDuplicates;
 
 class ProjectAuthAutomationController extends Controller
 {
@@ -5522,6 +5526,223 @@ class ProjectAuthAutomationController extends Controller
                     'days_in_status' => isset($request->days_in_status) && $request->days_in_status != "NULL" ? $request->days_in_status : NULL,
                     'rendering_provider' => isset($request->rendering_provider) && $request->rendering_provider != "NULL" ? $request->rendering_provider : NULL,
                     'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function lrrlLinkLittleRockecwfollowUp(Request $request) {
+        try {
+            $attributes = [
+                'claim_no' => isset($request->claim_no) && $request->claim_no != "NULL" ? $request->claim_no : NULL
+             ];        
+ 
+            $duplicateRecordExisting  =  LrrlLinkLittleRockecwfollowUp::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                LrrlLinkLittleRockecwfollowUp::insert([
+                    'ehr' => isset($request->ehr) && $request->ehr != "NULL" ? $request->ehr : NULL,
+                    'facility'=> isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                    'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
+                    'payer_phone_no' => isset($request->payer_phone_no) && $request->payer_phone_no != "NULL" ? $request->payer_phone_no : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,
+                    'patient_dob' => isset($request->patient_dob) && $request->patient_dob != "NULL" ? $request->patient_dob : NULL,
+                    'payer_subscriber_no' => isset($request->payer_subscriber_no) && $request->payer_subscriber_no != "NULL" ? $request->payer_subscriber_no : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'last_submission_date' => isset($request->last_submission_date) && $request->last_submission_date != "NULL" ? $request->last_submission_date : NULL,
+                    'claim_no' => isset($request->claim_no) && $request->claim_no != "NULL" ? $request->claim_no : NULL,
+                    'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                    'rendering_provider' => isset($request->rendering_provider) && $request->rendering_provider != "NULL" ? $request->rendering_provider : NULL,
+                    'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned"
+                ]);
+                return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords  =  LrrlLinkLittleRockecwfollowUp::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'ehr' => isset($request->ehr) && $request->ehr != "NULL" ? $request->ehr : NULL,
+                            'facility'=> isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                            'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
+                            'payer_phone_no' => isset($request->payer_phone_no) && $request->payer_phone_no != "NULL" ? $request->payer_phone_no : NULL,
+                            'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                            'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,
+                            'patient_dob' => isset($request->patient_dob) && $request->patient_dob != "NULL" ? $request->patient_dob : NULL,
+                            'payer_subscriber_no' => isset($request->payer_subscriber_no) && $request->payer_subscriber_no != "NULL" ? $request->payer_subscriber_no : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'last_submission_date' => isset($request->last_submission_date) && $request->last_submission_date != "NULL" ? $request->last_submission_date : NULL,
+                            'claim_no' => isset($request->claim_no) && $request->claim_no != "NULL" ? $request->claim_no : NULL,
+                            'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                            'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                            'rendering_provider' => isset($request->rendering_provider) && $request->rendering_provider != "NULL" ? $request->rendering_provider : NULL,
+                            'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                     LrrlLinkLittleRockecwfollowUp::insert([
+                        'ehr' => isset($request->ehr) && $request->ehr != "NULL" ? $request->ehr : NULL,
+                        'facility'=> isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                        'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
+                        'payer_phone_no' => isset($request->payer_phone_no) && $request->payer_phone_no != "NULL" ? $request->payer_phone_no : NULL,
+                        'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                        'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,
+                        'patient_dob' => isset($request->patient_dob) && $request->patient_dob != "NULL" ? $request->patient_dob : NULL,
+                        'payer_subscriber_no' => isset($request->payer_subscriber_no) && $request->payer_subscriber_no != "NULL" ? $request->payer_subscriber_no : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'last_submission_date' => isset($request->last_submission_date) && $request->last_submission_date != "NULL" ? $request->last_submission_date : NULL,
+                        'claim_no' => isset($request->claim_no) && $request->claim_no != "NULL" ? $request->claim_no : NULL,
+                        'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                        'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                        'rendering_provider' => isset($request->rendering_provider) && $request->rendering_provider != "NULL" ? $request->rendering_provider : NULL,
+                        'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record Reinserted Successfully']);
+                }                
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function lrrlLinkLittleRockecwfollowUpDuplicates(Request $request){
+        try {
+            LrrlLinkLittleRockecwfollowUpDuplicates::insert([
+                    'ehr' => isset($request->ehr) && $request->ehr != "NULL" ? $request->ehr : NULL,
+                    'facility'=> isset($request->facility) && $request->facility != "NULL" ? $request->facility : NULL,
+                    'payer_name' => isset($request->payer_name) && $request->payer_name != "NULL" ? $request->payer_name : NULL,
+                    'payer_phone_no' => isset($request->payer_phone_no) && $request->payer_phone_no != "NULL" ? $request->payer_phone_no : NULL,
+                    'patient_name' => isset($request->patient_name) && $request->patient_name != "NULL" ? $request->patient_name : NULL,
+                    'patient_acct_no' => isset($request->patient_acct_no) && $request->patient_acct_no != "NULL" ? $request->patient_acct_no : NULL,
+                    'patient_dob' => isset($request->patient_dob) && $request->patient_dob != "NULL" ? $request->patient_dob : NULL,
+                    'payer_subscriber_no' => isset($request->payer_subscriber_no) && $request->payer_subscriber_no != "NULL" ? $request->payer_subscriber_no : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'last_submission_date' => isset($request->last_submission_date) && $request->last_submission_date != "NULL" ? $request->last_submission_date : NULL,
+                    'claim_no' => isset($request->claim_no) && $request->claim_no != "NULL" ? $request->claim_no : NULL,
+                    'charges' => isset($request->charges) && $request->charges != "NULL" ? $request->charges : NULL,
+                    'balance' => isset($request->balance) && $request->balance != "NULL" ? $request->balance : NULL,
+                    'rendering_provider' => isset($request->rendering_provider) && $request->rendering_provider != "NULL" ? $request->rendering_provider : NULL,
+                    'status' => isset($request->status) && $request->status != "NULL" ? $request->status : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+    public function lrrlLinkLittleRocknextgenfollowUp(Request $request) {
+        try {
+            $attributes = [
+                'e_i_a_b' => isset($request->e_i_a_b) && $request->e_i_a_b != "NULL" ? $request->e_i_a_b : NULL
+             ];        
+ 
+            $duplicateRecordExisting  =  LrrlLinkLittleRocknextgenfollowUp::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                LrrlLinkLittleRocknextgenfollowUp::insert([
+                    'ehr' => isset($request->ehr) && $request->ehr != "NULL" ? $request->ehr : NULL,
+                    'loc_name'=> isset($request->loc_name) && $request->loc_name != "NULL" ? $request->loc_name : NULL,
+                    'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL,
+                    'per_nbr' => isset($request->per_nbr) && $request->per_nbr != "NULL" ? $request->per_nbr : NULL,
+                    'e_i_a_b' => isset($request->e_i_a_b) && $request->e_i_a_b != "NULL" ? $request->e_i_a_b : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'rendering' => isset($request->rendering) && $request->rendering != "NULL" ? $request->rendering : NULL,
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                    'chg_amt' => isset($request->chg_amt) && $request->chg_amt != "NULL" ? $request->chg_amt : NULL,
+                    'ln_itm_amt' => isset($request->ln_itm_amt) && $request->ln_itm_amt != "NULL" ? $request->ln_itm_amt : NULL,
+                    'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                    'lst_bill_dt' => isset($request->lst_bill_dt) && $request->lst_bill_dt != "NULL" ? $request->lst_bill_dt : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned"
+                ]);
+                return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords  =  LrrlLinkLittleRocknextgenfollowUp::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'ehr' => isset($request->ehr) && $request->ehr != "NULL" ? $request->ehr : NULL,
+                            'loc_name'=> isset($request->loc_name) && $request->loc_name != "NULL" ? $request->loc_name : NULL,
+                            'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL,
+                            'per_nbr' => isset($request->per_nbr) && $request->per_nbr != "NULL" ? $request->per_nbr : NULL,
+                            'e_i_a_b' => isset($request->e_i_a_b) && $request->e_i_a_b != "NULL" ? $request->e_i_a_b : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'rendering' => isset($request->rendering) && $request->rendering != "NULL" ? $request->rendering : NULL,
+                            'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                            'chg_amt' => isset($request->chg_amt) && $request->chg_amt != "NULL" ? $request->chg_amt : NULL,
+                            'ln_itm_amt' => isset($request->ln_itm_amt) && $request->ln_itm_amt != "NULL" ? $request->ln_itm_amt : NULL,
+                            'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                            'lst_bill_dt' => isset($request->lst_bill_dt) && $request->lst_bill_dt != "NULL" ? $request->lst_bill_dt : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                     LrrlLinkLittleRocknextgenfollowUp::insert([
+                         'ehr' => isset($request->ehr) && $request->ehr != "NULL" ? $request->ehr : NULL,
+                        'loc_name'=> isset($request->loc_name) && $request->loc_name != "NULL" ? $request->loc_name : NULL,
+                        'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL,
+                        'per_nbr' => isset($request->per_nbr) && $request->per_nbr != "NULL" ? $request->per_nbr : NULL,
+                        'e_i_a_b' => isset($request->e_i_a_b) && $request->e_i_a_b != "NULL" ? $request->e_i_a_b : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'rendering' => isset($request->rendering) && $request->rendering != "NULL" ? $request->rendering : NULL,
+                        'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                        'chg_amt' => isset($request->chg_amt) && $request->chg_amt != "NULL" ? $request->chg_amt : NULL,
+                        'ln_itm_amt' => isset($request->ln_itm_amt) && $request->ln_itm_amt != "NULL" ? $request->ln_itm_amt : NULL,
+                        'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                        'lst_bill_dt' => isset($request->lst_bill_dt) && $request->lst_bill_dt != "NULL" ? $request->lst_bill_dt : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record Reinserted Successfully']);
+                }                
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function lrrlLinkLittleRocknextgenfollowUpDuplicates(Request $request){
+        try {
+            LrrlLinkLittleRocknextgenfollowUpDuplicates::insert([
+                    'ehr' => isset($request->ehr) && $request->ehr != "NULL" ? $request->ehr : NULL,
+                    'loc_name'=> isset($request->loc_name) && $request->loc_name != "NULL" ? $request->loc_name : NULL,
+                    'name' => isset($request->name) && $request->name != "NULL" ? $request->name : NULL,
+                    'per_nbr' => isset($request->per_nbr) && $request->per_nbr != "NULL" ? $request->per_nbr : NULL,
+                    'e_i_a_b' => isset($request->e_i_a_b) && $request->e_i_a_b != "NULL" ? $request->e_i_a_b : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'rendering' => isset($request->rendering) && $request->rendering != "NULL" ? $request->rendering : NULL,
+                    'payer' => isset($request->payer) && $request->payer != "NULL" ? $request->payer : NULL,
+                    'chg_amt' => isset($request->chg_amt) && $request->chg_amt != "NULL" ? $request->chg_amt : NULL,
+                    'ln_itm_amt' => isset($request->ln_itm_amt) && $request->ln_itm_amt != "NULL" ? $request->ln_itm_amt : NULL,
+                    'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
+                    'lst_bill_dt' => isset($request->lst_bill_dt) && $request->lst_bill_dt != "NULL" ? $request->lst_bill_dt : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
