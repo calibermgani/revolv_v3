@@ -232,8 +232,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('lrrl_link_little_rock_ecw_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@lrrlLinkLittleRockecwfollowUpDuplicates');
     Route::any('lrrl_link_little_rock_nextgen_follow_up', 'App\Http\Controllers\ProjectAuthAutomationController@lrrlLinkLittleRocknextgenfollowUp');
     Route::any('lrrl_link_little_rock_nextgen_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@lrrlLinkLittleRocknextgenfollowUpDuplicates');
-    Route::any('roc_reno_orthopedic_follow_up', 'App\Http\Controllers\ProjectAutomationController@rocRenoOrthopedicFollowUp');
-    Route::any('roc_reno_orthopedic_follow_up_duplicate', 'App\Http\Controllers\ProjectAutomationController@rocRenoOrthopedicFollowUpDuplicates');
+    Route::any('roc_reno_orthopedic_follow_up', 'App\Http\Controllers\ProjectAuthAutomationController@rocRenoOrthopedicFollowUp');
+    Route::any('roc_reno_orthopedic_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@rocRenoOrthopedicFollowUpDuplicates');
     Route::any('get_project_columns', 'App\Http\Controllers\FormController@getProjectColumns');
 
 
