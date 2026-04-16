@@ -134,8 +134,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('the_queens_health_system_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@TheQueensHealthSystemArDuplicates');
     Route::any('boozman_hoff_eye_center_ar', 'App\Http\Controllers\ProjectAutomationController@boozmanHoffEyeCenterAr');
     Route::any('boozman_hoff_eye_center_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@boozmanHoffEyeCenterArDuplicates');
-    Route::any('reno_orthopedic_center_ar', 'App\Http\Controllers\ProjectAutomationController@renoOrthopedicCenterAr');
-    Route::any('reno_orthopedic_center_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@renoOrthopedicCenterArDuplicates');
+    // Route::any('reno_orthopedic_center_ar', 'App\Http\Controllers\ProjectAutomationController@renoOrthopedicCenterAr');
+    // Route::any('reno_orthopedic_center_ar_duplicate', 'App\Http\Controllers\ProjectAutomationController@renoOrthopedicCenterArDuplicates');//old
     Route::any('sbgmg_eligiblity_verification', 'App\Http\Controllers\ProjectAutomationController@sbgmgEligiblityVerification');
     Route::any('sbgmg_eligiblity_verification_duplicate', 'App\Http\Controllers\ProjectAutomationController@sbgmgEligiblityVerificationDuplicates');
     Route::any('pbhg_eligibility_verification', 'App\Http\Controllers\ProjectAutomationController@pbhgEligibilityVerification');
@@ -232,6 +232,8 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('lrrl_link_little_rock_ecw_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@lrrlLinkLittleRockecwfollowUpDuplicates');
     Route::any('lrrl_link_little_rock_nextgen_follow_up', 'App\Http\Controllers\ProjectAuthAutomationController@lrrlLinkLittleRocknextgenfollowUp');
     Route::any('lrrl_link_little_rock_nextgen_follow_up_duplicate', 'App\Http\Controllers\ProjectAuthAutomationController@lrrlLinkLittleRocknextgenfollowUpDuplicates');
+    Route::any('roc_reno_orthopedic_follow_up', 'App\Http\Controllers\ProjectAutomationController@rocRenoOrthopedicFollowUp');
+    Route::any('roc_reno_orthopedic_follow_up_duplicate', 'App\Http\Controllers\ProjectAutomationController@rocRenoOrthopedicFollowUpDuplicates');
     Route::any('get_project_columns', 'App\Http\Controllers\FormController@getProjectColumns');
 
 

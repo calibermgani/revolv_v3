@@ -66,8 +66,8 @@ use App\Models\RcsaAr;
 use App\Models\RcsaArDuplicates;
 use App\Models\TqhsAdjudication;
 use App\Models\TqhsAdjudicationDuplicates;
-use App\Models\TqhsCodingToBilling; 
-use App\Models\HslAr;  
+use App\Models\TqhsCodingToBilling;
+use App\Models\HslAr;
 use App\Models\HslArDuplicates;
 use App\Models\SmpSeleverstovFollowUp;
 use App\Models\SmpSeleverstovFollowUpDuplicates;
@@ -89,6 +89,8 @@ use App\Models\LrrlLinkLittleRockecwfollowUp;
 use App\Models\LrrlLinkLittleRockecwfollowUpDuplicates;
 use App\Models\LrrlLinkLittleRocknextgenfollowUp;
 use App\Models\LrrlLinkLittleRocknextgenfollowUpDuplicates;
+use App\Models\RocRenoOrthopedicFollowUp;
+use App\Models\RocRenoOrthopedicFollowUpDuplicates;
 
 class ProjectAuthAutomationController extends Controller
 {
@@ -5743,6 +5745,112 @@ class ProjectAuthAutomationController extends Controller
                     'ln_itm_amt' => isset($request->ln_itm_amt) && $request->ln_itm_amt != "NULL" ? $request->ln_itm_amt : NULL,
                     'cpt' => isset($request->cpt) && $request->cpt != "NULL" ? $request->cpt : NULL,
                     'lst_bill_dt' => isset($request->lst_bill_dt) && $request->lst_bill_dt != "NULL" ? $request->lst_bill_dt : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned",
+            ]);
+            return response()->json(['message' => 'Duplicate Record Inserted Successfully']);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+
+     public function rocRenoOrthopedicFollowUp(Request $request) {
+        try {
+            $attributes = [
+                'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,
+                'claim_id' => isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL
+             ];        
+ 
+            $duplicateRecordExisting  =  RocRenoOrthopedicFollowUp::where($attributes)->exists();
+            if (!$duplicateRecordExisting) {
+                RocRenoOrthopedicFollowUp::insert([
+                    'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,
+                    'claim_id'=> isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'sts' => isset($request->sts) && $request->sts != "NULL" ? $request->sts : NULL,
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                    'payor' => isset($request->payor) && $request->payor != "NULL" ? $request->payor : NULL,
+                    'denial_category' => isset($request->denial_category) && $request->denial_category != "NULL" ? $request->denial_category : NULL,
+                    'reason_codes' => isset($request->reason_codes) && $request->reason_codes != "NULL" ? $request->reason_codes : NULL,
+                    'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
+                    'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+                    'outstanding_amount' => isset($request->outstanding_amount) && $request->outstanding_amount != "NULL" ? $request->outstanding_amount : NULL,
+                    'days_active_in_wq' => isset($request->days_active_in_wq) && $request->days_active_in_wq != "NULL" ? $request->days_active_in_wq : NULL,
+                    'invoke_date' => date('Y-m-d'),
+                    'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                    'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                    'chart_status' => "CE_Assigned"
+                ]);
+                return response()->json(['message' => 'Record Inserted Successfully']);
+            } else {
+                $duplicateRecords  =  RocRenoOrthopedicFollowUp::where($attributes)->where('chart_status',"CE_Assigned")->get();
+                if ($duplicateRecords->isNotEmpty()) {
+                    foreach ($duplicateRecords as $duplicateRecord) {
+                        $duplicateRecord->update([
+                            'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,
+                            'claim_id'=> isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                            'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                            'sts' => isset($request->sts) && $request->sts != "NULL" ? $request->sts : NULL,
+                            'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                            'payor' => isset($request->payor) && $request->payor != "NULL" ? $request->payor : NULL,
+                            'denial_category' => isset($request->denial_category) && $request->denial_category != "NULL" ? $request->denial_category : NULL,
+                            'reason_codes' => isset($request->reason_codes) && $request->reason_codes != "NULL" ? $request->reason_codes : NULL,
+                            'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
+                            'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+                            'outstanding_amount' => isset($request->outstanding_amount) && $request->outstanding_amount != "NULL" ? $request->outstanding_amount : NULL,
+                            'days_active_in_wq' => isset($request->days_active_in_wq) && $request->days_active_in_wq != "NULL" ? $request->days_active_in_wq : NULL,
+                            'invoke_date' => date('Y-m-d'),
+                            'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                            'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                            'updated_at'=> carbon::now()->format('Y-m-d H:i:s')
+                        ]);
+                    }
+                    return response()->json(['message' => 'Existing Record Updated Successfully']);
+                } else {
+                     RocRenoOrthopedicFollowUp::insert([
+                        'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,
+                        'claim_id'=> isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                        'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                        'sts' => isset($request->sts) && $request->sts != "NULL" ? $request->sts : NULL,
+                        'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                        'payor' => isset($request->payor) && $request->payor != "NULL" ? $request->payor : NULL,
+                        'denial_category' => isset($request->denial_category) && $request->denial_category != "NULL" ? $request->denial_category : NULL,
+                        'reason_codes' => isset($request->reason_codes) && $request->reason_codes != "NULL" ? $request->reason_codes : NULL,
+                        'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
+                        'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+                        'outstanding_amount' => isset($request->outstanding_amount) && $request->outstanding_amount != "NULL" ? $request->outstanding_amount : NULL,
+                        'days_active_in_wq' => isset($request->days_active_in_wq) && $request->days_active_in_wq != "NULL" ? $request->days_active_in_wq : NULL,
+                        'invoke_date' => date('Y-m-d'),
+                        'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
+                        'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
+                        'chart_status' => "CE_Assigned",
+                    ]);
+                    return response()->json(['message' => 'Record Reinserted Successfully']);
+                }                
+            }
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+    }
+    public function rocRenoOrthopedicFollowUpDuplicates(Request $request){
+        try {
+            RocRenoOrthopedicFollowUpDuplicates::insert([
+                    'invoice_number' => isset($request->invoice_number) && $request->invoice_number != "NULL" ? $request->invoice_number : NULL,
+                    'claim_id'=> isset($request->claim_id) && $request->claim_id != "NULL" ? $request->claim_id : NULL,
+                    'dos' => isset($request->dos) && $request->dos != "NULL" ? $request->dos : NULL,
+                    'sts' => isset($request->sts) && $request->sts != "NULL" ? $request->sts : NULL,
+                    'patient' => isset($request->patient) && $request->patient != "NULL" ? $request->patient : NULL,
+                    'payor' => isset($request->payor) && $request->payor != "NULL" ? $request->payor : NULL,
+                    'denial_category' => isset($request->denial_category) && $request->denial_category != "NULL" ? $request->denial_category : NULL,
+                    'reason_codes' => isset($request->reason_codes) && $request->reason_codes != "NULL" ? $request->reason_codes : NULL,
+                    'service_provider' => isset($request->service_provider) && $request->service_provider != "NULL" ? $request->service_provider : NULL,
+                    'billed_amount' => isset($request->billed_amount) && $request->billed_amount != "NULL" ? $request->billed_amount : NULL,
+                    'outstanding_amount' => isset($request->outstanding_amount) && $request->outstanding_amount != "NULL" ? $request->outstanding_amount : NULL,
+                    'days_active_in_wq' => isset($request->days_active_in_wq) && $request->days_active_in_wq != "NULL" ? $request->days_active_in_wq : NULL,
                     'invoke_date' => date('Y-m-d'),
                     'CE_emp_id' => isset($request->CE_emp_id) && $request->CE_emp_id != '-' && $request->CE_emp_id != "NULL" ? $request->CE_emp_id : NULL,
                     'QA_emp_id' => isset($request->QA_emp_id) && $request->QA_emp_id != '-' && $request->QA_emp_id != "NULL" ? $request->QA_emp_id : NULL,
