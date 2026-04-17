@@ -154,10 +154,39 @@ def export_to_excel(
 
         ref_data = {}
         for col, (ref_table, id_col, def_col) in CODE_MAPPING.items():
-            if col in cols_to_select:
+            if col not in cols_to_select:
+                continue
+            # -----------------------------
+            # SPECIAL CASE: denial codes
+            # -----------------------------
+            if col == "ar_denial_codes":
+                cursor.execute(f"""
+                    SELECT id, denial_code, code_description
+                    FROM {ref_table}
+                """)
+                ref_data[col] = {
+                    str(r["id"]): f'{r["denial_code"]} - {r["code_description"]}'
+                    for r in cursor.fetchall()
+                }
+            # -----------------------------
+            # SPECIAL CASE: substatus codes
+            # -----------------------------
+            elif col == "ar_substatus_codes":
+                cursor.execute(f"""
+                    SELECT id, sub_status_code, sub_status_code_description
+                    FROM {ref_table}
+                """)
+                ref_data[col] = {
+                    str(r["id"]): f'{r["sub_status_code"]} - {r["sub_status_code_description"]}'
+                    for r in cursor.fetchall()
+                }
+            # -----------------------------
+            # NORMAL MAPPING (ALL OTHERS)
+            # -----------------------------
+            else:
                 cursor.execute(f"SELECT {id_col}, {def_col} FROM {ref_table}")
                 ref_data[col] = {
-                    str(row[id_col]): row[def_col] for row in cursor.fetchall()
+                    str(r[id_col]): r[def_col] for r in cursor.fetchall()
                 }
 
         STATUS_MAPPING = {
@@ -204,8 +233,8 @@ def export_to_excel(
         excel_name = table_name
         if excel_name.endswith("_datas"):
             excel_name = excel_name[:-6]
-        # output_file = output_file or f"{excel_name}.xlsx"//local
-        output_file = output_file or f"/tmp/{excel_name}.xlsx"
+        # output_file = output_file or f"{excel_name}.xlsx" #local
+        output_file = output_file or f"/tmp/{excel_name}.xlsx" # server
 
         chunksize = 50000
         writer = pd.ExcelWriter(output_file, engine="xlsxwriter")
@@ -220,9 +249,14 @@ def export_to_excel(
             if not rows:
                 break
             chunk = pd.DataFrame(rows, columns=columns)
-
+            for col in chunk.columns:
+                if "date" in col.lower() or col.lower() in ["dos"]:
+                    try:
+                        chunk[col] = pd.to_datetime(chunk[col], errors="coerce").dt.strftime("%m/%d/%y")
+                    except Exception:
+                        pass
             for col in CODE_MAPPING:
-                if col in chunk.columns:
+                if col in chunk.columns and col in ref_data:
                     chunk[col] = chunk[col].astype(str).map(ref_data[col]).fillna(chunk[col])
 
             if "chart_status" in chunk.columns:
@@ -314,7 +348,8 @@ def export_to_excel(
                          **{c: c.replace("_", " ").title() for c in chunk.columns if c not in COLUMN_RENAME_MAPPING}},
                 inplace=True
             )
-
+            chunk = chunk.fillna("--")
+            chunk.replace("", "--", inplace=True)
             chunk.to_excel(writer, index=False, startrow=row_num, header=(row_num==0))
             row_num += len(chunk)
             print(f"Written {row_num} rows", file=sys.stderr)
