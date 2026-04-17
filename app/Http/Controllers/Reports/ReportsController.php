@@ -34,7 +34,10 @@ use App\Exports\BulkReportExport;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use App\Models\CallerChartsWorkLogs;
-
+use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\File;
+use App\Exports\DynamicBulkExport;
+use DateTime;
 
 ini_set('max_execution_time', 300);
 ini_set('memory_limit', '2G');
@@ -75,8 +78,8 @@ class ReportsController extends Controller
                     if ($decodedsubProjectName == 'project' && count($subProject) == 1) {
                         $column_names = DB::select("DESCRIBE $table_name");
                         $columns = array_column($column_names, 'Field');
-                        $columnsToExclude = ['QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends', 'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers', 'CE_status_code', 'CE_sub_status_code', 'CE_followup_date', 'updated_at', 'created_at', 'deleted_at','cpt_trends','icd_trends','modifiers'];
-                        $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
+                            $columnsToExclude = ['QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends', 'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers', 'CE_status_code', 'CE_sub_status_code', 'CE_followup_date', 'updated_at', 'created_at', 'deleted_at','cpt_trends','icd_trends','modifiers'];
+                            $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                             return !in_array($column, $columnsToExclude);
                         });
                     } else if ($decodedsubProjectName !== 'project') {
@@ -1959,18 +1962,18 @@ class ReportsController extends Controller
    
 
     
- public function bulkProductionReports()
-    {
-        // Empty paginator so Blade pagination methods don’t error
-        $emptyPaginator = new LengthAwarePaginator([], 0, 20, 1, [
-            'path' => Paginator::resolveCurrentPath()
-        ]);
+//  public function bulkProductionReports()
+//     {
+//         // Empty paginator so Blade pagination methods don’t error
+//         $emptyPaginator = new LengthAwarePaginator([], 0, 20, 1, [
+//             'path' => Paginator::resolveCurrentPath()
+//         ]);
 
-        return view('reports.bulkProductionReport', [
-            'completedProjectDetails' => $emptyPaginator,
-            'columnsHeader'           => [],
-        ]);
-    }
+//         return view('reports.bulkProductionReport', [
+//             'completedProjectDetails' => $emptyPaginator,
+//             'columnsHeader'           => [],
+//         ]);
+//     }
     public function bulkProductionReportsColumns(Request $request)    {
         // $project_id     = $request->project_id;
         // $sub_project_id = $request->sub_project_id;
@@ -2596,13 +2599,132 @@ class ReportsController extends Controller
  
 
     // DataTables AJAX
-    public function getBulkColumns(Request $request)
+//   public function getBulkColumns(Request $request)
+// {
+//     try {
+//         $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
+//         $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+
+//         $columnsHeader = [];
+
+//         // ✅ DataTables pagination parameters
+//         $draw = intval($request->get('draw'));
+//         $start = intval($request->get('start', 0));
+//         $length = intval($request->get('length', 100)); // default 100 if not provided
+
+//         $start_date = $end_date = null;
+//         if (!empty($request["work_date"])) {
+//             $work_date = explode(' - ', $request["work_date"]);
+//             $start_date = date('Y-m-d 08:00:00', strtotime($work_date[0]));
+//             $end_date = date('Y-m-d 07:59:00', strtotime($work_date[1] . ' +1 day'));
+//         }
+
+//         $paProject = Helpers::projectName($project_id);
+//         $decodedClientName = $paProject->project_name ?? null;
+
+//         $decodedSubProjectName = '';
+//         if ($project_id && $sub_project_id) {
+//             $sub = Helpers::subProjectName($project_id, $sub_project_id);
+//             $decodedSubProjectName = $sub->sub_project_name ?? '';
+//         }
+
+//         if ($decodedClientName && $decodedSubProjectName) {
+//             $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName), '_');
+
+//             if (!Schema::hasTable($table_name)) {
+//                 return response()->json(['error' => true, 'message' => 'Table not found']);
+//             }
+
+//             $allColumns = array_column(DB::select("DESCRIBE `$table_name`"), 'Field');
+
+//             $excludeCols = [
+//                 'QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends',
+//                 'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers',
+//                 'CE_status_code', 'CE_sub_status_code', 'CE_followup_date',
+//                 'updated_at', 'created_at', 'deleted_at', 'cpt_trends', 'icd_trends', 'modifiers'
+//             ];
+
+//             $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
+
+//             if (empty($columnsHeader)) {
+//                 return response()->json(['error' => true, 'message' => 'No columns found']);
+//             }
+
+//             $selectCols = array_map(fn($col) => "$table_name.$col", $columnsHeader);
+//             $selectCols[] = "$table_name.id as id";
+
+//             $query = DB::table($table_name)->select($selectCols);
+
+//             // Filters
+//             if ($start_date && $end_date && in_array('coder_work_date', $allColumns)) {
+//                 $query->whereBetween("$table_name.updated_at", [$start_date, $end_date]);
+//             }
+
+//             if (!empty($request->user)) {
+//                 $query->where(function ($q) use ($request) {
+//                     $q->where('CE_emp_id', $request->user)
+//                       ->orWhere('QA_emp_id', $request->user);
+//                 });
+//             }
+
+//             if (!empty($request->client_status) && in_array('chart_status', $allColumns)) {
+//                 $query->where('chart_status', $request->client_status);
+//             }
+
+//             // ✅ Handle DataTable Export Requests
+//           if ($request->has('export') && $request->export === 'true') {
+//     $data = $query->get();
+//     $filename = 'bulk_report_' . now()->format('Ymd_His') . '.xlsx';
+//     $path = storage_path("app/public/{$filename}");
+
+//     // ✅ Use built-in Excel export (no extra package)
+//     $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+//     $sheet = $spreadsheet->getActiveSheet();
+
+//     // Headers
+//     foreach ($columnsHeader as $colIndex => $colName) {
+//         $sheet->setCellValueByColumnAndRow($colIndex + 1, 1, $colName);
+//     }
+
+//     // Data rows
+//     foreach ($data as $rowIndex => $row) {
+//         foreach ($columnsHeader as $colIndex => $colName) {
+//             $sheet->setCellValueByColumnAndRow($colIndex + 1, $rowIndex + 2, $row->$colName);
+//         }
+//     }
+
+//     $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+//     $writer->save($path);
+
+//     return response()->download($path)->deleteFileAfterSend(true);
+// }
+
+
+//             // ✅ Normal DataTables AJAX (Server-Side)
+//             return DataTables::of($query)
+//                 ->setRowId(fn($row) => $row->id)
+//                 ->addIndexColumn()
+//                 ->with('columnsHeader', $columnsHeader)
+//                 ->make(true);
+//         }
+
+//         return response()->json(['error' => true, 'message' => 'Table not found']);
+//     } catch (\Exception $e) {
+//         return response()->json(['error' => true, 'message' => $e->getMessage()]);
+//     }
+// }
+    public function getBulkColumns1(Request $request)
     {
         try {
             $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
             $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
 
             $columnsHeader = [];
+
+            // ✅ DataTables pagination parameters
+            $draw = intval($request->get('draw'));
+            $start = intval($request->get('start', 0));
+            $length = intval($request->get('length', 100)); // default 100 if not provided
 
             $start_date = $end_date = null;
             if (!empty($request["work_date"])) {
@@ -2621,7 +2743,7 @@ class ReportsController extends Controller
             }
 
             if ($decodedClientName && $decodedSubProjectName) {
-                $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName), '_');
+                    $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedSubProjectName)).'_datas','_');
 
                 if (!Schema::hasTable($table_name)) {
                     return response()->json(['error' => true, 'message' => 'Table not found']);
@@ -2643,11 +2765,11 @@ class ReportsController extends Controller
                 }
 
                 $selectCols = array_map(fn($col) => "$table_name.$col", $columnsHeader);
-                $selectCols[] = "$table_name.id as id"; // unique ID for DataTables
+                $selectCols[] = "$table_name.id as id";
 
                 $query = DB::table($table_name)->select($selectCols);
 
-                // Filters
+                // ✅ Filters
                 if ($start_date && $end_date && in_array('coder_work_date', $allColumns)) {
                     $query->whereBetween("$table_name.updated_at", [$start_date, $end_date]);
                 }
@@ -2655,19 +2777,50 @@ class ReportsController extends Controller
                 if (!empty($request->user)) {
                     $query->where(function ($q) use ($request) {
                         $q->where('CE_emp_id', $request->user)
-                          ->orWhere('QA_emp_id', $request->user);
+                        ->orWhere('QA_emp_id', $request->user);
                     });
                 }
 
                 if (!empty($request->client_status) && in_array('chart_status', $allColumns)) {
                     $query->where('chart_status', $request->client_status);
                 }
+                
+                    
 
-                return DataTables::of($query)
-                    ->setRowId(fn($row) => $row->id)
-                    ->addIndexColumn()
-                    ->with('columnsHeader', $columnsHeader)
-                    ->make(true);
+                // ✅ Handle DataTable Export Requests (full dataset)
+            if ($request->has('export') && $request->export === 'true') {
+                        $filename = 'bulk_report_' . now()->format('Ymd_His') . '.csv';
+                        $path = storage_path("app/public/{$filename}");
+                        $handle = fopen($path, 'w');
+
+                        // Header
+                        fputcsv($handle, $columnsHeader);
+
+                        // Write in chunks
+                        $query->orderBy('id')->chunk(1000, function ($rows) use ($handle, $columnsHeader) {
+                            foreach ($rows as $row) {
+                                fputcsv($handle, array_map(fn($col) => $row->$col, $columnsHeader));
+                            }
+                        });
+
+                        fclose($handle);
+
+                        return response()->download($path)->deleteFileAfterSend(true);
+                }
+
+
+                // ✅ Normal DataTables pagination
+                $totalRecords = $query->count();
+                $limit = ($length > 10000) ? 10000 : $length;
+                $records = $query->skip($start)->take($limit)->get();
+
+                return response()->json([
+                    "draw" => $draw,
+                    "recordsTotal" => $totalRecords,
+                    "recordsFiltered" => $totalRecords,
+                    "data" => $records,
+                    "columnsHeader" => $columnsHeader
+                ]);
             }
 
             return response()->json(['error' => true, 'message' => 'Table not found']);
@@ -2677,46 +2830,749 @@ class ReportsController extends Controller
     }
 
     // Excel Export
-    public function exportBulkReport(Request $request)
-    {
+    // public function exportBulkReport(Request $request)
+    // {
+    //     $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
+    //     $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+
+    //     $paProject = Helpers::projectName($project_id);
+    //     $decodedClientName = $paProject->project_name ?? '';
+    //     $decodedSubProjectName = '';
+    //     if ($project_id && $sub_project_id) {
+    //         $sub = Helpers::subProjectName($project_id, $sub_project_id);
+    //         $decodedSubProjectName = $sub->sub_project_name ?? '';
+    //     }
+
+    //     $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName), '_');
+
+    //     $allColumns = array_column(DB::select("DESCRIBE `$table_name`"), 'Field');
+    //     $excludeCols = [
+    //         'QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends',
+    //         'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers',
+    //         'CE_status_code', 'CE_sub_status_code', 'CE_followup_date',
+    //         'updated_at', 'created_at', 'deleted_at', 'cpt_trends', 'icd_trends', 'modifiers'
+    //     ];
+
+    //     $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
+
+    //     return Excel::download(new class($table_name, $columnsHeader) implements \Maatwebsite\Excel\Concerns\FromQuery, \Maatwebsite\Excel\Concerns\WithHeadings {
+    //         private $table;
+    //         private $columns;
+    //         public function __construct($table, $columns) {
+    //             $this->table = $table;
+    //             $this->columns = $columns;
+    //         }
+    //         public function query() {
+    //             return DB::table($this->table)->select($this->columns);
+    //         }
+    //         public function headings(): array {
+    //             return $this->columns;
+    //         }
+    //     }, 'bulk_report.xlsx');
+    // }
+
+
+
+
+public function exportBulkReport(Request $request)
+{
+    $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
+    $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+
+    $paProject = Helpers::projectName($project_id);
+    $decodedClientName = $paProject->project_name ?? '';
+    $decodedSubProjectName = '';
+    if ($project_id && $sub_project_id) {
+        $sub = Helpers::subProjectName($project_id, $sub_project_id);
+        $decodedSubProjectName = $sub->sub_project_name ?? '';
+    }
+
+    $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName), '_');
+
+    $allColumns = array_column(DB::select("DESCRIBE `$table_name`"), 'Field');
+    $excludeCols = [
+        'QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends',
+        'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers',
+        'CE_status_code', 'CE_sub_status_code', 'CE_followup_date',
+        'updated_at', 'created_at', 'deleted_at', 'cpt_trends', 'icd_trends', 'modifiers'
+    ];
+
+    $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
+
+    return Excel::download(
+        new DynamicBulkExport($table_name, $columnsHeader),
+        'bulk_report.csv', // ✅ CSV instead of XLSX
+        \Maatwebsite\Excel\Excel::CSV
+    );
+}
+
+
+    public function bulkProductionReports() {
+        try {
+          return view('reports.bulkProductionReport');
+        } catch (\Exception $e) {
+            Log::error("Laravel Exception: " . $e->getMessage());
+            return response()->json([
+                'error'   => 'Laravel Exception',
+                'details' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function runPython(Request $request) {
+        try {
+            // $pythonPath = 'C:\Users\cf100\AppData\Local\Programs\Python\Python313\python.exe';
+            // $pythonScript = base_path('python\\Reports.py');
+            $pythonPath = '/bin/python3';
+            $pythonScript = base_path('python/Reports.py');
+    
+            $payload = json_encode([
+                'project_id'     => $request->input('project_id'),
+                'sub_project_id' => $request->input('sub_project_id'),
+                'date_range'     => $request->input('work_date'),
+                'user_id'        => $request->input('user'),
+                'client_status'  => $request->input('client_status')
+            ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    
+            // Run Python script
+            $process = new Process([$pythonPath, $pythonScript]);
+            $process->setInput($payload);
+            $process->setWorkingDirectory(base_path());
+            $process->setEnv(array_merge($_ENV, getenv(), [
+                'PYTHONUNBUFFERED' => '1',
+                'SystemRoot'       => getenv('SystemRoot') ?: 'C:\Windows',
+                'PATH'             => getenv('PATH'),
+            ]));
+            $process->setTimeout(3600);
+            $process->run();
+    
+            $stdout = trim($process->getOutput());
+            $stderr = $process->getErrorOutput();
+    
+            Log::info("Python STDOUT: " . $stdout);
+            Log::info("Python STDERR: " . $stderr);
+    
+            // Check if Python ran successfully and file exists
+            if (!$process->isSuccessful() || !$stdout || !File::exists($stdout)) {
+                return response()->json([
+                    'error'  => "Python script failed",
+                    'stdout' => $stdout,
+                    'stderr' => $stderr
+                ], 500);
+            }
+    
+            // Send Excel file as a download
+            return response()->download($stdout, basename($stdout))->deleteFileAfterSend(true);
+    
+        } catch (\Exception $e) {
+            Log::error("Laravel Exception: " . $e->getMessage());
+            return response()->json([
+                'error'   => 'Laravel Exception',
+                'details' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+
+public function getBulkColumnsCSV(Request $request)
+{
+    try {
         $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
         $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
 
         $paProject = Helpers::projectName($project_id);
-        $decodedClientName = $paProject->project_name ?? '';
+        $decodedClientName = $paProject->project_name ?? null;
+
         $decodedSubProjectName = '';
         if ($project_id && $sub_project_id) {
             $sub = Helpers::subProjectName($project_id, $sub_project_id);
             $decodedSubProjectName = $sub->sub_project_name ?? '';
         }
 
-        $table_name = Str::slug(Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName), '_');
+        if (!$decodedClientName || !$decodedSubProjectName) {
+            return response()->json(['error' => true, 'message' => 'Invalid project/subproject']);
+        }
 
+        $table_name = Str::slug((Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName)) . '_datas', '_');
+        if (!Schema::hasTable($table_name)) {
+            return response()->json(['error' => true, 'message' => 'Table not found']);
+        }
+
+        // --- Date Range ---
+        $start_date = $end_date = null;
+        if (!empty($request["work_date"])) {
+            $work_date = explode(' - ', $request["work_date"]);
+            $start_date = date('Y-m-d 08:00:00', strtotime($work_date[0]));
+            $end_date = date('Y-m-d 07:59:00', strtotime($work_date[1] . ' +1 day'));
+        }
+
+        // --- Columns ---
         $allColumns = array_column(DB::select("DESCRIBE `$table_name`"), 'Field');
         $excludeCols = [
             'QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends',
             'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers',
             'CE_status_code', 'CE_sub_status_code', 'CE_followup_date',
-            'updated_at', 'created_at', 'deleted_at', 'cpt_trends', 'icd_trends', 'modifiers'
+            'updated_at', 'created_at', 'deleted_at', 'cpt_trends', 'icd_trends', 'modifiers', 'id'
         ];
 
         $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
+        if (empty($columnsHeader)) {
+            return response()->json(['error' => true, 'message' => 'No columns found']);
+        }
 
-        return Excel::download(new class($table_name, $columnsHeader) implements \Maatwebsite\Excel\Concerns\FromQuery, \Maatwebsite\Excel\Concerns\WithHeadings {
-            private $table;
-            private $columns;
-            public function __construct($table, $columns) {
-                $this->table = $table;
-                $this->columns = $columns;
+        // --- Query Base ---
+        $query = DB::table($table_name)->select($columnsHeader);
+
+        if ($start_date && $end_date && in_array('updated_at', $allColumns)) {
+            $query->whereBetween("$table_name.updated_at", [$start_date, $end_date]);
+        }
+
+        if (!empty($request->user)) {
+            $query->where(function ($q) use ($request) {
+                $q->where('CE_emp_id', $request->user)
+                    ->orWhere('QA_emp_id', $request->user);
+            });
+        }
+
+        // --- Status Mapping ---
+        $statusMap = [
+            "AR Inprocess" => "CE_Inprocess",
+            "AR Pending" => "CE_Pending",
+            "AR Completed" => "CE_Completed",
+            "AR Hold" => "CE_Hold",
+            "QA Inprocess" => "QA_Inprocess",
+            "QA Pending" => "QA_Pending",
+            "QA Completed" => "QA_Completed",
+            "QA Hold" => "QA_Hold",
+            "AR Assigned" => "CE_Assigned",
+            "AR Non Workable" => "AR_non_workable",
+            "Auto Close" => "Auto_Close",
+        ];
+
+        if (!empty($request->client_status) && in_array('chart_status', $allColumns)) {
+            $mapped = $statusMap[$request->client_status] ?? $request->client_status;
+            $query->where('chart_status', $mapped);
+        }
+
+        // --- Header Renames ---
+        $headerRenameMap = [
+            "chart_status" => "Charge Status",
+            "CE_emp_id" => "AR Emp Id",
+            "ce_hold_reason" => "AR Hold Reason",
+            "coder_work_date" => "AR Work Date",
+            "coder_rework_status" => "AR Rework Status",
+            "coder_rework_reason" => "AR Rework Reason",
+            "coder_error_count" => "AR Error Count",
+            "ar_status_code" => "Status Code",
+            "ar_action_code" => "Action Code",
+            "ar_denial_codes" => "Denial Code",
+            "ar_substatus_codes" => "Sub Status Code"
+        ];
+
+        // --- EXPORT MODE ---
+        if ($request->has('export') && $request->export === 'true') {
+            $filename = 'bulk_report_' . now()->format('Ymd_His') . '.csv';
+            $path = storage_path("app/public/{$filename}");
+            $handle = fopen($path, 'w');
+
+            // Final Headers
+            $finalHeaders = [];
+            foreach ($columnsHeader as $col) {
+                $finalHeaders[] = $headerRenameMap[$col] ?? Str::title(str_replace('_', ' ', $col));
             }
-            public function query() {
-                return DB::table($this->table)->select($this->columns);
-            }
-            public function headings(): array {
-                return $this->columns;
-            }
-        }, 'bulk_report.xlsx');
+            $finalHeaders[] = "Work Time";
+            $finalHeaders[] = "Aging";
+            $finalHeaders[] = "Aging Range";
+
+            fputcsv($handle, $finalHeaders);
+
+            // Chunked writing for performance
+            $query->orderBy('id')->chunk(1000, function ($rows) use ($handle, $columnsHeader, $project_id, $sub_project_id) {
+                // --- Map parent_id to work_time ---
+                $parentIds = collect($rows)->pluck('parent_id')->filter()->unique()->toArray();
+                $workTimeMap = [];
+                if (!empty($parentIds)) {
+                    $workLogs = DB::table('caller_charts_work_logs')
+                        ->select('record_id', 'work_time')
+                        ->where('project_id', $project_id)
+                        ->where('sub_project_id', $sub_project_id)
+                        ->whereIn('record_id', $parentIds)
+                        ->get();
+                    foreach ($workLogs as $w) {
+                        $workTimeMap[$w->record_id] = $w->work_time;
+                    }
+                }
+
+                // --- Write each row ---
+                foreach ($rows as $row) {
+                    $dataRow = [];
+
+                    foreach ($columnsHeader as $col) {
+                        $dataRow[] = $row->$col ?? '';
+                    }
+
+                    // Work Time
+                    $workTime = isset($row->parent_id) ? ($workTimeMap[$row->parent_id] ?? '') : '';
+                    $dataRow[] = $workTime;
+
+                    // Aging + Aging Range
+                    $aging = $agingRange = '';
+                    if (!empty($row->dos)) {
+                        try {
+                            $dos = new DateTime($row->dos);
+                            $diff = (new DateTime())->diff($dos)->days;
+                            $aging = $diff;
+                            if ($diff <= 30) $agingRange = '0-30';
+                            elseif ($diff <= 60) $agingRange = '31-60';
+                            elseif ($diff <= 90) $agingRange = '61-90';
+                            elseif ($diff <= 120) $agingRange = '91-120';
+                            elseif ($diff <= 180) $agingRange = '121-180';
+                            elseif ($diff <= 365) $agingRange = '181-365';
+                            else $agingRange = '365+';
+                        } catch (\Exception $ex) {
+                            $aging = '';
+                            $agingRange = '';
+                        }
+                    }
+
+                    $dataRow[] = $aging;
+                    $dataRow[] = $agingRange;
+
+                    fputcsv($handle, $dataRow);
+                }
+            });
+
+            fclose($handle);
+            return response()->download($path)->deleteFileAfterSend(true);
+        }
+
+        // --- PAGINATION MODE ---
+        $draw = intval($request->get('draw'));
+        $start = intval($request->get('start', 0));
+        $length = intval($request->get('length', 50));
+
+        $totalRecords = $query->count();
+        $records = $query->skip($start)->take($length)->get();
+
+        return response()->json([
+            "draw" => $draw,
+            "recordsTotal" => $totalRecords,
+            "recordsFiltered" => $totalRecords,
+            "data" => $records,
+            "columnsHeader" => $columnsHeader
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Bulk CSV Export Error: ' . $e->getMessage());
+        return response()->json(['error' => true, 'message' => $e->getMessage()]);
     }
+}
+
+// public function getBulkColumns(Request $request)
+// {
+//     try {
+//         $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
+//         $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+
+//         $paProject = Helpers::projectName($project_id);
+//         $decodedClientName = $paProject->project_name ?? null;
+
+//         $decodedSubProjectName = '';
+//         if ($project_id && $sub_project_id) {
+//             $sub = Helpers::subProjectName($project_id, $sub_project_id);
+//             $decodedSubProjectName = $sub->sub_project_name ?? '';
+//         }
+
+//         if (!$decodedClientName || !$decodedSubProjectName) {
+//             return response()->json(['error' => true, 'message' => 'Invalid project/subproject']);
+//         }
+
+//         $table_name = Str::slug((Str::lower($decodedClientName) . '_' . Str::lower($decodedSubProjectName)) . '_datas', '_');
+//         if (!Schema::hasTable($table_name)) {
+//             return response()->json(['error' => true, 'message' => 'Table not found']);
+//         }
+
+//         // --- Date Range ---
+//         $start_date = $end_date = null;
+//         if (!empty($request["work_date"])) {
+//             $work_date = explode(' - ', $request["work_date"]);
+//             $start_date = date('Y-m-d 08:00:00', strtotime($work_date[0]));
+//             $end_date = date('Y-m-d 07:59:00', strtotime($work_date[1] . ' +1 day'));
+//         }
+
+//         // --- Columns ---
+//         $allColumns = array_column(DB::select("DESCRIBE `$table_name`"), 'Field');
+//         $excludeCols = [
+//             'QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends',
+//             'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers',
+//             'CE_status_code', 'CE_sub_status_code', 'CE_followup_date',
+//             'updated_at', 'created_at', 'deleted_at', 'cpt_trends', 'icd_trends', 'modifiers', 'id'
+//         ];
+
+//         // keep important AR/QA fields in even if excluded list overlaps
+//         $importantCols = ['ar_status_code', 'ar_action_code', 'ar_denial_codes', 'ar_substatus_codes', 'chart_status'];
+//         $columnsHeader = array_values(array_filter($allColumns, function ($col) use ($excludeCols, $importantCols) {
+//             return !in_array($col, $excludeCols) || in_array($col, $importantCols);
+//         }));
+
+//         if (empty($columnsHeader)) {
+//             return response()->json(['error' => true, 'message' => 'No columns found']);
+//         }
+
+//         // --- Query Base ---
+//         $query = DB::table($table_name)->select($columnsHeader);
+
+//         if ($start_date && $end_date && in_array('updated_at', $allColumns)) {
+//             $query->whereBetween("$table_name.updated_at", [$start_date, $end_date]);
+//         }
+
+//         if (!empty($request->user)) {
+//             $query->where(function ($q) use ($request) {
+//                 $q->where('CE_emp_id', $request->user)
+//                     ->orWhere('QA_emp_id', $request->user);
+//             });
+//         }
+
+//         // --- Status Mapping ---
+//         $statusMap = [
+//             "AR Inprocess"   => "CE_Inprocess",
+//             "AR Pending"     => "CE_Pending",
+//             "AR Completed"   => "CE_Completed",
+//             "AR Hold"        => "CE_Hold",
+//             "QA Inprocess"   => "QA_Inprocess",
+//             "QA Pending"     => "QA_Pending",
+//             "QA Completed"   => "QA_Completed",
+//             "QA Hold"        => "QA_Hold",
+//             "AR Assigned"    => "CE_Assigned",
+//             "AR Non Workable" => "AR_non_workable",
+//             "Auto Close"     => "Auto_Close",
+//         ];
+
+//         if (!empty($request->client_status) && in_array('chart_status', $allColumns)) {
+//             $mapped = $statusMap[$request->client_status] ?? null;
+//             if ($mapped) {
+//                 $query->where('chart_status', $mapped);
+//             }
+//         }
+
+//         // --- Header Renames ---
+//         $headerRenameMap = [
+//             "chart_status" => "Charge Status",
+//             "CE_emp_id" => "AR Emp Id",
+//             "ce_hold_reason" => "AR Hold Reason",
+//             "coder_work_date" => "AR Work Date",
+//             "coder_rework_status" => "AR Rework Status",
+//             "coder_rework_reason" => "AR Rework Reason",
+//             "coder_error_count" => "AR Error Count",
+//             "ar_status_code" => "Status Code",
+//             "ar_action_code" => "Action Code",
+//             "ar_denial_codes" => "Denial Code",
+//             "ar_substatus_codes" => "Sub Status Code"
+//         ];
+
+//         // --- EXPORT MODE ---
+//         if ($request->has('export') && $request->export === 'true') {
+//             $filename = 'bulk_report_' . now()->format('Ymd_His') . '.csv';
+//             $path = storage_path("app/public/{$filename}");
+//             $handle = fopen($path, 'w');
+
+//             // Final Headers
+//             $finalHeaders = [];
+//             foreach ($columnsHeader as $col) {
+//                 $finalHeaders[] = $headerRenameMap[$col] ?? Str::title(str_replace('_', ' ', $col));
+//             }
+//             $finalHeaders[] = "Work Time";
+//             $finalHeaders[] = "Aging";
+//             $finalHeaders[] = "Aging Range";
+//             fputcsv($handle, $finalHeaders);
+
+//             $query->orderBy('id')->chunk(1000, function ($rows) use ($handle, $columnsHeader, $project_id, $sub_project_id) {
+//                 $parentIds = collect($rows)->pluck('parent_id')->filter()->unique()->toArray();
+//                 $workTimeMap = [];
+//                 if (!empty($parentIds)) {
+//                     $workLogs = DB::table('caller_charts_work_logs')
+//                         ->select('record_id', 'work_time')
+//                         ->where('project_id', $project_id)
+//                         ->where('sub_project_id', $sub_project_id)
+//                         ->whereIn('record_id', $parentIds)
+//                         ->get();
+//                     foreach ($workLogs as $w) {
+//                         $workTimeMap[$w->record_id] = $w->work_time;
+//                     }
+//                 }
+
+//                 foreach ($rows as $row) {
+//                     $dataRow = [];
+//                     foreach ($columnsHeader as $col) {
+//                         $dataRow[] = $row->$col ?? '';
+//                     }
+
+//                     $workTime = isset($row->parent_id) ? ($workTimeMap[$row->parent_id] ?? '') : '';
+//                     $dataRow[] = $workTime;
+
+//                     // Aging + Range
+//                     $aging = $agingRange = '';
+//                     if (!empty($row->dos)) {
+//                         try {
+//                             $dos = new DateTime($row->dos);
+//                             $diff = (new DateTime())->diff($dos)->days;
+//                             $aging = $diff;
+//                             if ($diff <= 30) $agingRange = '0-30';
+//                             elseif ($diff <= 60) $agingRange = '31-60';
+//                             elseif ($diff <= 90) $agingRange = '61-90';
+//                             elseif ($diff <= 120) $agingRange = '91-120';
+//                             elseif ($diff <= 180) $agingRange = '121-180';
+//                             elseif ($diff <= 365) $agingRange = '181-365';
+//                             else $agingRange = '365+';
+//                         } catch (\Exception $ex) {}
+//                     }
+
+//                     $dataRow[] = $aging;
+//                     $dataRow[] = $agingRange;
+//                     fputcsv($handle, $dataRow);
+//                 }
+//             });
+
+//             fclose($handle);
+//             return response()->download($path)->deleteFileAfterSend(true);
+//         }
+
+//         // --- GRID MODE ---
+//         $draw = intval($request->get('draw'));
+//         $start = intval($request->get('start', 0));
+//         $length = intval($request->get('length', 50));
+
+//         $totalRecords = $query->count();
+//         $records = $query->skip($start)->take($length)->get();
+
+//         // Add computed fields for grid too
+//         $records = $records->map(function ($row) use ($project_id, $sub_project_id) {
+//             $parentId = $row->parent_id ?? null;
+//             $workTime = '';
+//             if ($parentId) {
+//                 $workTime = DB::table('caller_charts_work_logs')
+//                     ->where('project_id', $project_id)
+//                     ->where('sub_project_id', $sub_project_id)
+//                     ->where('record_id', $parentId)
+//                     ->value('work_time');
+//             }
+
+//             $aging = $agingRange = '';
+//             if (!empty($row->dos)) {
+//                 $dos = new DateTime($row->dos);
+//                 $diff = (new DateTime())->diff($dos)->days;
+//                 $aging = $diff;
+//                 if ($diff <= 30) $agingRange = '0-30';
+//                 elseif ($diff <= 60) $agingRange = '31-60';
+//                 elseif ($diff <= 90) $agingRange = '61-90';
+//                 elseif ($diff <= 120) $agingRange = '91-120';
+//                 elseif ($diff <= 180) $agingRange = '121-180';
+//                 elseif ($diff <= 365) $agingRange = '181-365';
+//                 else $agingRange = '365+';
+//             }
+
+//             $row->work_time = $workTime;
+//             $row->aging = $aging;
+//             $row->aging_range = $agingRange;
+
+//             return $row;
+//         });
+
+//         $columnsHeader = array_merge($columnsHeader, ['work_time', 'aging', 'aging_range']);
+
+//         return response()->json([
+//             "draw" => $draw,
+//             "recordsTotal" => $totalRecords,
+//             "recordsFiltered" => $totalRecords,
+//             "data" => $records,
+//             "columnsHeader" => $columnsHeader
+//         ]);
+
+//     } catch (\Exception $e) {
+//         Log::error('Bulk CSV Export Error: ' . $e->getMessage());
+//         return response()->json(['error' => true, 'message' => $e->getMessage()]);
+//     }
+// }
+public function getBulkColumns(Request $request)
+{
+    try {
+        ini_set('max_execution_time', 0);
+        ini_set('memory_limit', '-1');
+
+        $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
+        $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+
+        $paProject = Helpers::projectName($project_id);
+        $decodedClientName = $paProject->project_name ?? null;
+        $decodedSubProjectName = $sub_project_id && $project_id ? (Helpers::subProjectName($project_id, $sub_project_id)->sub_project_name ?? '') : '';
+
+        if (!$decodedClientName || !$decodedSubProjectName) {
+            return response()->json(['error' => true, 'message' => 'Invalid project/subproject']);
+        }
+
+        $table_name = Str::slug(Str::lower($decodedClientName . '_' . $decodedSubProjectName) . '_datas', '_');
+        if (!Schema::hasTable($table_name)) {
+            return response()->json(['error' => true, 'message' => 'Table not found']);
+        }
+
+        // --- Date Range ---
+        $start_date = $end_date = null;
+        if (!empty($request["work_date"])) {
+            $work_date = explode(' - ', $request["work_date"]);
+            $start_date = date('Y-m-d 08:00:00', strtotime($work_date[0]));
+            $end_date = date('Y-m-d 07:59:00', strtotime($work_date[1] . ' +1 day'));
+        }
+
+        // --- Columns ---
+        $allColumns = array_column(DB::select("DESCRIBE `$table_name`"), 'Field');
+        $checkedValues = $request->checkedValues ?? $allColumns;
+
+        // Exclude unwanted columns but keep important AR/QA
+        $excludeCols = [
+            'QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends',
+            'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers',
+            'CE_status_code', 'CE_sub_status_code', 'CE_followup_date',
+            'updated_at', 'created_at', 'deleted_at', 'id', 'modifiers'
+        ];
+        $importantCols = ['ar_status_code', 'ar_action_code', 'ar_denial_codes', 'ar_substatus_codes', 'chart_status'];
+
+        $columnsHeader = array_values(array_filter($checkedValues, function ($col) use ($excludeCols, $importantCols) {
+            return !in_array($col, $excludeCols) || in_array($col, $importantCols);
+        }));
+
+        // --- Latest Work Logs Join (same as reportClientColumnsList) ---
+        $latestWorkLogs = DB::table(DB::raw('(
+            SELECT *,
+                   ROW_NUMBER() OVER (
+                       PARTITION BY record_id, project_id, sub_project_id, record_status
+                       ORDER BY start_time DESC
+                   ) AS row_num
+            FROM caller_charts_work_logs
+        ) as ranked_logs'))->where('row_num', 1);
+
+        $query = DB::table($table_name)
+            ->joinSub($latestWorkLogs, 'caller_charts_work_logs', function ($join) use ($table_name) {
+                $join->on('caller_charts_work_logs.record_id', '=', $table_name . '.parent_id');
+            })
+            ->select(array_merge(
+                $columnsHeader,
+                ['caller_charts_work_logs.work_time', 'caller_charts_work_logs.record_status']
+            ))
+            ->where('caller_charts_work_logs.project_id', '=', $project_id)
+            ->where('caller_charts_work_logs.sub_project_id', '=', $sub_project_id)
+            ->when($start_date && $end_date, function ($q) use ($start_date, $end_date) {
+                $q->whereBetween('caller_charts_work_logs.start_time', [$start_date, $end_date]);
+            })
+            ->when(!empty($request->user), function ($q) use ($request) {
+                $q->where(function ($inner) use ($request) {
+                    $inner->where('CE_emp_id', $request->user)
+                        ->orWhere('QA_emp_id', $request->user);
+                });
+            })
+            ->when(!empty($request->client_status), function ($q) use ($request) {
+                $q->where('caller_charts_work_logs.record_status', $request->client_status);
+            });
+
+        // --- EXPORT MODE ---
+        if ($request->has('export') && $request->export === 'true') {
+            $filename = 'bulk_report_' . now()->format('Ymd_His') . '.csv';
+            $path = storage_path("app/public/{$filename}");
+            $handle = fopen($path, 'w');
+
+            // Add computed columns
+            $finalHeaders = array_merge($columnsHeader, ['work_time', 'aging', 'aging_range']);
+            fputcsv($handle, $finalHeaders);
+
+            $query->orderBy('id')->chunk(1000, function ($rows) use ($handle, $columnsHeader) {
+                foreach ($rows as $row) {
+                    $rowData = [];
+                    foreach ($columnsHeader as $col) {
+                        $value = $row->$col ?? '';
+
+                        // ---- Map AR/QA Codes to Names ----
+                        if ($col === 'ar_status_code' && $value)
+                            $value = Helpers::arStatusById($value)['status_code'] ?? $value;
+                        if ($col === 'ar_action_code' && $value)
+                            $value = Helpers::arActionById($value)['action_code'] ?? $value;
+                        if ($col === 'ar_denial_codes' && $value)
+                            $value = Helpers::arDenialById($value)['denialCode'] ?? $value;
+                        if ($col === 'ar_substatus_codes' && $value)
+                            $value = Helpers::arSubStatusById($value)['substatusCode'] ?? $value;
+
+                        // ---- Clean up fields ----
+                        if (strpos($value, '_el_') !== false)
+                            $value = str_replace('_el_', ', ', $value);
+
+                        $rowData[] = $value ?: '--';
+                    }
+
+                    // Work time
+                    $rowData[] = $row->work_time ?? '--';
+
+                    // Aging calculation
+                    $aging = $agingRange = '';
+                    if (!empty($row->dos)) {
+                        $dos = Carbon::parse($row->dos);
+                        $diff = $dos->diffInDays(Carbon::now());
+                        $aging = $diff;
+                        if ($diff <= 30) $agingRange = '0-30';
+                        elseif ($diff <= 60) $agingRange = '31-60';
+                        elseif ($diff <= 90) $agingRange = '61-90';
+                        elseif ($diff <= 120) $agingRange = '91-120';
+                        elseif ($diff <= 180) $agingRange = '121-180';
+                        elseif ($diff <= 365) $agingRange = '181-365';
+                        else $agingRange = '365+';
+                    }
+                    $rowData[] = $aging;
+                    $rowData[] = $agingRange;
+
+                    fputcsv($handle, $rowData);
+                }
+            });
+
+            fclose($handle);
+            return response()->download($path)->deleteFileAfterSend(true);
+        }
+
+        // --- DATATABLE MODE ---
+        $draw = intval($request->get('draw'));
+        $start = intval($request->get('start', 0));
+        $length = intval($request->get('length', 100));
+
+        $totalRecords = $query->count();
+        $records = $query->skip($start)->take($length)->get();
+
+        // Compute aging etc. for grid
+        foreach ($records as $r) {
+            $r->aging = $r->aging_range = '';
+            if (!empty($r->dos)) {
+                $dos = Carbon::parse($r->dos);
+                $diff = $dos->diffInDays(Carbon::now());
+                $r->aging = $diff;
+                if ($diff <= 30) $r->aging_range = '0-30';
+                elseif ($diff <= 60) $r->aging_range = '31-60';
+                elseif ($diff <= 90) $r->aging_range = '61-90';
+                elseif ($diff <= 120) $r->aging_range = '91-120';
+                elseif ($diff <= 180) $r->aging_range = '121-180';
+                elseif ($diff <= 365) $r->aging_range = '181-365';
+                else $r->aging_range = '365+';
+            }
+        }
+
+        $columnsHeader = array_merge($columnsHeader, ['work_time', 'aging', 'aging_range']);
+
+        return response()->json([
+            "draw" => $draw,
+            "recordsTotal" => $totalRecords,
+            "recordsFiltered" => $totalRecords,
+            "data" => $records,
+            "columnsHeader" => $columnsHeader
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Bulk Export Error: ' . $e->getMessage());
+        return response()->json(['error' => true, 'message' => $e->getMessage()]);
+    }
+}
+
 
    
 }
