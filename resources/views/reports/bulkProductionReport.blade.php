@@ -111,52 +111,17 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-footer d-flex justify-content-between align-items-center w-100">
-
-                    <!-- Left Side: Export Button -->
-                    <div id="export_div">
-                        <button type="button" class="btn btn-primary-export text-white" id="bulk_export"
-                            style="font-size:13px">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor"
-                                class="bi bi-box-arrow-up" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd"
-                                    d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z" />
-                                <path fill-rule="evenodd"
-                                    d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z" />
-                            </svg>&nbsp;&nbsp;<span>Export</span>
-                        </button>
-
-                    </div>
+                <div class="form-footer d-flex justify-content-end align-items-center w-100">
                     <div class="pr-10">
                         <button class="btn btn-light-danger" id="filter_clear" tabindex="10" type="button">
-                            <span><span>Clear</span></span>
+                            <span>Clear</span>
                         </button>&nbsp;&nbsp;
                         <button type="submit" class="btn btn-white-black font-weight-bold" id="formUpdate_save">
-                            Submit
+                            Export Excel
                         </button>
                     </div>
-
                 </div>
             </form>
-
-            <div class="table-responsive pt-5 pb-5 px-4">
-                <table class="table table-separate table-head-custom no-footer dtr-column " id="bulk_list"
-                    data-order='[[ 0, "desc" ]]'>
-                    @include('reports.partials.bulkProductionTable', [
-                        'completedProjectDetails' => $completedProjectDetails,
-                        'columnsHeader' => $columnsHeader,
-                    ])
-
-                </table>
-            </div>
-
-            <div id="pagination_links">
-                @include('reports.partials.pagination', [
-                    'completedProjectDetails' => $completedProjectDetails,
-                ])
-            </div>
-
-
         </div>
     </div>
 @endsection
@@ -166,7 +131,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script>
-        $(document).ready(function() {          
+        $(document).ready(function() {
             var start = moment().startOf('month');
             var end = moment().endOf('month');
 
@@ -187,22 +152,7 @@
             });
 
             // Clear value initially
-           // $('.daterange').val('');
-
-            // Validate range selection
-            // $('.daterange').on('apply.daterangepicker', function(ev, picker) {
-            //     var diffDays = picker.endDate.diff(picker.startDate, 'days');
-            //     if (diffDays > 30) {
-            //         //alert('Please select a date range of 30 days or less.');
-            //         js_notification('error', 'Please select a date range of 30 days or less.');
-            //         $(this).val(''); // clear field if invalid
-            //         return false;
-            //     }
-            //     $(this).val(
-            //         picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY')
-            //     );
-            // });
-
+            $('.daterange').val('');
 
             $(document).on('change', '#project_id', function() {
                 KTApp.block('#reportModal', {
@@ -246,151 +196,6 @@
                 });
             });
 
-
-
-            // $('#filterForm').on('submit', function(e) {
-            $('#formUpdate_save').on('click', function(e) {
-                 e.preventDefault();
-                if ($('#project_id').val() == '' || $('#sub_project_id').val() == '') {
-                   
-                    if ($('#project_id').val() == '') {
-                        $('#project_id').next('.select2').find(".select2-selection").css('border-color',
-                            'red');
-                    } else {
-                        $('#project_id').next('.select2').find(".select2-selection").css('border-color',
-                        '');
-                    }
-                    if ($('#sub_project_id').val() == '') {
-                        $('#sub_project_id').next('.select2').find(".select2-selection").css('border-color',
-                            'red');
-                    } else {
-                        $('#sub_project_id').next('.select2').find(".select2-selection").css('border-color',
-                            '');
-                    }
-                    return false;
-                }
-                var clientName = btoa($('#project_id').val());
-                var subProjectName = btoa($('#sub_project_id').val());
-                var formData = $('#filterForm').serialize();
-                formData = formData
-                    .replace(/(^|&)project_id=[^&]*/g, '')
-                    .replace(/(^|&)sub_project_id=[^&]*/g, '')
-                    .replace(/^&+|&+$/g, ''); // clean up any leftover "&"
-                formData += '&clientName=' + clientName;
-                formData += '&subProjectName=' + subProjectName;
-
-                console.log(formData);
-
-                $.ajax({
-                    url: "{{ route('reports.bulk.columns') }}",
-                    method: "POST",
-                    data: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(res) {
-                        $('#bulk_list').html(res.html);
-                        $('#pagination_links').html(res.pagination);
-
-                    }
-                });
-            });
-            $('#bulk_export').on('click', function(e) {
-
-
-                if ($('#project_id').val() == '' || $('#sub_project_id').val() == '') {
-                    e.preventDefault();
-                    if ($('#project_id').val() == '') {
-                        $('#project_id').next('.select2').find(".select2-selection").css('border-color',
-                            'red');
-                    } else {
-                        $('#project_id').next('.select2').find(".select2-selection").css('border-color',
-                        '');
-                    }
-                    if ($('#sub_project_id').val() == '') {
-                        $('#sub_project_id').next('.select2').find(".select2-selection").css('border-color',
-                            'red');
-                    } else {
-                        $('#sub_project_id').next('.select2').find(".select2-selection").css('border-color',
-                            '');
-                    }
-                    return false;
-                }
-                var clientName = btoa($('#project_id').val());
-                var subProjectName = btoa($('#sub_project_id').val());
-                var formData = $('#filterForm').serialize();
-
-                // remove project_id and sub_project_id like your submit handler
-                formData = formData
-                    .replace(/(^|&)project_id=[^&]*/g, '')
-                    .replace(/(^|&)sub_project_id=[^&]*/g, '')
-                    .replace(/^&+|&+$/g, ''); // clean up any leftover "&"
-
-                formData += '&clientName=' + clientName;
-                formData += '&subProjectName=' + subProjectName;
-
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
-
-                KTApp.block('#export_div', {
-                    overlayColor: '#000000',
-                    state: 'danger',
-                    opacity: 0.1,
-                    message: 'Fetching...',
-                });
-
-                $.ajax({
-                    url: "{{ url('bulk_export') }}",
-                    method: 'POST',
-                    data: formData,
-                    xhrFields: {
-                        responseType: 'blob'
-                    },
-                    success: function(response, status, xhr) {
-
-
-                        var filename = "";
-                        var disposition = xhr.getResponseHeader('Content-Disposition');
-                        if (disposition && disposition.indexOf('attachment') !== -1) {
-                            var matches = /filename[^;=\n]*=([^;\n]*)/.exec(disposition);
-                            if (matches != null && matches[1]) {
-                                filename = matches[1].trim().replace(/^"|"$/g, '');
-                            }
-                        }
-
-                        var blob = new Blob([response], {
-                            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                        });
-                        var link = document.createElement('a');
-                        link.href = window.URL.createObjectURL(blob);
-                        console.log('response', response, status, xhr, filename, link.href,
-                            blob);
-                        console.log('filename', filename);
-
-                        link.download = filename || 'export.xlsx';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        KTApp.unblock('#export_div');
-                    },
-                    error: function(xhr) {
-                        console.error('Error generating Excel file', xhr);
-                        KTApp.unblock('#export_div');
-                    }
-                });
-            });
-            $('#filter_clear').on('click', function(e) {
-                window.location.href = baseUrl + 'reports/bulk'
-                "?parent=" +
-                getUrlVars()[
-                        "parent"] +
-                    "&child=" + getUrlVars()["child"];
-            });
-
-
             var table = $("#bulk_list").DataTable({
                 processing: true,
                 lengthChange: false,
@@ -412,9 +217,88 @@
             table.buttons().container()
                 .appendTo('.outside');
 
+            $('#filter_clear').on('click', function(e) {
+                window.location.href = baseUrl + 'reports/bulk'
+                "?parent=" +
+                getUrlVars()[
+                        "parent"] +
+                    "&child=" + getUrlVars()["child"];
+            });
 
+            $('#formUpdate_save').on('click', function(e) {
+                e.preventDefault();
+                if ($('#project_id').val() == '' || $('#sub_project_id').val() == '') {
 
+                    if ($('#project_id').val() == '') {
+                        $('#project_id').next('.select2').find(".select2-selection").css('border-color',
+                            'red');
+                    } else {
+                        $('#project_id').next('.select2').find(".select2-selection").css('border-color',
+                            '');
+                    }
+                    if ($('#sub_project_id').val() == '') {
+                        $('#sub_project_id').next('.select2').find(".select2-selection").css('border-color',
+                            'red');
+                    } else {
+                        $('#sub_project_id').next('.select2').find(".select2-selection").css('border-color',
+                            '');
+                    }
+                    return false;
+                }
+                // Read values from inputs
+                var clientName = $('#project_id').val();
+                var subProjectName = $('#sub_project_id').val();
 
+                // Build payload manually to avoid duplicates
+                var formData = {
+                    project_id: clientName,
+                    sub_project_id: subProjectName
+                };
+
+                // Include other form fields if needed (that are not already in formData)
+                $('#filterForm').serializeArray().forEach(function(item) {
+                    if (!formData.hasOwnProperty(item.name)) {
+                        formData[item.name] = item.value;
+                    }
+                });
+
+                $.ajax({
+                    url: "{{ url('run-python') }}",
+                    method: "POST",
+                    data: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    xhrFields: {
+                        responseType: 'blob'
+                    },
+                    success: function(response, status, xhr) {
+                        var disposition = xhr.getResponseHeader('Content-Disposition');
+                        var filename = 'export.xlsx';
+
+                        if (disposition && disposition.indexOf('attachment') !== -1) {
+                            var matches = /filename[^;=\n]*=([^;\n]*)/.exec(disposition);
+                            if (matches != null && matches[1]) {
+                                filename = matches[1].trim().replace(/^"|"$/g, '');
+                            }
+                        }
+
+                        var blob = new Blob([response], {
+                            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                        });
+                        var link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = filename;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    },
+                    error: function(err) {
+                        console.error(err);
+                        alert("Failed to export Excel");
+                    }
+                });
+            });
 
         });
     </script>

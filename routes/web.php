@@ -208,9 +208,10 @@ Route::group(['prefix' => 'qa_production'], function () {
     //     $exitCode = Artisan::call('cache:clear');
     //     // return what you want
     // });
-        Route::get('/reports/bulk', 'App\Http\Controllers\Reports\ReportsController@bulkProductionReports')->name('reports.bulk');
+        Route::get('/reports/bulk', 'App\Http\Controllers\Reports\ReportsController@bulkProductionReports')->name('reports.bulk');//python
         Route::match(['get','post'],'/reports/bulk/columns', 'App\Http\Controllers\Reports\ReportsController@bulkProductionReportsColumns')->name('reports.bulk.columns');
         Route::any('bulk_export', 'App\Http\Controllers\Reports\ReportsController@bulkExport');
+        Route::post('run-python', 'App\Http\Controllers\Reports\ReportsController@runPython');//python
 
 
 
@@ -218,7 +219,9 @@ Route::group(['prefix' => 'qa_production'], function () {
                 ->name('reports.bulk.index');
             Route::post('/bulk/columns','App\Http\Controllers\Reports\ReportsController@getBulkColumns')
                 ->name('reports.bulk.columns');
-                Route::post('reports/bulk/export', 'App\Http\Controllers\Reports\ReportsController@exportBulkReport')->name('reports.bulk.export');
+                Route::any('reports/bulk/export', 'App\Http\Controllers\Reports\ReportsController@exportBulkReport')->name('reports.bulk.export');
+        // Route::get('/get-question-child', 'App\Http\Controllers\ProductionController@getQuestionChild')->name('get.question.child');//working
+        //   Route::post('/save-question', 'App\Http\Controllers\ProductionController@save')->name('questions.save');
 
 
 
