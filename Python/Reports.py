@@ -223,8 +223,8 @@ def export_to_excel(
                 where_clauses.append("chart_status = %s")
                 params.append(mapped_status)
 
-        if date_range and "updated_at" in all_columns:
-            where_clauses.append("updated_at BETWEEN %s AND %s")
+        if date_range and "ar_at" in all_columns:
+            where_clauses.append("ar_at BETWEEN %s AND %s")
             params.extend([start_datetime, end_datetime])
 
         if where_clauses:
