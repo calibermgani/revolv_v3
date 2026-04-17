@@ -204,7 +204,8 @@ def export_to_excel(
         excel_name = table_name
         if excel_name.endswith("_datas"):
             excel_name = excel_name[:-6]
-        output_file = output_file or f"{excel_name}.xlsx"
+        # output_file = output_file or f"{excel_name}.xlsx"//local
+        output_file = output_file or f"/tmp/{excel_name}.xlsx"
 
         chunksize = 50000
         writer = pd.ExcelWriter(output_file, engine="xlsxwriter")
