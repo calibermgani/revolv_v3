@@ -536,7 +536,10 @@ class FormController extends Controller
                             }
                         }
                     }
-                     if (DB::transactionLevel() > 0) {
+                    //  if (DB::transactionLevel() > 0) {
+                    //     DB::commit();
+                    // }
+                    if (DB::getPdo()->inTransaction()) {
                         DB::commit();
                     }
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
