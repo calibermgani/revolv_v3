@@ -2923,7 +2923,7 @@ public function exportBulkReport(Request $request)
             // $pythonPath = 'C:\Users\cf100\AppData\Local\Programs\Python\Python313\python.exe';
             // $pythonScript = base_path('python\\Reports.py');
             $pythonPath = '/bin/python3';
-            $pythonScript = base_path('python/Reports.py');
+            $pythonScript = base_path('Python/Reports.py');
     
             $payload = json_encode([
                 'project_id'     => $request->input('project_id'),
