@@ -32,7 +32,7 @@
                             <div class="row form-group">
                                 <div class="col-md-12">
                                     @if (isset($searchData['project_id']))
-                                        @php $subProjectList = App\Http\Helper\Admin\Helpers::subProjectList($searchData['project_id']); @endphp
+                                        @php $subProjectList = App\Http\Helper\Admin\Helpers::resolvSubProjectList($searchData['project_id']); @endphp
                                         {!! Form::select('sub_project_id', $subProjectList, $searchData['sub_project_id'] ?? null, [
                                             'class' => 'text-black form-control select2 sub_project_select',
                                             'id' => 'sub_project_id',
@@ -169,7 +169,7 @@
                 });
                 $.ajax({
                     type: "POST",
-                    url: "{{ url('reports/get_sub_projects') }}",
+                    url: "{{ url('reports/get_resolv_sub_projectList_details') }}",
                     data: {
                         project_id: project_id
                     },
