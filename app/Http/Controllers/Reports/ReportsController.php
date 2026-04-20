@@ -3392,187 +3392,199 @@ public function getBulkColumnsCSV(Request $request)
 //         return response()->json(['error' => true, 'message' => $e->getMessage()]);
 //     }
 // }
-public function getBulkColumns(Request $request)
-{
-    try {
-        ini_set('max_execution_time', 0);
-        ini_set('memory_limit', '-1');
+    public function getBulkColumns(Request $request)
+    {
+        try {
+            ini_set('max_execution_time', 0);
+            ini_set('memory_limit', '-1');
 
-        $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
-        $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
+            $project_id = Helpers::encodeAndDecodeID($request->clientName, 'decode');
+            $sub_project_id = Helpers::encodeAndDecodeID($request->subProjectName, 'decode');
 
-        $paProject = Helpers::projectName($project_id);
-        $decodedClientName = $paProject->project_name ?? null;
-        $decodedSubProjectName = $sub_project_id && $project_id ? (Helpers::subProjectName($project_id, $sub_project_id)->sub_project_name ?? '') : '';
+            $paProject = Helpers::projectName($project_id);
+            $decodedClientName = $paProject->project_name ?? null;
+            $decodedSubProjectName = $sub_project_id && $project_id ? (Helpers::subProjectName($project_id, $sub_project_id)->sub_project_name ?? '') : '';
 
-        if (!$decodedClientName || !$decodedSubProjectName) {
-            return response()->json(['error' => true, 'message' => 'Invalid project/subproject']);
-        }
-
-        $table_name = Str::slug(Str::lower($decodedClientName . '_' . $decodedSubProjectName) . '_datas', '_');
-        if (!Schema::hasTable($table_name)) {
-            return response()->json(['error' => true, 'message' => 'Table not found']);
-        }
-
-        // --- Date Range ---
-        $start_date = $end_date = null;
-        if (!empty($request["work_date"])) {
-            $work_date = explode(' - ', $request["work_date"]);
-            $start_date = date('Y-m-d 08:00:00', strtotime($work_date[0]));
-            $end_date = date('Y-m-d 07:59:00', strtotime($work_date[1] . ' +1 day'));
-        }
-
-        // --- Columns ---
-        $allColumns = array_column(DB::select("DESCRIBE `$table_name`"), 'Field');
-        $checkedValues = $request->checkedValues ?? $allColumns;
-
-        // Exclude unwanted columns but keep important AR/QA
-        $excludeCols = [
-            'QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends',
-            'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers',
-            'CE_status_code', 'CE_sub_status_code', 'CE_followup_date',
-            'updated_at', 'created_at', 'deleted_at', 'id', 'modifiers'
-        ];
-        $importantCols = ['ar_status_code', 'ar_action_code', 'ar_denial_codes', 'ar_substatus_codes', 'chart_status'];
-
-        $columnsHeader = array_values(array_filter($checkedValues, function ($col) use ($excludeCols, $importantCols) {
-            return !in_array($col, $excludeCols) || in_array($col, $importantCols);
-        }));
-
-        // --- Latest Work Logs Join (same as reportClientColumnsList) ---
-        $latestWorkLogs = DB::table(DB::raw('(
-            SELECT *,
-                   ROW_NUMBER() OVER (
-                       PARTITION BY record_id, project_id, sub_project_id, record_status
-                       ORDER BY start_time DESC
-                   ) AS row_num
-            FROM caller_charts_work_logs
-        ) as ranked_logs'))->where('row_num', 1);
-
-        $query = DB::table($table_name)
-            ->joinSub($latestWorkLogs, 'caller_charts_work_logs', function ($join) use ($table_name) {
-                $join->on('caller_charts_work_logs.record_id', '=', $table_name . '.parent_id');
-            })
-            ->select(array_merge(
-                $columnsHeader,
-                ['caller_charts_work_logs.work_time', 'caller_charts_work_logs.record_status']
-            ))
-            ->where('caller_charts_work_logs.project_id', '=', $project_id)
-            ->where('caller_charts_work_logs.sub_project_id', '=', $sub_project_id)
-            ->when($start_date && $end_date, function ($q) use ($start_date, $end_date) {
-                $q->whereBetween('caller_charts_work_logs.start_time', [$start_date, $end_date]);
-            })
-            ->when(!empty($request->user), function ($q) use ($request) {
-                $q->where(function ($inner) use ($request) {
-                    $inner->where('CE_emp_id', $request->user)
-                        ->orWhere('QA_emp_id', $request->user);
-                });
-            })
-            ->when(!empty($request->client_status), function ($q) use ($request) {
-                $q->where('caller_charts_work_logs.record_status', $request->client_status);
-            });
-
-        // --- EXPORT MODE ---
-        if ($request->has('export') && $request->export === 'true') {
-            $filename = 'bulk_report_' . now()->format('Ymd_His') . '.csv';
-            $path = storage_path("app/public/{$filename}");
-            $handle = fopen($path, 'w');
-
-            // Add computed columns
-            $finalHeaders = array_merge($columnsHeader, ['work_time', 'aging', 'aging_range']);
-            fputcsv($handle, $finalHeaders);
-
-            $query->orderBy('id')->chunk(1000, function ($rows) use ($handle, $columnsHeader) {
-                foreach ($rows as $row) {
-                    $rowData = [];
-                    foreach ($columnsHeader as $col) {
-                        $value = $row->$col ?? '';
-
-                        // ---- Map AR/QA Codes to Names ----
-                        if ($col === 'ar_status_code' && $value)
-                            $value = Helpers::arStatusById($value)['status_code'] ?? $value;
-                        if ($col === 'ar_action_code' && $value)
-                            $value = Helpers::arActionById($value)['action_code'] ?? $value;
-                        if ($col === 'ar_denial_codes' && $value)
-                            $value = Helpers::arDenialById($value)['denialCode'] ?? $value;
-                        if ($col === 'ar_substatus_codes' && $value)
-                            $value = Helpers::arSubStatusById($value)['substatusCode'] ?? $value;
-
-                        // ---- Clean up fields ----
-                        if (strpos($value, '_el_') !== false)
-                            $value = str_replace('_el_', ', ', $value);
-
-                        $rowData[] = $value ?: '--';
-                    }
-
-                    // Work time
-                    $rowData[] = $row->work_time ?? '--';
-
-                    // Aging calculation
-                    $aging = $agingRange = '';
-                    if (!empty($row->dos)) {
-                        $dos = Carbon::parse($row->dos);
-                        $diff = $dos->diffInDays(Carbon::now());
-                        $aging = $diff;
-                        if ($diff <= 30) $agingRange = '0-30';
-                        elseif ($diff <= 60) $agingRange = '31-60';
-                        elseif ($diff <= 90) $agingRange = '61-90';
-                        elseif ($diff <= 120) $agingRange = '91-120';
-                        elseif ($diff <= 180) $agingRange = '121-180';
-                        elseif ($diff <= 365) $agingRange = '181-365';
-                        else $agingRange = '365+';
-                    }
-                    $rowData[] = $aging;
-                    $rowData[] = $agingRange;
-
-                    fputcsv($handle, $rowData);
-                }
-            });
-
-            fclose($handle);
-            return response()->download($path)->deleteFileAfterSend(true);
-        }
-
-        // --- DATATABLE MODE ---
-        $draw = intval($request->get('draw'));
-        $start = intval($request->get('start', 0));
-        $length = intval($request->get('length', 100));
-
-        $totalRecords = $query->count();
-        $records = $query->skip($start)->take($length)->get();
-
-        // Compute aging etc. for grid
-        foreach ($records as $r) {
-            $r->aging = $r->aging_range = '';
-            if (!empty($r->dos)) {
-                $dos = Carbon::parse($r->dos);
-                $diff = $dos->diffInDays(Carbon::now());
-                $r->aging = $diff;
-                if ($diff <= 30) $r->aging_range = '0-30';
-                elseif ($diff <= 60) $r->aging_range = '31-60';
-                elseif ($diff <= 90) $r->aging_range = '61-90';
-                elseif ($diff <= 120) $r->aging_range = '91-120';
-                elseif ($diff <= 180) $r->aging_range = '121-180';
-                elseif ($diff <= 365) $r->aging_range = '181-365';
-                else $r->aging_range = '365+';
+            if (!$decodedClientName || !$decodedSubProjectName) {
+                return response()->json(['error' => true, 'message' => 'Invalid project/subproject']);
             }
+
+            $table_name = Str::slug(Str::lower($decodedClientName . '_' . $decodedSubProjectName) . '_datas', '_');
+            if (!Schema::hasTable($table_name)) {
+                return response()->json(['error' => true, 'message' => 'Table not found']);
+            }
+
+            // --- Date Range ---
+            $start_date = $end_date = null;
+            if (!empty($request["work_date"])) {
+                $work_date = explode(' - ', $request["work_date"]);
+                $start_date = date('Y-m-d 08:00:00', strtotime($work_date[0]));
+                $end_date = date('Y-m-d 07:59:00', strtotime($work_date[1] . ' +1 day'));
+            }
+
+            // --- Columns ---
+            $allColumns = array_column(DB::select("DESCRIBE `$table_name`"), 'Field');
+            $checkedValues = $request->checkedValues ?? $allColumns;
+
+            // Exclude unwanted columns but keep important AR/QA
+            $excludeCols = [
+                'QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends',
+                'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers',
+                'CE_status_code', 'CE_sub_status_code', 'CE_followup_date',
+                'updated_at', 'created_at', 'deleted_at', 'id', 'modifiers'
+            ];
+            $importantCols = ['ar_status_code', 'ar_action_code', 'ar_denial_codes', 'ar_substatus_codes', 'chart_status'];
+
+            $columnsHeader = array_values(array_filter($checkedValues, function ($col) use ($excludeCols, $importantCols) {
+                return !in_array($col, $excludeCols) || in_array($col, $importantCols);
+            }));
+
+            // --- Latest Work Logs Join (same as reportClientColumnsList) ---
+            $latestWorkLogs = DB::table(DB::raw('(
+                SELECT *,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY record_id, project_id, sub_project_id, record_status
+                        ORDER BY start_time DESC
+                    ) AS row_num
+                FROM caller_charts_work_logs
+            ) as ranked_logs'))->where('row_num', 1);
+
+            $query = DB::table($table_name)
+                ->joinSub($latestWorkLogs, 'caller_charts_work_logs', function ($join) use ($table_name) {
+                    $join->on('caller_charts_work_logs.record_id', '=', $table_name . '.parent_id');
+                })
+                ->select(array_merge(
+                    $columnsHeader,
+                    ['caller_charts_work_logs.work_time', 'caller_charts_work_logs.record_status']
+                ))
+                ->where('caller_charts_work_logs.project_id', '=', $project_id)
+                ->where('caller_charts_work_logs.sub_project_id', '=', $sub_project_id)
+                ->when($start_date && $end_date, function ($q) use ($start_date, $end_date) {
+                    $q->whereBetween('caller_charts_work_logs.start_time', [$start_date, $end_date]);
+                })
+                ->when(!empty($request->user), function ($q) use ($request) {
+                    $q->where(function ($inner) use ($request) {
+                        $inner->where('CE_emp_id', $request->user)
+                            ->orWhere('QA_emp_id', $request->user);
+                    });
+                })
+                ->when(!empty($request->client_status), function ($q) use ($request) {
+                    $q->where('caller_charts_work_logs.record_status', $request->client_status);
+                });
+
+            // --- EXPORT MODE ---
+            if ($request->has('export') && $request->export === 'true') {
+                $filename = 'bulk_report_' . now()->format('Ymd_His') . '.csv';
+                $path = storage_path("app/public/{$filename}");
+                $handle = fopen($path, 'w');
+
+                // Add computed columns
+                $finalHeaders = array_merge($columnsHeader, ['work_time', 'aging', 'aging_range']);
+                fputcsv($handle, $finalHeaders);
+
+                $query->orderBy('id')->chunk(1000, function ($rows) use ($handle, $columnsHeader) {
+                    foreach ($rows as $row) {
+                        $rowData = [];
+                        foreach ($columnsHeader as $col) {
+                            $value = $row->$col ?? '';
+
+                            // ---- Map AR/QA Codes to Names ----
+                            if ($col === 'ar_status_code' && $value)
+                                $value = Helpers::arStatusById($value)['status_code'] ?? $value;
+                            if ($col === 'ar_action_code' && $value)
+                                $value = Helpers::arActionById($value)['action_code'] ?? $value;
+                            if ($col === 'ar_denial_codes' && $value)
+                                $value = Helpers::arDenialById($value)['denialCode'] ?? $value;
+                            if ($col === 'ar_substatus_codes' && $value)
+                                $value = Helpers::arSubStatusById($value)['substatusCode'] ?? $value;
+
+                            // ---- Clean up fields ----
+                            if (strpos($value, '_el_') !== false)
+                                $value = str_replace('_el_', ', ', $value);
+
+                            $rowData[] = $value ?: '--';
+                        }
+
+                        // Work time
+                        $rowData[] = $row->work_time ?? '--';
+
+                        // Aging calculation
+                        $aging = $agingRange = '';
+                        if (!empty($row->dos)) {
+                            $dos = Carbon::parse($row->dos);
+                            $diff = $dos->diffInDays(Carbon::now());
+                            $aging = $diff;
+                            if ($diff <= 30) $agingRange = '0-30';
+                            elseif ($diff <= 60) $agingRange = '31-60';
+                            elseif ($diff <= 90) $agingRange = '61-90';
+                            elseif ($diff <= 120) $agingRange = '91-120';
+                            elseif ($diff <= 180) $agingRange = '121-180';
+                            elseif ($diff <= 365) $agingRange = '181-365';
+                            else $agingRange = '365+';
+                        }
+                        $rowData[] = $aging;
+                        $rowData[] = $agingRange;
+
+                        fputcsv($handle, $rowData);
+                    }
+                });
+
+                fclose($handle);
+                return response()->download($path)->deleteFileAfterSend(true);
+            }
+
+            // --- DATATABLE MODE ---
+            $draw = intval($request->get('draw'));
+            $start = intval($request->get('start', 0));
+            $length = intval($request->get('length', 100));
+
+            $totalRecords = $query->count();
+            $records = $query->skip($start)->take($length)->get();
+
+            // Compute aging etc. for grid
+            foreach ($records as $r) {
+                $r->aging = $r->aging_range = '';
+                if (!empty($r->dos)) {
+                    $dos = Carbon::parse($r->dos);
+                    $diff = $dos->diffInDays(Carbon::now());
+                    $r->aging = $diff;
+                    if ($diff <= 30) $r->aging_range = '0-30';
+                    elseif ($diff <= 60) $r->aging_range = '31-60';
+                    elseif ($diff <= 90) $r->aging_range = '61-90';
+                    elseif ($diff <= 120) $r->aging_range = '91-120';
+                    elseif ($diff <= 180) $r->aging_range = '121-180';
+                    elseif ($diff <= 365) $r->aging_range = '181-365';
+                    else $r->aging_range = '365+';
+                }
+            }
+
+            $columnsHeader = array_merge($columnsHeader, ['work_time', 'aging', 'aging_range']);
+
+            return response()->json([
+                "draw" => $draw,
+                "recordsTotal" => $totalRecords,
+                "recordsFiltered" => $totalRecords,
+                "data" => $records,
+                "columnsHeader" => $columnsHeader
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Bulk Export Error: ' . $e->getMessage());
+            return response()->json(['error' => true, 'message' => $e->getMessage()]);
         }
-
-        $columnsHeader = array_merge($columnsHeader, ['work_time', 'aging', 'aging_range']);
-
-        return response()->json([
-            "draw" => $draw,
-            "recordsTotal" => $totalRecords,
-            "recordsFiltered" => $totalRecords,
-            "data" => $records,
-            "columnsHeader" => $columnsHeader
-        ]);
-    } catch (\Exception $e) {
-        Log::error('Bulk Export Error: ' . $e->getMessage());
-        return response()->json(['error' => true, 'message' => $e->getMessage()]);
     }
-}
 
-
+    public function resolvSubProjectListDetails(Request $request){
+        try {
+            $subProject = Helpers::resolvSubProjectList($request->project_id);
+            if (!empty($request->project_id) && is_string($request->project_id)) {
+                    $user=Helpers::getprojectResourceList($request->project_id);
+            }  else {
+                $user = [];
+            }
+            return response()->json(['success' => true, 'subProject' => $subProject, 'resource' => $user]);
+        } catch (Exception $e) {
+            log::debug($e->getMessage());
+        }
+    }
    
 }

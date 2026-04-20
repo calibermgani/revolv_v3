@@ -93,6 +93,7 @@ Route::any('pendingtab_status_update', 'App\Http\Controllers\ProductionControlle
 //Route::any('reports/project_report_tracking', 'App\Http\Controllers\Reports\ReportsController@projectReportTracking');
 // Start tracking + trigger background process
 Route::post('reports/project_report_tracking', 'App\Http\Controllers\Reports\ReportsController@projectReportTracking');
+Route::any('reports/get_resolv_sub_projectList_details', 'App\Http\Controllers\Reports\ReportsController@resolvSubProjectListDetails');
 
 // Poll status only
 Route::get('reports/project_report_tracking_status/{project_id}/{sub_project_id}', 'App\Http\Controllers\Reports\ReportsController@projectReportTrackingStatus');

@@ -39,6 +39,7 @@ use App\Models\ARDenialCode;
 use App\Models\ARSubStatusCode;
 // use App\Models\question;
 use App\Models\CallerChartsWorkLogs;
+// use App\Models\Scenario;
 
 class Helpers
 {
@@ -776,7 +777,7 @@ class Helpers
 	}
 	public static function resolvProjectList()
 	{
-		$projectIds = formConfiguration::groupby('project_id') ->pluck('project_id')->toArray();
+		$projectIds = formConfiguration::groupby('project_id')->pluck('project_id')->toArray();
 		$data =  project::where('status', 'Active')->whereIn('project_id',$projectIds)->pluck('aims_project_name', 'project_id')->prepend(trans('Select Project'), '')->toArray();
 		return $data;
 	}
@@ -1418,5 +1419,33 @@ class Helpers
         ->first('work_time');
         return $data;
     }
+	// public static function getQuestionWithquestionOptions($scenarioId)	{
+	// 	// $data = question::where('status', 'Active')->where('ar_status_id', $statusId)->pluck('question_text', 'id')->toArray();
+	// 	 $data = \DB::table('questions')
+    //         ->leftJoin('question_options', function($join) use ($scenarioId) {
+    //             $join->on('questions.id', '=', 'question_options.question_id')
+    //                ->where('questions.ar_denial_id', $scenarioId);
+    //         })
+    //         ->where('questions.ar_denial_id', $scenarioId)
+    //         ->select(
+    //             'questions.id as question_id',
+    //             'questions.question_text',
+	// 			'questions.input_type',
+	// 				'questions.parent_option_id',
+	// 					'questions.validation',
+	// 			'question_options.option_label as options'
+    //         )
+    //         ->get()->toArray();
+	// 	return $data;
+	// }
+	// public static function scenarioList()
+	// {
+	// 	$data = Scenario::select('id','scenario_text')->where('status', 'Active')->pluck('scenario_text', 'id')->prepend(trans('Select Scenario'), '')->toArray();
+	// 	return $data;
+	// }
+	public static function resolvSubProjectList($project_id) {
+		$subProjectIds = formConfiguration::groupby('sub_project_id')->where('project_id', $project_id)->pluck('sub_project_id')->toArray();
+		return subproject::where('project_id', $project_id)->whereIn('sub_project_id', $subProjectIds)->pluck('sub_project_name', 'sub_project_id')->prepend(trans('Select Sub Project'), '')->toArray();
+	}
 
 }
