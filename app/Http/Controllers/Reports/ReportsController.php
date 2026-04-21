@@ -2987,8 +2987,7 @@ public function exportBulkReport(Request $request)
             'client_status'  => $request->client_status
         ];
 
-        // RunPythonReportJob::dispatch($payload)->onQueue('pythonReport')->delay(now()->addSeconds(2));
-         RunPythonReportJob::dispatch($payload);
+        RunPythonReportJob::dispatch($payload)->onQueue('pythonReport')->delay(now()->addSeconds(2));
 
         return response()->json([
             "job_id" => $jobId
