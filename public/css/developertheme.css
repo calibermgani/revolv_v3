@@ -853,3 +853,9 @@ font-size: 10px;
     background-color: #ffffff;
     font-weight: 500;
 }
+
+.btn.applyBtn {
+    color: #FFFFFF;
+    background: #139AB3;
+    border: none;
+}

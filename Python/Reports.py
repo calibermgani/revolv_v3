@@ -55,6 +55,7 @@ def normalize_date_range(date_range_str):
         end_date = datetime.strptime(end_str, "%m/%d/%Y")
     start_datetime = start_date.replace(hour=8, minute=0, second=0)
     end_datetime = (end_date + timedelta(days=1)).replace(hour=7, minute=59, second=59)
+
     return start_datetime, end_datetime
 
 def slugify_sub_project(sub_project_name):
