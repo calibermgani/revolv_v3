@@ -239,7 +239,7 @@ def export_to_excel(
         os.makedirs("/var/www/html/revolv_v3/storage/app/reports", exist_ok=True) #for bulk report storage
  
         file_name = f"{excel_name}_{datetime.now().strftime('%Y%m%d%H%M%S')}.xlsx" #for bulk report storage
-        output_file = os.path.join("storage/app/reports", file_name) #for bulk report storage
+        output_file = os.path.join("/var/www/html/revolv_v3/storage/app/reports", file_name) #for bulk report storage
 
         chunksize = 10000
         writer = pd.ExcelWriter(output_file, engine="xlsxwriter")
