@@ -38,6 +38,7 @@ use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\File;
 use App\Exports\DynamicBulkExport;
 use DateTime;
+use App\Jobs\RunPythonReportJob;
 
 ini_set('max_execution_time', 300);
 ini_set('memory_limit', '2G');
@@ -2918,62 +2919,107 @@ public function exportBulkReport(Request $request)
             ], 500);
         }
     }
-    public function runPython(Request $request) {
-        try {
-            // $pythonPath = 'C:\Users\cf100\AppData\Local\Programs\Python\Python313\python.exe';
-            // $pythonScript = base_path('python\\Reports.py');
-            $pythonPath = '/bin/python3';
-            $pythonScript = base_path('Python/Reports.py');
+    // public function runPython(Request $request) {
+    //     try {
+    //         $pythonPath = 'C:\Users\cf100\AppData\Local\Programs\Python\Python313\python.exe';
+    //         $pythonScript = base_path('python\\Reports.py');
+    //         // $pythonPath = '/bin/python3';
+    //         // $pythonScript = base_path('Python/Reports.py');
     
-            $payload = json_encode([
-                'project_id'     => $request->input('project_id'),
-                'sub_project_id' => $request->input('sub_project_id'),
-                'date_range'     => $request->input('work_date'),
-                'user_id'        => $request->input('user'),
-                'client_status'  => $request->input('client_status')
-            ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    //         $payload = json_encode([
+    //             'project_id'     => $request->input('project_id'),
+    //             'sub_project_id' => $request->input('sub_project_id'),
+    //             'date_range'     => $request->input('work_date'),
+    //             'user_id'        => $request->input('user'),
+    //             'client_status'  => $request->input('client_status')
+    //         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     
-            // Run Python script
-            $process = new Process([$pythonPath, $pythonScript]);
-            $process->setInput($payload);
-            $process->setWorkingDirectory(base_path());
-            $process->setEnv(array_merge($_ENV, getenv(), [
-                'PYTHONUNBUFFERED' => '1',
-                'SystemRoot'       => getenv('SystemRoot') ?: 'C:\Windows',
-                'PATH'             => getenv('PATH'),
-            ]));
-            $process->setTimeout(3600);
-            $process->run();
+    //         // Run Python script
+    //         $process = new Process([$pythonPath, $pythonScript]);
+    //         $process->setInput($payload);
+    //         $process->setWorkingDirectory(base_path());
+    //         $process->setEnv(array_merge($_ENV, getenv(), [
+    //             'PYTHONUNBUFFERED' => '1',
+    //             'SystemRoot'       => getenv('SystemRoot') ?: 'C:\Windows',
+    //             'PATH'             => getenv('PATH'),
+    //         ]));
+    //         $process->setTimeout(3600);
+    //         $process->run();
     
-            $stdout = trim($process->getOutput());
-            $stderr = $process->getErrorOutput();
+    //         $stdout = trim($process->getOutput());
+    //         $stderr = $process->getErrorOutput();
     
-            Log::info("Python STDOUT: " . $stdout);
-            Log::info("Python STDERR: " . $stderr);
+    //         Log::info("Python STDOUT: " . $stdout);
+    //         Log::info("Python STDERR: " . $stderr);
     
-            // Check if Python ran successfully and file exists
-            if (!$process->isSuccessful() || !$stdout || !File::exists($stdout)) {
-                return response()->json([
-                    'error'  => "Python script failed",
-                    'stdout' => $stdout,
-                    'stderr' => $stderr
-                ], 500);
-            }
+    //         // Check if Python ran successfully and file exists
+    //         if (!$process->isSuccessful() || !$stdout || !File::exists($stdout)) {
+    //             return response()->json([
+    //                 'error'  => "Python script failed",
+    //                 'stdout' => $stdout,
+    //                 'stderr' => $stderr
+    //             ], 500);
+    //         }
     
-            // Send Excel file as a download
-            return response()->download($stdout, basename($stdout))->deleteFileAfterSend(true);
+    //         // Send Excel file as a download
+    //         return response()->download($stdout, basename($stdout))->deleteFileAfterSend(true);
     
-        } catch (\Exception $e) {
-            Log::error("Laravel Exception: " . $e->getMessage());
-            return response()->json([
-                'error'   => 'Laravel Exception',
-                'details' => $e->getMessage()
-            ], 500);
-        }
+    //     } catch (\Exception $e) {
+    //         Log::error("Laravel Exception: " . $e->getMessage());
+    //         return response()->json([
+    //             'error'   => 'Laravel Exception',
+    //             'details' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }//worked for excel upto 70000 rows
+
+
+    public function runPython(Request $request)
+    {
+        $jobId = Str::uuid()->toString();
+
+        $payload = [
+            'job_id'         => $jobId,
+            'project_id'     => $request->project_id,
+            'sub_project_id' => $request->sub_project_id,
+            'date_range'     => $request->work_date,
+            'user_id'        => $request->user,
+            'client_status'  => $request->client_status
+        ];
+
+        RunPythonReportJob::dispatch($payload)->onQueue('pythonReport');
+
+        return response()->json([
+            "job_id" => $jobId
+        ]);
     }
+    public function checkReport($jobId)
+    {
+        $file = Cache::get('report_' . $jobId);
+        Log::info('Cache fetch: report_' . $jobId);
 
+        // 🔍 Debug (optional)
+        // dd($file);
 
+        if (is_string($file) && file_exists($file)) {
+            return response()->json([
+                'ready' => true,
+                'file'  => basename($file)
+            ]);
+        }
 
+        return response()->json(['ready' => false]);
+    }
+    public function downloadReport($filename)
+    {
+        $path = storage_path('app/reports/' . $filename);
+
+        if (!file_exists($path)) {
+            abort(404, "File not found");
+        }
+
+        return response()->download($path)->deleteFileAfterSend(true);
+    }
 public function getBulkColumnsCSV(Request $request)
 {
     try {

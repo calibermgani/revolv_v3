@@ -213,6 +213,8 @@ Route::group(['prefix' => 'qa_production'], function () {
         Route::match(['get','post'],'/reports/bulk/columns', 'App\Http\Controllers\Reports\ReportsController@bulkProductionReportsColumns')->name('reports.bulk.columns');
         Route::any('bulk_export', 'App\Http\Controllers\Reports\ReportsController@bulkExport');
         Route::post('run-python', 'App\Http\Controllers\Reports\ReportsController@runPython');//python
+        Route::get('/check-report/{jobId}', 'App\Http\Controllers\Reports\ReportsController@checkReport');
+        Route::get('/download-report/{file}',  'App\Http\Controllers\Reports\ReportsController@downloadReport');
 
 
 

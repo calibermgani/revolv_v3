@@ -234,10 +234,14 @@ def export_to_excel(
         excel_name = table_name
         if excel_name.endswith("_datas"):
             excel_name = excel_name[:-6]
-        # output_file = output_file or f"{excel_name}.xlsx" #local
-        output_file = output_file or f"/tmp/{excel_name}.xlsx" # server
+        # output_file = output_file or f"{excel_name}.xlsx" #local upto 70000 rows
+        # output_file = output_file or f"/tmp/{excel_name}.xlsx" # server upto 70000 rows
+        os.makedirs("storage/app/reports", exist_ok=True) #for bulk report storage
+ 
+        file_name = f"{excel_name}_{datetime.now().strftime('%Y%m%d%H%M%S')}.xlsx" #for bulk report storage
+        output_file = os.path.join("storage/app/reports", file_name) #for bulk report storage
 
-        chunksize = 50000
+        chunksize = 10000
         writer = pd.ExcelWriter(output_file, engine="xlsxwriter")
         row_num = 0
 

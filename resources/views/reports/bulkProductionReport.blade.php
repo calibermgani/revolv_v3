@@ -155,7 +155,7 @@
             $('.daterange').val('');
 
             $(document).on('change', '#project_id', function() {
-                KTApp.block('#reportModal', {
+                KTApp.block('#filterForm', {
                     overlayColor: '#000000',
                     state: 'danger',
                     opacity: 0.1,
@@ -190,7 +190,7 @@
                                 '</option>';
                         });
                         $("#user").html(user_options);
-                        KTApp.unblock('#reportModal');
+                        KTApp.unblock('#filterForm');
                     },
                     error: function(jqXHR, exception) {}
                 });
@@ -225,10 +225,83 @@
                     "&child=" + getUrlVars()["child"];
             });
 
+            // $('#formUpdate_save').on('click', function(e) {
+            //     e.preventDefault();
+            //     if ($('#project_id').val() == '' || $('#sub_project_id').val() == '') {
+
+            //         if ($('#project_id').val() == '') {
+            //             $('#project_id').next('.select2').find(".select2-selection").css('border-color',
+            //                 'red');
+            //         } else {
+            //             $('#project_id').next('.select2').find(".select2-selection").css('border-color',
+            //                 '');
+            //         }
+            //         if ($('#sub_project_id').val() == '') {
+            //             $('#sub_project_id').next('.select2').find(".select2-selection").css('border-color',
+            //                 'red');
+            //         } else {
+            //             $('#sub_project_id').next('.select2').find(".select2-selection").css('border-color',
+            //                 '');
+            //         }
+            //         return false;
+            //     }
+            //     // Read values from inputs
+            //     var clientName = $('#project_id').val();
+            //     var subProjectName = $('#sub_project_id').val();
+
+            //     // Build payload manually to avoid duplicates
+            //     var formData = {
+            //         project_id: clientName,
+            //         sub_project_id: subProjectName
+            //     };
+
+            //     // Include other form fields if needed (that are not already in formData)
+            //     $('#filterForm').serializeArray().forEach(function(item) {
+            //         if (!formData.hasOwnProperty(item.name)) {
+            //             formData[item.name] = item.value;
+            //         }
+            //     });
+
+            //     $.ajax({
+            //         url: "{{ url('run-python') }}",
+            //         method: "POST",
+            //         data: formData,
+            //         headers: {
+            //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            //         },
+            //         xhrFields: {
+            //             responseType: 'blob'
+            //         },
+            //         success: function(response, status, xhr) {
+            //             var disposition = xhr.getResponseHeader('Content-Disposition');
+            //             var filename = 'export.xlsx';
+
+            //             if (disposition && disposition.indexOf('attachment') !== -1) {
+            //                 var matches = /filename[^;=\n]*=([^;\n]*)/.exec(disposition);
+            //                 if (matches != null && matches[1]) {
+            //                     filename = matches[1].trim().replace(/^"|"$/g, '');
+            //                 }
+            //             }
+
+            //             var blob = new Blob([response], {
+            //                 type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            //             });
+            //             var link = document.createElement('a');
+            //             link.href = window.URL.createObjectURL(blob);
+            //             link.download = filename;
+            //             document.body.appendChild(link);
+            //             link.click();
+            //             document.body.removeChild(link);
+            //         },
+            //         error: function(err) {
+            //             console.error(err);
+            //             alert("Failed to export Excel");
+            //         }
+            //     });
+            // });//worked for excel upto 70000 rows
             $('#formUpdate_save').on('click', function(e) {
                 e.preventDefault();
                 if ($('#project_id').val() == '' || $('#sub_project_id').val() == '') {
-
                     if ($('#project_id').val() == '') {
                         $('#project_id').next('.select2').find(".select2-selection").css('border-color',
                             'red');
@@ -245,61 +318,38 @@
                     }
                     return false;
                 }
-                // Read values from inputs
-                var clientName = $('#project_id').val();
-                var subProjectName = $('#sub_project_id').val();
-
-                // Build payload manually to avoid duplicates
-                var formData = {
-                    project_id: clientName,
-                    sub_project_id: subProjectName
-                };
-
-                // Include other form fields if needed (that are not already in formData)
-                $('#filterForm').serializeArray().forEach(function(item) {
-                    if (!formData.hasOwnProperty(item.name)) {
-                        formData[item.name] = item.value;
-                    }
+                // ✅ START LOADER
+                KTApp.block('#filterForm', {
+                    overlayColor: '#000000',
+                    state: 'primary',
+                    opacity: 0.2,
+                    message: 'Generating report... Please wait',
                 });
 
-                $.ajax({
-                    url: "{{ url('run-python') }}",
-                    method: "POST",
-                    data: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    xhrFields: {
-                        responseType: 'blob'
-                    },
-                    success: function(response, status, xhr) {
-                        var disposition = xhr.getResponseHeader('Content-Disposition');
-                        var filename = 'export.xlsx';
-
-                        if (disposition && disposition.indexOf('attachment') !== -1) {
-                            var matches = /filename[^;=\n]*=([^;\n]*)/.exec(disposition);
-                            if (matches != null && matches[1]) {
-                                filename = matches[1].trim().replace(/^"|"$/g, '');
-                            }
-                        }
-
-                        var blob = new Blob([response], {
-                            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                        });
-                        var link = document.createElement('a');
-                        link.href = window.URL.createObjectURL(blob);
-                        link.download = filename;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    },
-                    error: function(err) {
-                        console.error(err);
-                        alert("Failed to export Excel");
-                    }
+                var formData = $('#filterForm').serialize();
+                $.post("{{ url('run-python') }}", formData, function(res) {
+                    checkFileReady(res.job_id);
+                }).fail(function() {
+                    KTApp.unblock('#filterForm');
+                    alert("Failed to start report");
                 });
             });
+            function checkFileReady(jobId) {
+                var interval = setInterval(function() {
+                    $.get("{{ url('check-report') }}/" + jobId, function(res) {
+                        if (res.ready) {
+                            clearInterval(interval);
+                            window.location.href = "{{ url('download-report') }}/" + res.file;
+                            KTApp.unblock('#filterForm');
+                        }
+                    }).fail(function() {
+                        clearInterval(interval);
+                        KTApp.unblock('#filterForm');
+                        alert("Error checking report status");
+                    });
 
+                }, 5000);
+            }
         });
     </script>
 @endpush
