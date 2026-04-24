@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 import mysql.connector
 from dateutil import parser as date_parser
+os.umask(0o002)
 
 db_config = {
     "user": os.environ.get("DB_USER", "root"),
@@ -104,8 +105,19 @@ def export_to_excel(
             df_empty = pd.DataFrame(
                 {"Message": ["No table found for given project/sub-project"]}
             )
-            output_file = output_file or f"{table_name}.xlsx"
+
+            excel_name = table_name
+            if excel_name.endswith("_datas"):
+                excel_name = excel_name[:-6]
+
+            reports_dir = "/var/www/html/revolv_v3/storage/app/reports"
+            os.makedirs(reports_dir, exist_ok=True)
+
+            file_name = f"{excel_name}_{datetime.now().strftime('%Y%m%d%H%M%S')}.xlsx"
+            output_file = os.path.join(reports_dir, file_name)
+
             df_empty.to_excel(output_file, index=False, engine="xlsxwriter")
+            os.chmod(output_file, 0o664)
             cursor.close()
             conn.close()
             return os.path.abspath(output_file)
@@ -360,6 +372,7 @@ def export_to_excel(
             print(f"Written {row_num} rows", file=sys.stderr)
 
         writer.close()
+        os.chmod(output_file, 0o664)
         cursor.close()
         conn.close()
 
