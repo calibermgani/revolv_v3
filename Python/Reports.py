@@ -278,25 +278,10 @@ def export_to_excel(
         cursor.execute(main_query, tuple(params))
         columns = [desc[0] for desc in cursor.description]
 
-        # ✅ STEP 1: ALWAYS WRITE HEADER FIRST
-        df_template = pd.DataFrame(columns=columns)
-        df_template.to_excel(writer, index=False, header=True)
-
-        # ✅ STEP 2: FETCH FIRST ROW (DO NOT LOSE DATA)
-        first_row = cursor.fetchone()
-
-        # If NO DATA → return header-only excel
-        if not first_row:
-            writer.close()
-            os.chmod(output_file, 0o664)
-            cursor.close()
-            conn.close()
-            return os.path.abspath(output_file)
-
-        # Start processing with first row included
-        rows = [first_row]
-
-        while rows:
+        while True:
+            rows = cursor.fetchmany(chunksize)
+            if not rows:
+                break
 
             chunk = pd.DataFrame(rows, columns=columns)
             for col in chunk.columns:
