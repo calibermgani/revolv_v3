@@ -59,12 +59,20 @@ def normalize_date_range(date_range_str):
 
     return start_datetime, end_datetime
 
+# def slugify_sub_project(sub_project_name):
+#     sub_project = sub_project_name.lower()
+#     sub_project = re.sub(r"[\s\-]+", "_", sub_project)
+#     sub_project = re.sub(r"[^a-z0-9_]", "", sub_project)
+#     return sub_project #sankar
 def slugify_sub_project(sub_project_name):
     sub_project = sub_project_name.lower()
-    sub_project = re.sub(r"[\s\-]+", "_", sub_project)
-    sub_project = re.sub(r"[^a-z0-9_]", "", sub_project)
-    return sub_project
-
+    # 1. remove all non-alphanumeric except space
+    sub_project = re.sub(r"[^a-z0-9\s]", "", sub_project)
+    # 2. replace spaces with single underscore
+    sub_project = re.sub(r"\s+", "_", sub_project)
+    # 3. remove multiple underscores (final safety)
+    sub_project = re.sub(r"_+", "_", sub_project)
+    return sub_project.strip("_")
 def generate_table_name(project_name, sub_project_name):
     project_clean = re.sub(r"[^a-z0-9]", "", project_name.lower())
     sub_slug = slugify_sub_project(sub_project_name)
