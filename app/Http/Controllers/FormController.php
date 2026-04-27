@@ -1222,12 +1222,10 @@ class FormController extends Controller
     public function runCommands()
     {
         try {
-            // $modelNamespace = "App\\Models\\TestModel";
-            // Artisan::call('make:model', [
-            //     'name' => $modelNamespace,
-            //     '--no-interaction' => true,
-            // ]);
-          return 'hi';
+            shell_exec('/usr/bin/php /var/www/html/revolv_v3/artisan make:model App/Models/TestModel');
+
+
+            return 'Success';
         
         
         } catch (\Exception $e) {
