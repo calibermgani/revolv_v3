@@ -313,8 +313,8 @@
             });
 
             $('#reportModal').on('hidden.bs.modal', function () {
-                $('#project_id').val('').change();
-                $('#sub_project_id').val('').change();
+                $('#project_id').val('').trigger('change');
+                $('#sub_project_id').val('').trigger('change');
                 $('.daterange').val('');
             });
 
