@@ -686,26 +686,31 @@ class ProjectController extends Controller
         try {
             $arCacheKey = 'project_' . str_replace(',', '_', $projectId) . '_ar_count';
             $qaCacheKey = 'project_' . str_replace(',', '_', $projectId) . '_qa_count';      
-            $totalAR = Cache::get($arCacheKey, 0);
-            $totalQA = Cache::get($qaCacheKey, 0);
+            $totalAR = Cache::get($arCacheKey, ['totalArList' => []]);
+            $totalQA = Cache::get($qaCacheKey, ['totalQAList' => []]);
         
             $loggedResolvAR = 0;$totalARCount = 0;
-            foreach($totalAR['totalArList'] as $key => $arList){          
-                if($arList['client_id'] == $rowProjectId && $arList['assigned_people'] != null){
-                    $totalARCount += 1;
-                $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
-                                    ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                                    ->distinct('user_id')
-                                    ->count();
+            if (!empty($totalAR['totalArList'])) {
+                foreach($totalAR['totalArList'] as $key => $arList){          
+                    if($arList['client_id'] == $rowProjectId && $arList['assigned_people'] != null){
+                        $totalARCount += 1;
+                    $loggedResolvAR +=  EmployeeLogin::where('user_id', $arList['assigned_people'])
+                                        ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                        ->distinct('user_id')
+                                        ->count();
+                    }
                 }
             }
             $loggedResolvQA = 0;
-            foreach($totalQA['totalQAList'] as $key => $qaList){    
-                if($qaList['client_id'] == $rowProjectId && $qaList['assigned_people'] != null){
-                $loggedResolvQA +=  EmployeeLogin::where('user_id', $qaList['assigned_people'])
-                                    ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
-                                    ->distinct('user_id')
-                                    ->count();
+
+            if (!empty($totalQA['totalQAList'])) {
+                foreach($totalQA['totalQAList'] as $key => $qaList){    
+                    if($qaList['client_id'] == $rowProjectId && $qaList['assigned_people'] != null){
+                    $loggedResolvQA +=  EmployeeLogin::where('user_id', $qaList['assigned_people'])
+                                        ->whereBetween('updated_at', [$yesterDayStartDate, $yesterDayEndDate])
+                                        ->distinct('user_id')
+                                        ->count();
+                    }
                 }
             }
             return response()->json([
