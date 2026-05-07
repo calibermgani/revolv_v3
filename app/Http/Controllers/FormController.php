@@ -50,7 +50,12 @@ class FormController extends Controller
                 ->pluck('sub_project_id')->toArray();
                 // $data = subproject::where('project_id', $request->project_id)->pluck('sub_project_name', 'id')->prepend(trans('Select'), '')->toArray();
                 $data = subproject::where('project_id', $request->project_id)->pluck('sub_project_name', 'sub_project_id')->toArray();
-                return response()->json(["subProject" => $data, "existingSubProject" => $existingSubProject]);
+               $existingSubProjectWithDeltedAt = formConfiguration::onlyTrashed()
+                    ->where('project_id', $request->project_id)
+                    ->distinct()
+                    ->pluck('sub_project_id')
+                    ->toArray();
+                return response()->json(["subProject" => $data, "existingSubProject" => $existingSubProject,"existingSubProjectWithDeltedAt" => $existingSubProjectWithDeltedAt]);
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
             }
@@ -1253,5 +1258,5 @@ class FormController extends Controller
             return response()->json(['error' => 'An error occurred while fetching project columns'], 500);
         }
     }
-
+     
 }

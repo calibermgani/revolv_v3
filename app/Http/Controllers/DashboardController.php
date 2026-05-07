@@ -268,7 +268,10 @@ class DashboardController extends Controller
             }
 
             $data = json_decode($response->getBody(), true);
-
+            $data['practiceList'] = Helpers::filterPracticeList(
+                $data['practiceList'] ?? [],
+                $data['clientInfo']['id'] ?? null
+            );
             $subprojects = $data['practiceList'] ?? [];
             $clientDetails = $data['clientInfo'];
             $subProjectsWithCount = [];
@@ -614,7 +617,10 @@ class DashboardController extends Controller
                 }
 
                 $data = json_decode($response->getBody(), true);
-
+                $data['practiceList'] = Helpers::filterPracticeList(
+                        $data['practiceList'] ?? [],
+                        $data['clientInfo']['id'] ?? null
+                    );
                 $subprojects = $data['practiceList'] ?? [];
                 $resourceList = $data['resourceList'] ?? [];
                 $clientDetails = $data['clientInfo'];
@@ -648,7 +654,7 @@ class DashboardController extends Controller
                 if (count($subprojects) > 0) {
 
                     foreach ($subprojects as $key => $subProjectData) {
-
+                        
                         $table_name = Str::slug(
                             Str::lower($projectName . '_' . $subProjectData['name']),
                             '_'
@@ -672,7 +678,7 @@ class DashboardController extends Controller
                                 $subProjectsWithCount[$key][$resourceKey]['client_name'] = $projectName;
                                 $subProjectsWithCount[$key][$resourceKey]['sub_project_id'] = $subProjectData['id'];
                                 $subProjectsWithCount[$key][$resourceKey]['sub_project_name'] = $subProjectData['name'];
-                                $subProjectsWithCount[$key][$resourceKey]['resource_emp_id'] = $resourceDataVal["CE_emp_id"];
+                                                                $subProjectsWithCount[$key][$resourceKey]['resource_emp_id'] = $resourceDataVal["CE_emp_id"];
 
                                 /* ===== ORIGINAL QUERIES (UNCHANGED LOGIC) ===== */
                                 $subProjectsWithCount[$key][$resourceKey]['assignedCount'] =
@@ -710,7 +716,7 @@ class DashboardController extends Controller
                                 'client_id' => $clientDetails['id'],
                                 'client_name' => $projectName,
                                 'sub_project_id' => $subProjectData['id'],
-                                'sub_project_name' => $subProjectData['name'],
+                                 'sub_project_name' => $subProjectData['name'],
                                 'assignedCount' => '--',
                                 'CompletedCount' => '--',
                                 'PendingCount' => '--',
@@ -982,8 +988,8 @@ class DashboardController extends Controller
                     if ($response->getStatusCode() == 200) {
                         // $data = json_decode($response->getBody(), true);
                         $responseData = json_decode($response->getBody(), true);
-                        if (isset($responseData)) {
-                            return $responseData['clientList'];
+                        if (!empty($responseData['clientList'])) {
+                            return Helpers::getFilteredClientProjects($responseData['clientList']);
                         } else {
                             throw new \Exception('clientList not found in the API response');
                         }

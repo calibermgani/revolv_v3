@@ -244,7 +244,11 @@
     </div>
     {!! Form::close() !!}
 @endsection
-
+<style>
+    .select2-results__option[title] {
+        color: red !important;
+    }
+</style>
 @push('view.scripts')
     <script>
         function validateInput(input) {
@@ -335,13 +339,23 @@
                     success: function(res) {
                          subprojectCount = Object.keys(res.subProject).length;
                         var myArray = res.existingSubProject;
+                        var existingSubProjectWithDeltedAt = res.existingSubProjectWithDeltedAt;
                         var sla_options = '<option value="">-- Select --</option>';
+                        // $.each(res.subProject, function(key, value) {
+                        //     sla_options += '<option value="' + key + '" ' +
+                        //                         (myArray.length >0 && $.inArray(key, myArray) !== -1 ? 'disabled' :
+                        //                             '') +
+                        //                         '>' + value +
+                        //         '</option>';
+                        // });
                         $.each(res.subProject, function(key, value) {
+                            var isExisting = myArray.length > 0 && $.inArray(key, myArray) !== -1;
+                            var isDeleted = existingSubProjectWithDeltedAt.length > 0 && $.inArray(key, existingSubProjectWithDeltedAt) !== -1;
                             sla_options += '<option value="' + key + '" ' +
-                                                (myArray.length >0 && $.inArray(key, myArray) !== -1 ? 'disabled' :
-                                                    '') +
-                                                '>' + value +
-                                '</option>';
+                                (isExisting ? 'disabled ' : '') +
+                                (isDeleted ? 'disabled title="Sub-project already exists. Please enable it"' : '') +
+                                '>'+ value +
+                            '</option>';
                         });
                         $("#sub_project_id").html(sla_options);
                         $('select[name="sub_project_id"]').html(sla_options);

@@ -55,16 +55,27 @@ class ProductionController extends Controller
                     'token' => '1a32e71a46317b9cc6feb7388238c95d',
                     'user_id' => $userId
                 ];
-                $client = new Client(['verify' => false]);
-                $response = $client->request('POST',  config("constants.PRO_CODE_URL").'/api/v1_users/get_clients_on_user', [
-                    'json' => $payload
-                ]);
-                if ($response->getStatusCode() == 200) {
-                     $data = json_decode($response->getBody(), true);
-                } else {
-                     return response()->json(['error' => 'API request failed'], $response->getStatusCode());
-                }   
-                  $projects = $data['clientList'];
+                $data = retry(3, function () use ($payload) {
+                    $client = new Client(['verify' => false]);
+                    $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_clients_on_user', [
+                        'json' => $payload,
+                    ]);
+                    if ($response->getStatusCode() == 200) {
+                        $responseData = json_decode($response->getBody(), true);
+                        if (!empty($responseData['clientList'])) {
+                            return Helpers::getFilteredClientProjects($responseData['clientList']);
+                        } else {
+                            throw new \Exception('clientList not found in the API response');
+                        }
+                    } elseif ($response->getStatusCode() == 429) {
+                        $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
+                        sleep($retryAfter);
+                        throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
+                    } else {
+                        throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+                    }
+                }, 4000);
+                $projects =  $data;
                   return view('productions/clients',compact('projects'));
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -90,6 +101,10 @@ class ProductionController extends Controller
             } else {
                  return response()->json(['error' => 'API request failed'], $response->getStatusCode());
             }
+            $data['practiceList'] = Helpers::filterPracticeList(
+                $data['practiceList'] ?? [],
+                $data['clientInfo']['id'] ?? null
+            );
             $subprojects = $data['practiceList'];
             $clientDetails = $data['clientInfo'];
            
@@ -248,7 +263,9 @@ class ProductionController extends Controller
                                     $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                                                                             $query->whereNull('ar_manager_rebuttal_status')
                                                                                                 ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                                                                                    })->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                                                                                    })->where('CE_emp_id',$resourceName)
+                                                                                    // ->whereBetween('updated_at',[$startDate,$endDate])
+                                                                                    ->count();
                                     $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();                                                
                                } else {
                                     $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','CE_Inprocess')->orderBy('id','DESC')->pluck('record_id')->toArray();
@@ -276,7 +293,9 @@ class ProductionController extends Controller
                                     $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                                                                     $query->whereNull('ar_manager_rebuttal_status')
                                                                                         ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                                                                            })->whereBetween('updated_at',[$startDate,$endDate])->count();
+                                                                            })
+                                                                           // ->whereBetween('updated_at',[$startDate,$endDate])
+                                                                            ->count();
                                    $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();   
                            }
                    } else {
@@ -315,7 +334,9 @@ class ProductionController extends Controller
                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                     $query->whereNull('ar_manager_rebuttal_status')
                                         ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                            })->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                            })->where('CE_emp_id',$loginEmpId)
+                            // ->whereBetween('updated_at',[$startDate,$endDate])
+                            ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                   } else {
                     return redirect()->back();
@@ -430,7 +451,9 @@ class ProductionController extends Controller
                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                     $query->whereNull('ar_manager_rebuttal_status')
                                         ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                            })->whereBetween('updated_at',[$startDate,$endDate])->count();
+                            })
+                            // ->whereBetween('updated_at',[$startDate,$endDate])
+                            ->count();
                        $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();                                                
                      
                    }
@@ -453,7 +476,9 @@ class ProductionController extends Controller
                       $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                 $query->whereNull('ar_manager_rebuttal_status')
                                     ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                        })->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        })->where('CE_emp_id',$loginEmpId)
+                        // ->whereBetween('updated_at',[$startDate,$endDate])
+                        ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();                                                
                      
                     }
@@ -471,7 +496,8 @@ class ProductionController extends Controller
                  $arSubStatusList = Helpers::arSubStatusList();
                  $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                  $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
-                return view('productions/clientPendingTab',compact('pendingProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','existingCallerChartsWorkLogs','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arDenialList','arSubStatusList'));
+                 $projectTypeSettings = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->first();
+                return view('productions/clientPendingTab',compact('pendingProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','existingCallerChartsWorkLogs','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arDenialList','arSubStatusList','projectTypeSettings'));
 
            } catch (\Exception $e) {
                log::debug($e->getMessage());
@@ -556,7 +582,9 @@ class ProductionController extends Controller
                             $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                         $query->whereNull('ar_manager_rebuttal_status')
                                             ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                                })->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                                })->where('CE_emp_id',$resourceName)
+                                // ->whereBetween('updated_at',[$startDate,$endDate])
+                                ->count();
                                 $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
                         } else {
                             // $holdProjectDetails = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','ASC')->get();
@@ -579,7 +607,9 @@ class ProductionController extends Controller
                             $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                         $query->whereNull('ar_manager_rebuttal_status')
                                             ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                                })->whereBetween('updated_at',[$startDate,$endDate])->count();
+                                })
+                                //->whereBetween('updated_at',[$startDate,$endDate])
+                                ->count();
                             $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         }
                     }
@@ -602,7 +632,9 @@ class ProductionController extends Controller
                       $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                 $query->whereNull('ar_manager_rebuttal_status')
                                     ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                        })->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        })->where('CE_emp_id',$loginEmpId)
+                        // ->whereBetween('updated_at',[$startDate,$endDate])
+                        ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                  }
@@ -619,7 +651,8 @@ class ProductionController extends Controller
                  $arSubStatusList = Helpers::arSubStatusList();
                  $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                  $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
-                return view('productions/clientOnholdTab',compact('holdProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','existingCallerChartsWorkLogs','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arDenialList','arSubStatusList'));
+                 $projectTypeSettings = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->first();
+                return view('productions/clientOnholdTab',compact('holdProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','existingCallerChartsWorkLogs','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arDenialList','arSubStatusList','projectTypeSettings'));
 
            } catch (\Exception $e) {
                log::debug($e->getMessage());
@@ -696,7 +729,9 @@ class ProductionController extends Controller
                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                 $query->whereNull('ar_manager_rebuttal_status')
                                     ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                        })->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        })
+                        // ->whereBetween('updated_at',[$startDate,$endDate])
+                        ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                    }
                 } else if ($loginEmpId) {
@@ -712,7 +747,9 @@ class ProductionController extends Controller
                       $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                     $query->whereNull('ar_manager_rebuttal_status')
                                         ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                            })->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                            })->where('CE_emp_id',$loginEmpId)
+                            // ->whereBetween('updated_at',[$startDate,$endDate])
+                            ->count();
                       $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                  }
@@ -812,7 +849,9 @@ class ProductionController extends Controller
                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                     $query->whereNull('ar_manager_rebuttal_status')
                                         ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                            })->whereBetween('updated_at',[$startDate,$endDate])->count();
+                            })
+                            // ->whereBetween('updated_at',[$startDate,$endDate])
+                            ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 } else if ($loginEmpId) {
@@ -833,7 +872,9 @@ class ProductionController extends Controller
                       $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                 $query->whereNull('ar_manager_rebuttal_status')
                                     ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                        })->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        })->where('CE_emp_id',$loginEmpId)
+                        // ->whereBetween('updated_at',[$startDate,$endDate])
+                        ->count();
                       $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                  }
@@ -931,7 +972,9 @@ class ProductionController extends Controller
                         $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                     $query->whereNull('ar_manager_rebuttal_status')
                                         ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                            })->whereBetween('updated_at',[$startDate,$endDate])->count();
+                            })
+                            // ->whereBetween('updated_at',[$startDate,$endDate])
+                            ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                    }
                 } elseif ($loginEmpId) {
@@ -947,7 +990,9 @@ class ProductionController extends Controller
                         $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                 $query->whereNull('ar_manager_rebuttal_status')
                                     ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                        })->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        })->where('CE_emp_id',$loginEmpId)
+                        // ->whereBetween('updated_at',[$startDate,$endDate])
+                        ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 }
@@ -2169,7 +2214,9 @@ class ProductionController extends Controller
                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                 $query->whereNull('ar_manager_rebuttal_status')
                                     ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                        })->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        })
+                        //->whereBetween('updated_at',[$startDate,$endDate])
+                        ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                     //    $payload = [
                     //        'token' => '1a32e71a46317b9cc6feb7388238c95d',
@@ -2202,7 +2249,9 @@ class ProductionController extends Controller
                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                     $query->whereNull('ar_manager_rebuttal_status')
                                         ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                            })->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                            })->where('CE_emp_id',$loginEmpId)
+                            //->whereBetween('updated_at',[$startDate,$endDate])
+                            ->count();
                        $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                }
@@ -2214,8 +2263,8 @@ class ProductionController extends Controller
                $popupEditableFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->where('field_type','editable')->where('field_type_3','popup_visible')->get();
                $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
-         
-                   return view('productions/clientUnAssignedTab',compact('unAssignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','unAssignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount'));
+               $projectTypeSettings = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->first();
+                   return view('productions/clientUnAssignedTab',compact('unAssignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','unAssignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','projectTypeSettings'));
 
            } catch (\Exception $e) {
                log::debug($e->getMessage());
@@ -2335,7 +2384,9 @@ class ProductionController extends Controller
                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                 $query->whereNull('ar_manager_rebuttal_status')
                                     ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                        })->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        })
+                        //->whereBetween('updated_at',[$startDate,$endDate])
+                        ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                    }
                 } else if ($loginEmpId) {
@@ -2351,7 +2402,9 @@ class ProductionController extends Controller
                     $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                 $query->whereNull('ar_manager_rebuttal_status')
                                     ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                        })->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        })->where('CE_emp_id',$loginEmpId)
+                        //->whereBetween('updated_at',[$startDate,$endDate])
+                        ->count();
                     $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                    }
                  }
@@ -2441,7 +2494,9 @@ class ProductionController extends Controller
                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                     $query->whereNull('ar_manager_rebuttal_status')
                                         ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                            })->whereBetween('updated_at',[$startDate,$endDate])->count();
+                            })
+                            //->whereBetween('updated_at',[$startDate,$endDate])
+                            ->count();
                        $modelClassDuplcates = "App\\Models\\" .$modelName.'Duplicates';
                        $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                        $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
@@ -2463,7 +2518,9 @@ class ProductionController extends Controller
                       $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                     $query->whereNull('ar_manager_rebuttal_status')
                                         ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                            })->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                            })->where('CE_emp_id',$loginEmpId)
+                            //->whereBetween('updated_at',[$startDate,$endDate])
+                            ->count();
                     $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','DESC')->pluck('record_id')->toArray();
                     $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                    }
@@ -3363,7 +3420,9 @@ class ProductionController extends Controller
                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                 $query->whereNull('ar_manager_rebuttal_status')
                                     ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                        })->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        })
+                        //->whereBetween('updated_at',[$startDate,$endDate])
+                        ->count();
                    }
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
@@ -3379,7 +3438,9 @@ class ProductionController extends Controller
                     $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                 $query->whereNull('ar_manager_rebuttal_status')
                                     ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
-                        })->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        })->where('CE_emp_id',$loginEmpId)
+                        //->whereBetween('updated_at',[$startDate,$endDate])
+                        ->count();
                    }
                  }
                  $dept= Session::get('loginDetails')['userInfo']['department']['id'];

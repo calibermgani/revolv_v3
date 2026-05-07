@@ -45,16 +45,27 @@ class QAProductionController extends Controller
                     'token' => '1a32e71a46317b9cc6feb7388238c95d',
                     'user_id' => $userId,
                 ];
-                $client = new Client(['verify' => false]);
-                $response = $client->request('POST', config("constants.PRO_CODE_URL").'/api/v1_users/get_clients_on_user', [
-                    'json' => $payload,
-                ]);
-                if ($response->getStatusCode() == 200) {
-                    $data = json_decode($response->getBody(), true);
-                } else {
-                    return response()->json(['error' => 'API request failed'], $response->getStatusCode());
-                }
-                $projects = $data['clientList'];
+                $data = retry(3, function () use ($payload) {
+                    $client = new Client(['verify' => false]);
+                    $response = $client->request('POST', config("constants.PRO_CODE_URL") . '/api/v1_users/get_clients_on_user', [
+                        'json' => $payload,
+                    ]);
+                    if ($response->getStatusCode() == 200) {
+                        $responseData = json_decode($response->getBody(), true);
+                        if (!empty($responseData['clientList'])) {
+                            return Helpers::getFilteredClientProjects($responseData['clientList']);
+                        } else {
+                            throw new \Exception('clientList not found in the API response');
+                        }
+                    } elseif ($response->getStatusCode() == 429) {
+                        $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
+                        sleep($retryAfter);
+                        throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
+                    } else {
+                        throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+                    }
+                }, 4000);
+                $projects =  $data;
                 return view('QAProduction/clients', compact('projects'));
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
@@ -82,6 +93,10 @@ class QAProductionController extends Controller
             } else {
                 return response()->json(['error' => 'API request failed'], $response->getStatusCode());
             }
+            $data['practiceList'] = Helpers::filterPracticeList(
+                $data['practiceList'] ?? [],
+                $data['clientInfo']['id'] ?? null
+            );
             $subprojects = $data['practiceList'];
             $clientDetails = $data['clientInfo'];
          

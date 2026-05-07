@@ -965,6 +965,10 @@ class Helpers
                     if ($response->getStatusCode() == 200) {
                         $responseData = json_decode($response->getBody(), true);
                         if (isset($responseData)) {
+							 $responseData['practiceList'] = Helpers::filterPracticeList(
+									$responseData['practiceList'] ?? [],
+									$responseData['clientInfo']['id'] ?? null
+								);//for filter manually deleted at projects in form_configuration table by tech
                             return $responseData;
                         } else {
                             throw new \Exception('practice on client not found in the API response');
@@ -1447,5 +1451,35 @@ class Helpers
 		$subProjectIds = formConfiguration::groupby('sub_project_id')->where('project_id', $project_id)->pluck('sub_project_id')->toArray();
 		return subproject::where('project_id', $project_id)->whereIn('sub_project_id', $subProjectIds)->pluck('sub_project_name', 'sub_project_id')->prepend(trans('Select Sub Project'), '')->toArray();
 	}
-
+	public static function getConfigMap()	{
+		return Cache::remember('form_config_map', 3600, function () {
+			$map = [];
+			formConfiguration::select('project_id', 'sub_project_id')
+				->distinct()
+				->get()
+				->each(function ($item) use (&$map) {
+					$map[$item->project_id][$item->sub_project_id] = true;
+				});
+			return $map;
+		});
+	}
+	 public static function getFilteredClientProjects($clientList) {
+        $configMap = self::getConfigMap();
+        foreach ($clientList as $pIndex => $project) {
+            $filtered = [];
+            foreach ($project['subprject_name'] ?? [] as $subKey => $subName) {
+                if (isset($configMap[$project['id']][$subKey])) {
+                    $filtered[$subKey] = $subName;
+                }
+            }
+            $clientList[$pIndex]['subprject_name'] = $filtered;
+        }
+        return $clientList;
+    }
+	public static function filterPracticeList($practiceList, $projectId) {
+		$configMap = self::getConfigMap(); // reuse cached map
+		return array_values(array_filter($practiceList, function ($practice) use ($configMap, $projectId) {
+			return isset($configMap[$projectId][$practice['id']]);
+		}));
+	} 
 }
