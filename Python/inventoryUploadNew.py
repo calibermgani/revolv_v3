@@ -1811,17 +1811,21 @@ def insert_inventory_exe_file(
         file_name,
         exe_date,
         inventory_count,
-        upload_status
+        upload_status,
+        created_at,
+        updated_at
     )
     values
     (
-        %s,%s,%s,%s,%s,%s
+        %s,%s,%s,%s,%s,%s,%s,%s
     )
     """
 
-    exe_date = datetime.now().strftime(
+    current_datetime = datetime.now().strftime(
         "%Y-%m-%d %H:%M:%S"
     )
+
+    exe_date = current_datetime
 
     with conn.cursor() as cursor:
 
@@ -1833,7 +1837,9 @@ def insert_inventory_exe_file(
                 file_name,
                 exe_date,
                 inventory_count,
-                upload_status
+                upload_status,
+                current_datetime,
+                current_datetime
             )
         )
 
@@ -1894,13 +1900,20 @@ def insert_inventory_error_log(
         project_id,
         sub_project_id,
         error_status_code,
-        error_description
+        error_description,
+        error_date,
+        created_at,
+        updated_at
     )
     values
     (
-        %s,%s,%s,%s
+        %s,%s,%s,%s,%s,%s,%s
     )
     """
+
+    current_datetime = datetime.now().strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
 
     with conn.cursor() as cursor:
 
@@ -1910,7 +1923,10 @@ def insert_inventory_error_log(
                 project_id,
                 sub_project_id,
                 error_status_code,
-                error_description
+                error_description,
+                current_datetime,
+                current_datetime,
+                current_datetime
             )
         )
 
