@@ -108,6 +108,60 @@
                 </table>
             </div>
 
+            <div class="modal" id="uploadModal" tabindex="-1" role="dialog"  aria-labelledby="uploadModalLabel" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="uploadModalLabel">
+                                Inventory Upload
+                            </h5>
+
+                           <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color:black">&times;</button>
+                        </div>
+
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            @csrf
+                            <div class="modal-body">
+                                {{-- <input type="hidden" id="project_id" name="project_id" value="215">
+                                <input type="hidden" id="sub_project_id" name="sub_project_id" value="357"> --}}
+                                <input type="hidden" id="project_id" name="project_id">
+                                <input type="hidden" id="sub_project_id" name="sub_project_id">
+                                <div class="form-group">
+                                    <label>Select File</label>
+                                    <input type="file"
+                                        class="form-control"
+                                        name="file"
+                                        id="uploadFile"
+                                        required>
+                                </div>
+                                <div id="uploadErrors"
+                                    class="alert alert-danger"
+                                    style="display:none;">
+                                </div>
+                                <div id="uploadSuccess"
+                                    class="alert alert-success"
+                                    style="display:none;">
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <!-- Clear Button -->
+                                <button type="button"
+                                        id="clearFileBtn"
+                                        class="btn btn-warning">
+                                    Clear
+                                </button>                                 
+                                <!-- Submit Button -->
+                                <button type="submit"  id="submitFile"
+                                        class="btn" style="background-color: #139AB3 !important;color: #ffffff;">
+                                    Upload
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
@@ -147,6 +201,30 @@
     .table.table-separate .inv_lft th:last-child,
     .table.table-separate td:last-child {
         padding-right: 10 !important;
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+        background: #fff;
+        margin: 10% auto;
+        padding: 20px;
+        width: 400px;
+        border-radius: 8px;
+    }
+
+    .close {
+        float: right;
+        font-size: 24px;
+        cursor: pointer;
     }
 </style>
 @push('view.scripts')
@@ -205,9 +283,8 @@
                             project_id: client_id,
                         },
                         success: function(res) {
-                            console.log(res, 'res');
                             subProjects = res.subprojects;
-                            subprojectCountData = Object.keys(subProjects).length;console.log(subprojectCountData,'subprojectCountData');
+                            subprojectCountData = Object.keys(subProjects).length;
 
                             if(typeof subprojectCountData !== 'undefined' && subprojectCountData > 0) {
                               row.child(format(row.data(), subProjects)).show();
@@ -227,16 +304,13 @@
                 }
             });
 
-
+            const excelDownloadRoute = "{{ route('project.download') }}";
             function format(data, subProjects) {
-                //  subprojectCountt = Object.keys(subProjects).length;
-                console.log(subprojectCountData,'format');
                 if(subprojectCountData > 0) {
                     var html =
                         '<table id="practice_list" class="inv_head" cellpadding="5" cellspacing="0" border="0" style="width:97%;border-radius: 10px !important;overflow: hidden;margin-left: 1.5rem;">' +
-                        '<tr><th></th><th>Sub Project</th><th>Assigned</th> <th>Completed</th> <th>Pending</th><th>On Hold</th> </tr>';
+                        '<tr><th></th><th>Sub Project</th><th>Assigned</th> <th>Completed</th> <th>Pending</th><th>On Hold</th><th>Inventory Upload</th> </tr>';
                     $.each(subProjects, function(index, val) {
-                        console.log(val, 'val',val.client_name,val.sub_project_name );
                         html +=
                             '<tbody><tr class="clickable-row cursor_hand">' +
                             '<td><input type="hidden" value=' + val.client_id + '></td>' +
@@ -245,15 +319,173 @@
                             '<td>' + val.CompletedCount + '</td>' +
                             '<td>' + val.PendingCount + '</td>' +
                             '<td>' + val.holdCount + '</td>' +
+                            `<td>
+                                    ${
+                                        val.inventory_upload_config !== 'no icon'
+                                            ? (
+                                                val.project_type != null
+                                                    ? 'Open Access'
+                                                    : `
+                                                        <i class="fa fa-upload upload-icon cursor_hand"
+                                                            data-projectid="${val.client_id}"
+                                                            data-subproject="${val.sub_project_id}"
+                                                            style="font-size:18px;color:#139AB3;cursor:pointer;margin-left:4rem">
+                                                        </i>
+
+                                                        <a href="${excelDownloadRoute}?project_id=${val.client_id}&sub_project_id=${val.sub_project_id}">
+                                                            <i class="fa fa-download download-icon cursor_hand"
+                                                                style="font-size:18px;color:#139AB3;cursor:pointer;margin-left:1rem">
+                                                            </i>
+                                                        </a>
+                                                    `
+                                            )
+                                            : 'Not Configured'
+                                    }
+                                </td>` +
+                         
                             '</tr></tbody>';
                     });
                     html += '</table>';
                     return html;
               }
             }
+          $(document).on('click', '.upload-icon', function () {
+                var projectId = $(this).data('projectid');
+                var subProjectId = $(this).data('subproject');
+                $('#project_id').val(projectId);
+                $('#sub_project_id').val(subProjectId);
+                $('#uploadFile').val('');
+                $('#uploadErrors').hide();
+                $('#uploadSuccess').hide();
+                $('#uploadModal').show();
+            });
 
+            $('.close').on('click', function () {                
+                $('#uploadFile').val('');
+                $('#uploadErrors').hide();
+                $('#uploadSuccess').hide();
+                $('#uploadModal').hide();
+            });
+            $('#clearFileBtn').on('click', function () {
+                $('#uploadFile').val('');
+                $('#uploadErrors').hide();
+                $('#uploadSuccess').hide();
+                $('#uploadModal').hide();
+            });
+            $('#uploadModal').on('hidden.bs.modal', function () {
+                $('#uploadForm')[0].reset();
+                $('#subProjectId').val('');
+                $('#uploadErrors').hide();
+                $('#uploadSuccess').hide();
+            });
+         
+
+                
+            $('#uploadForm').on('submit', function(e) {
+                e.preventDefault();
+
+                $('#uploadErrors').hide().empty();
+                $('#uploadSuccess').hide().empty();
+
+                var formData = new FormData(this);
+                var switchedToInsertMessage = false;
+
+                showGlobalLoader("File uploading...", true, true);
+
+                function switchToDataInserting() {
+                    if (switchedToInsertMessage) {
+                        return;
+                    }
+
+                    switchedToInsertMessage = true;
+
+                    updateGlobalLoaderMessage("Data inserting...");
+                    updateGlobalLoaderPercent(100);
+
+                    setTimeout(function () {
+                        $('#global-loader-percent').hide();
+                        restartGlobalLoaderTimer();
+                    }, 500);
+                }
+
+                $.ajax({
+                    url: "{{ url('uploadFile') }}",
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    global: false,
+
+                    xhr: function() {
+                        var xhr = new window.XMLHttpRequest();
+
+                        xhr.upload.addEventListener("progress", function(event) {
+                            if (event.lengthComputable) {
+                                var percent = Math.round((event.loaded / event.total) * 100);
+
+                                updateGlobalLoaderPercent(percent);
+
+                                if (percent >= 100) {
+                                    switchToDataInserting();
+                                }
+                            }
+                        }, false);
+
+                        xhr.upload.addEventListener("load", function() {
+                            switchToDataInserting();
+                        }, false);
+
+                        return xhr;
+                    },
+
+                    success: function(response) {
+                        hideGlobalLoader();
+
+                        $('#uploadErrors').hide().empty();
+                        $('#uploadSuccess').hide().empty();
+
+                        if (response.status === 'success') {
+                            $('#uploadSuccess').html(response.message).show();
+                            js_notification('success', response.message);
+                            $('#uploadModal').hide();
+                        } else if (response.status === 'warning') {
+                            $('#uploadErrors').html(response.message).show();
+                            js_notification('error', response.message);
+                            $('#uploadModal').hide();
+                        } else {
+                            $('#uploadErrors').html('Something went wrong. Please try again.').show();
+                        }
+                    },
+
+                    error: function(xhr) {
+                        hideGlobalLoader();
+
+                        $('#uploadErrors').hide().empty();
+                        $('#uploadSuccess').hide().empty();
+
+                        var errorHtml = '';
+
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            $.each(xhr.responseJSON.errors, function(key, value) {
+                                errorHtml += '<p>' + value + '</p>';
+                            });
+                        } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorHtml = xhr.responseJSON.message;
+                        } else {
+                            errorHtml = 'Something went wrong. Please try again.';
+                        }
+
+                        $('#uploadErrors').html(errorHtml).show();
+                        js_notification('error', errorHtml);
+                    }
+                });
+            });
+
+               
             $(document).on('click', '.clickable-row', function(e) {
-
+                if ($(e.target).closest('td').is(':last-child')) {
+                    return;
+                }
                 // var client_name = $(this).closest('tr').find('td:eq(1)').text();
                 // var id = $(this).closest('tr').find('td:eq(0)').text();
                 // var encodedId = $(this).closest('tr').find('td:eq(0) input').val();
@@ -261,13 +493,9 @@
                 var subProjectName = $(this).closest('tr').find('td:eq(1) input').val();
 
                 if (!clientName) {
-                    console.error('encodedclientname is undefined or empty');
                     return;
                 }
-
-                // window.location.href = baseUrl + 'projects/' + encodedId + '/' + clientName + "?parent=" +
-                //     getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
-                KTApp.block('#clientsDiv', {
+               KTApp.block('#clientsDiv', {
                         overlayColor: '#000000',
                         state: 'danger',
                         opacity: 0.1,
@@ -276,31 +504,7 @@
                 window.location.href = baseUrl + 'projects_assigned/' + btoa(clientName) + '/' + btoa(
                         subProjectName) + "?parent=" +
                     getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
-                  //  KTApp.unblock('#clientsDiv');
-
-
             })
-
-
-                // $(document).on('click', '.clickable-client', function() {
-
-                //             var clientName = $(this).closest('tr').find('td:eq(1) input').val();
-                //             var subProjectName = '--';
-
-                //             if (!clientName) {
-                //                 console.error('encodedclientname is undefined or empty');
-                //                 return;
-                //             }
-
-                //             console.log(subprojectCountData,'subprojectCount');
-                //             if (typeof subprojectCountData !== 'undefined' && subprojectCountData <= 0) {
-                //             window.location.href = baseUrl + 'projects_assigned/' + btoa(clientName) + '/' +
-                //                     subProjectName + "?parent=" +
-                //                 getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
-                //             }
-                // })
-
-
         })
 
     </script>

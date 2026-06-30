@@ -40,7 +40,7 @@ use App\Exports\DynamicBulkExport;
 use DateTime;
 use App\Jobs\RunPythonReportJob;
 
-ini_set('max_execution_time', 300);
+ini_set('max_execution_time', 600);
 ini_set('memory_limit', '2G');
 class ReportsController extends Controller
 {
@@ -3632,5 +3632,269 @@ public function getBulkColumnsCSV(Request $request)
             log::debug($e->getMessage());
         }
     }
-   
+        public function inventoryUpload(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file',
+            'project_id' => 'required',
+            'sub_project_id' => 'required',
+        ]);
+
+        $projectId = $request->project_id;
+        $subProjectId = $request->sub_project_id;
+        $configurationExists = DB::table('inventory_upload_configuration')
+                ->where('project_id', $projectId)
+                ->where('sub_project_id', $subProjectId)
+                ->exists();
+
+        if (!$configurationExists) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Inventory upload configuration not found for selected project and sub project combination.',
+            ]);
+        }
+        $project = DB::table('projects')
+            ->where('project_id', $projectId)
+            ->first();
+
+        if (!$project) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Selected project not found.',
+            ]);
+        }
+
+        $subProject = DB::table('subprojects')
+            ->where('sub_project_id', $subProjectId)
+            ->where('project_id', $projectId)
+            ->first();
+
+        if (!$subProject) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Selected project and sub project combination is invalid.',
+            ]);
+        }
+
+        
+
+        $file = $request->file('file');
+        $extension = strtolower($file->getClientOriginalExtension());
+        $serverMime = $file->getMimeType();
+        $clientMime = $file->getClientMimeType();
+
+        Log::info('UPLOAD ORIGINAL NAME: ' . $file->getClientOriginalName());
+        Log::info('UPLOAD EXTENSION: ' . $extension);
+        Log::info('UPLOAD SERVER MIME: ' . $serverMime);
+        Log::info('UPLOAD CLIENT MIME: ' . $clientMime);
+        Log::info('UPLOAD SIZE: ' . $file->getSize());
+        if ($extension !== 'csv') {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Please upload CSV file only for fast inventory upload. Excel files are slower for large data.',
+            ]);
+        }
+        $allowedCsvMimeTypes = [
+            'text/csv',
+            'text/plain',
+            'application/csv',
+            'text/x-csv',
+            'application/x-csv',
+            'application/vnd.ms-excel',
+        ];
+         if (
+            !in_array($serverMime, $allowedCsvMimeTypes, true) &&
+            !in_array($clientMime, $allowedCsvMimeTypes, true)
+        ) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Invalid CSV file type. Detected type: ' . $serverMime,
+            ]);
+        }
+        $projectName = $project->project_name;
+        $subProjectName = $subProject->sub_project_name;
+
+        // $projectNameSlug = Str::slug($projectName, '_');
+        // $subProjectNameSlug = Str::slug($subProjectName, '_');
+
+        // $expectedFileNameKey = $projectNameSlug . '_' . $subProjectNameSlug;
+        //  $expectedFileNameKey = $projectName . '_' . $subProjectName . '-' . date('mdY');
+          $expectedFileNameKey = Str::slug(($projectName.'_'.$subProjectName),'_'). '-' . date('mdY');
+
+        // $originalFileNameWithoutExt = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        // $uploadedFileNameKey = Str::slug($originalFileNameWithoutExt, '_');
+        $uploadedFileNameKey = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+
+        if (!Str::contains($uploadedFileNameKey, $expectedFileNameKey)) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Uploaded file name is not matching selected project and sub project. File name should contain: ' . $expectedFileNameKey,
+            ]);
+        }
+
+        $cleanOriginalFileName = preg_replace('/[^A-Za-z0-9._-]/', '_', $file->getClientOriginalName());
+        $fileName = time() . '_' . $cleanOriginalFileName;
+
+        $uploadPath = storage_path(
+            'app' . DIRECTORY_SEPARATOR .
+            'inventory_uploads' . DIRECTORY_SEPARATOR .
+            $projectId . DIRECTORY_SEPARATOR .
+            $subProjectId
+        );
+
+        if (!file_exists($uploadPath)) {
+            mkdir($uploadPath, 0775, true);
+        }
+
+        $filePath = $uploadPath . DIRECTORY_SEPARATOR . $fileName;
+
+        $file->move($uploadPath, $fileName);
+
+        $payload = [
+            'file_path' => $filePath,
+            'file_name' => $fileName,
+            'project_id' => $projectId,
+            'sub_project_id' => $subProjectId,
+            'project_name' => $projectName,
+            'sub_project_name' => $subProjectName,
+        ];
+
+        $python = env('PYTHON_BIN', 'python');
+        $script = realpath(base_path('Python/inventoryUploadNew.py'));
+
+        if (!$script || !file_exists($script)) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Python script not found.',
+            ], 500);
+        }
+
+        Log::info('PYTHON SCRIPT PATH ' . $script);
+        Log::info('PYTHON SCRIPT MODIFIED ' . date('Y-m-d H:i:s', filemtime($script)));
+        Log::info('PYTHON SCRIPT HASH ' . sha1_file($script));
+        Log::info('PYTHON PAYLOAD ' . json_encode($payload));
+
+        $env = [
+            'SystemRoot' => getenv('SystemRoot') ?: 'C:\\Windows',
+            'WINDIR' => getenv('WINDIR') ?: 'C:\\Windows',
+            'PATH' => getenv('PATH'),
+        ];
+
+        $process = new Process(
+            [$python, $script],
+            base_path(),
+            $env
+        );
+
+        $process->setInput(json_encode($payload));
+        $process->setTimeout(7200);
+        $process->run();
+
+        $stdout = trim($process->getOutput());
+        $stderr = trim($process->getErrorOutput());
+
+        Log::info('PYTHON STDOUT ' . $stdout);
+        Log::info('PYTHON STDERR ' . $stderr);
+
+        $pythonResponse = $this->decodePythonJsonResponse($stdout);
+
+        if (!$process->isSuccessful()) {
+            $message = 'Inventory not uploaded.';
+
+            if (is_array($pythonResponse) && isset($pythonResponse['message'])) {
+                $message = $pythonResponse['message'];
+            } else {
+                $message = $this->cleanPythonUserMessage($stdout, $stderr);
+            }
+
+            return response()->json([
+                'status' => 'warning',
+                'message' => $message,
+            ]);
+        }
+
+       if (!is_array($pythonResponse)) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Inventory not uploaded. Python returned invalid response.',
+            ]);
+        }
+
+        if (($pythonResponse['status'] ?? null) === 'warning') {
+            return response()->json([
+                'status' => 'warning',
+                'message' => $pythonResponse['message'] ?? 'Inventory not uploaded.',
+            ]);
+        }
+
+        $data = $pythonResponse['data'] ?? $pythonResponse;
+
+        return response()->json([
+            'status' => 'success',
+            'message' => $pythonResponse['message'] ?? 'Inventory uploaded successfully.',
+            'file' => $fileName,
+            'inserted' => $data['inserted'] ?? 0,
+            'total_rows' => $data['total_rows'] ?? 0,
+            'table' => $data['table'] ?? null,
+        ]);
+    }
+    private function decodePythonJsonResponse($stdout)
+    {
+        $stdout = trim((string) $stdout);
+
+        if ($stdout === '') {
+            return null;
+        }
+
+        $decoded = json_decode($stdout, true);
+
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            return $decoded;
+        }
+
+        // fallback: get last valid JSON line if stdout has extra text
+        $lines = preg_split('/\r\n|\r|\n/', $stdout);
+
+        foreach (array_reverse($lines) as $line) {
+            $line = trim($line);
+
+            if ($line === '') {
+                continue;
+            }
+
+            if (str_starts_with($line, '{') && str_ends_with($line, '}')) {
+                $decoded = json_decode($line, true);
+
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    return $decoded;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private function cleanPythonUserMessage($stdout, $stderr)
+    {
+        $combined = trim((string) $stdout);
+
+        if ($combined === '') {
+            $combined = trim((string) $stderr);
+        }
+
+        $combined = html_entity_decode(strip_tags($combined));
+        $combined = str_replace(["\r\n", "\r"], "\n", $combined);
+
+        // Prefer clean inventory message from Python output/log
+        if (preg_match('/(inventory not uploaded:[^\n]+)/i', $combined, $match)) {
+            return trim($match[1]);
+        }
+
+        // If Python traceback has Exception line, extract only that line
+        if (preg_match('/Exception:\s*([^\n]+)/i', $combined, $match)) {
+            return trim($match[1]);
+        }
+
+        return 'Inventory not uploaded. Please check uploaded file format and headers.';
+    }
 }

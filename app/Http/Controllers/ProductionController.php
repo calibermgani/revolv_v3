@@ -2699,7 +2699,7 @@ class ProductionController extends Controller
                     });
                     array_push($fields,'aging','aging_range');
                 }
-                return Excel::download(new ProductionExport($fields,$exportResult), 'Resolv_'.$exStatus.'_export.xlsx');
+                return Excel::download(new ProductionExport($fields,$exportResult), $exportFileName.' _ '.$exStatus.'_export.xlsx');
                 } catch (\Exception $e) {
                     log::debug($e->getMessage());
                 }
@@ -3866,7 +3866,62 @@ class ProductionController extends Controller
     //         'message' => 'No sub question found.'
     //     ], 404);
     // }
+       public function downloadProjects(Request $request)
+    {
+        try {
+            $project_shortname = project::where('project_id', $request->project_id)
+                ->value('project_name');
 
+            $sub_project_shortname = Subproject::where('sub_project_id', $request->sub_project_id)
+                ->value('sub_project_name');
+
+            $current_date = date('mdY');
+
+            $file_name = Str::slug(($project_shortname . '_' . $sub_project_shortname), '_') . '-' . $current_date;
+
+            $data_columns = DB::table('inventory_upload_configuration')
+                ->where('project_id', $request->project_id)
+                ->where('sub_project_id', $request->sub_project_id)
+                ->value('data_columns');
+
+            if (!$data_columns) {
+                return redirect()->back()->with('error', 'Download failed: data columns not configured.');
+            }
+
+            $labels = array_map('trim', explode(',', $data_columns));
+
+            $export = new class($labels) implements
+                \Maatwebsite\Excel\Concerns\FromArray,
+                \Maatwebsite\Excel\Concerns\WithHeadings {
+
+                protected $headers;
+
+                public function __construct($headers)
+                {
+                    $this->headers = $headers;
+                }
+
+                public function array(): array
+                {
+                    return [];
+                }
+
+                public function headings(): array
+                {
+                    return $this->headers;
+                }
+            };
+
+            return Excel::download(
+                $export,
+                $file_name . '.csv',
+                \Maatwebsite\Excel\Excel::CSV
+            );
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Download failed: ' . $e->getMessage());
+        }
+    }
 
 
 

@@ -225,6 +225,9 @@ Route::group(['prefix' => 'qa_production'], function () {
                 Route::any('reports/bulk/export', 'App\Http\Controllers\Reports\ReportsController@exportBulkReport')->name('reports.bulk.export');
         // Route::get('/get-question-child', 'App\Http\Controllers\ProductionController@getQuestionChild')->name('get.question.child');//working
         //   Route::post('/save-question', 'App\Http\Controllers\ProductionController@save')->name('questions.save');
+         Route::any('/uploadFile','App\Http\Controllers\Reports\ReportsController@inventoryUpload')
+                ->name('reports.inventory.upload');
+         Route::any('project-download', 'App\Http\Controllers\ProductionController@downloadProjects')->name('project.download');
 
 
 
