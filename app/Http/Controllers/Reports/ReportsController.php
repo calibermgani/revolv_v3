@@ -3759,7 +3759,8 @@ public function getBulkColumnsCSV(Request $request)
             'sub_project_name' => $subProjectName,
         ];
 
-        $python = env('PYTHON_BIN', 'python');
+        // $python = env('PYTHON_BIN', 'python');
+        $python = '/bin/python3';
         $script = realpath(base_path('Python/inventoryUploadNew.py'));
 
         if (!$script || !file_exists($script)) {
