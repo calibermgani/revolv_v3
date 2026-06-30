@@ -75,21 +75,41 @@
             transform: scale(1);
         }
     }
+   
+    .ngx-spinner .loading-timer {
+        font-size: 16px;
+        font-weight: 500;
+        color: #555;
+        margin-bottom: 8px;
+        text-align: center;
+    }
+
+    .ngx-spinner .loading-percent {
+        font-size: 15px;
+        font-weight: 500;
+        color: #555;
+        margin-bottom: 18px;
+        text-align: center;
+    }
+
 </style>
 
 <body id="kt_body"
     class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
      <!-- ngx-style Global Loader -->
-    <div id="global-loader" style="display: flex;">
-        <div class="ngx-spinner">
-            <div class="loading-text">Loading...</div>
-            <div class="spinner-dots">
-                <div class="dot dot1"></div>
-                <div class="dot dot2"></div>
-                <div class="dot dot3"></div>
-            </div>
+   <div id="global-loader" style="display: flex;">
+    <div class="ngx-spinner">
+        <div class="loading-text" id="global-loader-text">Loading...</div>
+        <div class="loading-timer" id="global-loader-timer" style="display: none;">00:00</div>
+        <div class="loading-percent" id="global-loader-percent" style="display: none;">0%</div>
+
+        <div class="spinner-dots">
+            <div class="dot dot1"></div>
+            <div class="dot dot2"></div>
+            <div class="dot dot3"></div>
         </div>
     </div>
+</div>
     @include('layouts/mobile_header')
     <div class="d-flex flex-column flex-root">
         <div class="d-flex flex-row flex-column-fluid page">
@@ -129,89 +149,231 @@
 
 </html>
 <script>
-    // Hide loader when everything (DOM + images + assets) is loaded
-        window.onload = function () {
-            const loader = document.getElementById("global-loader");
-            loader.style.opacity = 0;
-            setTimeout(() => loader.style.display = "none", 300);
-        };
-
-        // Show loader on form submit
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll("form").forEach(function (form) {
-                form.addEventListener("submit", function () {
-                    document.getElementById("global-loader").style.display = "flex";
-                    document.getElementById("global-loader").style.opacity = 1;
-                });
-            });
-
-            // Show loader on page unload/navigation
-            window.addEventListener("beforeunload", function () {
-                document.getElementById("global-loader").style.display = "flex";
-                document.getElementById("global-loader").style.opacity = 1;
-            });
-        });
-
-        // jQuery AJAX loader
-        // $(function () {
-        //     $(document).ajaxStart(function () {
-        //         $('#global-loader').css({ display: 'flex', opacity: 1 });
-        //     }).ajaxStop(function () {
-        //         $('#global-loader').fadeOut(300);
-        //     });
-        // });
-        $(function () {
-            $(document).ajaxStart(function (event, xhr, settings) {
-                // Check if it's NOT the polling API
-                if (!window.currentAjaxUrl || !window.currentAjaxUrl.includes("project_report_tracking_status")) {
-                    $('#global-loader').css({ display: 'flex', opacity: 1 });
-                }
-            }).ajaxStop(function () {
-                if (!window.currentAjaxUrl || !window.currentAjaxUrl.includes("project_report_tracking_status")) {
-                    $('#global-loader').fadeOut(300);
-                }
-            });
-
-            // Capture each AJAX request URL
-            $(document).ajaxSend(function (event, jqXHR, options) {
-                window.currentAjaxUrl = options.url;
-            });
-        });
-
     let timeout;
+    let globalLoaderTimerInterval = null;
+    let globalLoaderSeconds = 0;
+    let activeGlobalAjaxRequests = 0;
 
-// Reset session on any user activity
-const resetTimeout = () => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-        window.location.href = '/logout'; // Redirect to logout route
-    }, 7200000); // 2 hour in milliseconds
-};
+    function formatGlobalLoaderTime(totalSeconds) {
+        const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+        const seconds = (totalSeconds % 60).toString().padStart(2, "0");
 
-// Listeners for user activity
-['click', 'mousemove', 'keypress'].forEach((event) => {
-    document.addEventListener(event, resetTimeout);
-});
-
-// Initial timeout set on page load
-resetTimeout();
-document.addEventListener("click", function (e) {
-    const target = e.target.closest("a, button,div,span");
-
-    if (!target) return;
-
-    // Match common export routes (adjust keywords if needed)
-    const href = target.getAttribute("href") || target.getAttribute("data-href") || "";
-    
-    if (href.includes("export") || href.includes("download") || href.includes("javascript:void(0)")) {
-        // Show loader
-        $('#global-loader').css({ display: 'flex', opacity: 1 });
-
-        // Hide loader after a few seconds (download prompt already started)
-        setTimeout(() => {
-            $('#global-loader').fadeOut(300);
-        }, 3000); // adjust time depending on your file size
+        return minutes + ":" + seconds;
     }
-});
 
+    function showGlobalLoader(message = "Loading...", showTimer = false, showPercent = false) {
+        const loader = document.getElementById("global-loader");
+        const loaderText = document.getElementById("global-loader-text");
+        const loaderTimer = document.getElementById("global-loader-timer");
+        const loaderPercent = document.getElementById("global-loader-percent");
+
+        if (!loader || !loaderText) {
+            return;
+        }
+
+        loaderText.textContent = message;
+        loader.style.display = "flex";
+        loader.style.opacity = 1;
+
+        clearInterval(globalLoaderTimerInterval);
+        globalLoaderTimerInterval = null;
+        globalLoaderSeconds = 0;
+
+        if (loaderTimer) {
+            if (showTimer) {
+                loaderTimer.textContent = "00:00";
+                loaderTimer.style.display = "block";
+
+                globalLoaderTimerInterval = setInterval(function () {
+                    globalLoaderSeconds++;
+                    loaderTimer.textContent = formatGlobalLoaderTime(globalLoaderSeconds);
+                }, 1000);
+            } else {
+                loaderTimer.textContent = "00:00";
+                loaderTimer.style.display = "none";
+            }
+        }
+
+        if (loaderPercent) {
+            if (showPercent) {
+                loaderPercent.textContent = "0%";
+                loaderPercent.style.display = "block";
+            } else {
+                loaderPercent.textContent = "0%";
+                loaderPercent.style.display = "none";
+            }
+        }
+    }
+
+    function updateGlobalLoaderMessage(message) {
+        const loaderText = document.getElementById("global-loader-text");
+
+        if (loaderText) {
+            loaderText.textContent = message;
+        }
+    }
+
+    function updateGlobalLoaderPercent(percent) {
+        const loaderPercent = document.getElementById("global-loader-percent");
+
+        if (loaderPercent) {
+            loaderPercent.textContent = percent + "%";
+        }
+    }
+
+    function hideGlobalLoaderPercent() {
+        const loaderPercent = document.getElementById("global-loader-percent");
+
+        if (loaderPercent) {
+            loaderPercent.textContent = "0%";
+            loaderPercent.style.display = "none";
+        }
+    }
+
+    function restartGlobalLoaderTimer() {
+        const loaderTimer = document.getElementById("global-loader-timer");
+
+        clearInterval(globalLoaderTimerInterval);
+        globalLoaderTimerInterval = null;
+        globalLoaderSeconds = 0;
+
+        if (loaderTimer) {
+            loaderTimer.textContent = "00:00";
+            loaderTimer.style.display = "block";
+        }
+
+        globalLoaderTimerInterval = setInterval(function () {
+            globalLoaderSeconds++;
+
+            if (loaderTimer) {
+                loaderTimer.textContent = formatGlobalLoaderTime(globalLoaderSeconds);
+            }
+        }, 1000);
+    }
+
+    function hideGlobalLoader() {
+        const loader = document.getElementById("global-loader");
+        const loaderText = document.getElementById("global-loader-text");
+        const loaderTimer = document.getElementById("global-loader-timer");
+        const loaderPercent = document.getElementById("global-loader-percent");
+
+        clearInterval(globalLoaderTimerInterval);
+        globalLoaderTimerInterval = null;
+        globalLoaderSeconds = 0;
+
+        if (loaderText) {
+            loaderText.textContent = "Loading...";
+        }
+
+        if (loaderTimer) {
+            loaderTimer.textContent = "00:00";
+            loaderTimer.style.display = "none";
+        }
+
+        if (loaderPercent) {
+            loaderPercent.textContent = "0%";
+            loaderPercent.style.display = "none";
+        }
+
+        if (loader) {
+            loader.style.opacity = 0;
+
+            setTimeout(function () {
+                loader.style.display = "none";
+            }, 300);
+        }
+    }
+
+    window.onload = function () {
+        hideGlobalLoader();
+    };
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll("form").forEach(function (form) {
+            form.addEventListener("submit", function () {
+                if (form.id === "uploadForm") {
+                    return;
+                }
+
+                showGlobalLoader("Loading...", false, false);
+            });
+        });
+
+        window.addEventListener("beforeunload", function () {
+            showGlobalLoader("Loading...", false, false);
+        });
+
+        if (window.jQuery) {
+            $(document).ajaxSend(function (event, jqXHR, options) {
+                const ajaxUrl = options && options.url ? options.url : "";
+
+                if (ajaxUrl.includes("project_report_tracking_status")) {
+                    return;
+                }
+
+                activeGlobalAjaxRequests++;
+                showGlobalLoader("Loading...", false, false);
+            });
+
+            $(document).ajaxComplete(function (event, jqXHR, options) {
+                const ajaxUrl = options && options.url ? options.url : "";
+
+                if (ajaxUrl.includes("project_report_tracking_status")) {
+                    return;
+                }
+
+                activeGlobalAjaxRequests = Math.max(0, activeGlobalAjaxRequests - 1);
+
+                if (activeGlobalAjaxRequests === 0) {
+                    hideGlobalLoader();
+                }
+            });
+
+            $(document).ajaxError(function (event, jqXHR, options) {
+                const ajaxUrl = options && options.url ? options.url : "";
+
+                if (ajaxUrl.includes("project_report_tracking_status")) {
+                    return;
+                }
+
+                activeGlobalAjaxRequests = Math.max(0, activeGlobalAjaxRequests - 1);
+
+                if (activeGlobalAjaxRequests === 0) {
+                    hideGlobalLoader();
+                }
+            });
+        }
+    });
+
+    const resetTimeout = () => {
+        clearTimeout(timeout);
+
+        timeout = setTimeout(() => {
+            window.location.href = "/logout";
+        }, 7200000);
+    };
+
+    ["click", "mousemove", "keypress"].forEach((event) => {
+        document.addEventListener(event, resetTimeout);
+    });
+
+    resetTimeout();
+
+    document.addEventListener("click", function (event) {
+        const target = event.target.closest("a, button");
+
+        if (!target) {
+            return;
+        }
+
+        const href = target.getAttribute("href") || target.getAttribute("data-href") || "";
+
+        if (href.includes("export") || href.includes("download")) {
+            showGlobalLoader("Loading...", false, false);
+
+            setTimeout(function () {
+                hideGlobalLoader();
+            }, 3000);
+        }
+    });
 </script>
