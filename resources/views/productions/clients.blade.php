@@ -321,9 +321,9 @@
                             '<td>' + val.holdCount + '</td>' +
                             `<td>
                                     ${
-                                        val.inventory_upload_config !== 'no icon'
+                                           val.project_type != null                                        
                                             ? (
-                                                val.project_type != null
+                                               val.inventory_upload_config !== 'no icon'
                                                     ? 'Open Access'
                                                     : `
                                                         <i class="fa fa-upload upload-icon cursor_hand"
