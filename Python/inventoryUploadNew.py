@@ -614,40 +614,76 @@ def validate_mysql_identifier(identifier, label):
     return identifier
 
 
-def slugify_sub_project(name):
+def laravel_str_slug(value, separator="_"):
 
-    name = str(name).lower()
+    value = str(value).lower()
 
-    name = re.sub(
-        r"[^a-z0-9]+",
-        "_",
-        name
+    # Laravel Str::slug first converts the opposite separator into the requested separator.
+    # For separator "_", hyphens are converted to underscores.
+    if separator == "-":
+
+        flip = "_"
+
+    else:
+
+        flip = "-"
+
+    value = re.sub(
+        r"[" + re.escape(flip) + r"]+",
+        separator,
+        value
     )
 
-    return name.strip("_")
+    # Laravel default slug dictionary converts @ to the word "at".
+    value = value.replace(
+        "@",
+        separator + "at" + separator
+    )
+
+    # Match Laravel behavior: remove unsupported characters instead of replacing them.
+    # Example: Dickson/EPIC/No Response becomes dicksonepicno_response.
+    value = re.sub(
+        r"[^" + re.escape(separator) + r"a-z0-9\s]+",
+        "",
+        value
+    )
+
+    # Convert whitespace and separator runs into a single separator.
+    value = re.sub(
+        r"[" + re.escape(separator) + r"\s]+",
+        separator,
+        value
+    )
+
+    return value.strip(
+        separator
+    )
+
+
+def slugify_sub_project(name):
+
+    return laravel_str_slug(
+        name,
+        "_"
+    )
 
 
 def generate_table_name(project_name, sub_project_name):
 
-    project_clean = re.sub(
-        r"[^a-z0-9]",
-        "",
+    raw_table_name = (
         str(project_name).lower()
+        + "_"
+        + str(sub_project_name).lower()
     )
 
-    sub_clean = slugify_sub_project(
-        sub_project_name
+    table_name = laravel_str_slug(
+        raw_table_name,
+        "_"
     )
 
-    if not project_clean or not sub_clean:
+    if not table_name:
 
         raise Exception("invalid generated table name")
-
-    table_name = (
-        project_clean
-        + "_"
-        + sub_clean
-    )
 
     return validate_mysql_identifier(
         table_name,
@@ -812,49 +848,12 @@ def normalize_columns(df):
 
 def read_csv_with_encoding_fallback(file_path, **read_csv_kwargs):
 
-    # Encoding fallback only affects CSV reading.
-    # It does not change validation, duplicate checking, LOAD DATA, chart_status,
-    # CE_Assigned duplicate rule, tracking, or insert logic.
-    bom_encodings = []
-
-    try:
-
-        with open(file_path, "rb") as file_obj:
-
-            first_bytes = file_obj.read(4)
-
-        if first_bytes.startswith(b"\xef\xbb\xbf"):
-
-            bom_encodings.append(
-                "utf-8-sig"
-            )
-
-        elif first_bytes.startswith(b"\xff\xfe") or first_bytes.startswith(b"\xfe\xff"):
-
-            bom_encodings.append(
-                "utf-16"
-            )
-
-    except Exception:
-
-        bom_encodings = []
-
-    encodings = []
-
-    for encoding_name in bom_encodings + [
+    encodings = [
         "utf-8-sig",
         "utf-8",
         "cp1252",
-        "windows-1252",
-        "iso-8859-1",
         "latin1"
-    ]:
-
-        if encoding_name not in encodings:
-
-            encodings.append(
-                encoding_name
-            )
+    ]
 
     last_unicode_error = None
 
@@ -880,7 +879,7 @@ def read_csv_with_encoding_fallback(file_path, **read_csv_kwargs):
 
             return df
 
-        except UnicodeError as unicode_error:
+        except UnicodeDecodeError as unicode_error:
 
             last_unicode_error = unicode_error
 
@@ -891,41 +890,11 @@ def read_csv_with_encoding_fallback(file_path, **read_csv_kwargs):
                 + str(unicode_error)
             )
 
-    try:
+    raise Exception(
+        "inventory not uploaded: uploaded CSV encoding is invalid. tried encodings: "
+        + ", ".join(encodings)
+    ) from last_unicode_error
 
-        log_info(
-            "trying csv encoding : utf-8 with replacement"
-        )
-
-        df = pd.read_csv(
-            file_path,
-            encoding="utf-8",
-            encoding_errors="replace",
-            **read_csv_kwargs
-        )
-
-        log_info(
-            "csv encoding used : utf-8 with replacement"
-        )
-
-        return df
-
-    except Exception as final_error:
-
-        if last_unicode_error is not None:
-
-            raise Exception(
-                "inventory not uploaded: uploaded CSV encoding is invalid. tried encodings: "
-                + ", ".join(encodings)
-                + ", utf-8 with replacement"
-            ) from last_unicode_error
-
-        raise Exception(
-            "inventory not uploaded: uploaded CSV encoding is invalid. tried encodings: "
-            + ", ".join(encodings)
-            + ", utf-8 with replacement. actual error: "
-            + str(final_error)
-        ) from final_error
 
 def read_file(file_path):
 
