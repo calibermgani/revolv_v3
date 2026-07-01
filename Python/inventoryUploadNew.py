@@ -76,20 +76,71 @@ def log_info(message):
 
 def log_error(message):
 
+    error_text = str(message)
+
     print(
-        "[error] " + str(message),
+        "[error] " + error_text,
         file=sys.stderr,
         flush=True
     )
 
-    with open(error_log_file, "a", encoding="utf-8") as f:
+    log_line = (
+        datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        + " "
+        + error_text
+        + "\n"
+    )
 
-        f.write(
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            + " "
-            + str(message)
-            + "\n"
+    fallback_error_log_file = "/tmp/inventory_upload_local_db_error.log"
+
+    try:
+
+        log_dir = os.path.dirname(
+            error_log_file
         )
+
+        if log_dir:
+
+            os.makedirs(
+                log_dir,
+                exist_ok=True
+            )
+
+        with open(error_log_file, "a", encoding="utf-8") as f:
+
+            f.write(
+                log_line
+            )
+
+    except Exception as log_write_error:
+
+        try:
+
+            with open(fallback_error_log_file, "a", encoding="utf-8") as f:
+
+                f.write(
+                    log_line
+                )
+
+                f.write(
+                    datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    + " failed to write primary error log "
+                    + error_log_file
+                    + " : "
+                    + str(log_write_error)
+                    + "\n"
+                )
+
+        except Exception as fallback_write_error:
+
+            print(
+                "[error] failed to write fallback error log "
+                + fallback_error_log_file
+                + " : "
+                + str(fallback_write_error),
+                file=sys.stderr,
+                flush=True
+            )
 
 
 def send_success(message, data):
@@ -759,6 +810,56 @@ def normalize_columns(df):
     return df
 
 
+def read_csv_with_encoding_fallback(file_path, **read_csv_kwargs):
+
+    encodings = [
+        "utf-8-sig",
+        "utf-8",
+        "cp1252",
+        "latin1"
+    ]
+
+    last_unicode_error = None
+
+    for encoding_name in encodings:
+
+        try:
+
+            log_info(
+                "trying csv encoding : "
+                + encoding_name
+            )
+
+            df = pd.read_csv(
+                file_path,
+                encoding=encoding_name,
+                **read_csv_kwargs
+            )
+
+            log_info(
+                "csv encoding used : "
+                + encoding_name
+            )
+
+            return df
+
+        except UnicodeDecodeError as unicode_error:
+
+            last_unicode_error = unicode_error
+
+            log_info(
+                "csv encoding failed : "
+                + encoding_name
+                + " : "
+                + str(unicode_error)
+            )
+
+    raise Exception(
+        "inventory not uploaded: uploaded CSV encoding is invalid. tried encodings: "
+        + ", ".join(encodings)
+    ) from last_unicode_error
+
+
 def read_file(file_path):
 
     if not os.path.isfile(file_path):
@@ -781,7 +882,7 @@ def read_file(file_path):
 
     if ext == ".csv":
 
-        df = pd.read_csv(
+        df = read_csv_with_encoding_fallback(
             file_path,
             dtype=str,
             keep_default_na=False,
