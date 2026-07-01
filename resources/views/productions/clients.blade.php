@@ -321,11 +321,11 @@
                             '<td>' + val.holdCount + '</td>' +
                             `<td>
                                     ${
-                                        val.inventory_upload_config !== 'no icon'
-                                            ? (
-                                                val.project_type != null
-                                                    ? 'Open Access'
-                                                    : `
+                                           val.project_type != null                                        
+                                            ? 'Open Access'
+                                                    : 
+                                               val.inventory_upload_config !== 'no icon'
+                                                    ? ( `
                                                         <i class="fa fa-upload upload-icon cursor_hand"
                                                             data-projectid="${val.client_id}"
                                                             data-subproject="${val.sub_project_id}"
