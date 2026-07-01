@@ -112,13 +112,20 @@ class ProductionController extends Controller
           //  $subprojects = subproject::with(['clientName'])->where('project_id',$request->project_id)->where('status','Active')->get();
             $subProjectsWithCount = [];
             foreach ($subprojects as $key => $data) {
+                 $configurationExists = DB::table('inventory_upload_configuration')
+                ->where('project_id',$clientDetails['id'])
+                ->where('sub_project_id', $data['id'])
+                ->exists();
                 $paProject = Helpers::projectName($clientDetails['id']);
                 $paProjectName = $paProject ? $paProject->project_name : null;
+                $projectType = formConfiguration::where('project_id',$clientDetails['id'])->where('sub_project_id',$data['id'])->first('project_type');
                 $subProjectsWithCount[$key]['client_id'] =$clientDetails['id'];
                 // $subProjectsWithCount[$key]['client_name'] = Helpers::projectName($clientDetails["id"])->project_name;//$clientDetails['client_name'];
                 $subProjectsWithCount[$key]['client_name'] = $paProjectName;//$clientDetails['client_name'];
                 $subProjectsWithCount[$key]['sub_project_id'] =$data['id'];
                 $subProjectsWithCount[$key]['sub_project_name'] = $data['name'];
+                $subProjectsWithCount[$key]['project_type'] =$projectType ? $projectType->project_type : '--';
+                $subProjectsWithCount[$key]['inventory_upload_config'] = !$configurationExists ? 'no icon' : 'yes';
                 $projectName = $subProjectsWithCount[$key]['client_name'];
                 // $model_name = ucfirst($projectName) . ucfirst($subProjectsWithCount[$key]['sub_project_name']);
                 // $modelClass = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',$model_name);
