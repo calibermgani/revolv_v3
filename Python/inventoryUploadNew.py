@@ -516,7 +516,7 @@ def fetch_upload_configuration(
     required_columns = parse_configuration_columns(
         configuration.get("required_columns"),
         "required_columns",
-        True,
+        False,
         True
     )
 
@@ -542,19 +542,6 @@ def fetch_upload_configuration(
             + " does not match db_columns count "
             + str(len(db_columns))
             + " in inventory upload configuration"
-        )
-
-    invalid_required_columns = [
-        column
-        for column in required_columns
-        if column not in data_columns
-    ]
-
-    if invalid_required_columns:
-
-        raise Exception(
-            "inventory not uploaded: required columns not present in data_columns: "
-            + ", ".join(invalid_required_columns)
         )
 
     invalid_date_columns = [
@@ -1230,11 +1217,6 @@ def prepare_dataframe(df, configuration):
         data_columns
     )
 
-    validate_required_columns(
-        df,
-        required_columns
-    )
-
     df = add_missing_optional_columns(
         df,
         data_columns
@@ -1266,36 +1248,11 @@ def prepare_dataframe(df, configuration):
 
 def filter_valid_dataframe(df, data_columns, required_columns):
 
-    valid_mask = pd.Series(
-        True,
-        index=df.index
-    )
+    # Required columns should not block insertion.
+    # All rows are allowed after header/configuration preparation.
+    valid_df = df.copy()
 
-    if "uid" in data_columns and "uid" in df.columns:
-
-        uid_values = df["uid"].astype(
-            "string"
-        ).str.strip()
-
-        valid_mask = valid_mask & uid_values.notna() & (uid_values != "")
-
-    for column_name in required_columns:
-
-        if column_name in df.columns:
-
-            column_values = df[column_name].astype(
-                "string"
-            ).str.strip()
-
-            valid_mask = valid_mask & column_values.notna() & (column_values != "")
-
-    skipped_rows = int(
-        (~valid_mask).sum()
-    )
-
-    valid_df = df.loc[
-        valid_mask
-    ].copy()
+    skipped_rows = 0
 
     row_errors = 0
 
