@@ -128,7 +128,7 @@
                                 <input type="hidden" id="sub_project_id" name="sub_project_id">
                                 <div class="form-group">
                                     <div class="form-group">
-                                        <label>Select File <span style="color:red;">(Upload only CSV file)</span></label>
+                                        <label>Select File <span style="color:black;">(Upload only CSV file)</span></label>
                                         <input type="file"
                                             class="form-control"
                                             name="file"
