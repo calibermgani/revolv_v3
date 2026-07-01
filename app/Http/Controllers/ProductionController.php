@@ -247,8 +247,8 @@ class ProductionController extends Controller
                     if (class_exists($modelClass)) {
                        $modelClassDuplcates = "App\\Models\\" . $modelName.'Duplicates';
                            if($resourceName != null) {
-                            $existingCallerChartsWorkLogsInprocess="";
-                            $existingCallerChartsWorkLogs="";
+                            $existingCallerChartsWorkLogsInprocess=[];
+                            $existingCallerChartsWorkLogs=[];
                                     // $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','CE_Inprocess')->orderBy('id','DESC')->pluck('record_id')->toArray();
                                     // $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','DESC')->pluck('record_id')->toArray();
                                     $assignedProjectDetails = $query->whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$resourceName);
@@ -278,8 +278,8 @@ class ProductionController extends Controller
                                     $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','ASC')->pluck('chart_status')->toArray(); 
                               
                                     } else {
-                                $existingCallerChartsWorkLogsInprocess="";
-                                $existingCallerChartsWorkLogs="";
+                                $existingCallerChartsWorkLogsInprocess=[];
+                                $existingCallerChartsWorkLogs=[];
                                     // $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','CE_Inprocess')->orderBy('id','DESC')->pluck('record_id')->toArray();
                                     // $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','DESC')->pluck('record_id')->toArray();
                                     
@@ -316,8 +316,8 @@ class ProductionController extends Controller
                    }
                } elseif ($loginEmpId) {
                    if (class_exists($modelClass)) {
-                     $existingCallerChartsWorkLogsInprocess="";
-                                $existingCallerChartsWorkLogs="";
+                     $existingCallerChartsWorkLogsInprocess=[];
+                                $existingCallerChartsWorkLogs=[];
 
                     //    $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','CE_Inprocess')->orderBy('id','DESC')->pluck('record_id')->toArray();
                     //    $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','DESC')->pluck('record_id')->toArray();
