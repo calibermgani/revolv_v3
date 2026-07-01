@@ -2610,6 +2610,9 @@ class ProductionController extends Controller
                 $paProject = Helpers::projectName($decodedProjectName);
                 $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName);
+                $exportProjectName = $paProject ? $paProject->aims_project_name : NULL;
+                $exportSubProjectName = Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->new_sub_project_name != null ? Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->new_sub_project_name : Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
+                $exportFileName = $exportProjectName != NULL ? $exportProjectName .' _ '.$exportSubProjectName : 'Resolv';
                 if($decodedsubProjectName != null &&  $decodedsubProjectName != 'project') {
                     $decodedsubProjectName= $decodedsubProjectName->sub_project_name;
                 }
@@ -2706,7 +2709,7 @@ class ProductionController extends Controller
                     });
                     array_push($fields,'aging','aging_range');
                 }
-                return Excel::download(new ProductionExport($fields,$exportResult), 'Resolv_'.$exStatus.'_export.xlsx');
+                return Excel::download(new ProductionExport($fields,$exportResult), $exportFileName.' _ '.$exStatus.'_export.xlsx');
                 } catch (\Exception $e) {
                     log::debug($e->getMessage());
                 }
