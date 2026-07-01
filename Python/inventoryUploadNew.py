@@ -812,12 +812,49 @@ def normalize_columns(df):
 
 def read_csv_with_encoding_fallback(file_path, **read_csv_kwargs):
 
-    encodings = [
+    # Encoding fallback only affects CSV reading.
+    # It does not change validation, duplicate checking, LOAD DATA, chart_status,
+    # CE_Assigned duplicate rule, tracking, or insert logic.
+    bom_encodings = []
+
+    try:
+
+        with open(file_path, "rb") as file_obj:
+
+            first_bytes = file_obj.read(4)
+
+        if first_bytes.startswith(b"\xef\xbb\xbf"):
+
+            bom_encodings.append(
+                "utf-8-sig"
+            )
+
+        elif first_bytes.startswith(b"\xff\xfe") or first_bytes.startswith(b"\xfe\xff"):
+
+            bom_encodings.append(
+                "utf-16"
+            )
+
+    except Exception:
+
+        bom_encodings = []
+
+    encodings = []
+
+    for encoding_name in bom_encodings + [
         "utf-8-sig",
         "utf-8",
         "cp1252",
+        "windows-1252",
+        "iso-8859-1",
         "latin1"
-    ]
+    ]:
+
+        if encoding_name not in encodings:
+
+            encodings.append(
+                encoding_name
+            )
 
     last_unicode_error = None
 
@@ -843,7 +880,7 @@ def read_csv_with_encoding_fallback(file_path, **read_csv_kwargs):
 
             return df
 
-        except UnicodeDecodeError as unicode_error:
+        except UnicodeError as unicode_error:
 
             last_unicode_error = unicode_error
 
@@ -854,11 +891,41 @@ def read_csv_with_encoding_fallback(file_path, **read_csv_kwargs):
                 + str(unicode_error)
             )
 
-    raise Exception(
-        "inventory not uploaded: uploaded CSV encoding is invalid. tried encodings: "
-        + ", ".join(encodings)
-    ) from last_unicode_error
+    try:
 
+        log_info(
+            "trying csv encoding : utf-8 with replacement"
+        )
+
+        df = pd.read_csv(
+            file_path,
+            encoding="utf-8",
+            encoding_errors="replace",
+            **read_csv_kwargs
+        )
+
+        log_info(
+            "csv encoding used : utf-8 with replacement"
+        )
+
+        return df
+
+    except Exception as final_error:
+
+        if last_unicode_error is not None:
+
+            raise Exception(
+                "inventory not uploaded: uploaded CSV encoding is invalid. tried encodings: "
+                + ", ".join(encodings)
+                + ", utf-8 with replacement"
+            ) from last_unicode_error
+
+        raise Exception(
+            "inventory not uploaded: uploaded CSV encoding is invalid. tried encodings: "
+            + ", ".join(encodings)
+            + ", utf-8 with replacement. actual error: "
+            + str(final_error)
+        ) from final_error
 
 def read_file(file_path):
 
