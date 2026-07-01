@@ -83,9 +83,25 @@ def slugify_sub_project(sub_project_name):
     sub_project = re.sub(r"\s+", "_", sub_project).strip("_")
     return sub_project
 def generate_table_name(project_name, sub_project_name):
-    project_clean = re.sub(r"[^a-z0-9]", "", project_name.lower())
-    sub_slug = slugify_sub_project(sub_project_name)
-    return f"{project_clean}_{sub_slug}_datas"
+    # Same as Laravel:
+    # Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)), '_')
+    table_slug = (
+        str(project_name).lower()
+        + "_"
+        + str(sub_project_name).lower()
+    )
+
+    # Laravel Str::slug with separator "_" converts hyphens to underscores.
+    table_slug = re.sub(r"[-]+", "_", table_slug)
+
+    # Laravel removes symbols like / instead of converting them to underscores.
+    table_slug = table_slug.replace("@", "at")
+    table_slug = re.sub(r"[^a-z0-9_\s]+", "", table_slug)
+
+    # Laravel converts spaces and existing underscores to the separator.
+    table_slug = re.sub(r"[_\s]+", "_", table_slug).strip("_")
+
+    return f"{table_slug}_datas"
 
 def export_to_excel(
     project_id,
