@@ -965,10 +965,10 @@ class Helpers
                     if ($response->getStatusCode() == 200) {
                         $responseData = json_decode($response->getBody(), true);
                         if (isset($responseData)) {
-							//  $responseData['practiceList'] = Helpers::filterPracticeList(
-							// 		$responseData['practiceList'] ?? [],
-							// 		$responseData['clientInfo']['id'] ?? null
-							// 	);//for filter manually deleted at projects in form_configuration table by tech
+							 $responseData['practiceList'] = Helpers::filterPracticeList(
+									$responseData['practiceList'] ?? [],
+									$responseData['clientInfo']['id'] ?? null
+								);//for filter manually deleted at projects in form_configuration table by tech
                             return $responseData;
                         } else {
                             throw new \Exception('practice on client not found in the API response');
