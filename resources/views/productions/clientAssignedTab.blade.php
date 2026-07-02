@@ -1854,6 +1854,8 @@ use Carbon\Carbon;
                     subStatus(status_code_id,'');
                     // KTApp.unblock('#myModal_status');
                 });
+
+                
             $(document).on('click', '.clickable-row', function(e) {
                e.preventDefault();
                 // var record_id = $(this).closest('tr').find('td:eq(0)').text();
@@ -2733,12 +2735,62 @@ function showSubmitPopup() {
             // $(document).on('click', '.manual-clickable-row', function(e) {
             //     $('#myModal_status').modal('show');
             // });
+            function resetManualStatusPopupFields() {
+                    var $modal = $('#myModal_status');
+                    var $form = $('#formConfiguration');
+
+                    if ($form.length && $form[0]) {
+                        $form[0].reset();
+                    }
+
+                    // remove hidden radio values added during previous validation submit
+                    $form.find('input[type="hidden"][name$="[]"]').remove();
+
+                    // clear hidden values except csrf
+                    $form.find('input[type="hidden"]').not('[name="_token"]').val('');
+
+                    // clear input and textarea values
+                    $form.find('input[type="text"], input[type="number"], input[type="date"], textarea').val('');
+
+                    // clear checkbox and radio
+                    $form.find('input[type="checkbox"], input[type="radio"]').prop('checked', false);
+
+                    // reset dropdowns to default
+                    $('#ar_status_code').val('242').trigger('change');
+                    $('#ar_action_code').val('1512').trigger('change');
+                    $('#ar_denial_codes').val('64').trigger('change');
+                    $('#ar_sub_status_codes').val('1').trigger('change');
+                    $('#chart_status').val('').trigger('change');
+
+                    // clear left-side labels
+                    $modal.find('label.pop-non-edt-val[id]').text('');
+
+                    // clear title
+                    $('#title_status').text('');
+
+                    // hide hold reason
+                    $('#ce_hold_reason').val('').hide();
+                    $('#ce_hold_reason_label').hide();
+
+                    // clear validation borders/messages
+                    $modal.find('.select2-selection').css('border', '');
+                    $modal.find('input, textarea, select').css('border-color', '');
+                    $('#check_p1, #radio_p1').hide();
+
+                    // remove dynamic added fields
+                    $modal.find('[id^="dynamicElement_"]').remove();
+
+                    $('#project_assign_save').prop('disabled', true);
+                }
             $(document).on('click', '.manual-clickable-row', function(e) {
+                e.preventDefault();
                 $existingCallerChartsWorkLogsInprocessCount = @json($existingCallerChartsWorkLogs);
                 
                 if($existingCallerChartsWorkLogsInprocessCount.length > 0 && $existingCallerChartsWorkLogsInprocessCount[0] !== null) {
                     return  js_notification('error', 'Alreday one record is inprocess please change that record status');
                 }
+                currentAssignedRow = null;
+                resetManualStatusPopupFields();
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
@@ -2758,6 +2810,8 @@ function showSubmitPopup() {
                             $('#myModal_status').modal('show');
                             startTime_db = response.startTimeVal;
                             $('select[name="chart_status"]').val('CE_Completed').trigger('change');
+                            $('#title_status').text('New');
+                            $('#project_assign_save').prop('disabled', false);
                         } else {
                             $('#myModal_status').modal('hide');
                             js_notification('error', 'Something went wrong');
@@ -3125,15 +3179,17 @@ function showSubmitPopup() {
         }
  
       function removeAssignedRowAfterSubmit() {
-                if (currentAssignedRow && currentAssignedRow.length) {
-                    if ($.fn.DataTable.isDataTable('#client_assigned_list')) {
-                        $('#client_assigned_list').DataTable().row(currentAssignedRow).remove().draw(false);
-                    } else {
-                        currentAssignedRow.remove();
-                    }
-
-                    currentAssignedRow = null;
+                if (!currentAssignedRow || !currentAssignedRow.length) {
+                    return;
                 }
+
+                if ($.fn.DataTable.isDataTable('#client_assigned_list')) {
+                    $('#client_assigned_list').DataTable().row(currentAssignedRow).remove().draw(false);
+                } else {
+                    currentAssignedRow.remove();
+                }
+
+                currentAssignedRow = null;
 
                 var total = parseInt($('#assigned_showing_text').attr('data-total'), 10) || 0;
                 var first = parseInt($('#assigned_showing_text').attr('data-first'), 10) || 0;
