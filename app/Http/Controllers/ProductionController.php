@@ -1272,7 +1272,7 @@ class ProductionController extends Controller
         }
     }
 
-    public function clientsStore(Request $request,$clientName,$subProjectName) {
+    public function clientsStore(Request $request,$clientName,$subProjectName) {     
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
             try {
                 // $data = $request->all();
@@ -1288,13 +1288,28 @@ class ProductionController extends Controller
                 $modelClass = "App\\Models\\" . $modelName.'Datas';
                 $originalModelClass = "App\\Models\\" . $modelName;
                 // $modelClass = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',ucfirst($decodedClientName).ucfirst($decodedsubProjectName)).'Datas';
+                // $data = [];
+                // foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
+                //     if (is_array($value)) {
+                //         // $data[$key] = implode('_el_', $value);
+                //         $data[$key] = in_array(null, $value, true) ? null : implode('_el_', $value);
+                //     } else {
+                //         $data[$key] = $value;
+                //     }
+                // }
                 $data = [];
-                foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
+                foreach ($request->except('_token', 'parent', 'child', 'page') as $key => $value) {
                     if (is_array($value)) {
-                        // $data[$key] = implode('_el_', $value);
-                        $data[$key] = in_array(null, $value, true) ? null : implode('_el_', $value);
+                        // Remove empty/null values from array
+                        $filteredValue = array_filter($value, function ($item) {
+                            return $item !== null && $item !== '';
+                        });
+                        // If all values are empty, store null
+                        $data[$key] = count($filteredValue) > 0
+                            ? implode('_el_', $filteredValue)
+                            : null;
                     } else {
-                        $data[$key] = $value;
+                        $data[$key] = $value === '' ? null : $value;
                     }
                 }
                 $data['invoke_date'] = date('Y-m-d',strtotime($data['invoke_date']));
@@ -1538,7 +1553,12 @@ class ProductionController extends Controller
                             $callChartWorkLog->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time] );
                         }
                    }
-                   return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName.'?parent=' .request()->parent .'&child=' .request()->child);
+                //    return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName.'?parent=' .request()->parent .'&child=' .request()->child);
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'Data updated successfully',
+                        'redirect_url' => url('/projects_assigned/'.$clientName.'/'.$subProjectName.'?parent=' . request()->parent . '&child=' . request()->child)
+                    ]);
             } else {
                 
                 $data['invoke_date'] = date('Y-m-d');
@@ -1604,6 +1624,12 @@ class ProductionController extends Controller
                         //     $duplicateDatasRecord->update($data);
                         // } 
                         $duplicateMsg = 'Duplicate Entry';
+                        if ($request->ajax() || $request->wantsJson()) {
+                            return response()->json([
+                                'status' => 'error',
+                                'message' => $duplicateMsg
+                            ], 409);
+                        }
                         return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName)->with('error', $duplicateMsg);
                     } else {
                         $orginalData = $originalModelClass::create($originalData);
@@ -1643,7 +1669,12 @@ class ProductionController extends Controller
                     }
                 }
                 
-                return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName.'?parent=' .request()->parent .'&child=' .request()->child);
+                // return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName.'?parent=' .request()->parent .'&child=' .request()->child);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Data updated successfully',
+                    'redirect_url' => url('/projects_assigned/'.$clientName.'/'.$subProjectName.'?parent=' . request()->parent . '&child=' . request()->child)
+                ]);
             }
                 // $originalModelClass = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',ucfirst($decodedClientName).ucfirst($decodedsubProjectName));
 
@@ -1661,13 +1692,35 @@ class ProductionController extends Controller
                 // }
                 
             } catch (\Exception $e) {
-                log::debug($e->getMessage());
-                return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName.'?parent=' .request()->parent .'&child=' .request()->child)->with('error','An unexpected error occurred. Please recheck data once.');
-              
+                \Log::error('clientsStore error', [
+                    'message' => $e->getMessage(),
+                    'line' => $e->getLine(),
+                    'file' => $e->getFile(),
+                    'request_data' => $request->except('_token')
+                ]);
+
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => $e->getMessage()
+                    ], 500);
+                }
+
+                return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName.'?parent=' .request()->parent .'&child=' .request()->child)
+                    ->with('error','An unexpected error occurred. Please recheck data once.');
             }
-        } else {
+           
+       } else {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Session expired. Please login again.',
+                    'redirect_url' => url('/')
+                ], 401);
+            }
+
             return redirect('/');
-        }
+        }      
     }
 
     public function assigneeChange(Request $request) {

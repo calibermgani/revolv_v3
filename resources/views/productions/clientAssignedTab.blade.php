@@ -522,10 +522,15 @@ use Carbon\Carbon;
                                         </table>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <div class="ml-3">
+                                       <div class="ml-3"
+                                            id="assigned_showing_text"
+                                            data-first="{{ $assignedProjectDetails->firstItem() != null ? $assignedProjectDetails->firstItem() : 0 }}"
+                                            data-total="{{ $assignedProjectDetails->total() }}"
+                                            data-per-page="{{ $assignedProjectDetails->perPage() }}">
                                             Showing {{ $assignedProjectDetails->firstItem() != null ? $assignedProjectDetails->firstItem() : 0 }} to {{ $assignedProjectDetails->lastItem() != null ? $assignedProjectDetails->lastItem() : 0 }} of {{ $assignedProjectDetails->total() }} entries
                                         </div>
-                                         <div>
+                                        
+                                        <div id="assigned_pagination">
                                             {{ $assignedProjectDetails->appends(request()->all())->links() }}
                                         </div>
                                     </div>                                    
@@ -987,7 +992,7 @@ use Carbon\Carbon;
                                                                     </span><span id="elapsedTime" class="timer_2"></span>
                                                                 </p>
 
-                                                                <button type="submit" class="btn1" id="project_assign_save" style="margin-right: -2rem">Submit</button>
+                                                                <button type="button" class="btn1" id="project_assign_save" style="margin-right: -2rem">Submit</button>
                                                             </div>
                                                         </div>
                                                         {!! Form::close() !!}
@@ -1579,6 +1584,7 @@ use Carbon\Carbon;
         });
         $('.date_range').val('');
         var startTime_db;
+        var currentAssignedRow = null;
         $(document).ready(function() {
             var indvidualSearchFieldsCount = Object.keys(@json($projectColSearchFields)).length;
             var resourceName = @json($resourceName);
@@ -1849,9 +1855,12 @@ use Carbon\Carbon;
                     // KTApp.unblock('#myModal_status');
                 });
             $(document).on('click', '.clickable-row', function(e) {
-              
+               e.preventDefault();
                 // var record_id = $(this).closest('tr').find('td:eq(0)').text();
                 // var record_id = $(this).closest('tr').find('td:eq(1)').text();
+                currentAssignedRow = $(this).closest('tr');
+                 $('#project_assign_save').prop('disabled', true);
+                 $('#myModal_status').modal('show');
                 var record_id =  $(this).closest('tr').find('#table_id').text();
                 // qaFormRecordId = record_id;console.log(record_id,'record_id',qaFormRecordId);
                 
@@ -1865,21 +1874,28 @@ use Carbon\Carbon;
                 $.ajax({
                     url: "{{ url('caller_chart_work_logs') }}",
                     method: 'POST',
+                    global: false,
                     data: {
                         record_id: record_id,
                         clientName: clientName,
                         subProjectName: subProjectName
                     },
-                    success: function(response) {
+                  success: function(response) {
                         if (response.success == true) {
-                             $('#myModal_status').modal('show');
                             startTime_db = response.startTimeVal;
-                            
+                            $('#project_assign_save').prop('disabled', false);
                         } else {
                             $('#myModal_status').modal('hide');
+                            $('#project_assign_save').prop('disabled', false);
                             js_notification('error', 'Something went wrong');
                         }
                     },
+                    error: function() {
+                     
+                        $('#myModal_status').modal('hide');
+                        $('#project_assign_save').prop('disabled', false);
+                        js_notification('error', 'Unable to start work log');
+                    }
                 });
 
                 // $('#myModal_status').modal('show');
@@ -2166,106 +2182,9 @@ use Carbon\Carbon;
                 function checkDuplicate(duplicateColumnData) {
                     return new Promise((resolve, reject) => {
                         resolve(0);
-                        // if (Object.keys(duplicateColumnData).length > 0) {
-                        //     const duplicateObj = { ...duplicateColumnData };
-                        //     $.ajaxSetup({
-                        //         headers: {
-                        //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                        //         },
-                        //     });
-
-                        //     $.ajax({
-                        //         url: "{{ url('manual_duplicate_column_check') }}",
-                        //         method: 'POST',
-                        //         data: duplicateObj,
-                        //         success: function (response) {
-                        //             if (response.success === true) {
-                        //                 resolve(0); 
-                        //             } else {
-                        //                 js_notification('error', 'Duplicate Entry');
-                        //                 resolve(1);
-                        //             }
-                        //         },
-                        //         error: function () {
-                        //             reject(-1); 
-                        //         },
-                        //     });
-                        // } else {
-                        //     resolve(0); 
-                        // }
-                    });
+                                           });
                 }
 
-                // var statusInput = 0; 
-                // if ( $('#ar_status_code').val() == 242 || $('#ar_denial_codes').val() == 64) {
-                //      e.preventDefault();  
-                //       inputTypeValue = 1;
-                      
-                //    swal.fire({
-                //                 text: $('#ar_status_code').val() == 242 && $('#ar_denial_codes').val() == 64 ? "Status code & Denial code None is selected, do you want to proceed? " : ($('#ar_status_code').val() == 242 ? "Status code None is selected, do you want to proceed?" : "Denial code None is selected, do you want to proceed?"),
-                //                 icon: "success",
-                //                 buttonsStyling: false,
-                //                 showCancelButton: true,
-                //                 confirmButtonText: "Yes",
-                //                 cancelButtonText: "No",
-                //                 reverseButtons: true,
-                //                 customClass: {
-                //                     confirmButton: "btn font-weight-bold btn-white-black",
-                //                     cancelButton: "btn font-weight-bold btn-light-danger",
-                //                 }
-
-                //             }).then(function(result) {
-                //                 if (result.value == true) {
-                //                   statusInput = 1;
-
-                //                 } else {
-                //                    statusInput = 0;
-                //                 }
-                //             });
-
-                // }
-                //  console.log(statusInput,'statusInput');
-                 
-                // checkDuplicate(duplicateColumnData)
-                //     .then((duplicateValue) => {
-                   
-                //          if (inputTypeValue == 0 && inputTypeRadioValue == 0 && duplicateValue == 0)  {
-                //             swal.fire({
-                //                 text: "Do you want to update1?",
-                //                 icon: "success",
-                //                 buttonsStyling: false,
-                //                 showCancelButton: true,
-                //                 confirmButtonText: "Yes",
-                //                 cancelButtonText: "No",
-                //                 reverseButtons: true,
-                //                 customClass: {
-                //                     confirmButton: "btn font-weight-bold btn-white-black",
-                //                     cancelButton: "btn font-weight-bold btn-light-danger",
-                //                 }
-
-                //             }).then(function(result) {
-                //                 if (result.value == true) {
-                //                     KTApp.block('#myModal_status', {
-                //                         overlayColor: '#000000',
-                //                         state: 'danger',
-                //                         opacity: 0.1,
-                //                         message: 'Fetching...',
-                //                     });
-                //                     document.querySelector('#formConfiguration').submit();
-                //                  //   KTApp.unblock('#myModal_status');
-
-                //                 } else {
-
-                //                 }
-                //             });
-
-                //           } else {
-                //             return false;
-                //          }
-                //     })
-                //     .catch((error) => {
-                //         console.error('Error:', error);
-                //     });
                 var statusInput = 0; 
                 if ($('#ar_status_code').val() == 242 || $('#ar_denial_codes').val() == 64) {
                     e.preventDefault();  
@@ -2318,6 +2237,7 @@ use Carbon\Carbon;
                             console.error('Error:', error);
                         });
                 }
+      
 
 // Function to show submit confirmation
 function showSubmitPopup() {
@@ -2335,13 +2255,7 @@ function showSubmitPopup() {
         }
     }).then(function(result) {
         if (result.value == true) {
-            KTApp.block('#myModal_status', {
-                overlayColor: '#000000',
-                state: 'danger',
-                opacity: 0.1,
-                message: 'Fetching...',
-            });
-            document.querySelector('#formConfiguration').submit();
+            submitFormConfigurationAjax();
         }
     });
 }
@@ -2742,333 +2656,7 @@ function showSubmitPopup() {
                     });
                 });
             
-                    // function handleBlurEvent(clientClass, annexClass) {
-                    //     var clientInf = $(clientClass).val().split(',').map(value => value.trim()); 
-                    //        clientInf = clientInf.filter(function(item) {
-                    //             return item && item.trim();
-                    //         });
-                    //     var annexInf = $(annexClass).val().split(',').map(value => value.trim()); 
-                    //     annexInf = annexInf.filter(function(item) {
-                    //             return item && item.trim();
-                    //         });
-                    //     let notesMap = {};
-                    //     var previousValue = [];
-                    //     var processedText = clientClass.replace('.', '').toUpperCase();
-                    //     var annexInfMap = {};
-                    //     var notes = $('.annex_coder_trends').val().trim();
-
-                    //     annexInf.forEach(function (value, index) {
-                    //         annexInfMap[value] = (annexInfMap[value] || 0)+1 ;
-                    //     });
-                                 
-                    //     for (var i = 0; i < clientInf.length; i++) {
-                    //         if (annexInf[i] !== undefined && annexInf[i] !== '') {
-                    //             if (clientInf[0] !== '' && clientInf[i] !== annexInf[i]) {                                    
-                    //                 if (clientInf[i].includes('-') && annexInf[i].includes('-')) {
-                    //                     var clientParts = clientInf[i].split('-');
-                    //                     var annexParts = annexInf[i].split('-');
-                    //                     const clientPart0 = clientParts[0].trim(); 
-                    //                     const annexPart0 = annexParts[0].trim(); 
-                    //                     const part1 = clientParts[1].trim(); 
-                    //                     const part2 = annexParts[1].trim(); 
-                    //                     if(part1 != part2) {
-                    //                         notesMap[part1] = processedText + ' - modifier ' +  part1 + ' changed to ' +  part2 + ' belongs to ' +  clientPart0;
-                    //                         previousValue[part1] = processedText + ' - ' + part1;
-                    //                     }
-                    //                     var noteLines =  notes.split('\n');
-                    //                     for (var j = 0; j < noteLines.length; j++) {
-                    //                         if(noteLines[j].includes(processedText + ' - modifier ' +  part1)) {
-                    //                             // noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                    //                             // notes = noteLines;
-                    //                             noteLines = noteLines.filter(line => line !== noteLines[j]);
-                    //                             notes = noteLines.join('\n');      
-
-                    //                             var lines = notes.split('\n');
-                    //                             var matchedLine = lines.find(lines => lines.includes(processedText + ' - modifier ' +  part1));
-                    //                             if (matchedLine) {
-                    //                                 notes = lines.filter(lines => lines !== matchedLine).join('\n');
-                    //                             }             
-                    //                         }
-                    //                     }
-                    //                     if(clientPart0 != annexPart0) {
-                    //                         notesMap[clientPart0] = processedText + ' - ' + clientPart0 + ' changed to ' + annexPart0;
-                    //                         previousValue[clientPart0] = processedText + ' - ' + clientPart0;                                          
-                    //                     }
-                    //                     var lines1 = notes.split('\n');
-                    //                      var matchedLine = lines1.find(lines => lines.includes(processedText + ' - ' + clientPart0));
-                    //                      if (matchedLine) {
-                    //                         notes = lines1.filter(lines => lines !== matchedLine).join('\n');
-                    //                      }
-
-                    //                     var noteLines =  notes.split('\n');
-                    //                     for (var j = 0; j < noteLines.length; j++) {
-                    //                             if(noteLines[j].includes(processedText + ' - ' + clientPart0)){
-                    //                                 // noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                    //                                 // notes = noteLines;   
-                    //                                 noteLines = noteLines.filter(line => line !== noteLines[j]);
-                    //                                 notes = noteLines.join('\n');                                
-                    //                             }
-                    //                     }
-                    //                 } else if (clientInf[i].includes('-') && !annexInf[i].includes('-')) {
-                    //                     var clientParts = clientInf[i].split('-');
-                    //                     const client1 = clientParts[0].trim(); 
-                    //                     const annex1 =annexInf[i].trim(); 
-                    //                     const cpart1 = clientParts[1].trim();
-                    //                     notesMap[cpart1] = processedText + ' - modifier ' +  cpart1 + ' removed belongs to ' + client1;
-                    //                     previousValue[cpart1] = processedText + ' - ' + cpart1;
-
-                    //                     var lines = notes.split('\n');
-                    //                     var matchedLine = lines.find(lines => lines.includes(processedText + ' - modifier ' +  cpart1));
-                    //                     if (matchedLine) {
-                    //                         notes = lines.filter(lines => lines !== matchedLine).join('\n');
-                    //                     } 
-                    //                     if(client1 !== annex1) {
-                    //                         notesMap[i] = processedText + ' - ' + client1 + ' changed to ' + annex1;//console.log('else if',client1,annex1,notesMap,notes);
-                    //                         previousValue[client1] = processedText + ' - ' + client1;
-                    //                     }
-
-                    //                     var noteLines =  notes.split('\n');
-                    //                     for (var j = 0; j < noteLines.length; j++) {
-                    //                         if(noteLines[j].includes(processedText + ' - ' + client1)){
-                    //                             // noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                    //                             // notes = noteLines;    
-                    //                             noteLines = noteLines.filter(line => line !== noteLines[j]);
-                    //                             notes = noteLines.join('\n');                                                                                       
-                    //                         }
-                    //                     }
-                    //                 } else if (!clientInf[i].includes('-') && annexInf[i].includes('-')) {
-                    //                     var parts = annexInf[i].split('-');
-                    //                     const client2 = clientInf[i].trim(); 
-                    //                     const annex2 = parts[0].trim();
-                    //                     const apart1 = parts[0].trim(); 
-                    //                     const apart2 = parts[1].trim(); 
-                    //                     notesMap[apart1] = processedText + ' - modifier ' +  parts[1] + ' added to ' +  client2;
-                    //                     previousValue[client2] = processedText + ' - ' + client2;
-                    //                     var noteLines =  notes.split('\n');
-                    //                     for (var j = 0; j < noteLines.length; j++) {
-                    //                         if(noteLines[j].includes(processedText + ' - modifier ')){
-                    //                             // noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                    //                             // notes = noteLines;
-                    //                             noteLines = noteLines.filter(line => line !== noteLines[j]);
-                    //                             notes = noteLines.join('\n');                                      
-                    //                         }
-                    //                     }
-                    //                     var lines = notes.split('\n');
-                    //                     var matchedLine = lines.find(lines => lines.includes(processedText + ' - modifier '));
-                    //                     if (matchedLine) {
-                    //                         notes = lines.filter(lines => lines !== matchedLine).join('\n');
-                    //                     }
-                    //                     if(client2 != annex2) {
-                    //                         notesMap[i] = processedText + ' - ' + client2 + ' changed to ' + annex2;
-                    //                         previousValue[clientInf[i]] = processedText + ' - ' + clientInf[i];
-                    //                     }
-                    //                     var noteLines =  notes.split('\n');
-                    //                     for (var j = 0; j < noteLines.length; j++) {
-                    //                             if(noteLines[j].includes(processedText + ' - ' + client2)){
-                    //                                 // noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                    //                                 // notes = noteLines; 
-                    //                                 noteLines = noteLines.filter(line => line !== noteLines[j]);
-                    //                                 notes = noteLines.join('\n');                                    
-                    //                             }
-                    //                     }//console.log('else if1',client2,annex2,notesMap,notes);
-                    //                 } else {
-                    //                     notesMap[i] = processedText + ' - ' + clientInf[i] + ' changed to ' + annexInf[i];
-                    //                     previousValue[clientInf[i]] = processedText + ' - ' + clientInf[i];
-                    //                     var lines =  notes.split('\n');
-                    //                     var matchedLine = lines.find(line => line.includes(processedText + ' - ' + clientInf[i]));
-                    //                     var matchedLine1 = lines.find(line => line.includes(processedText + ' - modifier ') && line.includes(clientInf[i]) );
-                                    
-                    //                     if (matchedLine || matchedLine1) {
-                    //                         lines = lines.filter(line => line !== matchedLine && line !== matchedLine1);
-                    //                         notes = lines.join('\n');
-                    //                     }
-                    //                     var noteLines =  notes.split('\n');
-                    //                     for (var j = 0; j < noteLines.length; j++) {
-                    //                         if(noteLines[j].includes(processedText + ' - ' + clientInf[i])){
-                    //                             noteLines = noteLines.filter(line => line !== noteLines[j]);
-                    //                             notes = noteLines.join('\n');                                               
-                    //                         }
-                    //                     }
-                    //                 }
-                    //                     var lines =  notes.split('\n');
-                    //                     var matchedLine = lines.find(line => line.includes(processedText + ' - ' + clientInf[i]));
-                    //                     var matchedLine1 = lines.find(line => line.includes(processedText + ' - modifier ') && line.includes(clientInf[i]));
-                                    
-                    //                     if (matchedLine || matchedLine1) {
-                    //                         lines = lines.filter(line => line !== matchedLine && line !== matchedLine1);
-                    //                         notes = lines.join('\n');
-                    //                     }
-                    //                     var noteLines =  notes.split('\n');
-                    //                     for (var j = 0; j < noteLines.length; j++) {
-                    //                         if(noteLines[j].includes(processedText + ' - ' + clientInf[i])){
-                    //                             noteLines = noteLines.filter(line => line !== noteLines[j]);
-                    //                             notes = noteLines.join('\n');                                               
-                    //                         }
-                    //                     }                             
-                    //             } else {
-                    //                 var lines = notes.split('\n');
-                    //                 if (clientInf[i].includes('-')) {
-                    //                     var clientParts = clientInf[i].split('-');
-                    //                     var matchedLine = lines.find(line => line.includes(processedText + ' - ' + clientParts[0]));// console.log(annexInf[i],'annexInf[i]',matchedLine,lines);
-                    //                     var matchedLine1 = lines.find(line => line.includes(processedText + ' - modifier ' + clientParts[1])); //console.log(annexInf[i],'annexInf[i]',matchedLine1,lines);
-                    //                     var matchedLine2 = lines.find(line => line.includes(processedText + ' - ' + clientParts[0] + ' changed to '));// console.log(annexInf[i],'annexInf[i]',matchedLine2,lines);
-                                   
-                    //                     if (matchedLine || matchedLine1 || matchedLine2) {
-                    //                         lines = lines.filter(line => line !== matchedLine && line !== matchedLine1  && line !== matchedLine2);
-                    //                         notes = lines.join('\n');
-                    //                     }
-                    //                 } else {
-                    //                     var matchedLine = lines.find(line => line.includes(processedText + ' - ' + clientInf[i]));
-                    //                     var matchedLine1 = lines.find(line => line.includes(processedText + ' - modifier ') && line.includes(clientInf[i]));
-                    //                     if (matchedLine || matchedLine1) {
-                    //                         lines = lines.filter(line => line !== matchedLine && line !== matchedLine1);
-                    //                         notes = lines.join('\n');
-                    //                     }
-                    //                     var noteLines =  notes.split('\n');
-                    //                     for (var j = 0; j < noteLines.length; j++) {
-                    //                         if(noteLines[j].includes(processedText + ' - ' + clientInf[i])){
-                    //                             // noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                    //                             // notes = noteLines;  
-                    //                             noteLines = noteLines.filter(line => line !== noteLines[j]);
-                    //                             notes = noteLines.join('\n');                                                
-                    //                         }
-                    //                     }      
-                    //                }                       
-                                                              
-                    //             }
-                    //             if (annexInfMap[annexInf[i]] > 0) {
-                    //                 annexInfMap[annexInf[i]]--;
-                    //                 if (annexInfMap[annexInf[i]] === 0) {
-                    //                     delete annexInfMap[annexInf[i]];
-                    //                 }
-                    //             }
-                            
-                    //         } else {
-                    //             if(annexInf.length > 1 && annexInf[0] == ''){
-                    //                 notesMap[clientInf[i]] = processedText + ' - ' + clientInf[i] + ' removed';
-                    //             } else if(annexInf[0] !== '') {
-                    //                 notesMap[clientInf[i]] = processedText + ' - ' + clientInf[i] + ' removed';
-                    //             } else {
-                    //                   var lines = notes.split('\n');
-                    //                    if (clientInf[i].includes('-')) {
-                    //                     var clientParts = clientInf[i].split('-');
-                    //                     var matchedLine = lines.find(line => line.includes(processedText + ' - ' + clientParts[0])); //console.log('else no -', matchedLine, clientParts[0],lines);
-                    //                     var matchedLine2 = lines.find(line => line.includes(processedText + ' - ' + clientParts[0] + ' changed to ')); //console.log('else no -', matchedLine2, clientParts[0],lines);
-                    //                     var matchedLine1 = lines.find(line => line.includes(processedText + ' - modifier ' + clientParts[1])); //console.log('else no -', matchedLine1,clientParts[1]);
-                    //                     if (matchedLine || matchedLine1 || matchedLine2) {
-                    //                         lines = lines.filter(line => line !== matchedLine && line !== matchedLine1 && line !== matchedLine2);
-                    //                         notes = lines.join('\n');
-                    //                     }
-                    //                 } else {
-                    //                     var matchedLine = lines.find(line => line.includes(processedText + ' - ' + clientInf[i]));
-                    //                     var matchedLine1 = lines.find(line => line.includes(processedText + ' - modifier ') && line.includes(clientInf[i]));
-                    //                     if (matchedLine || matchedLine1) {
-                    //                         lines = lines.filter(line => line !== matchedLine && line !== matchedLine1);
-                    //                         notes = lines.join('\n');
-                    //                     }
-                    //                     var noteLines =  notes.split('\n');
-                    //                     for (var j = 0; j < noteLines.length; j++) {
-                    //                         if(noteLines[j].includes(processedText + ' - ' + clientInf[i])){
-                    //                             // noteLines = noteLines.filter((item, index) => index !== j).join('\n');
-                    //                             // notes = noteLines;  
-                    //                             noteLines = noteLines.filter(line => line !== noteLines[j]);
-                    //                             notes = noteLines.join('\n');                                                    
-                    //                         }
-                    //                     }      
-                    //                }               
-                    //             }
-                    //             previousValue[clientInf[i]] = processedText + ' - ' + clientInf[i];                            
-                    //         }
-                    //     }
-                      
-                    //     for (var key in annexInfMap) {
-                    //         if (annexInfMap.hasOwnProperty(key) && annexInfMap[key] > 0) {
-                    //             if(key && (clientInf[0] !== '')) {
-                    //                 notesMap[key] = processedText + ' - ' + key + ' added';
-                    //                 var lines = notes.split('\n');
-                    //                 var matchedLine = lines.find(line => line.includes(notesMap[key]));
-                    //                 if (matchedLine) {
-                    //                     notes = lines.filter(line => line !== matchedLine).join('\n');
-                    //                 }
-                    //             }
-                    //         } 
-                    //     }
-                    //      clientInf.forEach(function (value) {
-                    //         if (notesMap[value]) { 
-                    //             var lines = notes.split('\n');
-                    //             if (lines.includes(previousValue[value])) {
-                    //                  var matchedLine = lines.find(line => line.includes(previousValue[value]));
-                    //                 if (matchedLine !== undefined) {
-                    //                     notes = notes.replace(matchedLine, notesMap[value]);
-                    //                 } else {
-                    //                     notes += '\n' + notesMap[value];
-                    //                 }
-                    //             } else {                                    
-                    //                 if (notes === "") {
-                    //                     notes += notesMap[value];
-                    //                 } else {
-                    //                     notes += '\n' + notesMap[value];
-                    //                 }
-                    //             }
-                    //             delete notesMap[value];
-                    //         }
-                    //     });
-
-                    //     // Add remaining notes for new additions
-                    //     for (var key in notesMap) {
-                    //         var lines = notes.split('\n');
-                    //         if (notesMap.hasOwnProperty(key)) {
-                    //             notes += '\n' + notesMap[key];
-                    //         }
-                    //     }
-                    //         var notes1 = notes.split('\n').filter(line => line.trim() !== '');
-                    //         var matchedLine = notes1.find(line => line.includes(processedText + ' - ') && line.includes(' added') );//console.log(annexInf,annexInf.length,notes,'modifiedString',matchedLine,notes1);
-                    //         if (matchedLine !== undefined && !matchedLine.includes(' added to')) {
-                    //             let modifiedString = matchedLine.replace(processedText + ' - ', '').replace(' added', '');//console.log(modifiedString,'matchedLine',matchedLine,notes1);
-                    //             if (!annexInf.includes(modifiedString)) {
-                    //                 notes1 = notes1.filter(line => line !== matchedLine);
-                    //                 notes = notes1.join('\n');
-                    //             }                        
-                    //         }
-                                     
-                    //         var noteLines11 =  notes.split('\n').filter(line => line.trim() !== '');
-                    //         var filteredNoteLines = [];
-                    //         for (var q = 0; q < noteLines11.length; q++) { 
-                              
-                    //             if(noteLines11[q].includes(processedText + ' - ') && noteLines11[q].includes(' added') && !noteLines11[q].includes(' added to')){                                  
-                    //                 let modifiedString = noteLines11[q].replace(processedText + ' - ', '').replace(' added', '');//console.log(modifiedString,'noteLines11[q]',noteLines11[q],noteLines11);
-                    //                 if (!annexInf.includes(modifiedString)) {
-                    //                     noteLines11 = noteLines11.filter(line => line !== noteLines11[q]);
-                    //                     notes = noteLines11.join('\n');  
-                    //                 }                                           
-                    //             }
-                    //             // if(annexInf.length == 0 && noteLines11[q].includes(processedText + ' - ')) {
-                    //             //     console.log(noteLines11[q],'q',q,noteLines11.length);   
-                    //             //     noteLines11 = noteLines11.filter(line => line !== noteLines11[q]);
-                    //             //     notes = noteLines11.join('\n');  
-                    //             // }   
-                    //                 if (annexInf.length == 0 && noteLines11[q].includes(processedText + ' - ')) {
-                    //                 } else {
-                    //                     filteredNoteLines.push(noteLines11[q]);
-                    //                 }
-                    //         }      
-                    //         noteLines11 = filteredNoteLines;
-                    //         notes = noteLines11.join('\n');
-
-                    //     let noteLines1 = notes.trim().split('\n');
-                    //     let uniqueNotes = Array.from(new Set(noteLines1));
-                    //     let finalNotes = uniqueNotes.join('\n');
-                    //     $('.annex_coder_trends').val(finalNotes);
-                    // }
-                   
-                    // $('.am_cpt').on('blur', function () {
-                    //     handleBlurEvent('.cpt', '.am_cpt');
-                    // });
-
-                    // $('.am_icd').on('blur', function () {
-                    //     handleBlurEvent('.icd', '.am_icd');
-                    // });
-
+                  
             function toggleCoderTrends() {
                 var hasAMFields = $('.am_cpt').length > 0 && $('.am_icd').length > 0;
                 if (hasAMFields) {
@@ -3452,5 +3040,138 @@ function showSubmitPopup() {
         document.addEventListener("DOMContentLoaded", function() {
             updateTime();
         });
+        
+        function submitFormConfigurationAjax() {
+            var form = $('#formConfiguration')[0];
+            var formData = new FormData(form);
+        
+            $('#project_assign_save').prop('disabled', true);
+            $.ajax({
+                url: $('#formConfiguration').attr('action'), // this gets Laravel Form::open url
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                cache: false,
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+        
+                success: function(response) {
+                    $('#project_assign_save').prop('disabled', false);
+        
+                    if (typeof KTApp !== 'undefined') {
+                        KTApp.unblock('#myModal_status');
+                    }
+        
+                    if (response.status === 'success' || response.success === true) {
+                        js_notification('success', response.message || 'Data updated successfully');
+                        console.log(response.message);
+        
+                        $('#myModal_status').modal('hide');
+                       removeAssignedRowAfterSubmit();
+        
+                    return false;
+                    }
+                        js_notification('error', response.message || 'Something went wrong');
+                    
+                },
+        
+                error: function(xhr) {
+                    $('#project_assign_save').prop('disabled', false);
+        
+                    if (typeof KTApp !== 'undefined') {
+                        KTApp.unblock('#myModal_status');
+                    }
+        
+                    if (xhr.status === 401) {
+                        js_notification('error', 'Session expired. Please login again.');
+        
+                        if (xhr.responseJSON && xhr.responseJSON.redirect_url) {
+                            window.location.href = xhr.responseJSON.redirect_url;
+                        }
+        
+                        return;
+                    }
+        
+                    if (xhr.status === 409) {
+                        js_notification('error', xhr.responseJSON?.message || 'Duplicate Entry');
+                        return;
+                    }
+        
+                    if (xhr.status === 422) {
+                        var errorMessage = 'Validation error';
+        
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            errorMessage = '';
+        
+                            $.each(xhr.responseJSON.errors, function(key, value) {
+                                errorMessage += value[0] + '<br>';
+                            });
+                        }
+        
+                        js_notification('error', errorMessage);
+                        return;
+                    }
+        
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        js_notification('error', xhr.responseJSON.message);
+                    } else {
+                        js_notification('error', 'Server error. Please try again.');
+                    }
+                }
+            });
+        }
+ 
+      function removeAssignedRowAfterSubmit() {
+                if (currentAssignedRow && currentAssignedRow.length) {
+                    if ($.fn.DataTable.isDataTable('#client_assigned_list')) {
+                        $('#client_assigned_list').DataTable().row(currentAssignedRow).remove().draw(false);
+                    } else {
+                        currentAssignedRow.remove();
+                    }
+
+                    currentAssignedRow = null;
+                }
+
+                var total = parseInt($('#assigned_showing_text').attr('data-total'), 10) || 0;
+                var first = parseInt($('#assigned_showing_text').attr('data-first'), 10) || 0;
+                var perPage = parseInt($('#assigned_showing_text').attr('data-per-page'), 10) || 25;
+
+                total = total - 1;
+
+                if (total < 0) {
+                    total = 0;
+                }
+
+                $('#assigned_showing_text').attr('data-total', total);
+
+                var visibleRows = $('#client_assigned_list tbody tr').filter(function() {
+                    return $(this).find('td').length > 1 && !$(this).find('td').hasClass('dataTables_empty');
+                }).length;
+
+                var last = 0;
+
+                if (visibleRows > 0 && total > 0) {
+                    last = first + visibleRows - 1;
+
+                    if (last > total) {
+                        last = total;
+                    }
+                } else {
+                    first = 0;
+                    last = 0;
+                }
+
+                $('#assigned_showing_text').text('Showing ' + first + ' to ' + last + ' of ' + total + ' entries');
+
+                if (total <= perPage) {
+                    $('#assigned_pagination').hide();
+                } else {
+                    $('#assigned_pagination').show();
+                }
+            }
+
     </script>
 @endpush
