@@ -268,10 +268,10 @@ class DashboardController extends Controller
             }
 
             $data = json_decode($response->getBody(), true);
-            $data['practiceList'] = Helpers::filterPracticeList(
-                $data['practiceList'] ?? [],
-                $data['clientInfo']['id'] ?? null
-            );
+            // $data['practiceList'] = Helpers::filterPracticeList(
+            //     $data['practiceList'] ?? [],
+            //     $data['clientInfo']['id'] ?? null
+            // );
             $subprojects = $data['practiceList'] ?? [];
             $clientDetails = $data['clientInfo'];
             $subProjectsWithCount = [];
@@ -617,10 +617,10 @@ class DashboardController extends Controller
                 }
 
                 $data = json_decode($response->getBody(), true);
-                $data['practiceList'] = Helpers::filterPracticeList(
-                        $data['practiceList'] ?? [],
-                        $data['clientInfo']['id'] ?? null
-                    );
+                // $data['practiceList'] = Helpers::filterPracticeList(
+                //         $data['practiceList'] ?? [],
+                //         $data['clientInfo']['id'] ?? null
+                //     );
                 $subprojects = $data['practiceList'] ?? [];
                 $resourceList = $data['resourceList'] ?? [];
                 $clientDetails = $data['clientInfo'];
@@ -989,7 +989,8 @@ class DashboardController extends Controller
                         // $data = json_decode($response->getBody(), true);
                         $responseData = json_decode($response->getBody(), true);
                         if (!empty($responseData['clientList'])) {
-                            return Helpers::getFilteredClientProjects($responseData['clientList']);
+                            return $responseData['clientList'];
+                            //return Helpers::getFilteredClientProjects($responseData['clientList']);
                         } else {
                             throw new \Exception('clientList not found in the API response');
                         }

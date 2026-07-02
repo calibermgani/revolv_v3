@@ -1085,7 +1085,8 @@ class ProjectController extends Controller
                         // $data = json_decode($response->getBody(), true);
                         $responseData = json_decode($response->getBody(), true);
                         if (!empty($responseData['clientList'])) {
-                            return Helpers::getFilteredClientProjects($responseData['clientList']);
+                              return $responseData['clientList'];
+                            //return Helpers::getFilteredClientProjects($responseData['clientList']);
                         } else {
                             throw new \Exception('clientList not found in the API response');
                         }
