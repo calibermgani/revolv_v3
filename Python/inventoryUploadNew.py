@@ -2370,7 +2370,7 @@ def main():
         )
 
         send_warning(
-            "inventory not uploaded: " + str(e)
+            str(e)
         )
 
         sys.exit(1)
