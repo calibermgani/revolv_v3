@@ -63,8 +63,7 @@ class ProductionController extends Controller
                     if ($response->getStatusCode() == 200) {
                         $responseData = json_decode($response->getBody(), true);
                         if (!empty($responseData['clientList'])) {
-                              return $responseData['clientList'];
-                            //return Helpers::getFilteredClientProjects($responseData['clientList']);
+                            return Helpers::getFilteredClientProjects($responseData['clientList']);
                         } else {
                             throw new \Exception('clientList not found in the API response');
                         }
@@ -102,10 +101,10 @@ class ProductionController extends Controller
             } else {
                  return response()->json(['error' => 'API request failed'], $response->getStatusCode());
             }
-            // $data['practiceList'] = Helpers::filterPracticeList(
-            //     $data['practiceList'] ?? [],
-            //     $data['clientInfo']['id'] ?? null
-            // );
+            $data['practiceList'] = Helpers::filterPracticeList(
+                $data['practiceList'] ?? [],
+                $data['clientInfo']['id'] ?? null
+            );
             $subprojects = $data['practiceList'];
             $clientDetails = $data['clientInfo'];
            
