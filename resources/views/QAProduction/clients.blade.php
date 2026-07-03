@@ -19,7 +19,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if (isset($projects))
+                        @if (isset($projects) && count($projects) > 0)
                             @foreach ($projects as $data)
                                 @php
                                     $loginEmpId =
@@ -138,6 +138,10 @@
                                     <td>{{ $holdTotalCount }}</td>
                                 </tr>
                             @endforeach
+                        @else
+                            <div class="alert alert-warning">
+                                {{ $message ?? 'No configured projects found.' }}
+                            </div>
                         @endif
                     </tbody>
                 </table>
@@ -249,28 +253,30 @@
                         data: {
                             project_id: client_id,
                         },
-                        success: function(res) {
-                            console.log(res, 'res');
-                            subProjects = res.subprojects;
+                        success: function(res) {                            
+                             subProjects = res.subprojects || [];
                             subprojectCountData = Object.keys(subProjects).length;
-                            console.log(subprojectCountData, 'subprojectCountData');
 
-                            if (typeof subprojectCountData !== 'undefined' &&
-                                subprojectCountData > 0) {
-                                row.child(format(row.data(), subProjects)).show();
-                            } else {
-                                if (typeof subprojectCountData !== 'undefined') {
-                                    window.location.href = baseUrl + 'qa_production/qa_projects_assigned/' +
-                                        btoa(client_id) + '/' +
-                                        subProjectName + "?parent=" +
-                                        getUrlVars()["parent"] + "&child=" + getUrlVars()[
-                                            "child"];
+                             if (subprojectCountData > 0) {
+                                    row.child(format(row.data(), subProjects)).show();
+                                } else {
+                                    row.child(
+                                        '<div class="alert alert-warning m-3">' +
+                                            (res.message || 'No configured subprojects found for this project.') +
+                                        '</div>'
+                                    ).show();
                                 }
-                            }
                             tr.addClass('shown');
                             KTApp.unblock('#clients_list');
                         },
-                        error: function(jqXHR, exception) {}
+                        error: function(jqXHR, exception) {
+                                row.child(
+                                    '<div class="alert alert-danger m-3">Unable to load subprojects. Please try again.</div>'
+                                ).show();
+
+                                tr.addClass('shown');
+                                KTApp.unblock('#clientsDiv');
+                        }
                     });
 
                 }

@@ -1084,11 +1084,17 @@ class ProjectController extends Controller
                     if ($response->getStatusCode() == 200) {
                         // $data = json_decode($response->getBody(), true);
                         $responseData = json_decode($response->getBody(), true);
-                        if (!empty($responseData['clientList'])) {
-                            return Helpers::getFilteredClientProjects($responseData['clientList']);
-                        } else {
-                            throw new \Exception('clientList not found in the API response');
+                        $clientList = $responseData['clientList'] ?? [];
+                        if (empty($clientList)) {
+                           return [];
                         }
+
+                        $filteredProjects = Helpers::getFilteredClientProjects($clientList);
+
+                        if (empty($filteredProjects)) {
+                           return [];
+                        }
+                        return $filteredProjects;
                     } elseif ($response->getStatusCode() == 429) {
                         $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
                         sleep($retryAfter);

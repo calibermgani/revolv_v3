@@ -62,11 +62,27 @@ class ProductionController extends Controller
                     ]);
                     if ($response->getStatusCode() == 200) {
                         $responseData = json_decode($response->getBody(), true);
-                        if (!empty($responseData['clientList'])) {
-                            return Helpers::getFilteredClientProjects($responseData['clientList']);
-                        } else {
-                            throw new \Exception('clientList not found in the API response');
+                        $clientList = $responseData['clientList'] ?? [];
+                        if (empty($clientList)) {
+                            return [
+                                'projects' => [],
+                                'message' => 'No clients found for this user.'
+                            ];
                         }
+
+                        $filteredProjects = Helpers::getFilteredClientProjects($clientList);
+
+                        if (empty($filteredProjects)) {
+                            return [
+                                'projects' => [],
+                                'message' => 'No configured projects found. Please complete form configuration for this project/subproject.'
+                            ];
+                        }
+
+                        return [
+                            'projects' => $filteredProjects,
+                            'message' => null
+                        ];
                     } elseif ($response->getStatusCode() == 429) {
                         $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
                         sleep($retryAfter);
@@ -75,8 +91,9 @@ class ProductionController extends Controller
                         throw new \Exception('API request failed with status: ' . $response->getStatusCode());
                     }
                 }, 4000);
-                $projects =  $data;
-                  return view('productions/clients',compact('projects'));
+                 $projects = $data['projects'];
+                 $message = $data['message'];
+                  return view('productions/clients',compact('projects','message'));
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
             }
@@ -107,7 +124,12 @@ class ProductionController extends Controller
             );
             $subprojects = $data['practiceList'];
             $clientDetails = $data['clientInfo'];
-           
+            if (empty($subprojects)) {
+                    return response()->json([
+                        'subprojects' => [],
+                        'message' => 'No configured subprojects found for this project.'
+                    ]);
+                }
 
           //  $subprojects = subproject::with(['clientName'])->where('project_id',$request->project_id)->where('status','Active')->get();
             $subProjectsWithCount = [];
@@ -162,7 +184,12 @@ class ProductionController extends Controller
 
             return response()->json(['subprojects' => $subProjectsWithCount]);
         } catch (\Exception $e) {
-            log::debug($e->getMessage());
+            Log::debug('getSubProjects error: ' . $e->getMessage());
+
+            return response()->json([
+                'subprojects' => [],
+                'message' => 'Unable to load subprojects. Please try again.'
+            ], 500);
         }
 
     }

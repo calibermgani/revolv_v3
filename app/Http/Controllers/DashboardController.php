@@ -274,6 +274,12 @@ class DashboardController extends Controller
             );
             $subprojects = $data['practiceList'] ?? [];
             $clientDetails = $data['clientInfo'];
+            if (empty($subprojects)) {
+                return response()->json([
+                    'subprojects' => [],
+                    'message' => 'No configured subprojects found for this project.'
+                ]);
+            }
             $subProjectsWithCount = [];
             $calendarId = $request->CalendarId;
 
@@ -624,7 +630,12 @@ class DashboardController extends Controller
                 $subprojects = $data['practiceList'] ?? [];
                 $resourceList = $data['resourceList'] ?? [];
                 $clientDetails = $data['clientInfo'];
-
+                if (empty($subprojects)) {
+                    return response()->json([
+                        'subprojects' => [],
+                        'message' => 'No configured subprojects found for this project.'
+                    ]);
+                }
                 $subProjectsWithCount = [];
 
                 /* ---------------- CACHE PROJECT NAME ONCE ---------------- */
@@ -988,11 +999,21 @@ class DashboardController extends Controller
                     if ($response->getStatusCode() == 200) {
                         // $data = json_decode($response->getBody(), true);
                         $responseData = json_decode($response->getBody(), true);
-                        if (!empty($responseData['clientList'])) {
-                            return Helpers::getFilteredClientProjects($responseData['clientList']);
-                        } else {
-                            throw new \Exception('clientList not found in the API response');
-                        }
+                        $clientList = $responseData['clientList'] ?? [];
+                            if (empty($clientList)) {
+                                return [];
+                            }
+
+                            $filteredProjects = Helpers::getFilteredClientProjects($clientList);
+
+                            if (empty($filteredProjects)) {
+                                return [];
+                            }
+                            return $filteredProjects;
+                            // return [
+                            //     'projects' => $filteredProjects,
+                            //     'message' => null
+                            // ];
                     } elseif ($response->getStatusCode() == 429) {
                         $retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
                         sleep($retryAfter);
@@ -1179,72 +1200,73 @@ class DashboardController extends Controller
                 </tr>
             </thead>
             <tbody>';
+          if(isset($projects) && count($projects) > 0) {  
+                foreach ($projects as $data) {
 
-            foreach ($projects as $data) {
+                    // ✅ cache helper call (was repeated inside loop)
+                    $projectData = Helpers::projectName($data["id"]);
+                    $projectName = $projectData ? $projectData->project_name : null;
 
-                // ✅ cache helper call (was repeated inside loop)
-                $projectData = Helpers::projectName($data["id"]);
-                $projectName = $projectData ? $projectData->project_name : null;
+                    // build models (same logic, just cleaner)
+                    $modelNames = [];
 
-                // build models (same logic, just cleaner)
-                $modelNames = [];
-
-                if (!empty($data['subprject_name'])) {
-                    foreach ($data['subprject_name'] as $item) {
+                    if (!empty($data['subprject_name'])) {
+                        foreach ($data['subprject_name'] as $item) {
+                            $modelNames[] = Str::studly(
+                                Str::slug(strtolower($projectName . '_' . $item), '_')
+                            );
+                        }
+                    } else {
                         $modelNames[] = Str::studly(
-                            Str::slug(strtolower($projectName . '_' . $item), '_')
+                            Str::slug(strtolower($projectName . '_project'), '_')
                         );
                     }
-                } else {
-                    $modelNames[] = Str::studly(
-                        Str::slug(strtolower($projectName . '_project'), '_')
-                    );
-                }
 
-                $assignedTotalCount = 0;
-                $completedTotalCount = 0;
-                $pendingTotalCount = 0;
-                $holdTotalCount = 0;
-                $modelTFlag = 0;
+                    $assignedTotalCount = 0;
+                    $completedTotalCount = 0;
+                    $pendingTotalCount = 0;
+                    $holdTotalCount = 0;
+                    $modelTFlag = 0;
 
-                foreach ($modelNames as $model) {
+                    foreach ($modelNames as $model) {
 
-                    $modelClass = "App\\Models\\$model";
+                        $modelClass = "App\\Models\\$model";
 
-                    if (!class_exists($modelClass)) {
-                        continue;
+                        if (!class_exists($modelClass)) {
+                            continue;
+                        }
+
+                        // queries unchanged (ONLY grouped + reused date vars)
+                        $assignedTotalCount += $modelClass::whereIn('chart_status', ['CE_Assigned','CE_Inprocess'])
+                            ->whereNotNull('CE_emp_id')
+                            ->whereBetween('invoke_date', [$startDate, $endDate])
+                            ->count();
+
+                        $completedTotalCount += $modelClass::where('chart_status', 'CE_Completed')
+                            ->whereBetween('invoke_date', [$startDate, $endDate])
+                            ->count();
+
+                        $pendingTotalCount += $modelClass::where('chart_status', 'CE_Pending')
+                            ->whereBetween('invoke_date', [$startDate, $endDate])
+                            ->count();
+
+                        $holdTotalCount += $modelClass::where('chart_status', 'CE_Hold')
+                            ->whereBetween('invoke_date', [$startDate, $endDate])
+                            ->count();
+
+                        $modelTFlag = 1;
                     }
 
-                    // queries unchanged (ONLY grouped + reused date vars)
-                    $assignedTotalCount += $modelClass::whereIn('chart_status', ['CE_Assigned','CE_Inprocess'])
-                        ->whereNotNull('CE_emp_id')
-                        ->whereBetween('invoke_date', [$startDate, $endDate])
-                        ->count();
-
-                    $completedTotalCount += $modelClass::where('chart_status', 'CE_Completed')
-                        ->whereBetween('invoke_date', [$startDate, $endDate])
-                        ->count();
-
-                    $pendingTotalCount += $modelClass::where('chart_status', 'CE_Pending')
-                        ->whereBetween('invoke_date', [$startDate, $endDate])
-                        ->count();
-
-                    $holdTotalCount += $modelClass::where('chart_status', 'CE_Hold')
-                        ->whereBetween('invoke_date', [$startDate, $endDate])
-                        ->count();
-
-                    $modelTFlag = 1;
-                }
-
-                if ($modelTFlag > 0) {
-                    $body_info .= '<tr class="clickable-client cursor_hand project-clickable-row">
-                        <td class="details-control"></td>
-                        <td>' . $data['client_name'] . '<input type="hidden" value=' . $data['id'] . '></td>
-                        <td>' . $assignedTotalCount . '</td>
-                        <td>' . $completedTotalCount . '</td>
-                        <td>' . $pendingTotalCount . '</td>
-                        <td>' . $holdTotalCount . '</td>
-                    </tr>';
+                    if ($modelTFlag > 0) {
+                        $body_info .= '<tr class="clickable-client cursor_hand project-clickable-row">
+                            <td class="details-control"></td>
+                            <td>' . $data['client_name'] . '<input type="hidden" value=' . $data['id'] . '></td>
+                            <td>' . $assignedTotalCount . '</td>
+                            <td>' . $completedTotalCount . '</td>
+                            <td>' . $pendingTotalCount . '</td>
+                            <td>' . $holdTotalCount . '</td>
+                        </tr>';
+                    }
                 }
             }
 

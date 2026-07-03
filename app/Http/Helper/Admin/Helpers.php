@@ -969,6 +969,9 @@ class Helpers
 									$responseData['practiceList'] ?? [],
 									$responseData['clientInfo']['id'] ?? null
 								);//for filter manually deleted at projects in form_configuration table by tech
+								if (empty($responseData['practiceList'])) {
+									$responseData['practiceList'] = [];
+								}
                             return $responseData;
                         } else {
                             throw new \Exception('practice on client not found in the API response');
@@ -1451,35 +1454,73 @@ class Helpers
 		$subProjectIds = formConfiguration::groupby('sub_project_id')->where('project_id', $project_id)->pluck('sub_project_id')->toArray();
 		return subproject::where('project_id', $project_id)->whereIn('sub_project_id', $subProjectIds)->pluck('sub_project_name', 'sub_project_id')->prepend(trans('Select Sub Project'), '')->toArray();
 	}
-	public static function getConfigMap()	{
-		return Cache::remember('form_config_map', 3600, function () {
-			$map = [];
-			formConfiguration::select('project_id', 'sub_project_id')
-				->distinct()
-				->get()
-				->each(function ($item) use (&$map) {
-					$map[$item->project_id][$item->sub_project_id] = true;
-				});
-			return $map;
-		});
-	}
-	 public static function getFilteredClientProjects($clientList) {
+    public static function getConfigMap()   {
+        return Cache::remember('form_config_map', now()->addHour(), function () {
+            $map = [];
+
+            formConfiguration::select('project_id', 'sub_project_id')
+                ->whereNotNull('project_id')
+                ->whereNotNull('sub_project_id')
+                ->distinct()
+                ->get()
+                ->each(function ($item) use (&$map) {
+                    $projectId = (string) $item->project_id;
+                    $subProjectId = (string) $item->sub_project_id;
+
+                    $map[$projectId][$subProjectId] = true;
+                });
+
+            return $map;
+        });
+    }
+
+    public static function clearConfigMap()
+    {
+        Cache::forget('form_config_map');
+    }
+
+    public static function getFilteredClientProjects($clientList)
+    {
         $configMap = self::getConfigMap();
+
+        if (empty($clientList) || empty($configMap)) {
+            return [];
+        }
+
         foreach ($clientList as $pIndex => $project) {
+            $projectId = isset($project['id']) ? (string) $project['id'] : null;
             $filtered = [];
+
             foreach ($project['subprject_name'] ?? [] as $subKey => $subName) {
-                if (isset($configMap[$project['id']][$subKey])) {
+                $subProjectId = (string) $subKey;
+
+                if ($projectId && isset($configMap[$projectId][$subProjectId])) {
                     $filtered[$subKey] = $subName;
                 }
             }
+
             $clientList[$pIndex]['subprject_name'] = $filtered;
         }
-        return $clientList;
+
+        return array_values(array_filter($clientList, function ($project) {
+            return !empty($project['subprject_name']);
+        }));
     }
-	public static function filterPracticeList($practiceList, $projectId) {
-		$configMap = self::getConfigMap(); // reuse cached map
-		return array_values(array_filter($practiceList, function ($practice) use ($configMap, $projectId) {
-			return isset($configMap[$projectId][$practice['id']]);
-		}));
-	} 
+
+    public static function filterPracticeList($practiceList, $projectId)
+    {
+        $configMap = self::getConfigMap();
+
+        if (empty($practiceList) || empty($projectId) || empty($configMap)) {
+            return [];
+        }
+
+        $projectId = (string) $projectId;
+
+        return array_values(array_filter($practiceList, function ($practice) use ($configMap, $projectId) {
+            $practiceId = isset($practice['id']) ? (string) $practice['id'] : null;
+
+            return $practiceId && isset($configMap[$projectId][$practiceId]);
+        }));
+    }
 }

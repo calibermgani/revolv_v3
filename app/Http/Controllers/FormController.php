@@ -547,6 +547,7 @@ class FormController extends Controller
                     if (DB::getPdo()->inTransaction()) {
                         DB::commit();
                     }
+                    Helpers::clearConfigMap();
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
             } catch (\Exception $e) {
                 if (DB::transactionLevel() > 0) {
@@ -1131,7 +1132,7 @@ class FormController extends Controller
                     if (DB::getPdo()->inTransaction()) {
                         DB::commit();
                     }
-                  
+                    Helpers::clearConfigMap();
                     return redirect('/form_configuration_list' . '?parent=' . request()->parent . '&child=' . request()->child);
             } catch (\Exception $e) {
                  if (DB::transactionLevel() > 0) {

@@ -31,7 +31,7 @@
                                         $encodedId = App\Http\Helper\Admin\Helpers::encodeAndDecodeID(1);
                                         $encodeProjectName = App\Http\Helper\Admin\Helpers::encodeAndDecodeID('aig');
                                     @endphp --}}
-                        @if (isset($projects))
+                        @if (isset($projects) && count($projects) > 0)
                             @foreach ($projects as $data)
                             @php
                                 $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
@@ -103,6 +103,10 @@
                                     <td>{{$holdTotalCount}}</td>
                                 </tr>
                             @endforeach
+                        @else
+                            <div class="alert alert-warning">
+                                {{ $message ?? 'No configured projects found.' }}
+                            </div>
                         @endif
                     </tbody>
                 </table>
@@ -286,22 +290,30 @@
                             project_id: client_id,
                         },
                         success: function(res) {
-                            subProjects = res.subprojects;
-                            subprojectCountData = Object.keys(subProjects).length;
+                                subProjects = res.subprojects || [];
+                                subprojectCountData = Object.keys(subProjects).length;
 
-                            if(typeof subprojectCountData !== 'undefined' && subprojectCountData > 0) {
-                              row.child(format(row.data(), subProjects)).show();
-                            } else {
-                                if(typeof subprojectCountData !== 'undefined') {
-                                    window.location.href = baseUrl + 'projects_assigned/' + btoa(client_id) + '/' +
-                                        subProjectName + "?parent=" +
-                                    getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
+                                if (subprojectCountData > 0) {
+                                    row.child(format(row.data(), subProjects)).show();
+                                } else {
+                                    row.child(
+                                        '<div class="alert alert-warning m-3">' +
+                                            (res.message || 'No configured subprojects found for this project.') +
+                                        '</div>'
+                                    ).show();
                                 }
+
+                                tr.addClass('shown');
+                                KTApp.unblock('#clientsDiv');
+                            },
+                            error: function(jqXHR, exception) {
+                                row.child(
+                                    '<div class="alert alert-danger m-3">Unable to load subprojects. Please try again.</div>'
+                                ).show();
+
+                                tr.addClass('shown');
+                                KTApp.unblock('#clientsDiv');
                             }
-                            tr.addClass('shown');
-                            KTApp.unblock('#clientsDiv');
-                        },
-                        error: function(jqXHR, exception) {}
                     });
 
                 }
