@@ -11,6 +11,7 @@ import json
 import time
 import re
 import csv
+import traceback
 from datetime import datetime
 
 
@@ -157,12 +158,18 @@ def send_success(message, data):
     )
 
 
-def send_warning(message):
+def send_warning(message, error_log_id=None):
 
     result = {
         "status": "warning",
         "message": str(message)
     }
+
+    if error_log_id:
+
+        result["data"] = {
+            "error_log_id": error_log_id
+        }
 
     print(
         json.dumps(result),
@@ -1111,7 +1118,58 @@ def apply_column_aliases(df, data_columns):
 
     return df
 
+def validate_date_column_values(df, date_columns):
 
+    date_errors = []
+
+    for column_name in date_columns:
+
+        if column_name not in df.columns:
+
+            continue
+
+        original_values = df[column_name].astype("string").str.strip()
+
+        empty_mask = (
+            original_values.isna()
+            |
+            (original_values == "")
+            |
+            (original_values == "-")
+            |
+            (original_values.str.lower() == "nan")
+        )
+
+        parsed_dates = pd.to_datetime(
+            original_values,
+            errors="coerce"
+        )
+
+        invalid_mask = (
+            ~empty_mask
+            &
+            parsed_dates.isna()
+        )
+
+        invalid_rows = df.index[invalid_mask].tolist()
+
+        for row_index in invalid_rows:
+
+            date_errors.append(
+                "row "
+                + str(row_index + 2)
+                + ", column "
+                + column_name
+                + ", invalid date value: "
+                + str(original_values.loc[row_index])
+            )
+
+    if date_errors:
+
+        raise Exception(
+            "inventory not uploaded: invalid date values found. "
+            + " | ".join(date_errors[:20])
+        )
 def prepare_dates(df, date_columns):
 
     for column_name in date_columns:
@@ -1220,6 +1278,11 @@ def prepare_dataframe(df, configuration):
     df = add_missing_optional_columns(
         df,
         data_columns
+    )
+
+    validate_date_column_values(
+        df,
+        date_columns
     )
 
     df = prepare_dates(
@@ -2061,30 +2124,325 @@ def insert_success_tracking(
     )
 
 
-def insert_failed_tracking(input_data, error_message):
+def get_frontend_error_response(error_message):
+
+    error_text = str(error_message)
+
+    lower_error = error_text.lower()
+
+    error_rules = [
+        {
+            "code": "UPLOAD_REQUEST_INVALID",
+            "keywords": [
+                "empty input received",
+                "file_path is missing",
+                "project_id is missing",
+                "sub_project_id is missing",
+                "payload file name does not match",
+                "file is not inside inventory_uploads folder",
+                "uploaded file path does not match"
+            ],
+            "message": "Upload request is invalid. Please refresh the page and upload the file again."
+        },
+        {
+            "code": "FILE_NOT_FOUND",
+            "keywords": [
+                "file not found",
+                "file not found at uploaded path"
+            ],
+            "message": "Uploaded file could not be found. Please upload the file again."
+        },
+        {
+            "code": "EMPTY_FILE",
+            "keywords": [
+                "file is empty",
+                "file has no data rows"
+            ],
+            "message": "Uploaded file has no data rows. Please upload a file with valid records."
+        },
+        {
+            "code": "UNSUPPORTED_FILE_TYPE",
+            "keywords": [
+                "unsupported file type"
+            ],
+            "message": "Unsupported file format. Please upload only CSV  file."
+        },
+        {
+            "code": "CSV_ENCODING_INVALID",
+            "keywords": [
+                "uploaded csv encoding is invalid",
+                "unicode"
+            ],
+            "message": "Uploaded CSV encoding is invalid. Please save the file as UTF-8 CSV and upload again."
+        },
+        {
+            "code": "UPLOAD_CONFIGURATION_MISSING",
+            "keywords": [
+                "project and sub project combination is not configured",
+                "data_columns is missing",
+                "db_columns is missing",
+                "inventory upload configuration"
+            ],
+            "message": "Upload configuration is missing or incorrect for the selected project and sub project."
+        },
+        {
+            "code": "COLUMN_COUNT_MISMATCH",
+            "keywords": [
+                "data_columns count",
+                "does not match db_columns count"
+            ],
+            "message": "Upload configuration column count mismatch."
+        },
+        {
+            "code": "DATE_COLUMN_CONFIGURATION_INVALID",
+            "keywords": [
+                "date columns not present in data_columns"
+            ],
+            "message": "Date column configuration is incorrect."
+        },
+        {
+            "code": "NUMERIC_COLUMN_CONFIGURATION_INVALID",
+            "keywords": [
+                "numeric columns not present in data_columns"
+            ],
+            "message": "Numeric column configuration is incorrect."
+        },
+        {
+            "code": "INVALID_PROJECT_SUB_PROJECT",
+            "keywords": [
+                "invalid project or sub project combination"
+            ],
+            "message": "Selected project or sub project is invalid. Please refresh and try again."
+        },
+        {
+            "code": "DYNAMIC_TABLE_MISSING_COLUMNS",
+            "keywords": [
+                "configured db_columns not present in dynamic table",
+                "chart_status column is missing",
+                "unknown column",
+                "1054"
+            ],
+            "message": "Upload table configuration is incorrect."
+        },
+        {
+            "code": "HEADER_MISMATCH",
+            "keywords": [
+                "uploaded file header does not exactly match",
+                "missing configured data_columns",
+                "extra uploaded file columns",
+                "duplicate columns found in uploaded file"
+            ],
+            "message": "Uploaded file columns do not match the configured template. Please download the latest template and upload again."
+        },
+        {
+            "code": "NO_VALID_ROWS",
+            "keywords": [
+                "no valid rows to insert",
+                "all rows are duplicate inside uploaded file"
+            ],
+            "message": "No valid rows found for upload. Please verify the file data and upload again."
+        },
+        {
+            "code": "LOCAL_INFILE_DISABLED",
+            "keywords": [
+                "local_infile is off",
+                "load data local infile failed",
+                "used command is not allowed"
+            ],
+            "message": "Bulk upload service is not enabled in database."
+        },
+        {
+            "code": "DATABASE_CONNECTION_FAILED",
+            "keywords": [
+                "access denied",
+                "can't connect",
+                "connection refused",
+                "connection timed out",
+                "2003",
+                "1045"
+            ],
+            "message": "Database connection failed."
+        },
+        {
+            "code": "DATA_TOO_LONG",
+            "keywords": [
+                "data too long",
+                "1406"
+            ],
+            "message": "One or more values exceed the allowed column length. Please correct the file and upload again."
+        },
+        {
+            "code": "INVALID_DATA_FORMAT",
+            "keywords": [
+                "incorrect integer value",
+                "incorrect date value",
+                "truncated incorrect",
+                "1366",
+                "1292"
+            ],
+            "message": "One or more values have invalid format. Please correct the file and upload again."
+        },
+        {
+            "code": "DATABASE_REQUIRED_VALUE_MISSING",
+            "keywords": [
+                "cannot be null",
+                "1048"
+            ],
+            "message": "Required database value is missing. Please verify the file and upload configuration."
+        },
+        {
+            "code": "INVALID_DATE_VALUES",
+            "keywords": [
+                "invalid date values found"
+            ],
+            "message": "Invalid date value found in uploaded file. Please correct the date columns and upload again."
+        },
+    ]
+
+    for rule in error_rules:
+
+        for keyword in rule["keywords"]:
+
+            if keyword in lower_error:
+
+                return rule["code"], rule["message"]
+
+    return (
+        "INVENTORY_UPLOAD_FAILED",
+        "Inventory upload failed."
+    )
+
+
+
+def insert_inventory_upload_error_log(
+        conn,
+        project_id,
+        sub_project_id,
+        file_name,
+        table_name,
+        error_code,
+        user_message,
+        exception_type,
+        exception_message,
+        exception_trace,
+        input_payload
+):
+
+    sql = """
+    insert into inventory_upload_error_logs
+    (
+        project_id,
+        sub_project_id,
+        file_name,
+        table_name,
+        error_code,
+        user_message,
+        exception_type,
+        exception_message,
+        exception_trace,
+        input_payload,
+        created_at,
+        updated_at
+    )
+    values
+    (
+        %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s
+    )
+    """
+
+    current_datetime = datetime.now().strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
+
+    if input_payload is None:
+
+        input_payload_json = None
+
+    else:
+
+        try:
+
+            input_payload_json = json.dumps(
+                input_payload,
+                default=str
+            )
+
+        except Exception:
+
+            input_payload_json = json.dumps(
+                {
+                    "payload_error": "failed to convert input payload to json"
+                }
+            )
+
+    with conn.cursor() as cursor:
+
+        cursor.execute(
+            sql,
+            (
+                project_id,
+                sub_project_id,
+                file_name,
+                table_name,
+                error_code,
+                user_message,
+                exception_type,
+                exception_message,
+                exception_trace,
+                input_payload_json,
+                current_datetime,
+                current_datetime
+            )
+        )
+
+        error_log_id = cursor.lastrowid
+
+    conn.commit()
+
+    return error_log_id
+
+
+
+def insert_failed_tracking(
+        input_data,
+        exception_obj,
+        exception_trace,
+        error_code,
+        user_message
+):
 
     conn = None
 
+    error_log_id = None
+
     try:
 
-        if not input_data:
+        if isinstance(input_data, dict):
 
-            return
+            safe_input_data = input_data
 
-        project_id = input_data.get(
+        else:
+
+            safe_input_data = {}
+
+        project_id = safe_input_data.get(
             "project_id"
         )
 
-        sub_project_id = input_data.get(
+        sub_project_id = safe_input_data.get(
             "sub_project_id"
         )
 
-        file_name = input_data.get(
+        file_name = safe_input_data.get(
             "file_name"
         )
 
-        file_path = input_data.get(
+        file_path = safe_input_data.get(
             "file_path"
+        )
+
+        table_name = safe_input_data.get(
+            "table_name"
         )
 
         if not file_name and file_path:
@@ -2095,22 +2453,42 @@ def insert_failed_tracking(input_data, error_message):
 
         conn = get_connection()
 
-        insert_inventory_exe_file(
+        error_log_id = insert_inventory_upload_error_log(
             conn,
             project_id,
             sub_project_id,
             file_name,
-            0,
-            "failed"
+            table_name,
+            error_code,
+            user_message,
+            type(exception_obj).__name__,
+            str(exception_obj),
+            exception_trace,
+            safe_input_data
         )
 
-        insert_inventory_error_log(
-            conn,
-            project_id,
-            sub_project_id,
-            500,
-            str(error_message)
-        )
+        if project_id and sub_project_id:
+
+            insert_inventory_exe_file(
+                conn,
+                project_id,
+                sub_project_id,
+                file_name,
+                0,
+                "failed"
+            )
+
+            insert_inventory_error_log(
+                conn,
+                project_id,
+                sub_project_id,
+                500,
+                (
+                    user_message
+                    + " | inventory_upload_error_log_id : "
+                    + str(error_log_id)
+                )
+            )
 
     except Exception as tracking_error:
 
@@ -2124,6 +2502,8 @@ def insert_failed_tracking(input_data, error_message):
         if conn:
 
             conn.close()
+
+    return error_log_id
 
 
 # ============================================================
@@ -2193,6 +2573,8 @@ def process_inventory_upload(input_data):
             project_id,
             sub_project_id
         )
+
+        input_data["table_name"] = table_name
 
         validate_dynamic_table_columns(
             conn,
@@ -2360,17 +2742,27 @@ def main():
 
     except Exception as e:
 
+        exception_trace = traceback.format_exc()
+
         log_error(
             e
         )
 
-        insert_failed_tracking(
-            input_data,
+        error_code, user_message = get_frontend_error_response(
             e
         )
 
+        error_log_id = insert_failed_tracking(
+            input_data,
+            e,
+            exception_trace,
+            error_code,
+            user_message
+        )
+
         send_warning(
-            str(e)
+            user_message,
+            error_log_id
         )
 
         sys.exit(1)
