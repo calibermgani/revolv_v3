@@ -3691,7 +3691,7 @@ public function getBulkColumnsCSV(Request $request)
         if ($extension !== 'csv') {
             return response()->json([
                 'status' => 'warning',
-                'message' => 'Please upload CSV file only for fast inventory upload. Excel files are slower for large data.',
+                'message' => 'Please upload only CSV file.',
             ]);
         }
         $allowedCsvMimeTypes = [
@@ -3896,6 +3896,6 @@ public function getBulkColumnsCSV(Request $request)
             return trim($match[1]);
         }
 
-        return 'Inventory not uploaded. Please check uploaded file format and headers.';
+        return 'Inventory not uploaded. Please check uploaded file.';
     }
 }
