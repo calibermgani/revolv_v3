@@ -222,36 +222,6 @@
 
         </div>
     @endsection
-    <style>
-        #project_report th,
-        #project_report td {
-            vertical-align: middle;
-        }
-
-        /* Sub Project column */
-        #project_report th:nth-child(5),
-        #project_report td:nth-child(5),
-        .DTFC_LeftWrapper th:nth-child(5),
-        .DTFC_LeftWrapper td:nth-child(5) {
-            min-width: 180px !important;
-            max-width: 180px !important;
-            width: 180px !important;
-            white-space: normal !important;
-            word-break: break-word;
-            overflow-wrap: anywhere;
-        }
-
-        /* Count columns */
-        #project_report th,
-        #project_report td {
-            white-space: nowrap;
-        }
-
-        #project_report th:nth-child(5),
-        #project_report td:nth-child(5) {
-            white-space: normal !important;
-        }
-    </style>
     @push('view.scripts')
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
@@ -304,16 +274,6 @@
                     pageLength: 20,
                     scrollCollapse: true,
                     scrollX: true,
-                      autoWidth: false,
-
-                    columnDefs: [
-                        { targets: 0, width: '90px' },   // Emp Id
-                        { targets: 1, width: '150px' },  // Emp Name
-                        { targets: 2, width: '150px' },  // Manager Name
-                        { targets: 3, width: '180px' },  // Project
-                        { targets: 4, width: '180px' },  // Sub Project
-                    ],
-
                     "initComplete": function(settings, json) {
                         $('body').find('.dataTables_scrollBody').addClass("scrollbar");
                         $('body').find('.dataTables_scrollBody').css("margin-top",'-0.3rem','important');
