@@ -37,12 +37,18 @@ db_config = {
 # ============================================================
 # duplicate configuration
 # ============================================================
-# These columns are ignored while comparing duplicate row values.
+# Only invoke_date is ignored for exact duplicate comparison.
+# CE employee ID participates in the exact duplicate key so that:
+# - same business row + same CE employee ID = duplicate
+# - same business row + different CE employee ID = update existing CE_Assigned row
 # CE_Assigned is not a column. It is a value inside chart_status.
 DUPLICATE_IGNORE_COLUMNS = {
-    "invoke_date",
-    "ar_emp_id",
-    "ce_emp_id"
+    "invoke_date"
+}
+
+CE_EMPLOYEE_COLUMN_NAMES = {
+    "ce_emp_id",
+    "ar_emp_id"
 }
 
 # chart_status is available in the dynamic table only.
@@ -1457,6 +1463,50 @@ def get_duplicate_compare_columns(db_columns):
     return compare_columns, ignored_columns
 
 
+def get_ce_employee_column(db_columns):
+
+    for column_name in db_columns:
+
+        normalized_name = normalize_column_name(
+            column_name
+        )
+
+        if normalized_name in CE_EMPLOYEE_COLUMN_NAMES:
+
+            return column_name
+
+    raise Exception(
+        "inventory not uploaded: Emp Id column is missing from the configured upload columns"
+    )
+
+
+def get_business_compare_columns(compare_columns, ce_employee_column):
+
+    validate_mysql_identifier(
+        ce_employee_column,
+        "CE employee column"
+    )
+
+    business_compare_columns = [
+        column_name
+        for column_name in compare_columns
+        if normalize_column_name(column_name) not in CE_EMPLOYEE_COLUMN_NAMES
+    ]
+
+    if not business_compare_columns:
+
+        raise Exception(
+            "inventory not uploaded: duplicate check has no business columns available after excluding Emp Id field"
+        )
+
+    log_info(
+        "CE_Assigned business row comparison columns : "
+        + ", ".join(business_compare_columns)
+    )
+
+    return business_compare_columns
+
+
 def normalize_for_duplicate_compare(series):
 
     return (
@@ -1702,11 +1752,23 @@ def load_records_with_local_infile(
         "tmp_inv_load"
     )
 
-    temp_key_table = build_temp_table_name(
-        "tmp_inv_keys"
+    temp_business_key_table = build_temp_table_name(
+        "tmp_inv_business_keys"
+    )
+
+    temp_exact_key_table = build_temp_table_name(
+        "tmp_inv_exact_keys"
+    )
+
+    temp_update_source_table = build_temp_table_name(
+        "tmp_inv_update_source"
     )
 
     duplicate_existing_rows = 0
+
+    updated_existing_rows = 0
+
+    update_candidate_rows = 0
 
     try:
 
@@ -1720,14 +1782,38 @@ def load_records_with_local_infile(
             "temporary load table"
         )
 
-        safe_temp_key_table = validate_mysql_identifier(
-            temp_key_table,
-            "temporary key table"
+        safe_temp_business_key_table = validate_mysql_identifier(
+            temp_business_key_table,
+            "temporary business key table"
+        )
+
+        safe_temp_exact_key_table = validate_mysql_identifier(
+            temp_exact_key_table,
+            "temporary exact key table"
+        )
+
+        safe_temp_update_source_table = validate_mysql_identifier(
+            temp_update_source_table,
+            "temporary update source table"
         )
 
         validate_chart_status_column_exists(
             conn,
             safe_target_table
+        )
+
+        ce_employee_column = get_ce_employee_column(
+            db_columns
+        )
+
+        safe_ce_employee_column = validate_mysql_identifier(
+            ce_employee_column,
+            "CE employee column"
+        )
+
+        business_compare_columns = get_business_compare_columns(
+            compare_columns,
+            ce_employee_column
         )
 
         temp_csv_path = write_temp_load_csv(
@@ -1749,13 +1835,38 @@ def load_records_with_local_infile(
             "n"
         )
 
-        target_hash_sql = build_duplicate_hash_expression(
+        target_exact_hash_sql = build_duplicate_hash_expression(
             compare_columns,
             "t"
         )
 
-        load_hash_sql = build_duplicate_hash_expression(
+        load_exact_hash_sql = build_duplicate_hash_expression(
             compare_columns
+        )
+
+        target_business_hash_sql = build_duplicate_hash_expression(
+            business_compare_columns,
+            "t"
+        )
+
+        load_business_hash_sql = build_duplicate_hash_expression(
+            business_compare_columns
+        )
+
+        normalized_target_employee_sql = (
+            "lower(trim(ifnull(cast(t.`"
+            + safe_ce_employee_column
+            + "` as char), '')))"
+        )
+
+        normalized_update_employee_sql = (
+            "lower(trim(ifnull(cast(u.`employee_value` as char), '')))"
+        )
+
+        normalized_load_employee_sql = (
+            "lower(trim(ifnull(cast(n.`"
+            + safe_ce_employee_column
+            + "` as char), '')))"
         )
 
         with conn.cursor() as cursor:
@@ -1776,7 +1887,9 @@ def load_records_with_local_infile(
             cursor.execute(
                 f"""
                 alter table `{safe_temp_load_table}`
-                add column `__duplicate_key` char(64) null
+                add column `__load_row_id` bigint unsigned not null auto_increment primary key first,
+                add column `__duplicate_key` char(64) null,
+                add column `__business_key` char(64) null
                 """
             )
 
@@ -1801,23 +1914,37 @@ def load_records_with_local_infile(
 
             cursor.execute(
                 f"""
-                create temporary table `{safe_temp_key_table}`
+                update `{safe_temp_load_table}`
+                set `__duplicate_key` = {load_exact_hash_sql},
+                    `__business_key` = {load_business_hash_sql}
+                """
+            )
+
+            cursor.execute(
+                f"""
+                alter table `{safe_temp_load_table}`
+                add index `idx_duplicate_key` (`__duplicate_key`),
+                add index `idx_business_key` (`__business_key`)
+                """
+            )
+
+            cursor.execute(
+                f"""
+                create temporary table `{safe_temp_business_key_table}`
                 (
-                    duplicate_key char(64) not null,
-                    primary key (duplicate_key)
+                    business_key char(64) not null,
+                    primary key (business_key)
                 ) engine = InnoDB
                 """
             )
 
-            # Only existing rows with chart_status = CE_Assigned are duplicate blockers.
-            # Existing CE_Pending / CE_Completed / any other chart_status will not block insert.
             cursor.execute(
                 f"""
-                insert ignore into `{safe_temp_key_table}`
+                insert ignore into `{safe_temp_business_key_table}`
                 (
-                    duplicate_key
+                    business_key
                 )
-                select {target_hash_sql}
+                select {target_business_hash_sql}
                 from `{safe_target_table}` t
                 where lower(trim(cast(t.`{CHART_STATUS_COLUMN}` as char))) = lower(trim(%s))
                 """,
@@ -1826,32 +1953,50 @@ def load_records_with_local_infile(
                 )
             )
 
-            existing_key_count = cursor.rowcount
+            existing_business_key_count = cursor.rowcount
 
             log_info(
-                "existing CE_Assigned duplicate keys prepared : "
-                + str(existing_key_count)
+                "existing CE_Assigned business keys prepared : "
+                + str(existing_business_key_count)
             )
 
             cursor.execute(
                 f"""
-                update `{safe_temp_load_table}`
-                set `__duplicate_key` = {load_hash_sql}
+                create temporary table `{safe_temp_exact_key_table}`
+                (
+                    duplicate_key char(64) not null,
+                    primary key (duplicate_key)
+                ) engine = InnoDB
                 """
             )
 
             cursor.execute(
                 f"""
-                alter table `{safe_temp_load_table}`
-                add index `idx_duplicate_key` (`__duplicate_key`)
-                """
+                insert ignore into `{safe_temp_exact_key_table}`
+                (
+                    duplicate_key
+                )
+                select {target_exact_hash_sql}
+                from `{safe_target_table}` t
+                where lower(trim(cast(t.`{CHART_STATUS_COLUMN}` as char))) = lower(trim(%s))
+                """,
+                (
+                    DUPLICATE_BLOCKING_CHART_STATUS,
+                )
+            )
+
+            existing_exact_key_count = cursor.rowcount
+
+            log_info(
+                "existing CE_Assigned exact duplicate keys prepared : "
+                + str(existing_exact_key_count)
             )
 
             cursor.execute(
                 f"""
                 select count(*) as duplicate_existing_rows
                 from `{safe_temp_load_table}` n
-                inner join `{safe_temp_key_table}` e
+                inner join `{safe_temp_exact_key_table}` e
                     on e.`duplicate_key` = n.`__duplicate_key`
                 """
             )
@@ -1865,8 +2010,79 @@ def load_records_with_local_infile(
             if duplicate_existing_rows > 0:
 
                 log_info(
-                    "duplicate rows skipped because existing chart_status is CE_Assigned : "
+                    "duplicate rows skipped because existing CE_Assigned row has the same CE employee ID : "
                     + str(duplicate_existing_rows)
+                )
+
+            cursor.execute(
+                f"""
+                create temporary table `{safe_temp_update_source_table}` as
+                select
+                    n.`__business_key` as `business_key`,
+                    n.`{safe_ce_employee_column}` as `employee_value`
+                from `{safe_temp_load_table}` n
+                where 1 = 0
+                """
+            )
+
+            cursor.execute(
+                f"""
+                alter table `{safe_temp_update_source_table}`
+                add primary key (`business_key`)
+                """
+            )
+
+            cursor.execute(
+                f"""
+                insert ignore into `{safe_temp_update_source_table}`
+                (
+                    `business_key`,
+                    `employee_value`
+                )
+                select
+                    n.`__business_key`,
+                    n.`{safe_ce_employee_column}`
+                from `{safe_temp_load_table}` n
+                inner join `{safe_temp_business_key_table}` b
+                    on b.`business_key` = n.`__business_key`
+                left join `{safe_temp_exact_key_table}` e
+                    on e.`duplicate_key` = n.`__duplicate_key`
+                where e.`duplicate_key` is null
+                and {normalized_load_employee_sql} <> ''
+                order by n.`__load_row_id`
+                """
+            )
+
+            update_candidate_rows = cursor.rowcount
+
+            if update_candidate_rows > 0:
+
+                log_info(
+                    "CE_Assigned rows eligible for CE employee ID update : "
+                    + str(update_candidate_rows)
+                )
+
+            cursor.execute(
+                f"""
+                update `{safe_target_table}` t
+                inner join `{safe_temp_update_source_table}` u
+                    on u.`business_key` = {target_business_hash_sql}
+                set t.`{safe_ce_employee_column}` = u.`employee_value`
+                where lower(trim(cast(t.`{CHART_STATUS_COLUMN}` as char))) = lower(trim(%s))
+                and {normalized_target_employee_sql} <> {normalized_update_employee_sql}
+                """,
+                (
+                    DUPLICATE_BLOCKING_CHART_STATUS,
+                )
+            )
+
+            updated_existing_rows = cursor.rowcount
+
+            if updated_existing_rows > 0:
+
+                log_info(
+                    "existing CE_Assigned rows updated with new CE employee ID : "
+                    + str(updated_existing_rows)
                 )
 
             cursor.execute(
@@ -1878,9 +2094,9 @@ def load_records_with_local_infile(
                 select
                     {db_columns_select_sql}
                 from `{safe_temp_load_table}` n
-                left join `{safe_temp_key_table}` e
-                    on e.`duplicate_key` = n.`__duplicate_key`
-                where e.`duplicate_key` is null
+                left join `{safe_temp_business_key_table}` b
+                    on b.`business_key` = n.`__business_key`
+                where b.`business_key` is null
                 """
             )
 
@@ -1902,6 +2118,8 @@ def load_records_with_local_infile(
 
         return {
             "inserted": inserted,
+            "updated": updated_existing_rows,
+            "update_candidate_rows": update_candidate_rows,
             "insert_time": load_time,
             "avg_batch_time": load_time,
             "rows_per_second": rows_per_second,
@@ -2010,6 +2228,7 @@ def build_single_error_description(summary):
         "validated_rows : " + str(summary["validated_rows"]),
         "load_rows_after_file_duplicate_check : " + str(summary.get("load_rows_after_file_duplicate_check", "N/A")),
         "inserted : " + str(summary["inserted"]),
+        "updated : " + str(summary.get("updated", 0)),
         "assigned : " + str(summary["assigned"]),
         "unassigned : " + str(summary["unassigned"]),
         "skipped_rows : " + str(summary["skipped_rows"]),
@@ -2032,8 +2251,13 @@ def build_single_error_description(summary):
 
 def get_success_status_code(summary):
 
+    successfully_processed_rows = (
+        int(summary["inserted"])
+        + int(summary.get("updated", 0))
+    )
+
     if (
-        int(summary["inserted"]) == int(summary["total_rows"])
+        successfully_processed_rows == int(summary["total_rows"])
         and int(summary["skipped_rows"]) == 0
         and int(summary["row_errors"]) == 0
     ):
@@ -2649,6 +2873,14 @@ def process_inventory_upload(input_data):
             insert_result.get("duplicate_existing_rows", 0)
         )
 
+        updated_existing_rows = int(
+            insert_result.get("updated", 0)
+        )
+
+        update_candidate_rows = int(
+            insert_result.get("update_candidate_rows", 0)
+        )
+
         duplicate_rows = int(
             duplicate_file_rows + duplicate_existing_rows
         )
@@ -2674,12 +2906,14 @@ def process_inventory_upload(input_data):
             "validated_rows": len(valid_df),
             "load_rows_after_file_duplicate_check": len(df_for_load),
             "inserted": insert_result["inserted"],
+            "updated": updated_existing_rows,
+            "update_candidate_rows": update_candidate_rows,
             "skipped_rows": total_skipped_rows,
             "validation_skipped_rows": skipped_rows,
             "duplicate_file_rows": duplicate_file_rows,
             "duplicate_existing_rows": duplicate_existing_rows,
             "duplicate_rows": duplicate_rows,
-            "duplicate_rule": "same row skipped only when existing chart_status is CE_Assigned",
+            "duplicate_rule": "Repeated records with the same Emp Id are skipped. When the same record has a different Emp Id, the existing row is updated instead of creating another record.",
             "row_errors": row_errors,
             "assigned": assigned,
             "unassigned": unassigned,
@@ -2698,22 +2932,84 @@ def process_inventory_upload(input_data):
             response_data
         )
 
-        if int(insert_result["inserted"]) == 0:
+        message_parts = []
 
-            message = (
-                "No rows inserted. Duplicate rows skipped: "
-                + str(duplicate_rows)
+        inserted_count = int(
+            insert_result["inserted"]
+        )
+
+        updated_count = int(
+            updated_existing_rows
+        )
+
+        repeated_count = int(
+            duplicate_rows
+        )
+
+        if inserted_count > 0:
+
+            message_parts.append(
+                str(inserted_count)
+                + (
+                    " new record added"
+                    if inserted_count == 1
+                    else " new records added"
+                )
+            )
+
+        if updated_count > 0:
+
+            message_parts.append(
+                str(updated_count)
+                + (
+                    " existing row updated"
+                    if updated_count == 1
+                    else " existing rows updated"
+                )
+            )
+
+        if repeated_count > 0:
+
+            message_parts.append(
+                str(repeated_count)
+                + (
+                    " duplicate record skipped"
+                    if repeated_count == 1
+                    else " duplicate records skipped"
+                )
+            )
+
+        if not message_parts:
+
+            message_summary = "No changes were required"
+
+        elif len(message_parts) == 1:
+
+            message_summary = message_parts[0]
+
+        elif len(message_parts) == 2:
+
+            message_summary = (
+                message_parts[0]
+                + " and "
+                + message_parts[1]
             )
 
         else:
 
-            message = (
-                str(insert_result["inserted"])
-                + " rows inserted successfully in "
-                + format_duration(total_time)
-                + ". Duplicate rows skipped: "
-                + str(duplicate_rows)
+            message_summary = (
+                ", ".join(message_parts[:-1])
+                + ", and "
+                + message_parts[-1]
             )
+
+        message = (
+            message_summary
+            + ". Completed in "
+            + format_duration(total_time)
+            + "."
+        )
+
         send_success(
             message,
             response_data
