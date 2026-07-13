@@ -427,8 +427,9 @@ use Carbon\Carbon;
                                                                 @if (($loginEmpId  !== "Admin" || strpos($empDesignation, 'Manager') !== true || strpos($empDesignation, 'VP') !== true || strpos($empDesignation, 'Leader') !== true || strpos($empDesignation, 'Team Lead') !== true || strpos($empDesignation, 'CEO') !== true || strpos($empDesignation, 'Vice') !== true || strpos($empDesignation, 'Group Coordinator') !== true || strpos($empDesignation, 'Subject Matter Expert') !== true) && $loginEmpId != $data->CE_emp_id)
                                                                 @else
                                                                     {{-- @if (empty($existingCallerChartsWorkLogs) && !in_array("CE_Inprocess",$assignedProjectDetailsStatus) && $reworkCount < 3) --}}
-                                                                    @if (empty($existingCallerChartsWorkLogs) && !in_array("CE_Inprocess",$assignedProjectDetailsStatus)  && $reworkCount < 6)
-                                                                        <button class="task-start clickable-row"
+                                                                    {{-- @if (empty($existingCallerChartsWorkLogs) && !in_array("CE_Inprocess",$assignedProjectDetailsStatus)  && $reworkCount < 6) --}}
+                                                                    @if (empty($existingCallerChartsWorkLogs)  && $reworkCount < 6)   
+                                                                     <button class="task-start clickable-row"
                                                                             title="Start"><i class="fa fa-play-circle icon-circle1 mt-0" aria-hidden="true" style="color:#ffffff"></i></button>
                                                                     @elseif(in_array($data->id, $existingCallerChartsWorkLogs) || $data->chart_status == "CE_Inprocess")
                                                                         <button class="task-start clickable-row"
