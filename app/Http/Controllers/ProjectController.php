@@ -1792,7 +1792,8 @@ class ProjectController extends Controller
                                     });
                                 })
                                 ->groupBy('CE_emp_id')
-                                ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate])
+                                // ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate])
+                                ->havingRaw('MAX(ar_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate])
                                 ->select('CE_emp_id')
                                 ->get()
                                 ->count();
@@ -1918,7 +1919,8 @@ class ProjectController extends Controller
                                     });
                                 })
                                 ->groupBy('CE_emp_id')
-                                ->havingRaw('MAX(updated_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate])
+                                // ->havingRaw('MAX(ar_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate])
+                                ->havingRaw('MAX(ar_at) BETWEEN ? AND ?', [$yesterDayStartDate, $yesterDayEndDate])
                                 ->select('CE_emp_id')
                                 ->get()
                                 ->count();
