@@ -104,8 +104,8 @@
                             <td style="text-align: center;padding: 5px;">{{ $loggedResolvAR}}</td>
                             <td style="text-align: center;padding: 5px;">{{$data['prodcution_ar']}}</td>
                             <td style="text-align: center;padding: 5px;">{{ $data['Coder'] == 0 ? 'No Activity' : $data['Coder']}}</td>
-                            <td style="text-align: center; padding: 5px; {{ $prjDetailsList != '--' &&  $prjDetailsList != null ? ($data['Coder'] != 0 && $data['Coder'] == $prjDetailsList[$mKey]['aims_count'] ? 'color:green' : 'color:red') : 'color:red' }}">
-                                {{  $prjDetailsList != '--' &&  $prjDetailsList != null ? $prjDetailsList[$mKey]['aims_count'] :  $prjDetailsList}}</td>
+                            {{-- <td style="text-align: center; padding: 5px; {{ $prjDetailsList != '--' &&  $prjDetailsList != null ? ($data['Coder'] != 0 && $data['Coder'] == $prjDetailsList[$mKey]['aims_count'] ? 'color:green' : 'color:red') : 'color:red' }}">
+                                {{  $prjDetailsList != '--' &&  $prjDetailsList != null ? $prjDetailsList[$mKey]['aims_count'] :  $prjDetailsList}}</td> --}}
                             {{-- <td style="text-align: center;padding: 5px;">{{$data['total_qa']}}</td> --}}
                             <td style="text-align: center;padding: 5px;">{{ $loggedResolvQA}}</td>
                             <td style="text-align: center;padding: 5px;">{{$data['prodcution_qa']}}</td>
