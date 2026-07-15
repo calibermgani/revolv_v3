@@ -27,7 +27,7 @@ use Carbon\Carbon;
                     </div>
                     <div class="col-md-6">
                         <div class="row" style="justify-content: flex-end;margin-right:1.4rem">
-                            @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)
+                            @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false)
                                     @php
                                         $clientId = App\Http\Helper\Admin\Helpers::encodeAndDecodeID($clientName, 'decode');
                                         $prjTotalArList = App\Http\Helper\Admin\Helpers::getArResourceName($clientId);
@@ -58,7 +58,7 @@ use Carbon\Carbon;
                                     strpos($empDesignation, 'Leader') !== false ||
                                     strpos($empDesignation, 'Team Lead') !== false ||
                                     strpos($empDesignation, 'CEO') !== false ||
-                                    strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)
+                                    strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false)
                                 <div class="col-lg-3 mb-lg-0 mb-6" id="assign_div">
 
                                     <fieldset class="form-group mb-0 white-smoke-disabled">
@@ -123,7 +123,7 @@ use Carbon\Carbon;
                                 strpos($empDesignation, 'Leader') !== false ||
                                 strpos($empDesignation, 'Team Lead') !== false ||
                                 strpos($empDesignation, 'CEO') !== false ||
-                                strpos($empDesignation, 'Vice') !== false|| strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)
+                                strpos($empDesignation, 'Vice') !== false|| strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false)
                             <div class="wizard-step mb-0 five" data-wizard-type="step">
                                 <div class="wizard-wrapper py-2">
                                     <div class="wizard-label p-2 mt-2">
@@ -184,7 +184,7 @@ use Carbon\Carbon;
                             strpos($empDesignation, 'Leader') !== false ||
                             strpos($empDesignation, 'Team Lead') !== false ||
                             strpos($empDesignation, 'CEO') !== false ||
-                            strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)
+                            strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false)
                             <div class="wizard-step mb-0 eight" data-wizard-type="step">
                                 <div class="wizard-wrapper py-2">
                                     <div class="wizard-label p-2 mt-2">
@@ -216,7 +216,7 @@ use Carbon\Carbon;
                                 strpos($empDesignation, 'Leader') !== false ||
                                 strpos($empDesignation, 'Team Lead') !== false ||
                                 strpos($empDesignation, 'CEO') !== false ||
-                                strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)
+                                strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false)
                             <div class="wizard-step mb-0 six" data-wizard-type="step">
                                 <div class="wizard-wrapper py-2">
                                     <div class="wizard-label p-2 mt-2">
@@ -367,7 +367,7 @@ use Carbon\Carbon;
                                                 strpos($empDesignation, 'Leader') !== false ||
                                                 strpos($empDesignation, 'Team Lead') !== false ||
                                                 strpos($empDesignation, 'CEO') !== false ||
-                                                strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)
+                                                strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false)
                                             <th class='notexport'><input type="checkbox" id="ckbCheckAll"
                                                     class="cursor_hand">
                                             </th>
@@ -425,7 +425,7 @@ use Carbon\Carbon;
                                                     strpos($empDesignation, 'Leader') !== false ||
                                                     strpos($empDesignation, 'Team Lead') !== false ||
                                                     strpos($empDesignation, 'CEO') !== false ||
-                                                    strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false)
+                                                    strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false)
                                                 <td><input type="checkbox" class="checkBoxClass cursor_hand" name='check[]'
                                                         value="{{ $data->id }}">
                                                 </td>
