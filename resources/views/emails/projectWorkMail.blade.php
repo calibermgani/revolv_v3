@@ -43,6 +43,7 @@
         <table class="table" border="1" style="border-collapse: collapse">
             <thead>
                 <tr>
+                    <th style="text-align: center;padding: 5px;width:110px;background-color:#2f75b5;color:#ffffff;font-weight:100;border-color:black;">Span</th>   
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Project</th>
                     {{-- <th style="text-align: left;padding: 5px;">Chats</th> --}}
                     <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">Inventory Uploaded</th>
@@ -62,43 +63,153 @@
 
                 @if (isset($mailBody) && count($mailBody) > 0)
                     @php
+                        // if ( isset($yesterday) && !empty($yesterday)) {
+                        // $prjDetailsList = App\Http\Helper\Admin\Helpers::getAimsProductionEntryCount($projectIds,$subProjectIds,date('Y-m-d',strtotime($yesterday)));  
+                        // } else {
+                        //     $prjDetailsList = '--';
+                        // }   //AIMS Count
                         if ( isset($yesterday) && !empty($yesterday)) {
-                        $prjDetailsList = App\Http\Helper\Admin\Helpers::getAimsProductionEntryCount($projectIds,$subProjectIds,date('Y-m-d',strtotime($yesterday)));  
+                             $spanDetailsList = App\Http\Helper\Admin\Helpers::getAimsSubProjectSpan($projectIds,$subProjectIds);  
                         } else {
-                            $prjDetailsList = '--';
-                        }            
+                            $spanDetailsList = '--';
+                        }               
                     @endphp
-                    @foreach ($mailBody as $mKey => $data)
+                   @php
+                        /*
+                        * Attach the corresponding span to each mailBody row
+                        * before sorting. This keeps all row details together.
+                        */
+                        $sortedMailBody = collect($mailBody)
+                            ->map(function ($row, $index) use ($spanDetailsList) {
+
+                                $row['span'] = '--';
+
+                                if (
+                                    is_array($spanDetailsList)
+                                    && isset($spanDetailsList[$index])
+                                    && is_array($spanDetailsList[$index])
+                                ) {
+                                    $row['span'] = $spanDetailsList[$index]['span'] ?? '--';
+                                }
+
+                                return $row;
+                            })
+                            ->sort(function ($firstRow, $secondRow) {
+
+                                $firstSpan = trim((string) ($firstRow['span'] ?? ''));
+                                $secondSpan = trim((string) ($secondRow['span'] ?? ''));
+
+                                /*
+                                * Keep missing or unmapped spans at the bottom.
+                                */
+                                $firstSpanMissing = $firstSpan === '' || $firstSpan === '--';
+                                $secondSpanMissing = $secondSpan === '' || $secondSpan === '--';
+
+                                if ($firstSpanMissing !== $secondSpanMissing) {
+                                    return $firstSpanMissing ? 1 : -1;
+                                }
+
+                                /*
+                                * Natural ordering:
+                                * DU - 01
+                                * DU - 02
+                                * DU - 03
+                                */
+                                $spanComparison = strnatcasecmp($firstSpan, $secondSpan);
+
+                                if ($spanComparison !== 0) {
+                                    return $spanComparison;
+                                }
+
+                                /*
+                                * Within the same span, sort projects alphabetically.
+                                */
+                                return strnatcasecmp(
+                                    trim((string) ($firstRow['project'] ?? '')),
+                                    trim((string) ($secondRow['project'] ?? ''))
+                                );
+                            })
+                            ->values();
+                    @endphp
+
+                    @foreach ($sortedMailBody as $data)
                     @php
                     $projectIdsString = implode(",",$projectIds);
                     $rowProjectId = $data['project_id'];
-                         $arCacheKey = 'project_' . str_replace(',', '_', $projectIdsString) . '_ar_count';
-                        $qaCacheKey = 'project_' . str_replace(',', '_', $projectIdsString) . '_qa_count';      
-                        $totalAR = Illuminate\Support\Facades\Cache::get($arCacheKey, 0);
-                        $totalQA = Illuminate\Support\Facades\Cache::get($qaCacheKey, 0);
-                    
-                        $loggedResolvAR = 0;$totalARCount = 0;
-                        foreach($totalAR['totalArList'] as $key => $arList){          
-                            if($arList['client_id'] == $rowProjectId && $arList['assigned_people'] != null){
+                        $arCacheKey = 'project_' . str_replace(',', '_', $projectIdsString) . '_ar_count';
+                        $qaCacheKey = 'project_' . str_replace(',', '_', $projectIdsString) . '_qa_count';
+                        /*
+                        * Default value must have the same array structure expected below.
+                        */
+                        $totalAR = Illuminate\Support\Facades\Cache::get($arCacheKey, [
+                            'totalArList' => [],
+                        ]);
+                        $totalQA = Illuminate\Support\Facades\Cache::get($qaCacheKey, [
+                            'totalQAList' => [],
+                        ]);
+                        /*
+                        * Handle old or invalid cached values such as 0 or null.
+                        */
+                        $totalARList = is_array($totalAR)
+                            && isset($totalAR['totalArList'])
+                            && is_iterable($totalAR['totalArList'])
+                                ? $totalAR['totalArList']
+                                : [];
+                        $totalQAList = is_array($totalQA)
+                            && isset($totalQA['totalQAList'])
+                            && is_iterable($totalQA['totalQAList'])
+                                ? $totalQA['totalQAList']
+                                : [];
+                        $loggedResolvAR = 0;
+                        $totalARCount = 0;
+                        foreach ($totalARList as $arList) {
+                            if (
+                                is_array($arList)
+                                && isset($arList['client_id'], $arList['assigned_people'])
+                                && $arList['client_id'] == $rowProjectId
+                                && $arList['assigned_people'] != null
+                            ) {
                                 $totalARCount += 1;
-                            $loggedResolvAR +=  App\Models\EmployeeLogin::where('user_id', $arList['assigned_people'])
-                                                ->whereBetween('updated_at', [$data['yesterDayStartDate'], $data['yesterDayEndDate']])
-                                                ->distinct('user_id')
-                                                ->count();
+                                $loggedResolvAR += App\Models\EmployeeLogin::where(
+                                        'user_id',
+                                        $arList['assigned_people']
+                                    )
+                                    ->whereBetween('updated_at', [
+                                        $data['yesterDayStartDate'],
+                                        $data['yesterDayEndDate'],
+                                    ])
+                                    ->distinct('user_id')
+                                    ->count('user_id');
                             }
                         }
                         $loggedResolvQA = 0;
-                        foreach($totalQA['totalQAList'] as $key => $qaList){    
-                            if($qaList['client_id'] == $rowProjectId && $qaList['assigned_people'] != null){
-                            $loggedResolvQA +=  App\Models\EmployeeLogin::where('user_id', $qaList['assigned_people'])
-                                                ->whereBetween('updated_at', [$data['yesterDayStartDate'], $data['yesterDayEndDate']])
-                                                ->distinct('user_id')
-                                                ->count();
+                        foreach ($totalQAList as $qaList) {
+                            if (
+                                is_array($qaList)
+                                && isset($qaList['client_id'], $qaList['assigned_people'])
+                                && $qaList['client_id'] == $rowProjectId
+                                && $qaList['assigned_people'] != null
+                            ) {
+                                $loggedResolvQA += App\Models\EmployeeLogin::where(
+                                        'user_id',
+                                        $qaList['assigned_people']
+                                    )
+                                    ->whereBetween('updated_at', [
+                                        $data['yesterDayStartDate'],
+                                        $data['yesterDayEndDate'],
+                                    ])
+                                    ->distinct('user_id')
+                                    ->count('user_id');
                             }
                         }
                     @endphp
                         <tr>
-                            <td style="text-align: center;padding: 5px;">{{ $data['project'] }}</td>
+                             <td style="text-align: center;padding:5px;width:110px;white-space:nowrap;">
+                                {{ $data['span'] ?? '--' }}
+                            </td>  
+                            <td style="text-align: left;padding: 5px 10px;width:250px;white-space:nowrap;">
+                                {{ $data['project'] }}
+                            </td>                         
                             <td style="text-align: center;padding: 5px;">{{ $data['Chats'] == 0 ? 'No' : 'Yes' }}</td>
                             <td style="text-align: center;padding: 5px;">{{ $totalARCount}}</td>
                             <td style="text-align: center;padding: 5px;">{{ $loggedResolvAR}}</td>
