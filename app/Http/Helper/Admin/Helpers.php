@@ -1523,4 +1523,42 @@ class Helpers
             return $practiceId && isset($configMap[$projectId][$practiceId]);
         }));
     }
+	public static function getAimsSubProjectSpan($prjArray,$subPrjArray)
+    {
+	
+            try {
+                $payload = [
+                    'token' => '1a32e71a46317b9cc6feb7388238c95d',
+                    'projectIds' => $prjArray,
+					'subProjectIds' => $subPrjArray
+                    
+                ];	  
+				$data = retry(3, function () use ($payload) {
+					$client = new Client(['verify' => false]);
+					$response = $client->request('POST', 'https://aims.officeos.in/api/v1_users/get_aims_sub_project_span', [
+						'json' => $payload,
+					]);
+					if ($response->getStatusCode() == 200) {
+				
+						$responseData = json_decode($response->getBody(), true);	
+						if (isset($responseData)) {
+							return $responseData['spanDetailsList'];
+						} else {
+							throw new \Exception('spanDetailsList not found in the API response');
+						}
+					} elseif ($response->getStatusCode() == 429) {
+						$retryAfter = $response->getHeader('Retry-After')[0] ?? 60; // Default wait time 2 seconds
+						sleep($retryAfter);
+						throw new \Exception('Rate limit exceeded, retrying after ' . $retryAfter . ' seconds.');
+					} else {
+						throw new \Exception('API request failed with status: ' . $response->getStatusCode());
+					}
+				}, 4000);           
+				return $data;
+			} catch (\Exception $e) {
+				Log::error('Error in prjDetailedList: ' . $e->getMessage());
+				return null;
+			}    
+        
+    }
 }
