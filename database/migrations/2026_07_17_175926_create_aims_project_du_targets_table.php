@@ -15,8 +15,12 @@ class CreateAimsProjectDuTargetsTable extends Migration
     {
         Schema::create('aims_project_du_targets', function (Blueprint $table) {
             $table->id();
+               $table->unsignedBigInteger('client_id')
+                ->nullable();         
 
-            $table->text('project');
+            $table->text('project') ->nullable();
+              $table->unsignedBigInteger('subproject_id')
+                ->nullable();
             $table->string('subproject_name', 255)->nullable();
             $table->string('scope_name', 255)->nullable();
 
