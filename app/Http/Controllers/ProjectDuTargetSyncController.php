@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Project;
+use App\Models\project;
 use App\Models\subproject;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
