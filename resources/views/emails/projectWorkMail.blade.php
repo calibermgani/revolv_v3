@@ -179,7 +179,7 @@
                                         $data['yesterDayEndDate'],
                                     ])
                                     ->distinct('user_id')
-                                    ->count('user_id');
+                                    ->count();
                             }
                         }
                         $loggedResolvQA = 0;
@@ -199,7 +199,7 @@
                                         $data['yesterDayEndDate'],
                                     ])
                                     ->distinct('user_id')
-                                    ->count('user_id');
+                                    ->count();
                             }
                         }
                     @endphp
