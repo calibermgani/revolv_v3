@@ -248,6 +248,10 @@ Route::group(['prefix' => 'projects'], function() {
     Route::get('aims-production-results/{date}',  'App\Http\Controllers\ProjectController@getAimsProductionResults');
     Route::any('project_daterange_wise_aims_production','App\Http\Controllers\ProjectController@projectDateRangeWiseAimsProduction');
     Route::get('date-range-aims-production-results',  'App\Http\Controllers\ProjectController@getDateWiseRangeResults');
+      Route::post('project-du-targets/sync', 'App\Http\Controllers\ProjectDuTargetSyncController@syncProjectDuTargets');
+
+
+
 
 
 
