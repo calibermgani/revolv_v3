@@ -17,6 +17,7 @@ class CreateAimsProjectDuTargetsTable extends Migration
             $table->id();
 
             $table->text('project');
+            $table->string('subproject_name', 255)->nullable();
             $table->string('scope_name', 255)->nullable();
 
             /*
@@ -28,6 +29,8 @@ class CreateAimsProjectDuTargetsTable extends Migration
             $table->string('actual_target', 255)->nullable();
 
             $table->string('du', 255)->nullable();
+            $table->string('month', 255)->nullable();
+            $table->string('year', 255)->nullable();
 
             $table->timestamp('synced_at')->nullable();
             $table->timestamps();

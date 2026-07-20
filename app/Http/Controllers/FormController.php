@@ -21,16 +21,40 @@ class FormController extends Controller
     public function formConfigurationList() {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
             try {
-                    $formConfiguration = formConfiguration::groupBy(['project_id', 'sub_project_id','project_type'])
-                                            ->select('project_id', 'sub_project_id', DB::raw('GROUP_CONCAT(label_name) as label_names'),'project_type')
-                                            ->get();
-               return view('Form.formConfigList',compact('formConfiguration'));
+                $formConfiguration = formConfiguration::join(
+                        'projects',
+                        'form_configurations.project_id',
+                        '=',
+                        'projects.project_id'
+                    )
+                    ->where('projects.status', 'Active')
+                    ->select(
+                        'form_configurations.project_id',
+                        'form_configurations.sub_project_id',
+                        'form_configurations.project_type',
+                        DB::raw(
+                            'GROUP_CONCAT(form_configurations.label_name) AS label_names'
+                        )
+                    )
+                    ->groupBy(
+                        'form_configurations.project_id',
+                        'form_configurations.sub_project_id',
+                        'form_configurations.project_type'
+                    )
+                    ->get();
+                return view('Form.formConfigList',compact('formConfiguration'));
             } catch (\Exception $e) {
-                Log::debug($e->getMessage());
+                Log::error('Form configuration list fetch failed', [
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                ]);
+                return redirect()
+                    ->back()
+                    ->with('error', 'Unable to fetch form configurations.');
             }
-        } else {
-            return redirect('/');
         }
+        return redirect('/');
     }
     public function formCreationIndex() {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
