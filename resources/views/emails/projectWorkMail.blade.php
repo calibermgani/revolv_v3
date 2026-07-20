@@ -314,7 +314,7 @@
                         {{ isset($data['span']) ? $data['span'] : '--' }}
                     </td>
 
-                    <td style="text-align: center;padding: 5px;">
+                    <td style="text-align: left;padding: 5px;">
                         {{ $data['project'] }}
                     </td>
 
