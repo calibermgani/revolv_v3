@@ -29,7 +29,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('project:callchartworklogs')->dailyAt('09:00');
         $schedule->command('project:workmail')->dailyAt('09:00');
         // $schedule->command('project:duonehourlymail')->hourly();
-        $schedule->command('project:dutargetsync')->dailyAt('09:00');
+        $schedule->command('project:dutargetsync')->dailyAt('15:00');
       
 
     }
