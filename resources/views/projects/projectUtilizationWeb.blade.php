@@ -61,7 +61,8 @@
                     <table class="table table-separate table-head-custom no-footer dtr-column clients_list_filter"
                         id="project_utilization_table">
                         <thead>
-                            <tr>
+                            <tr>                               
+                                <th>Span</th>
                                 <th>Project</th>
                                 <th>Inventory Uploaded</th>
                                 <th>Total Users - AR</th>
@@ -78,15 +79,46 @@
 
                             @if (isset($projectsPending) && count($projectsPending) > 0)
                             @php
+                                // if ( isset($yesterday) && !empty($yesterday)) {
+                                //    $prjDetailsList = App\Http\Helper\Admin\Helpers::getAimsProductionEntryCount($projectIds,$subProjectIds,date('Y-m-d',strtotime($yesterday)));  
+                                // } else {
+                                //     $prjDetailsList = '--';
+                                // } //AIMS Count
                                 if ( isset($yesterday) && !empty($yesterday)) {
-                                   $prjDetailsList = App\Http\Helper\Admin\Helpers::getAimsProductionEntryCount($projectIds,$subProjectIds,date('Y-m-d',strtotime($yesterday)));  
+                                    $spanDetailsList = App\Http\Helper\Admin\Helpers::getAimsSubProjectSpan($projectIds,$subProjectIds);  
                                 } else {
-                                    $prjDetailsList = '--';
-                                }            
+                                    $spanDetailsList = '--';
+                                }                       
                             @endphp
                                 @foreach ($projectsPending as $key => $data)
+                                        @php
+                                            $spanValue = '--';
+
+                                            if (
+                                                $spanDetailsList != '--' &&
+                                                $spanDetailsList != null &&
+                                                $spanDetailsList != '' &&
+                                                isset($spanDetailsList[$key]['span']) &&
+                                                $spanDetailsList[$key]['span'] != ''
+                                            ) {
+                                                $spanValue = $spanDetailsList[$key]['span'];
+                                            }
+
+                                            /*
+                                            * DU - 01 => 1
+                                            * DU - 02 => 2
+                                            * --      => 9999, so it appears last
+                                            */
+                                            $spanOrder = $spanValue == '--'
+                                                ? 9999
+                                                : (int) preg_replace('/[^0-9]/', '', $spanValue);
+                                        @endphp
                                     <tr data-project-id="{{ $data['project_id'] }}">
-                                        <td>{{ $data['project'] }}</td>
+                                        {{-- <td> {{  $spanDetailsList != '--' &&  $spanDetailsList != null  &&  $spanDetailsList != ""  &&  $spanDetailsList[$key]['span'] != "" ? ($spanDetailsList[$key]['span']) :  '--'}}</td>                     --}}
+                                        <td data-order="{{ $spanOrder }}">
+                                            {{ $spanValue }}
+                                        </td>
+                                                                                <td>{{ $data['project'] }}</td>
                                         <td>{{ $data['Chats'] == 0 ? 'No' : 'Yes' }}</td>
                                         {{-- <td>{{ $data['total_ar'] }}</td> --}}
                                         <td class="total-ar"></td>
