@@ -185,7 +185,12 @@ class ProjectDuTargetSyncController extends Controller
                     return $project !== ''
                         && !in_array($scopeName, $excludedScopes, true);
                 })
-                ->values();
+                ->values()
+                ->map(function ($row, $index) {
+                    $row['id'] = $index + 1;
+
+                    return $row;
+                });
 
             /*
              * Do not delete current records if the API returns no valid data.
