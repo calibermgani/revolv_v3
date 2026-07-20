@@ -11,6 +11,7 @@ class Kernel extends ConsoleKernel
               Commands\ProjectandPracticeTable::class,
               Commands\ProjectWorkMailCommand::class,
               Commands\procodeProjectOnHoldMail::class,
+               Commands\ProjectDuTargetSyncCommand::class,
     ];
     /**
      * Define the application's command schedule.
@@ -27,6 +28,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('project:hourlymail')->hourly();
         $schedule->command('project:callchartworklogs')->dailyAt('09:00');
         $schedule->command('project:workmail')->dailyAt('09:00');
+        // $schedule->command('project:duonehourlymail')->hourly();
+        $schedule->command('project:dutargetsync')->dailyAt('09:00');
       
 
     }
