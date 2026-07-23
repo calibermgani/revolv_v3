@@ -64,12 +64,12 @@
             </th>
 
             <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">
-                Total Users - AR
+                Billable FTE
             </th>
 
-            <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">
+            {{-- <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">
                 Logged Resolv - AR
-            </th>
+            </th> --}}
 
             <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">
                 Production Users - AR
@@ -241,24 +241,16 @@
                         str_replace(',', '_', $projectIdsString) .
                         '_qa_count';
 
-                    $totalAR = Illuminate\Support\Facades\Cache::get(
-                        $arCacheKey,
-                        ['totalArList' => []]
-                    );
+                    // $totalAR = Illuminate\Support\Facades\Cache::get(
+                    //     $arCacheKey,
+                    //     ['totalArList' => []]
+                    // );
 
                     $totalQA = Illuminate\Support\Facades\Cache::get(
                         $qaCacheKey,
                         ['totalQAList' => []]
-                    );
-                    Log::info('AR Cache', [
-                        'type' => gettype($totalAR),
-                        'value' => $totalAR,
-                    ]);
-
-                    Log::info('QA Cache', [
-                        'type' => gettype($totalQA),
-                        'value' => $totalQA,
-                    ]);
+                    );                 
+                 
 
                     $loggedResolvAR = 0;
                     $totalARCount = 0;
@@ -266,29 +258,29 @@
                     /*
                      * Existing AR logic kept unchanged.
                      */
-                    foreach ($totalAR['totalArList'] as $key => $arList) {
+                    // foreach ($totalAR['totalArList'] as $key => $arList) {
 
-                        if (
-                            $arList['client_id'] == $rowProjectId &&
-                            $arList['assigned_people'] != null
-                        ) {
-                            $totalARCount += 1;
+                    //     if (
+                    //         $arList['client_id'] == $rowProjectId &&
+                    //         $arList['assigned_people'] != null
+                    //     ) {
+                    //         $totalARCount += 1;
 
-                            $loggedResolvAR += App\Models\EmployeeLogin::where(
-                                    'user_id',
-                                    $arList['assigned_people']
-                                )
-                                ->whereBetween(
-                                    'updated_at',
-                                    [
-                                        $data['yesterDayStartDate'],
-                                        $data['yesterDayEndDate']
-                                    ]
-                                )
-                                ->distinct('user_id')
-                                ->count();
-                        }
-                    }
+                    //         $loggedResolvAR += App\Models\EmployeeLogin::where(
+                    //                 'user_id',
+                    //                 $arList['assigned_people']
+                    //             )
+                    //             ->whereBetween(
+                    //                 'updated_at',
+                    //                 [
+                    //                     $data['yesterDayStartDate'],
+                    //                     $data['yesterDayEndDate']
+                    //                 ]
+                    //             )
+                    //             ->distinct('user_id')
+                    //             ->count();
+                    //     }
+                    // }
 
                     $loggedResolvQA = 0;
 
@@ -335,13 +327,13 @@
                     </td>
 
                     <td style="text-align: center;padding: 5px;">
-                        {{-- {{ $totalARCount }} --}}//total users existing code
+                        {{-- {{ $totalARCount }} //total users existing code --}}
                         {{$billableFTE->billable_fte}}
                     </td>
 
-                    <td style="text-align: center;padding: 5px;">
+                    {{-- <td style="text-align: center;padding: 5px;">
                         {{ $loggedResolvAR }}
-                    </td>
+                    </td> --}}
 
                     <td style="text-align: center;padding: 5px;">
                         {{ $data['prodcution_ar'] }}
