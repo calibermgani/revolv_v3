@@ -44,7 +44,7 @@ use App\Jobs\DateRangeWiseAimsProduction;
     use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
 use Throwable;
-
+ini_set('max_execution_time', 180);
 class ProjectController extends Controller
 {
     public function clientTableUpdate()
@@ -1973,6 +1973,7 @@ class ProjectController extends Controller
                                     'prodcution_ar' => $productionARCount,
                                     'prodcution_qa' => $productionQACount,
                                     'project_id' => $project['id'], // Store project ID
+                                    'sub_project_id' => $subKey,
                                     'yesterDayStartDate' => $yesterDayStartDate,
                                     'yesterDayEndDate' => $yesterDayEndDate
                                 ];

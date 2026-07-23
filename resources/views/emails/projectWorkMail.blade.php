@@ -228,6 +228,8 @@
                     $projectIdsString = implode(",", $projectIds);
 
                     $rowProjectId = $data['project_id'];
+                    $rowSubProjectId = $data['sub_project_id'];
+
 
                     $arCacheKey =
                         'project_' .
@@ -241,13 +243,22 @@
 
                     $totalAR = Illuminate\Support\Facades\Cache::get(
                         $arCacheKey,
-                        0
+                        ['totalArList' => []]
                     );
 
                     $totalQA = Illuminate\Support\Facades\Cache::get(
                         $qaCacheKey,
-                        0
+                        ['totalQAList' => []]
                     );
+                    Log::info('AR Cache', [
+                        'type' => gettype($totalAR),
+                        'value' => $totalAR,
+                    ]);
+
+                    Log::info('QA Cache', [
+                        'type' => gettype($totalQA),
+                        'value' => $totalQA,
+                    ]);
 
                     $loggedResolvAR = 0;
                     $totalARCount = 0;
@@ -305,6 +316,7 @@
                                 ->count();
                         }
                     }
+                    $billableFTE = DB::table('aims_project_du_targets')->where('client_id',$rowProjectId)->where('subproject_id',$rowSubProjectId)->first('billable_fte');
                 @endphp
 
                 <tr>
@@ -323,7 +335,8 @@
                     </td>
 
                     <td style="text-align: center;padding: 5px;">
-                        {{ $totalARCount }}
+                        {{-- {{ $totalARCount }} --}}//total users existing code
+                        {{$billableFTE->billable_fte}}
                     </td>
 
                     <td style="text-align: center;padding: 5px;">
