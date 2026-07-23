@@ -1846,6 +1846,7 @@ class ProjectController extends Controller
                                     'prodcution_ar' => $productionARCount,//production ar login
                                     'prodcution_qa' => $productionQACount,
                                     'project_id' => $project['id'], // Store project ID
+                                    'sub_project_id' => $subKey
                                 ];
                                 $projectIds[] = $project['id'];
                                 $subProjectIds[] = $subKey;
@@ -1984,7 +1985,7 @@ class ProjectController extends Controller
                     }
                     // return ['data' => $projectData, 'ids' => $project_id];
                 });
-                // GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
+                GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
                 GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
                 $mailBody = $projectsPending;
                 if($toMailId != null && $ccMailId != null) {                   
