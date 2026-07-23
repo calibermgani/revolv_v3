@@ -87,9 +87,9 @@
                 Total QA
             </th> --}}
 
-            <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">
+            {{-- <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">
                 Logged Resolv - QA
-            </th>
+            </th> --}}
 
             <th style="text-align: center;padding: 5px;background-color:#2f75b5;color:#ffffff;font-weight: 100;border-color:black;">
                 Production Users - QA
@@ -282,32 +282,32 @@
                     //     }
                     // }
 
-                    $loggedResolvQA = 0;
+                    // $loggedResolvQA = 0;
 
                     /*
                      * Existing QA logic kept unchanged.
                      */
-                    foreach ($totalQA['totalQAList'] as $key => $qaList) {
+                    // foreach ($totalQA['totalQAList'] as $key => $qaList) {
 
-                        if (
-                            $qaList['client_id'] == $rowProjectId &&
-                            $qaList['assigned_people'] != null
-                        ) {
-                            $loggedResolvQA += App\Models\EmployeeLogin::where(
-                                    'user_id',
-                                    $qaList['assigned_people']
-                                )
-                                ->whereBetween(
-                                    'updated_at',
-                                    [
-                                        $data['yesterDayStartDate'],
-                                        $data['yesterDayEndDate']
-                                    ]
-                                )
-                                ->distinct('user_id')
-                                ->count();
-                        }
-                    }
+                    //     if (
+                    //         $qaList['client_id'] == $rowProjectId &&
+                    //         $qaList['assigned_people'] != null
+                    //     ) {
+                    //         $loggedResolvQA += App\Models\EmployeeLogin::where(
+                    //                 'user_id',
+                    //                 $qaList['assigned_people']
+                    //             )
+                    //             ->whereBetween(
+                    //                 'updated_at',
+                    //                 [
+                    //                     $data['yesterDayStartDate'],
+                    //                     $data['yesterDayEndDate']
+                    //                 ]
+                    //             )
+                    //             ->distinct('user_id')
+                    //             ->count();
+                    //     }
+                    // }
                     $billableFTE = DB::table('aims_project_du_targets')->where('client_id',$rowProjectId)->where('subproject_id',$rowSubProjectId)->first('billable_fte');
                 @endphp
 
@@ -364,9 +364,9 @@
                         {{ $data['total_qa'] }}
                     </td> --}}
 
-                    <td style="text-align: center;padding: 5px;">
+                    {{-- <td style="text-align: center;padding: 5px;">
                         {{ $loggedResolvQA }}
-                    </td>
+                    </td> --}}
 
                     <td style="text-align: center;padding: 5px;">
                         {{ $data['prodcution_qa'] }}
