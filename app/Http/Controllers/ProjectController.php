@@ -1967,7 +1967,9 @@ class ProjectController extends Controller
                         }
     
                                 $projectsPending[] = [
-                                    'project' => $project['client_name'] . '-' . $subProject,
+                                    // 'project' => $project['client_name'] . '-' . $subProject,
+                                    'project' => $project['client_name'],
+                                    'subProject' => $subProject,
                                     'Chats' => $aCount,
                                     'Coder' => $cCount,
                                     'QA' => $qCount,
@@ -1985,8 +1987,8 @@ class ProjectController extends Controller
                     }
                     // return ['data' => $projectData, 'ids' => $project_id];
                 });
-                GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
-                GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
+                // GetTotalARCountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
+                // GetTotalQACountJob::dispatch($projectIds)->delay(now()->addSeconds(5));
                 $mailBody = $projectsPending;
                 if($toMailId != null && $ccMailId != null) {                   
                     Mail::to($toMailId)->cc($ccMailId)->send(new ProjectWorkMail($mailHeader, $mailBody, $yesterday,$projectIds,$subProjectIds));
