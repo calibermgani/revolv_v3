@@ -26,6 +26,7 @@ class CreateAimsProjectResourceAllocationsTable extends Migration
             $table->string('resource_type', 50)->nullable();
             $table->string('percentage', 255)->nullable();
             $table->string('emp_id', 255)->nullable();
+            $table->text('user_name')->nullable();
             $table->string('user_status', 255)->nullable();
             $table->timestamps();
             $table->softDeletes();

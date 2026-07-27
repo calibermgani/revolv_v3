@@ -846,6 +846,8 @@ class ProjectDuTargetSyncController extends Controller
 
                     'emp_id' =>
                         $allocation['emp_id'] ?? null,
+                    'user_name' =>
+                        $allocation['user_name'] ?? null,
 
                     'user_status' =>
                         $allocation['user_status'] ?? null,
