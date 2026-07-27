@@ -762,5 +762,139 @@ class ProjectDuTargetSyncController extends Controller
         return $value === ''
             ? null
             : $value;
+    } 
+    public function syncProjectResourceAllocation()
+    {
+        try {
+            $sourceUrl = 'https://aims.officeos.in/api/v1_users/get_resolv_project_resource_allocation';
+
+            $payload = [
+                'token' => '1a32e71a46317b9cc6feb7388238c95d',
+            ];
+
+            $response = Http::timeout(120)
+                ->acceptJson()
+                ->get($sourceUrl, $payload);
+
+            if (!$response->successful()) {
+                Log::error('AIMS project resource allocation API failed.', [
+                    'status_code' => $response->status(),
+                    'response'    => $response->body(),
+                ]);
+
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Unable to fetch project resource allocation data from AIMS.',
+                    'code'    => $response->status(),
+                ], 500);
+            }
+
+            $apiResponse = $response->json();
+
+            if (
+                !isset($apiResponse['status']) ||
+                $apiResponse['status'] !== true
+            ) {
+                return response()->json([
+                    'status'   => false,
+                    'message'  => $apiResponse['message']
+                        ?? 'AIMS API returned an unsuccessful response.',
+                    'response' => $apiResponse,
+                ], 422);
+            }
+
+            $resourceAllocations = $apiResponse['data'] ?? [];
+
+            if (empty($resourceAllocations)) {
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'No project resource allocation records received from AIMS.',
+                    'count'   => 0,
+                ], 200);
+            }
+
+            $now = now();
+            $insertData = [];
+
+            foreach ($resourceAllocations as $allocation) {
+                $insertData[] = [
+                    'client_id' => $allocation['client_id'] ?? null,
+
+                    'assigned_people' =>
+                        $allocation['assigned_people'] ?? null,
+
+                    'department' =>
+                        $allocation['department'] ?? null,
+
+                    'department_name' =>
+                        $allocation['department_name'] ?? null,
+
+                    'shift_name' =>
+                        $allocation['shift_name'] ?? null,
+
+                    'current_designation' =>
+                        $allocation['current_designation'] ?? null,
+
+                    'status' =>
+                        $allocation['status'] ?? null,
+
+                    'resource_type' =>
+                        $allocation['resource_type'] ?? null,
+
+                    'percentage' =>
+                        $allocation['percentage'] ?? null,
+
+                    'emp_id' =>
+                        $allocation['emp_id'] ?? null,
+
+                    'user_status' =>
+                        $allocation['user_status'] ?? null,
+
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+
+            /*
+            * TRUNCATE must not be inside DB::transaction().
+            * It removes all records and resets AUTO_INCREMENT to 1.
+            */
+            DB::table('aims_project_resource_allocations')->truncate();
+
+            foreach (array_chunk($insertData, 500) as $chunk) {
+                DB::table('aims_project_resource_allocations')
+                    ->insert($chunk);
+            }
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Project resource allocation data synced successfully.',
+                'count'   => count($insertData),
+            ], 200);
+
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            Log::error('AIMS API connection failed.', [
+                'message' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'status'  => false,
+                'message' => 'Unable to connect to the AIMS API.',
+                'error'   => $e->getMessage(),
+            ], 500);
+
+        } catch (\Throwable $e) {
+            Log::error('Project resource allocation synchronization failed.', [
+                'message' => $e->getMessage(),
+                'line'    => $e->getLine(),
+                'file'    => $e->getFile(),
+            ]);
+
+            return response()->json([
+                'status'  => false,
+                'message' => 'Project resource allocation synchronization failed.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
     }
 }
