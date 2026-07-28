@@ -19,7 +19,7 @@
                         class="d-flex flex-row justify-content-between align-items-center float-right ml-2">
 
                         <a id="navigate-btn" class="btn btn-white-black font-weight-bolder btn-sm mr-1"
-                            href="{{ url('form_creation') }}?parent={{ request()->parent }}&child={{ request()->child }}"><i
+                            href="{{ route('formCreationIndex') }}?parent={{ request()->parent }}&child={{ request()->child }}"><i
                                 class="fa fa-plus" style="font-size:13px;color:#ffffff"></i>&nbsp;&nbsp;Add</a>
 
                     </div>
@@ -31,7 +31,7 @@
                                 <th width="10%">Sub Project Name</th>
                                 <th>Column Fields</th>
                                 <th width="10%">Project Type</th>
-                                <th width="3%"></th>
+                                <th width="6%"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -61,13 +61,18 @@
                                     @endphp
                                     @if($projectName !== null  && $subProjectName !== null )
                                     <tr
-                                        data-href="{{ route('formEdit', ['parent' => request()->parent, 'child' => request()->child, 'project_id' => $project_id_encode, 'sub_project_id' => $sub_project_id_encode]) }}" style="cursor:pointer !important">
+                                        data-href="{{ route('formEdit', ['parent' => request()->parent, 'child' => request()->child, 'project_id' => $project_id_encode, 'sub_project_id' => $sub_project_id_encode]) }}"
+                                        style="cursor:pointer !important">
                                         <td width="15%"><input type="hidden" value="{{$data->project_id}}">{{ $projectName->aims_project_name }}</td>
                                         <td width="10%"><input type="hidden" value="{{$data->sub_project_id}}">{{ $subProjectName == '--' ? '--' : $subProjectName->sub_project_name }}</td>
                                         <td style="word-wrap: break-word;white-space: normal;overflow-wrap: break-word;word-break: break-word; ">{{$data->label_names}}</td>
                                         <td width="10%">{{$data->project_type != null ? 'Open Access' : 'Automation'}}</td>
-                                        <td class="project_delete" data-value="{{$loop->iteration}}" width="3%"><i
-                                            class="fa fas fa-trash text-danger icon-circle2 ml-1 mt-0 record_delete"></i></a></td>
+                                        <td class="project_delete project_actions" data-value="{{$loop->iteration}}" width="6%">
+                                            @if($data->sub_project_id != null)
+                                            <i class="fa fa-clone text-primary icon-circle2 ml-1 mt-0 project_clone" title="Clone columns" style="cursor:pointer"></i>
+                                            @endif
+                                            <i class="fa fas fa-trash text-danger icon-circle2 ml-1 mt-0 record_delete"></i>
+                                        </td>
                                     </tr>
                                     @endif
                                 @endforeach
@@ -76,6 +81,40 @@
                     </table>
                 </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Clone configuration → formConfigurationCloneStore --}}
+    <div class="modal fade" id="cloneConfigurationModal" tabindex="-1" role="dialog" aria-labelledby="cloneConfigurationModalLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form id="formConfigurationCloneStoreForm" method="POST" action="{{ route('formConfigurationCloneStore') }}">
+                    @csrf
+                    <input type="hidden" name="parent" value="{{ request()->parent }}">
+                    <input type="hidden" name="child" value="{{ request()->child }}">
+                    <input type="hidden" name="project_id" id="clone_project_id" value="">
+                    <input type="hidden" name="source_sub_project_id" id="clone_source_sub_project_id" value="">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cloneConfigurationModalLabel">Clone column configuration</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-3 text-muted">Copy column fields from <strong id="clone_source_sub_project_name"></strong> to another sub project under the same project.</p>
+                        <div class="form-group mb-0">
+                            <label for="clone_target_sub_project_id" class="required">Sub project</label>
+                            <select class="form-control" name="sub_project_id" id="clone_target_sub_project_id" required>
+                                <option value="">-- Select --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light-danger font-weight-bold" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-white-black font-weight-bold" id="cloneConfigurationSubmit">Clone</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -109,9 +148,86 @@
                             window.location.href = href;
                         }
                 });
+                function subProjectIsConfigured(subProjectId, configuredIds) {
+                    return configuredIds.some(function(id) {
+                        return String(id) === String(subProjectId);
+                    });
+                }
+
+                $('#formConfigurationLsit tbody').on('click', '.project_clone', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var $row = $(this).closest('tr');
+                    var projectId = $row.find('td:eq(0) input').val();
+                    var sourceSubProjectId = $row.find('td:eq(1) input').val();
+                    var sourceSubProjectName = $.trim($row.find('td:eq(1)').text());
+
+                    $('#clone_project_id').val(projectId);
+                    $('#clone_source_sub_project_id').val(sourceSubProjectId);
+                    $('#clone_source_sub_project_name').text(sourceSubProjectName);
+                    $('#clone_target_sub_project_id').html('<option value="">Loading...</option>');
+                    $('#cloneConfigurationModal').modal('show');
+
+                    $.ajax({
+                        type: 'GET',
+                        url: "{{ url('sub_project_list') }}",
+                        dataType: 'json',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        data: {
+                            project_id: projectId
+                        },
+                        success: function(res) {
+                            var myArray = res.existingSubProject || [];
+                            var existingSubProjectWithDeltedAt = res.existingSubProjectWithDeltedAt || [];
+                            var options = '<option value="">-- Select --</option>';
+                            var hasTarget = false;
+
+                            $.each(res.subProject || {}, function(key, value) {
+                                if (String(key) === String(sourceSubProjectId)) {
+                                    return;
+                                }
+                                var isExisting = subProjectIsConfigured(key, myArray);
+                                var isDeleted = subProjectIsConfigured(key, existingSubProjectWithDeltedAt);
+                                if (!isExisting && !isDeleted) {
+                                    hasTarget = true;
+                                    options += '<option value="' + key + '">' + value + '</option>';
+                                }
+                            });
+
+                            $('#clone_target_sub_project_id').html(options);
+
+                            if (!hasTarget) {
+                                js_notification('error', 'No sub projects available to clone into for this project.');
+                            }
+                        },
+                        error: function() {
+                            $('#clone_target_sub_project_id').html('<option value="">-- Select --</option>');
+                            js_notification('error', 'Unable to load sub projects.');
+                        }
+                    });
+                });
+
+                $('#formConfigurationCloneStoreForm').on('submit', function() {
+                    if (!$('#clone_target_sub_project_id').val()) {
+                        return false;
+                    }
+                    KTApp.block('#formConfigDiv', {
+                        overlayColor: '#000000',
+                        state: 'danger',
+                        opacity: 0.1,
+                        message: 'Cloning...',
+                    });
+                });
+
                 $('#formConfigurationLsit tbody').on('click', 'td.project_delete', function(e){
                     var projectId = $(this).closest('tr').find('td:eq(0) input').val();
                     var subProjectId = $(this).closest('tr').find('td:eq(1) input').val();
+                    if ($(e.target).closest('.project_clone').length) {
+                        return;
+                    }
                     swal.fire({
                             text: "Are you sure you want to delete?",
                             icon: "success",

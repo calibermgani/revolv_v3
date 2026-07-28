@@ -82,15 +82,121 @@ class FormController extends Controller
                 return response()->json(["subProject" => $data, "existingSubProject" => $existingSubProject,"existingSubProjectWithDeltedAt" => $existingSubProjectWithDeltedAt]);
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());
+                return response()->json(['error' => 'Unable to load sub projects.'], 500);
             }
-        } else {
+        }
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        return redirect('/');
+    }
+
+    public function formConfigurationCloneStore(Request $request)
+    {
+        if (!Session::get('loginDetails') || !Session::get('loginDetails')['userInfo'] || Session::get('loginDetails')['userInfo']['user_id'] == null) {
             return redirect('/');
+        }
+
+        $request->validate([
+            'project_id' => 'required',
+            'source_sub_project_id' => 'required',
+            'sub_project_id' => 'required',
+        ]);
+
+        if ((string) $request->source_sub_project_id === (string) $request->sub_project_id) {
+            return redirect('/form_configuration_list' . '?parent=' . $request->parent . '&child=' . $request->child)
+                ->with('error', 'Source and target sub project cannot be the same.');
+        }
+
+        $additionalLabelArray = [
+            'AR Denial Codes',
+            'AR SubStatus Codes',
+            'Production Type',
+        ];
+
+        try {
+            $targetExists = formConfiguration::where('project_id', $request->project_id)
+                ->where('sub_project_id', $request->sub_project_id)
+                ->exists();
+
+            if ($targetExists) {
+                return redirect('/form_configuration_list' . '?parent=' . $request->parent . '&child=' . $request->child)
+                    ->with('error', 'Selected sub project already has a configuration.');
+            }
+
+            $sourceConfigs = formConfiguration::where('project_id', $request->project_id)
+                ->where('sub_project_id', $request->source_sub_project_id)
+                ->orderBy('id')
+                ->get()
+                ->filter(function ($row) use ($additionalLabelArray) {
+                    return !in_array($row->label_name, $additionalLabelArray, true);
+                })
+                ->values();
+
+            if ($sourceConfigs->isEmpty()) {
+                return redirect('/form_configuration_list' . '?parent=' . $request->parent . '&child=' . $request->child)
+                    ->with('error', 'No column configuration found to clone.');
+            }
+
+            $first = $sourceConfigs->first();
+            $storePayload = [
+                'project_id' => $request->project_id,
+                'sub_project_id' => $request->sub_project_id,
+                'project_type' => $first->project_type,
+                'claim_type' => $first->claim_type,
+                'label_name' => $sourceConfigs->pluck('label_name')->all(),
+                'input_type' => $sourceConfigs->pluck('input_type')->all(),
+                'options_name' => $sourceConfigs->pluck('options_name')->all(),
+                'field_type' => $sourceConfigs->pluck('field_type')->all(),
+                'field_type_1' => $sourceConfigs->pluck('field_type_1')->all(),
+                'field_type_2' => $sourceConfigs->pluck('field_type_2')->all(),
+                'field_type_3' => $sourceConfigs->pluck('field_type_3')->all(),
+                'user_type' => $sourceConfigs->pluck('user_type')->all(),
+                'input_type_editable' => $sourceConfigs->pluck('input_type_editable')->all(),
+            ];
+
+            $storeRequest = Request::create(
+                url('form_configuration_store'),
+                'POST',
+                $storePayload
+            );
+            $storeRequest->query->set('parent', $request->query('parent'));
+            $storeRequest->query->set('child', $request->query('child'));
+
+            if ($first->project_type === null || $first->project_type === '') {
+                $storeRequest->merge([
+                    'clone_inventory_source_sub_project_id' => $request->source_sub_project_id,
+                ]);
+            }
+
+            $storeRequest->merge([
+                'clone_col_search_source_sub_project_id' => $request->source_sub_project_id,
+            ]);
+
+            return self::processFormConfigurationStore($storeRequest);
+        } catch (\Exception $e) {
+            Log::error('Form configuration clone store failed', [
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            ]);
+
+            return redirect('/form_configuration_list' . '?parent=' . $request->parent . '&child=' . $request->child)
+                ->with('error', 'Unable to clone configuration.');
         }
     }
 
     public static function formConfigurationStore(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userInfo'] && Session::get('loginDetails')['userInfo']['user_id'] !=null) {
-          
+            return self::processFormConfigurationStore($request);
+        }
+
+        return redirect('/');
+    }
+
+    private static function processFormConfigurationStore(Request $request) {
             try {
                   DB::beginTransaction();
                  $data = $request->all();
@@ -568,6 +674,20 @@ class FormController extends Controller
                     //  if (DB::transactionLevel() > 0) {
                     //     DB::commit();
                     // }
+                    if ($request->filled('clone_inventory_source_sub_project_id')) {
+                        self::cloneInventoryUploadConfiguration(
+                            $data['project_id'],
+                            $request->clone_inventory_source_sub_project_id,
+                            $data['sub_project_id']
+                        );
+                    }
+                    if ($request->filled('clone_col_search_source_sub_project_id')) {
+                        self::cloneProjectColSearchConfigs(
+                            $data['project_id'],
+                            $request->clone_col_search_source_sub_project_id,
+                            $data['sub_project_id']
+                        );
+                    }
                     if (DB::getPdo()->inTransaction()) {
                         DB::commit();
                     }
@@ -580,9 +700,6 @@ class FormController extends Controller
                 return response()->json(['error' => $e->getMessage()], 500);
                 Log::debug($e->getMessage());
             }
-        } else {
-            return redirect('/');
-        }
     }
     public function formEdit($project_id,$sub_project_id) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
@@ -1230,6 +1347,29 @@ class FormController extends Controller
                             $record->deleted_at = Carbon::now();
                             $record->save();
                         }
+
+                        DB::table('inventory_upload_configuration')
+                            ->where('project_id', $data['projectId'])
+                            ->where('sub_project_id', $data['subProjectId'])
+                            ->whereNull('deleted_at')
+                            ->update([
+                                'deleted_at' => Carbon::now(),
+                                'updated_at' => Carbon::now(),
+                            ]);
+
+                        DB::table('project_col_search_configs')
+                            ->where('project_id', $data['projectId'])
+                            ->where('sub_project_id', $data['subProjectId'])
+                            ->whereNull('deleted_at')
+                            ->update([
+                                'deleted_at' => Carbon::now(),
+                                'updated_at' => Carbon::now(),
+                            ]);
+
+                        if (DB::transactionLevel() > 0) {
+                            DB::commit();
+                        }
+
                         return response()->json(['success' => true]);
                     } else {
                         return response()->json(['error' => true]);
@@ -1246,6 +1386,66 @@ class FormController extends Controller
                 }
         } else {
             return redirect('/');
+        }
+    }
+
+    private static function cloneInventoryUploadConfiguration($projectId, $sourceSubProjectId, $targetSubProjectId): void
+    {
+        $sourceRows = DB::table('inventory_upload_configuration')
+            ->where('project_id', $projectId)
+            ->where('sub_project_id', $sourceSubProjectId)
+            ->whereNull('deleted_at')
+            ->get();
+
+        if ($sourceRows->isEmpty()) {
+            return;
+        }
+
+        $now = Carbon::now();
+
+        foreach ($sourceRows as $row) {
+            DB::table('inventory_upload_configuration')->insert([
+                'project_id' => $projectId,
+                'sub_project_id' => $targetSubProjectId,
+                'data_columns' => $row->data_columns,
+                'db_columns' => $row->db_columns,
+                'required_columns' => $row->required_columns,
+                'date_columns' => $row->date_columns,
+                'numeric_columns' => $row->numeric_columns,
+                'duplicate_columns' => $row->duplicate_columns,
+                'created_at' => $now,
+                'updated_at' => $now,
+                'deleted_at' => null,
+            ]);
+        }
+    }
+
+    private static function cloneProjectColSearchConfigs($projectId, $sourceSubProjectId, $targetSubProjectId): void
+    {
+        $sourceRows = DB::table('project_col_search_configs')
+            ->where('project_id', $projectId)
+            ->where('sub_project_id', $sourceSubProjectId)
+            ->whereNull('deleted_at')
+            ->get();
+
+        if ($sourceRows->isEmpty()) {
+            return;
+        }
+
+        $now = Carbon::now();
+
+        foreach ($sourceRows as $row) {
+            DB::table('project_col_search_configs')->insert([
+                'project_id' => $projectId,
+                'sub_project_id' => $targetSubProjectId,
+                'column_name' => $row->column_name,
+                'column_type' => $row->column_type,
+                'status' => $row->status,
+                'enabled_by' => $row->enabled_by,
+                'created_at' => $now,
+                'updated_at' => $now,
+                'deleted_at' => null,
+            ]);
         }
     }
 

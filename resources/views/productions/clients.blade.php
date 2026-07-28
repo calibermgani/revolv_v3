@@ -17,7 +17,6 @@
             <div class="table-responsive pb-4">
                 <table class="table table-separate table-head-custom no-footer dtr-column " id="clients_list">
                     <thead>
-                        
                         <tr>
                             <th width="15px"></th>
                             <th>Project</th>
