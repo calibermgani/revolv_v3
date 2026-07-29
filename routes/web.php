@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\AlertConfigurationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -229,6 +230,53 @@ Route::group(['prefix' => 'qa_production'], function () {
          Route::any('/uploadFile','App\Http\Controllers\Reports\ReportsController@inventoryUpload')
                 ->name('reports.inventory.upload');
          Route::any('project-download', 'App\Http\Controllers\ProductionController@downloadProjects')->name('project.download');
+         Route::post('project-du-targets/sync', 'App\Http\Controllers\ProjectDuTargetSyncController@syncProjectDuTargets');
+         Route::prefix('alert-configurations')
+            ->name('alert-configurations.')
+            ->controller(AlertConfigurationController::class)
+            ->group(function () {
+                Route::get('/', 'index')
+                    ->name('index');
+
+                Route::get('/list', 'list')
+                    ->name('list');
+
+                Route::get('/subprojects', 'getSubProjects')
+                    ->name('subprojects');
+
+                Route::get('/options', 'getOptions')
+                    ->name('options');
+
+                Route::post('/', 'store')
+                    ->name('store');
+
+                Route::get('/{id}', 'show')
+                    ->whereNumber('id')
+                    ->name('show');
+
+                Route::put('/{id}', 'update')
+                    ->whereNumber('id')
+                    ->name('update');
+
+                Route::delete('/{id}', 'destroy')
+                    ->whereNumber('id')
+                    ->name('destroy');
+            });
+       Route::any('/dynamicTablecreationUploadFile','App\Http\Controllers\FormController@createFromExcel');
+       Route::any('non_ar_form_configuration_list', 'App\Http\Controllers\FormController@nonARFormConfigurationList');
+       Route::get('/non-ar-inventory-configurations','App\Http\Controllers\FormController@nonArInventoryConfigurationList')->name('nonArInventoryConfigurationList');
+       Route::get('/non-ar-inventory-template/download','App\Http\Controllers\FormController@downloadNonArInventoryTemplate')->name('downloadNonArInventoryTemplate');
+       Route::post('/non-ar-inventory-configuration/delete','App\Http\Controllers\FormController@deleteNonArInventoryConfiguration')->name('deleteNonArInventoryConfiguration');
+       Route::any('/inventoryuploadFile','App\Http\Controllers\FormController@inventoryuploadFile')->name('inventoryuploadFile');
+      //non ar report
+       Route::get('/reports/non_ar_report', 'App\Http\Controllers\Reports\ReportsController@nonArBulkProductionReports')->name('nonARreports');//python
+       Route::get('reports/get_non_ar_sub_projectList_details', 'App\Http\Controllers\Reports\ReportsController@nonArSubProjectListDetails');
+       Route::post('non-ar-run-python', 'App\Http\Controllers\Reports\ReportsController@nonArRunPython');//python
+       Route::get('/non-ar-check-report/{jobId}', 'App\Http\Controllers\Reports\ReportsController@nonArCheckReport');
+       Route::get('/non-ar-download-report/{file}',  'App\Http\Controllers\Reports\ReportsController@nonArdownloadReport');
+        
+    
+    
 
 
 
