@@ -17,6 +17,11 @@
                     </div>
                     <div 
                         class="d-flex flex-row justify-content-between align-items-center float-right ml-2">
+                          <!-- Upload Icon -->
+                            <i class="fa fa-upload upload-icon cursor_hand mr-3"
+                            style="font-size:18px; color:#139AB3; cursor:pointer;"
+                            title="Non AR Projects tables create from Excel">
+                            </i>
 
                         <a id="navigate-btn" class="btn btn-white-black font-weight-bolder btn-sm mr-1"
                             href="{{ route('formCreationIndex') }}?parent={{ request()->parent }}&child={{ request()->child }}"><i
@@ -115,6 +120,63 @@
                         <button type="submit" class="btn btn-white-black font-weight-bold" id="cloneConfigurationSubmit">Clone</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="uploadModal" tabindex="-1" role="dialog"  aria-labelledby="uploadModalLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadModalLabel">
+                        Non AR Projects Creation
+                    </h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color:black">&times;</button>
+                </div>
+
+                <form id="dynamicTableUploadForm" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        {{-- <input type="hidden" id="project_id" name="project_id" value="215">
+                        <input type="hidden" id="sub_project_id" name="sub_project_id" value="357"> --}}
+                        <input type="hidden" id="project_id" name="project_id">
+                        <input type="hidden" id="sub_project_id" name="sub_project_id">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label>Select File <span style="color:red;">(Upload only Excel file)</span></label>
+                                <input type="file"
+                                    class="form-control"
+                                    name="file"
+                                    id="uploadFile"
+                                    accept=".xlsx"
+                                    required>
+                            </div>
+                        </div>
+                        <div id="uploadErrors"
+                            class="alert alert-danger"
+                            style="display:none;">
+                        </div>
+                        <div id="uploadSuccess"
+                            class="alert alert-success"
+                            style="display:none;">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <!-- Clear Button -->
+                        <button type="button"
+                                id="clearFileBtn"
+                                class="btn btn-warning">
+                            Clear
+                        </button>                                 
+                        <!-- Submit Button -->
+                        <button type="submit"  id="submitFile"
+                                class="btn" style="background-color: #139AB3 !important;color: #ffffff;">
+                            Upload
+                        </button>
+                    </div>
+                </form>
+
             </div>
         </div>
     </div>
@@ -291,6 +353,111 @@
                         message: 'Fetching...',
                     });
                 });
+                $(document).on('click', '.upload-icon', function () {
+                    $('#dynamicTableUploadForm')[0].reset();
+                    $('#uploadErrors').hide().empty();
+                    $('#uploadSuccess').hide().empty();
+
+                    $('#uploadModal').modal('show');
+                });
+
+                $('.close, #clearFileBtn').on('click', function () {
+                    $('#dynamicTableUploadForm')[0].reset();
+                    $('#uploadErrors').hide().empty();
+                    $('#uploadSuccess').hide().empty();
+
+                    $('#uploadModal').modal('hide');
+                });
+                 $(document).on('click', '.upload-icon', function () {
+                    $('#dynamicTableUploadForm')[0].reset();
+                    $('#uploadErrors').hide().empty();
+                    $('#uploadSuccess').hide().empty();
+
+                    $('#uploadModal').modal('show');
+                });
+
+                $('.close, #clearFileBtn').on('click', function () {
+                    $('#dynamicTableUploadForm')[0].reset();
+                    $('#uploadErrors').hide().empty();
+                    $('#uploadSuccess').hide().empty();
+
+                    $('#uploadModal').modal('hide');
+                });
+         
+
+                
+            $('#dynamicTableUploadForm').on('submit', function (event) {
+                event.preventDefault();
+
+                $('#uploadErrors').hide().empty();
+                $('#uploadSuccess').hide().empty();
+
+                var formData = new FormData(this);
+
+                showGlobalLoader(
+                    'Creating Non-AR tables...',
+                    true,
+                    true
+                );
+
+                $.ajax({
+                    url: "{{ url('dynamicTablecreationUploadFile') }}",
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    global: false,
+
+                    success: function (response) {
+                        hideGlobalLoader();
+
+                        if (response.status === 'success') {
+                            $('#uploadModal').modal('hide');
+
+                            js_notification(
+                                'success',
+                                response.message
+                            );
+
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 1000);
+
+                            return;
+                        }
+
+                        $('#uploadErrors')
+                            .html(
+                                response.message
+                                    || 'Dynamic table creation failed.'
+                            )
+                            .show();
+
+                        js_notification(
+                            'error',
+                            response.message
+                                || 'Dynamic table creation failed.'
+                        );
+                    },
+
+                    error: function (xhr) {
+                        hideGlobalLoader();
+
+                        var message =
+                            xhr.responseJSON
+                            && xhr.responseJSON.message
+                                ? xhr.responseJSON.message
+                                : 'Something went wrong. Please try again.';
+
+                        $('#uploadErrors')
+                            .html(message)
+                            .show();
+
+                        js_notification('error', message);
+                    }
+                });
+            });
+
                 
         });
     </script>

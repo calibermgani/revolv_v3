@@ -39,6 +39,8 @@ use Illuminate\Support\Facades\File;
 use App\Exports\DynamicBulkExport;
 use DateTime;
 use App\Jobs\RunPythonReportJob;
+use App\Models\subproject;
+use App\Jobs\NonArReportJob;
 
 ini_set('max_execution_time', 600);
 ini_set('memory_limit', '2G');
@@ -3897,5 +3899,76 @@ public function getBulkColumnsCSV(Request $request)
         }
 
         return 'Inventory not uploaded. Please check uploaded file.';
+    }
+
+    public function nonArBulkProductionReports() {
+        try {
+          return view('reports.nonArBulkProductionReport');
+        } catch (\Exception $e) {
+            Log::error("Laravel Exception: " . $e->getMessage());
+            return response()->json([
+                'error'   => 'Laravel Exception',
+                'details' => $e->getMessage()
+            ], 500);
+        }
+    }
+     public function nonArSubProjectListDetails(Request $request){
+        try {
+            $subProject = $user = [];
+           if (!empty($request->project_id) && is_string($request->project_id)) {
+                $subProjectIds = DB::table('non_ar_inventory_upload_configuration')->groupby('sub_project_id')->where('project_id', $request->project_id)->pluck('sub_project_id')->toArray();
+                $subProject = subproject::where('project_id', $request->project_id)->whereIn('sub_project_id', $subProjectIds)->pluck('sub_project_name', 'sub_project_id')->prepend(trans('Select Sub Project'), '')->toArray();
+            }  else {
+                $subProject = [];
+            }
+            return response()->json(['success' => true, 'subProject' => $subProject, 'resource' => $user]);
+        } catch (Exception $e) {
+            log::debug($e->getMessage());
+        }
+    }
+     public function nonArRunPython(Request $request)
+    {
+        $jobId = Str::uuid()->toString();
+
+        $payload = [
+            'job_id'         => $jobId,
+            'project_id'     => $request->project_id,
+            'sub_project_id' => $request->sub_project_id,
+            'date_range'     => $request->work_date,
+            'user_id'        => $request->user
+        ];
+
+         NonArReportJob::dispatch($payload)->onQueue('nonArReport')->delay(now()->addSeconds(2));
+
+        return response()->json([
+            "job_id" => $jobId
+        ]);
+    }
+    public function nonArCheckReport($jobId)
+    {
+        $file = Cache::get('non_ar_report_' . $jobId);
+        Log::info('Cache fetch: non_ar_report_' . $jobId);
+
+        // 🔍 Debug (optional)
+        // dd($file);
+
+        if (is_string($file) && file_exists($file)) {
+            return response()->json([
+                'ready' => true,
+                'file'  => basename($file)
+            ]);
+        }
+
+        return response()->json(['ready' => false]);
+    }
+    public function nonArdownloadReport($filename)
+    {
+        $path = storage_path('app/reports/' . $filename);
+
+        if (!file_exists($path)) {
+            abort(404, "File not found");
+        }
+
+        return response()->download($path)->deleteFileAfterSend(true);
     }
 }

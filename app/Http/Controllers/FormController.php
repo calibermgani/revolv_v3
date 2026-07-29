@@ -16,6 +16,10 @@ use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Models\UpdateDynamicModel;
+use Symfony\Component\Process\Process;
+use Throwable;
+use Maatwebsite\Excel\Facades\Excel;
+
 class FormController extends Controller
 {
     public function formConfigurationList() {
@@ -1482,6 +1486,908 @@ class FormController extends Controller
             Log::error('Error in getProjectColumns: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while fetching project columns'], 500);
         }
+    }
+    
+    //ar non project list code
+    public function createFromExcel(Request $request)
+    {
+        $validated = $request->validate([
+            'file' => [
+                'required',
+                'file',
+                'mimes:xlsx',
+                'max:10240', // 10 MB
+            ],
+        ], [
+            'file.required' => 'Please select an Excel file.',
+            'file.file' => 'The uploaded item must be a valid file.',
+            'file.mimes' => 'Please upload only an XLSX Excel file.',
+            'file.max' => 'The Excel file must not exceed 10 MB.',
+        ]);
+
+        $file = $validated['file'];
+
+        $originalName = $file->getClientOriginalName();
+        $extension = strtolower($file->getClientOriginalExtension());
+
+        if ($extension !== 'xlsx') {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Please upload only an XLSX Excel file.',
+            ], 422);
+        }
+
+        /*
+         * Do not trust the user-provided original filename while writing
+         * to the server.
+         */
+        $safeOriginalName = preg_replace(
+            '/[^A-Za-z0-9._-]/',
+            '_',
+            $originalName
+        );
+
+        $storedFileName = now()->format('YmdHisv')
+            . '_'
+            . Str::random(8)
+            . '_'
+            . $safeOriginalName;
+
+        $uploadDirectory = storage_path(
+            'app' . DIRECTORY_SEPARATOR . 'dynamic_table_configurations'
+        );
+
+        if (
+            !is_dir($uploadDirectory)
+            && !mkdir($uploadDirectory, 0775, true)
+            && !is_dir($uploadDirectory)
+        ) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Unable to create the upload directory.',
+            ], 500);
+        }
+
+        try {
+            $file->move($uploadDirectory, $storedFileName);
+        } catch (Throwable $exception) {
+            Log::error('Dynamic table Excel file move failed.', [
+                'message' => $exception->getMessage(),
+                'original_file_name' => $originalName,
+            ]);
+
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Unable to store the uploaded Excel file.',
+            ], 500);
+        }
+
+        $filePath = $uploadDirectory
+            . DIRECTORY_SEPARATOR
+            . $storedFileName;
+
+        $pythonBinary = env('PYTHON_BIN', '/bin/python3');
+
+        $pythonScript = base_path(
+            'Python' . DIRECTORY_SEPARATOR . 'create_dynamic_tables.py'
+        );
+
+        if (!is_file($pythonScript)) {
+            $this->deleteFileSafely($filePath);
+
+            Log::error('Dynamic table Python script not found.', [
+                'script' => $pythonScript,
+            ]);
+
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Dynamic table creation script was not found.',
+            ], 500);
+        }
+
+        $payload = [
+            'file_path' => realpath($filePath) ?: $filePath,
+            'file_name' => $storedFileName,
+            'original_file_name' => $originalName,
+
+            /*
+             * Python validates that the uploaded file is located only
+             * inside this approved directory.
+             */
+            'allowed_upload_directory' => realpath($uploadDirectory)
+                ?: $uploadDirectory,
+        ];
+
+        /*
+         * Pass Laravel DB settings to Python through process environment
+         * variables. Do not hard-code database passwords in Python.
+         */
+        $processEnvironment = array_filter([
+            'PATH' => getenv('PATH') ?: null,
+            'SystemRoot' => getenv('SystemRoot') ?: null,
+            'WINDIR' => getenv('WINDIR') ?: null,
+
+            'DYNAMIC_DB_HOST' => config('database.connections.mysql.host'),
+            'DYNAMIC_DB_PORT' => (string) config(
+                'database.connections.mysql.port'
+            ),
+            'DYNAMIC_DB_DATABASE' => config(
+                'database.connections.mysql.database'
+            ),
+            'DYNAMIC_DB_USERNAME' => config(
+                'database.connections.mysql.username'
+            ),
+            'DYNAMIC_DB_PASSWORD' => config(
+                'database.connections.mysql.password'
+            ),
+            'DYNAMIC_DB_CHARSET' => config(
+                'database.connections.mysql.charset',
+                'utf8mb4'
+            ),
+        ], static fn ($value) => $value !== null);
+
+        $process = new Process(
+            [$pythonBinary, $pythonScript],
+            base_path(),
+            $processEnvironment
+        );
+
+        $process->setInput(
+            json_encode(
+                $payload,
+                JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
+            )
+        );
+
+        $process->setTimeout(300);
+
+        try {
+            $process->run();
+        } catch (Throwable $exception) {
+            $this->deleteFileSafely($filePath);
+
+            Log::error('Dynamic table Python process failed to execute.', [
+                'message' => $exception->getMessage(),
+                'script' => $pythonScript,
+            ]);
+
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Unable to execute the table creation process.',
+            ], 500);
+        }
+
+        $stdout = trim($process->getOutput());
+        $stderr = trim($process->getErrorOutput());
+
+        Log::info('Dynamic table Python process completed.', [
+            'successful' => $process->isSuccessful(),
+            'exit_code' => $process->getExitCode(),
+            'stdout' => $stdout,
+            'stderr' => $stderr,
+        ]);
+
+        /*
+         * The configuration workbook is no longer required after Python
+         * completes. Remove it even when validation fails.
+         */
+        $this->deleteFileSafely($filePath);
+
+        $pythonResponse = $this->decodePythonResponse($stdout);
+
+        if (!$process->isSuccessful()) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => is_array($pythonResponse)
+                    ? ($pythonResponse['message']
+                        ?? 'Dynamic table creation failed.')
+                    : 'Dynamic table creation failed.',
+                'errors' => is_array($pythonResponse)
+                    ? ($pythonResponse['errors'] ?? [])
+                    : [],
+            ], 422);
+        }
+
+        if (!is_array($pythonResponse)) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Python returned an invalid response.',
+            ], 500);
+        }
+
+        if (($pythonResponse['status'] ?? null) !== 'success') {
+            return response()->json([
+                'status' => 'warning',
+                'message' => $pythonResponse['message']
+                    ?? 'Dynamic table creation failed.',
+                'errors' => $pythonResponse['errors'] ?? [],
+            ], 422);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => $pythonResponse['message']
+                ?? 'Dynamic tables processed successfully.',
+            'data' => $pythonResponse['data'] ?? [],
+        ]);
+    }
+
+    /**
+     * Python should print only one JSON response to stdout.
+     * This fallback also supports accidental diagnostic output before JSON.
+     */
+    private function decodePythonResponse(string $stdout): ?array
+    {
+        if ($stdout === '') {
+            return null;
+        }
+
+        $decoded = json_decode($stdout, true);
+
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            return $decoded;
+        }
+
+        $lines = preg_split('/\R/', $stdout) ?: [];
+
+        for ($index = count($lines) - 1; $index >= 0; $index--) {
+            $line = trim($lines[$index]);
+
+            if ($line === '') {
+                continue;
+            }
+
+            $decoded = json_decode($line, true);
+
+            if (
+                json_last_error() === JSON_ERROR_NONE
+                && is_array($decoded)
+            ) {
+                return $decoded;
+            }
+        }
+
+        return null;
+    }
+
+    private function deleteFileSafely(?string $filePath): void
+    {
+        if (
+            $filePath
+            && is_file($filePath)
+            && !@unlink($filePath)
+        ) {
+            Log::warning('Unable to delete dynamic table upload file.', [
+                'file_path' => $filePath,
+            ]);
+        }
+    }
+    public function nonArInventoryConfigurationList()
+    {
+        if (
+            !Session::get('loginDetails')
+            || !Session::get('loginDetails')['userDetail']
+            || Session::get('loginDetails')['userDetail']['emp_id'] === null
+        ) {
+            return redirect('/');
+        }
+
+        try {
+            $nonArConfigurations = DB::table(
+                    'non_ar_inventory_upload_configuration as config'
+                )
+                ->join(
+                    'projects as project',
+                    'config.project_id',
+                    '=',
+                    'project.project_id'
+                )
+                ->join(
+                    'subprojects as subproject',
+                    function ($join) {
+                        $join->on(
+                            'config.sub_project_id',
+                            '=',
+                            'subproject.sub_project_id'
+                        );
+
+                        $join->on(
+                            'config.project_id',
+                            '=',
+                            'subproject.project_id'
+                        );
+                    }
+                )
+                ->whereNull('config.deleted_at')
+                ->where('project.status', 'Active')
+                ->select(
+                    'config.id',
+                    'config.project_id',
+                    'config.sub_project_id',
+                    'config.data_columns',
+                    'config.db_columns',
+                    'config.date_columns',
+                    'project.project_name',
+                    'project.aims_project_name',
+                    'subproject.sub_project_name'
+                )
+                ->orderBy('project.project_name')
+                ->orderBy('subproject.sub_project_name')
+                ->get();
+
+            return view(
+                'Form.nonArInventoryConfigurationList',
+                compact('nonArConfigurations')
+            );
+        } catch (\Exception $exception) {
+            Log::error('Non-AR configuration list fetch failed.', [
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+            ]);
+
+            return redirect()
+                ->back()
+                ->with(
+                    'error',
+                    'Unable to fetch Non-AR inventory configurations.'
+                );
+        }
+    }
+    public function downloadNonArInventoryTemplate(Request $request)
+    {
+        $request->validate([
+            'project_id' => 'required',
+            'sub_project_id' => 'required',
+        ]);
+
+        try {
+            $configuration = DB::table(
+                    'non_ar_inventory_upload_configuration'
+                )
+                ->where('project_id', $request->project_id)
+                ->where('sub_project_id', $request->sub_project_id)
+                ->whereNull('deleted_at')
+                ->first();
+
+            if (!$configuration) {
+                return redirect()
+                    ->back()
+                    ->with(
+                        'error',
+                        'Download failed: configuration not found.'
+                    );
+            }
+
+            $project = project::where(
+                    'project_id',
+                    $request->project_id
+                )
+                ->first();
+
+            if (!$project) {
+                return redirect()
+                    ->back()
+                    ->with(
+                        'error',
+                        'Download failed: project not found.'
+                    );
+            }
+
+            $subProject = subproject::where(
+                    'project_id',
+                    $request->project_id
+                )
+                ->where(
+                    'sub_project_id',
+                    $request->sub_project_id
+                )
+                ->first();
+
+            if (!$subProject) {
+                return redirect()
+                    ->back()
+                    ->with(
+                        'error',
+                        'Download failed: sub-project not found.'
+                    );
+            }
+
+            $dataColumns = trim(
+                (string) $configuration->data_columns
+            );
+
+            if ($dataColumns === '') {
+                return redirect()
+                    ->back()
+                    ->with(
+                        'error',
+                        'Download failed: data columns are not configured.'
+                    );
+            }
+
+            /*
+            * Stored format:
+            * First_Name,Last_Name,DOB,DOS,...
+            */
+            $headers = array_values(
+                array_filter(
+                    array_map(
+                        'trim',
+                        explode(',', $dataColumns)
+                    ),
+                    static fn ($value) => $value !== ''
+                )
+            );
+
+            if (empty($headers)) {
+                return redirect()
+                    ->back()
+                    ->with(
+                        'error',
+                        'Download failed: valid headers were not found.'
+                    );
+            }
+
+            $fileName = Str::slug(
+                $project->project_name
+                . '_'
+                . $subProject->sub_project_name,
+                '_'
+            )
+            . '-'
+            . date('mdY');
+
+            $export = new class($headers) implements
+                \Maatwebsite\Excel\Concerns\FromArray,
+                \Maatwebsite\Excel\Concerns\WithHeadings {
+
+                private array $headers;
+
+                public function __construct(array $headers)
+                {
+                    $this->headers = $headers;
+                }
+
+                public function array(): array
+                {
+                    return [];
+                }
+
+                public function headings(): array
+                {
+                    return $this->headers;
+                }
+            };
+
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                $export,
+                $fileName . '.csv',
+                \Maatwebsite\Excel\Excel::CSV
+            );
+        } catch (\Exception $exception) {
+            Log::error('Non-AR template download failed.', [
+                'project_id' => $request->project_id,
+                'sub_project_id' => $request->sub_project_id,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return redirect()
+                ->back()
+                ->with(
+                    'error',
+                    'Download failed: ' . $exception->getMessage()
+                );
+        }
+    }
+    public function deleteNonArInventoryConfiguration(Request $request)
+    {
+        if (
+            !Session::get('loginDetails')
+            || !isset(Session::get('loginDetails')['userDetail'])
+            || empty(Session::get('loginDetails')['userDetail']['emp_id'])
+        ) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Your session has expired.',
+            ], 401);
+        }
+
+        $validated = $request->validate([
+            'project_id' => 'required',
+            'sub_project_id' => 'required',
+        ]);
+
+        try {
+            $projectId = $validated['project_id'];
+            $subProjectId = $validated['sub_project_id'];
+
+            $configuration = DB::table(
+                    'non_ar_inventory_upload_configuration'
+                )
+                ->where('project_id', $projectId)
+                ->where('sub_project_id', $subProjectId)
+                ->whereNull('deleted_at')
+                ->first();
+
+            if (!$configuration) {
+                return response()->json([
+                    'status' => 'warning',
+                    'message' => 'Configuration not found.',
+                ], 404);
+            }
+
+            $project = project::where(
+                    'project_id',
+                    $projectId
+                )
+                ->first();
+
+            if (!$project) {
+                return response()->json([
+                    'status' => 'warning',
+                    'message' => 'Project not found.',
+                ], 404);
+            }
+
+            $subProject = subproject::where(
+                    'project_id',
+                    $projectId
+                )
+                ->where(
+                    'sub_project_id',
+                    $subProjectId
+                )
+                ->first();
+
+            if (!$subProject) {
+                return response()->json([
+                    'status' => 'warning',
+                    'message' => 'Sub-project not found.',
+                ], 404);
+            }
+
+            $tableName = Str::slug(
+                Str::lower(
+                    $project->project_name
+                    . '_'
+                    . $subProject->sub_project_name
+                    . '_datas'
+                ),
+                '_'
+            );
+
+            if (!preg_match('/^[A-Za-z0-9_]+$/', $tableName)) {
+                return response()->json([
+                    'status' => 'warning',
+                    'message' => 'Generated inventory table name is invalid.',
+                ], 422);
+            }
+
+            /*
+            * Check whether the dynamic table contains data.
+            */
+            if (Schema::hasTable($tableName)) {
+                $dataExists = DB::table($tableName)->exists();
+
+                if ($dataExists) {
+                    return response()->json([
+                        'status' => 'warning',
+                        'message' => 'We cannot delete this configuration because the inventory table contains data.',
+                        'table' => $tableName,
+                    ], 422);
+                }
+            }
+
+            /*
+            * DROP TABLE performs an implicit MySQL commit.
+            * Therefore, do not place this operation inside DB::beginTransaction().
+            */
+            if (Schema::hasTable($tableName)) {
+                Schema::dropIfExists($tableName);
+            }
+
+            /*
+            * Soft-delete the configuration after dropping the empty table.
+            */
+            DB::table('non_ar_inventory_upload_configuration')
+                ->where('id', $configuration->id)
+                ->update([
+                    'deleted_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]);
+
+           $projectDisplayName = trim((string) ($project->project_name ?? ''));
+            $subProjectDisplayName = trim((string) ($subProject->sub_project_name ?? ''));
+
+            if ($projectDisplayName === '') {
+                $projectDisplayName = 'Project ' . $projectId;
+            }
+
+            if ($subProjectDisplayName === '') {
+                $subProjectDisplayName = 'Sub Project ' . $subProjectId;
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => $projectDisplayName
+                    . '_'
+                    . $subProjectDisplayName
+                    . ' configuration deleted successfully.',
+                'table' => $tableName,
+            ]);
+        } catch (\Exception $exception) {
+            Log::error('Non-AR configuration deletion failed.', [
+                'project_id' => $validated['project_id'] ?? null,
+                'sub_project_id' => $validated['sub_project_id'] ?? null,
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+            ]);
+
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Unable to delete the configuration.',
+                'error' => $exception->getMessage(),
+            ], 500);
+        }
+    }
+    public function inventoryuploadFile(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file',
+            'project_id' => 'required',
+            'sub_project_id' => 'required',
+        ]);
+
+        $projectId = $request->project_id;
+        $subProjectId = $request->sub_project_id;
+        $configurationExists = DB::table('non_ar_inventory_upload_configuration')
+                ->where('project_id', $projectId)
+                ->where('sub_project_id', $subProjectId)
+                ->exists();
+
+        if (!$configurationExists) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Inventory upload configuration not found for selected project and sub project combination.',
+            ]);
+        }
+        $project = DB::table('projects')
+            ->where('project_id', $projectId)
+            ->first();
+
+        if (!$project) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Selected project not found.',
+            ]);
+        }
+
+        $subProject = DB::table('subprojects')
+            ->where('sub_project_id', $subProjectId)
+            ->where('project_id', $projectId)
+            ->first();
+
+        if (!$subProject) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Selected project and sub project combination is invalid.',
+            ]);
+        }
+
+        
+
+        $file = $request->file('file');
+        $extension = strtolower($file->getClientOriginalExtension());
+        $serverMime = $file->getMimeType();
+        $clientMime = $file->getClientMimeType();
+
+        Log::info('UPLOAD ORIGINAL NAME: ' . $file->getClientOriginalName());
+        Log::info('UPLOAD EXTENSION: ' . $extension);
+        Log::info('UPLOAD SERVER MIME: ' . $serverMime);
+        Log::info('UPLOAD CLIENT MIME: ' . $clientMime);
+        Log::info('UPLOAD SIZE: ' . $file->getSize());
+        if ($extension !== 'csv') {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Please upload only CSV file.',
+            ]);
+        }
+        $allowedCsvMimeTypes = [
+            'text/csv',
+            'text/plain',
+            'application/csv',
+            'text/x-csv',
+            'application/x-csv',
+            'application/vnd.ms-excel',
+        ];
+         if (
+            !in_array($serverMime, $allowedCsvMimeTypes, true) &&
+            !in_array($clientMime, $allowedCsvMimeTypes, true)
+        ) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Invalid CSV file type. Detected type: ' . $serverMime,
+            ]);
+        }
+        $projectName = $project->project_name;
+        $subProjectName = $subProject->sub_project_name;
+        $expectedFileNameKey = Str::slug(($projectName.'_'.$subProjectName),'_'). '-' . date('mdY');
+        $uploadedFileNameKey = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+
+        if (!Str::contains($uploadedFileNameKey, $expectedFileNameKey)) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Uploaded file name is not matching selected project and sub project. File name should contain: ' . $expectedFileNameKey,
+            ]);
+        }
+
+        $cleanOriginalFileName = preg_replace('/[^A-Za-z0-9._-]/', '_', $file->getClientOriginalName());
+        $fileName = time() . '_' . $cleanOriginalFileName;
+
+        $uploadPath = storage_path(
+            'app' . DIRECTORY_SEPARATOR .
+            'ar_nonproject_inventory_uploads' . DIRECTORY_SEPARATOR .
+            $projectId . DIRECTORY_SEPARATOR .
+            $subProjectId
+        );
+
+        if (!file_exists($uploadPath)) {
+            mkdir($uploadPath, 0775, true);
+        }
+
+        $filePath = $uploadPath . DIRECTORY_SEPARATOR . $fileName;
+
+        $file->move($uploadPath, $fileName);
+
+        $payload = [
+            'file_path' => $filePath,
+            'file_name' => $fileName,
+            'project_id' => $projectId,
+            'sub_project_id' => $subProjectId,
+            'project_name' => $projectName,
+            'sub_project_name' => $subProjectName,
+        ];
+
+        $python = env('PYTHON_BIN', 'python');
+        // $python = '/bin/python3';
+        $script = realpath(base_path('Python/nonArProjectInventoryUpload.py'));
+
+        if (!$script || !file_exists($script)) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Python script not found.',
+            ], 500);
+        }
+
+        Log::info('PYTHON SCRIPT PATH ' . $script);
+        Log::info('PYTHON SCRIPT MODIFIED ' . date('Y-m-d H:i:s', filemtime($script)));
+        Log::info('PYTHON SCRIPT HASH ' . sha1_file($script));
+        Log::info('PYTHON PAYLOAD ' . json_encode($payload));
+
+        $env = [
+            'SystemRoot' => getenv('SystemRoot') ?: 'C:\\Windows',
+            'WINDIR' => getenv('WINDIR') ?: 'C:\\Windows',
+            'PATH' => getenv('PATH'),
+        ];
+
+        $process = new Process(
+            [$python, $script],
+            base_path(),
+            $env
+        );
+
+        $process->setInput(json_encode($payload));
+        $process->setTimeout(7200);
+        $process->run();
+
+        $stdout = trim($process->getOutput());
+        $stderr = trim($process->getErrorOutput());
+
+        Log::info('PYTHON STDOUT ' . $stdout);
+        Log::info('PYTHON STDERR ' . $stderr);
+
+        $pythonResponse = $this->decodePythonJsonResponse($stdout);
+
+        if (!$process->isSuccessful()) {
+            $message = 'Inventory not uploaded.';
+
+            if (is_array($pythonResponse) && isset($pythonResponse['message'])) {
+                $message = $pythonResponse['message'];
+            } else {
+                $message = $this->cleanPythonUserMessage($stdout, $stderr);
+            }
+
+            return response()->json([
+                'status' => 'warning',
+                'message' => $message,
+            ]);
+        }
+
+       if (!is_array($pythonResponse)) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Inventory not uploaded. Python returned invalid response.',
+            ]);
+        }
+
+        if (($pythonResponse['status'] ?? null) === 'warning') {
+            return response()->json([
+                'status' => 'warning',
+                'message' => $pythonResponse['message'] ?? 'Inventory not uploaded.',
+            ]);
+        }
+
+        $data = $pythonResponse['data'] ?? $pythonResponse;
+
+        return response()->json([
+            'status' => 'success',
+            'message' => $pythonResponse['message'] ?? 'Inventory uploaded successfully.',
+            'file' => $fileName,
+            'inserted' => $data['inserted'] ?? 0,
+            'total_rows' => $data['total_rows'] ?? 0,
+            'table' => $data['table'] ?? null,
+        ]);
+    }
+    private function decodePythonJsonResponse($stdout)
+    {
+        $stdout = trim((string) $stdout);
+
+        if ($stdout === '') {
+            return null;
+        }
+
+        $decoded = json_decode($stdout, true);
+
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            return $decoded;
+        }
+
+        // fallback: get last valid JSON line if stdout has extra text
+        $lines = preg_split('/\r\n|\r|\n/', $stdout);
+
+        foreach (array_reverse($lines) as $line) {
+            $line = trim($line);
+
+            if ($line === '') {
+                continue;
+            }
+
+            if (str_starts_with($line, '{') && str_ends_with($line, '}')) {
+                $decoded = json_decode($line, true);
+
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    return $decoded;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private function cleanPythonUserMessage($stdout, $stderr)
+    {
+        $combined = trim((string) $stdout);
+
+        if ($combined === '') {
+            $combined = trim((string) $stderr);
+        }
+
+        $combined = html_entity_decode(strip_tags($combined));
+        $combined = str_replace(["\r\n", "\r"], "\n", $combined);
+
+        // Prefer clean inventory message from Python output/log
+        if (preg_match('/(inventory not uploaded:[^\n]+)/i', $combined, $match)) {
+            return trim($match[1]);
+        }
+
+        // If Python traceback has Exception line, extract only that line
+        if (preg_match('/Exception:\s*([^\n]+)/i', $combined, $match)) {
+            return trim($match[1]);
+        }
+
+        return 'Inventory not uploaded. Please check uploaded file.';
     }
      
 }

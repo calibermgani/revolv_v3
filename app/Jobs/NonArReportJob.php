@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Jobs;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
+
+class NonArReportJob implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    protected $payload;
+
+    /**
+     * Create a new job instance.
+     *
+     * @return void
+     */
+    public function __construct($payload)
+    {
+        $this->payload = $payload;
+    }
+
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        try {
+            // $python = 'C:\Users\Vijayalaxmi\AppData\Local\Programs\Python\Python313\python.exe';//local
+            // $script = base_path('Python\\nonArProjectReportExport.py');//local
+            $python = '/bin/python3';//server
+            $script = base_path('Python/nonArProjectReportExport.py');//server
+           
+            $process = new Process([$python, $script]);
+            $process->setInput(json_encode($this->payload));
+            $process->setTimeout(7200);
+            $process->run();
+
+            $output = trim($process->getOutput());
+            $error  = trim($process->getErrorOutput());
+
+            Log::info("PY OUTPUT: " . $output);
+            Log::error("PY ERROR: " . $error);
+            Log::info("job_id: " . $this->payload['job_id']);
+
+            if (!$process->isSuccessful()) {
+                throw new \Exception($error);
+            }
+            // ✅ FIXED: use job_id instead of project_id
+            Cache::put('non_ar_report_' . $this->payload['job_id'], $output, 3600);
+            Log::info('Cache stored: non_ar_report_' . $this->payload['job_id']);
+
+        } catch (\Exception $e) {
+            Log::error("Job Failed: " . $e->getMessage());
+        }
+    }
+}
