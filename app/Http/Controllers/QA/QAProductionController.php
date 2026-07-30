@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Jobs\GetProjJob;
 use App\Jobs\GetSubPrjJob;
 use App\Jobs\RunQualityExportJob;
+use Symfony\Component\HttpFoundation\Cookie;
 
 ini_set('memory_limit', '1024M');
 class QAProductionController extends Controller
@@ -2383,9 +2384,10 @@ class QAProductionController extends Controller
             ], 500);
         }
     }
-    public function downloadQualityExportReport($filename)
-    {
-        $filename = basename($filename);
+    public function downloadQualityExportReport(Request $request,$filename) {
+        $filename = basename(
+            urldecode($filename)
+        );
 
         $path = storage_path(
             'app/reports/' . $filename
@@ -2401,15 +2403,56 @@ class QAProductionController extends Controller
             abort(404, 'Report file not found.');
         }
 
-        return response()
+        $extension = strtolower(
+            pathinfo(
+                $filename,
+                PATHINFO_EXTENSION
+            )
+        );
+
+        $contentType = $extension === 'csv'
+            ? 'text/csv; charset=UTF-8'
+            : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+        $downloadToken = $request->query(
+            'download_token'
+        );
+
+        $response = response()
             ->download(
                 $path,
                 $filename,
                 [
-                    'Content-Type' => 'text/csv; charset=UTF-8',
+                    'Content-Type' => $contentType,
+                    'Cache-Control' => 'no-store, no-cache, must-revalidate',
+                    'Pragma'        => 'no-cache',
                 ]
             )
             ->deleteFileAfterSend(true);
+
+        if (!empty($downloadToken)) {
+            /*
+            * BinaryFileResponse does not support withCookie().
+            * Add the cookie directly to its response headers.
+            */
+            $cookie = new Cookie(
+                $downloadToken,       // Cookie name
+                'completed',          // Cookie value
+                time() + 300,         // Expire after 5 minutes
+                '/',                  // Path
+                null,                 // Domain
+                false,                // Secure
+                false,                // HttpOnly must be false for JavaScript
+                false,                // Raw
+                Cookie::SAMESITE_LAX
+            );
+
+            $response->headers->setCookie(
+                $cookie
+            );
+        }
+
+        return $response;
     }
 
     

@@ -4161,7 +4161,8 @@ use Carbon\Carbon;
                         //     });
 
                         // });//laravel export
-                         $(document).on('click', '#assign_export', function(e) {
+                        $(document).on('click', '#assign_export', function (e) {
+                            e.preventDefault();
                             var formData = $('#formSearch').serialize();
                             var chartStatus = "CE_Completed";
                             var recordStatusVal = "Assigned";
@@ -4182,19 +4183,24 @@ use Carbon\Carbon;
                                 message: 'Fetching...',
                             });
                             $.ajax({
-                                    url: "{{ url('qa_production/quality_export_assigned') }}",
-                                    method: 'POST',
-                                    data: formData,
-                                    // xhrFields: {
-                                    //     responseType: 'blob'  // This is crucial for downloading Excel
-                                    // },//for laravel export
-                                    dataType: 'json',
+                                url: "{{ url('qa_production/quality_export_assigned') }}",
+                                method: 'POST',
+                                data: formData,
+                                dataType: 'json',
 
                                 success: function (response) {
-                                    console.log('Export started response:', response);
+                                    console.log(
+                                        'Export started response:',
+                                        response
+                                    );
 
-                                    if (response.status === true && response.job_id) {
-                                        checkQualityExportFileReady(response.job_id);
+                                    if (
+                                        response.status === true &&
+                                        response.job_id
+                                    ) {
+                                        checkQualityExportFileReady(
+                                            response.job_id
+                                        );
                                     } else {
                                         KTApp.unblock('#export_div');
 
@@ -4206,13 +4212,18 @@ use Carbon\Carbon;
                                 },
 
                                 error: function (xhr) {
-                                    console.log('Export start error:', xhr.responseText);
+                                    console.log(
+                                        'Export start error:',
+                                        xhr.responseText
+                                    );
 
                                     KTApp.unblock('#export_div');
 
                                     alert(
-                                        xhr.responseJSON?.message ||
-                                        'Failed to start quality report.'
+                                        xhr.responseJSON &&
+                                        xhr.responseJSON.message
+                                            ? xhr.responseJSON.message
+                                            : 'Failed to start quality report.'
                                     );
                                 }
                             });
@@ -4224,7 +4235,10 @@ use Carbon\Carbon;
                                 "{{ url('qa_production/quality-export/check-report') }}/" +
                                 encodeURIComponent(jobId);
 
-                            console.log('Checking report URL:', checkUrl);
+                            console.log(
+                                'Checking report URL:',
+                                checkUrl
+                            );
 
                             var interval = setInterval(function () {
                                 $.ajax({
@@ -4234,10 +4248,14 @@ use Carbon\Carbon;
                                     cache: false,
 
                                     success: function (response) {
-                                        console.log('Report status response:', response);
+                                        console.log(
+                                            'Report status response:',
+                                            response
+                                        );
 
                                         if (response.failed === true) {
                                             clearInterval(interval);
+
                                             KTApp.unblock('#export_div');
 
                                             alert(
@@ -4254,27 +4272,9 @@ use Carbon\Carbon;
                                         ) {
                                             clearInterval(interval);
 
-                                            var downloadUrl =
-                                                "{{ url('qa_production/quality-export/download-report') }}/" +
-                                                encodeURIComponent(response.file);
-
-                                            console.log('Downloading report:', downloadUrl);
-
-                                            /*
-                                            * Use a temporary anchor instead of window.location.href.
-                                            */
-                                            var downloadLink = document.createElement('a');
-
-                                            downloadLink.href = downloadUrl;
-                                            downloadLink.style.display = 'none';
-
-                                            document.body.appendChild(downloadLink);
-
-                                            downloadLink.click();
-
-                                            document.body.removeChild(downloadLink);
-
-                                            KTApp.unblock('#export_div');
+                                            startQualityReportDownload(
+                                                response.file
+                                            );
                                         }
                                     },
 
@@ -4290,12 +4290,139 @@ use Carbon\Carbon;
                                         KTApp.unblock('#export_div');
 
                                         alert(
-                                            xhr.responseJSON?.message ||
-                                            'Error checking quality report status.'
+                                            xhr.responseJSON &&
+                                            xhr.responseJSON.message
+                                                ? xhr.responseJSON.message
+                                                : 'Error checking quality report status.'
                                         );
                                     }
                                 });
                             }, 5000);
+                        }
+
+
+                        function startQualityReportDownload(fileName) {
+                            var downloadToken =
+                                'download_' +
+                                new Date().getTime() +
+                                '_' +
+                                Math.random().toString(36).substring(2);
+
+                            /*
+                            * Remove any old cookie with the same token.
+                            */
+                            document.cookie =
+                                downloadToken +
+                                '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+
+                            var downloadUrl =
+                                "{{ url('qa_production/quality-export/download-report') }}/" +
+                                encodeURIComponent(fileName) +
+                                '?download_token=' +
+                                encodeURIComponent(downloadToken);
+
+                            console.log(
+                                'Downloading report:',
+                                downloadUrl
+                            );
+
+                            /*
+                            * Hidden iframe downloads the CSV without leaving the page.
+                            */
+                            var downloadFrame =
+                                document.createElement('iframe');
+
+                            downloadFrame.style.display = 'none';
+                            downloadFrame.src = downloadUrl;
+
+                            document.body.appendChild(
+                                downloadFrame
+                            );
+
+                            /*
+                            * Wait until Laravel sends the download cookie.
+                            */
+                            var downloadCheckInterval =
+                                setInterval(function () {
+                                    if (
+                                        hasCookie(
+                                            downloadToken
+                                        )
+                                    ) {
+                                        clearInterval(
+                                            downloadCheckInterval
+                                        );
+
+                                        /*
+                                        * Remove the token cookie.
+                                        */
+                                        document.cookie =
+                                            downloadToken +
+                                            '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+
+                                        KTApp.unblock(
+                                            '#export_div'
+                                        );
+
+                                        setTimeout(function () {
+                                            if (
+                                                downloadFrame &&
+                                                downloadFrame.parentNode
+                                            ) {
+                                                downloadFrame.parentNode.removeChild(
+                                                    downloadFrame
+                                                );
+                                            }
+                                        }, 5000);
+                                    }
+                                }, 500);
+
+                            /*
+                            * Safety timeout: stop loader after 10 minutes.
+                            */
+                            setTimeout(function () {
+                                clearInterval(
+                                    downloadCheckInterval
+                                );
+
+                                KTApp.unblock(
+                                    '#export_div'
+                                );
+
+                                if (
+                                    downloadFrame &&
+                                    downloadFrame.parentNode
+                                ) {
+                                    downloadFrame.parentNode.removeChild(
+                                        downloadFrame
+                                    );
+                                }
+                            }, 10 * 60 * 1000);
+                        }
+
+
+                        function hasCookie(cookieName) {
+                            var cookies =
+                                document.cookie.split(';');
+
+                            for (
+                                var index = 0;
+                                index < cookies.length;
+                                index++
+                            ) {
+                                var cookie =
+                                    cookies[index].trim();
+
+                                if (
+                                    cookie.indexOf(
+                                        cookieName + '='
+                                    ) === 0
+                                ) {
+                                    return true;
+                                }
+                            }
+
+                            return false;
                         }
                         $(document).on('change', '#assigneeArDropdown', function() {               
                             $('#ply_btn_svg').css('display', 'block');
