@@ -2678,61 +2678,242 @@ function showSubmitPopup() {
                         "parent"] +
                     "&child=" + getUrlVars()["child"];
             })
-            $(document).on('click', '#assign_export', function(e) {        
-                var formData = $('#formSearch').serialize();
-                var chartStatus = "CE_Assigned";
-                var recordStatusVal = "assigned";
-                formData += '&chart_status=' + chartStatus;
-                formData += '&clientName=' + clientName;
-                formData += '&subProjectName=' + subProjectName;
-                formData += '&resourceName=' + resourceName;
-                formData += '&recordStatusVal=' + recordStatusVal;
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
-                            'content')
+            // $(document).on('click', '#assign_export', function(e) {        
+            //     var formData = $('#formSearch').serialize();
+            //     var chartStatus = "CE_Assigned";
+            //     var recordStatusVal = "assigned";
+            //     formData += '&chart_status=' + chartStatus;
+            //     formData += '&clientName=' + clientName;
+            //     formData += '&subProjectName=' + subProjectName;
+            //     formData += '&resourceName=' + resourceName;
+            //     formData += '&recordStatusVal=' + recordStatusVal;
+            //     $.ajaxSetup({
+            //         headers: {
+            //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+            //                 'content')
+            //         }
+            //     });
+            //     KTApp.block('#export_div', {
+            //         overlayColor: '#000000',
+            //         state: 'danger',
+            //         opacity: 0.1,
+            //         message: 'Fetching...',
+            //     });
+            //     $.ajax({
+            //             url: "{{ url('client_export') }}",
+            //             method: 'POST',
+            //             data: formData,
+            //             xhrFields: {
+            //                 responseType: 'blob'  // This is crucial for downloading Excel
+            //             },
+            //             success: function(response, status, xhr) {  // Correct order of parameters
+            //                 var filename = "";
+            //                 var disposition = xhr.getResponseHeader('Content-Disposition');
+            //                 if (disposition && disposition.indexOf('attachment') !== -1) {
+            //                     var matches = /filename[^;=\n]*=([^;\n]*)/.exec(disposition);                            
+            //                     if (matches != null && matches[1]) {
+            //                         // Trim any extra spaces or quotes around the filename
+            //                         filename = matches[1].trim().replace(/^"|"$/g, '');
+            //                     }
+            //                 }
+
+            //                 var blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            //                 var link = document.createElement('a');
+            //                 link.href = window.URL.createObjectURL(blob);
+            //                 link.download = filename || 'export.xlsx';
+            //                 document.body.appendChild(link);
+            //                 link.click();
+            //                 document.body.removeChild(link);
+            //                 KTApp.unblock('#export_div');
+            //             },
+            //             error: function(response) {
+            //                 console.log('Error generating Excel file', response);
+            //             }
+            //     });
+
+            // });//laravel export
+              $(document).on('click', '#assign_export', function (e) {
+            e.preventDefault();
+
+            var formData = $('#formSearch').serialize();
+            var chartStatus = "CE_Assigned";
+            var recordStatusVal = "assigned";
+            formData += '&chart_status=' + encodeURIComponent(chartStatus);
+            formData += '&clientName=' + encodeURIComponent(clientName);
+            formData += '&subProjectName=' + encodeURIComponent(subProjectName);
+            formData += '&recordStatusVal=' + encodeURIComponent(recordStatusVal);
+
+            if (
+                typeof resourceName !== 'undefined' &&
+                resourceName !== null &&
+                resourceName !== ''
+            ) {
+                formData += '&resourceName=' + encodeURIComponent(resourceName);
+            } else {
+                formData += '&resourceName=null';
+            }
+
+            $.ajax({
+                url: "{{ url('client_export_assigned') }}",
+                type: "POST",
+                data: formData,
+                dataType: "json",
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content')
+                },
+
+                beforeSend: function () {
+                    KTApp.block('#export_div', {
+                        overlayColor: '#000000',
+                        state: 'primary',
+                        opacity: 0.2,
+                        message: 'Fetching'
+                    });
+                },
+
+                success: function (response) {
+                    console.log('Client export response:', response);
+
+                    if (
+                        response.status === true &&
+                        response.job_id
+                    ) {
+                        checkClientReportReady(
+                            response.job_id
+                        );
+
+                        return;
+                    }
+
+                    KTApp.unblock('#export_div');
+
+                    alert(
+                        response.message ||
+                        'Unable to start client export.'
+                    );
+                },
+
+                error: function (xhr) {
+                    console.log(
+                        'Client export error:',
+                        xhr.status,
+                        xhr.responseText
+                    );
+
+                    KTApp.unblock('#export_div');
+
+                    var message = 'Unable to start client export.';
+
+                    if (
+                        xhr.responseJSON &&
+                        xhr.responseJSON.message
+                    ) {
+                        message = xhr.responseJSON.message;
+                    }
+
+                    alert(message);
+                }
+            });
+        });
+
+        function checkClientReportReady(jobId) {
+            var checkUrl =
+                "{{ url('client-export/check-report') }}/" +
+                encodeURIComponent(jobId);
+
+            var attemptCount = 0;
+            var maximumAttempts = 240;
+
+            var reportInterval = setInterval(function () {
+                attemptCount++;
+
+                $.ajax({
+                    url: checkUrl,
+                    type: "GET",
+                    dataType: "json",
+                    cache: false,
+
+                    success: function (response) {
+                        console.log(
+                            'Client report status:',
+                            response
+                        );
+
+                        if (response.failed === true) {
+                            clearInterval(reportInterval);
+
+                            KTApp.unblock('#export_div');
+
+                            alert(
+                                response.message ||
+                                'Client report generation failed.'
+                            );
+
+                            return;
+                        }
+
+                        if (
+                            response.ready === true &&
+                            response.file
+                        ) {
+                            clearInterval(reportInterval);
+
+                            KTApp.unblock('#export_div');
+
+                            downloadClientReport(
+                                response.file
+                            );
+
+                            return;
+                        }
+
+                        if (attemptCount >= maximumAttempts) {
+                            clearInterval(reportInterval);
+
+                            KTApp.unblock('#export_div');
+
+                            alert(
+                                'Report generation timed out.'
+                            );
+                        }
+                    },
+
+                    error: function (xhr) {
+                        clearInterval(reportInterval);
+
+                        console.log(
+                            'Client status check error:',
+                            xhr.status,
+                            xhr.responseText
+                        );
+
+                        KTApp.unblock('#export_div');
+
+                        alert(
+                            'Unable to check report status.'
+                        );
                     }
                 });
-                KTApp.block('#export_div', {
-                    overlayColor: '#000000',
-                    state: 'danger',
-                    opacity: 0.1,
-                    message: 'Fetching...',
-                });
-                $.ajax({
-                        url: "{{ url('client_export') }}",
-                        method: 'POST',
-                        data: formData,
-                        xhrFields: {
-                            responseType: 'blob'  // This is crucial for downloading Excel
-                        },
-                        success: function(response, status, xhr) {  // Correct order of parameters
-                            var filename = "";
-                            var disposition = xhr.getResponseHeader('Content-Disposition');
-                            if (disposition && disposition.indexOf('attachment') !== -1) {
-                                var matches = /filename[^;=\n]*=([^;\n]*)/.exec(disposition);                            
-                                if (matches != null && matches[1]) {
-                                    // Trim any extra spaces or quotes around the filename
-                                    filename = matches[1].trim().replace(/^"|"$/g, '');
-                                }
-                            }
 
-                            var blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-                            var link = document.createElement('a');
-                            link.href = window.URL.createObjectURL(blob);
-                            link.download = filename || 'export.xlsx';
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                            KTApp.unblock('#export_div');
-                        },
-                        error: function(response) {
-                            console.log('Error generating Excel file', response);
-                        }
-                });
+            }, 5000);
+        }
 
-            });
-           
+        function downloadClientReport(fileName) {
+            var downloadUrl =
+                "{{ url('client-export/download-report') }}/" +
+                encodeURIComponent(fileName);
+
+            console.log(
+                'Client report download URL:',
+                downloadUrl
+            );
+
+            /*
+            * Using window.location is more reliable for file downloads
+            * than Ajax blob downloads.
+            */
+            window.location.assign(downloadUrl);
+        }
             // $(document).on('click', '.manual-clickable-row', function(e) {
             //     $('#myModal_status').modal('show');
             // });
@@ -3179,56 +3360,58 @@ function showSubmitPopup() {
             });
         }
  
-      function removeAssignedRowAfterSubmit() {
-                if (!currentAssignedRow || !currentAssignedRow.length) {
-                    return;
-                }
-
-                if ($.fn.DataTable.isDataTable('#client_assigned_list')) {
-                    $('#client_assigned_list').DataTable().row(currentAssignedRow).remove().draw(false);
-                } else {
-                    currentAssignedRow.remove();
-                }
-
-                currentAssignedRow = null;
-
-                var total = parseInt($('#assigned_showing_text').attr('data-total'), 10) || 0;
-                var first = parseInt($('#assigned_showing_text').attr('data-first'), 10) || 0;
-                var perPage = parseInt($('#assigned_showing_text').attr('data-per-page'), 10) || 25;
-
-                total = total - 1;
-
-                if (total < 0) {
-                    total = 0;
-                }
-
-                $('#assigned_showing_text').attr('data-total', total);
-
-                var visibleRows = $('#client_assigned_list tbody tr').filter(function() {
-                    return $(this).find('td').length > 1 && !$(this).find('td').hasClass('dataTables_empty');
-                }).length;
-
-                var last = 0;
-
-                if (visibleRows > 0 && total > 0) {
-                    last = first + visibleRows - 1;
-
-                    if (last > total) {
-                        last = total;
-                    }
-                } else {
-                    first = 0;
-                    last = 0;
-                }
-
-                $('#assigned_showing_text').text('Showing ' + first + ' to ' + last + ' of ' + total + ' entries');
-
-                if (total <= perPage) {
-                    $('#assigned_pagination').hide();
-                } else {
-                    $('#assigned_pagination').show();
-                }
+        function removeAssignedRowAfterSubmit() {
+            if (!currentAssignedRow || !currentAssignedRow.length) {
+                return;
             }
+
+            if ($.fn.DataTable.isDataTable('#client_assigned_list')) {
+                $('#client_assigned_list').DataTable().row(currentAssignedRow).remove().draw(false);
+            } else {
+                currentAssignedRow.remove();
+            }
+
+            currentAssignedRow = null;
+
+            var total = parseInt($('#assigned_showing_text').attr('data-total'), 10) || 0;
+            var first = parseInt($('#assigned_showing_text').attr('data-first'), 10) || 0;
+            var perPage = parseInt($('#assigned_showing_text').attr('data-per-page'), 10) || 25;
+
+            total = total - 1;
+
+            if (total < 0) {
+                total = 0;
+            }
+
+            $('#assigned_showing_text').attr('data-total', total);
+
+            var visibleRows = $('#client_assigned_list tbody tr').filter(function() {
+                return $(this).find('td').length > 1 && !$(this).find('td').hasClass('dataTables_empty');
+            }).length;
+
+            var last = 0;
+
+            if (visibleRows > 0 && total > 0) {
+                last = first + visibleRows - 1;
+
+                if (last > total) {
+                    last = total;
+                }
+            } else {
+                first = 0;
+                last = 0;
+            }
+
+            $('#assigned_showing_text').text('Showing ' + first + ' to ' + last + ' of ' + total + ' entries');
+
+            if (total <= perPage) {
+                $('#assigned_pagination').hide();
+            } else {
+                $('#assigned_pagination').show();
+            }
+        }
+
+     
 
     </script>
 @endpush

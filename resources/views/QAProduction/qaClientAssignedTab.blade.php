@@ -4108,7 +4108,60 @@ use Carbon\Carbon;
                                 "parent"] +
                             "&child=" + getUrlVars()["child"];
                     })
-                        $(document).on('click', '#assign_export', function(e) {
+                        // $(document).on('click', '#assign_export', function(e) {
+                        //     var formData = $('#formSearch').serialize();
+                        //     var chartStatus = "CE_Completed";
+                        //     var recordStatusVal = "Assigned";
+                        //     formData += '&chart_status=' + chartStatus;
+                        //     formData += '&clientName=' + clientName;
+                        //     formData += '&subProjectName=' + subProjectName;
+                        //     formData += '&recordStatusVal=' + recordStatusVal;
+                        //     $.ajaxSetup({
+                        //         headers: {
+                        //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                        //                 'content')
+                        //         }
+                        //     });
+                        //     KTApp.block('#export_div', {
+                        //         overlayColor: '#000000',
+                        //         state: 'danger',
+                        //         opacity: 0.1,
+                        //         message: 'Fetching...',
+                        //     });
+                        //     $.ajax({
+                        //             url: "{{ url('qa_production/quality_export') }}",
+                        //             method: 'POST',
+                        //             data: formData,
+                        //             xhrFields: {
+                        //                 responseType: 'blob'  // This is crucial for downloading Excel
+                        //             },
+                        //             success: function(response, status, xhr) {  // Correct order of parameters
+                        //                 var filename = "";
+                        //                 var disposition = xhr.getResponseHeader('Content-Disposition');
+                        //                 if (disposition && disposition.indexOf('attachment') !== -1) {
+                        //                     var matches = /filename[^;=\n]*=([^;\n]*)/.exec(disposition);                            
+                        //                     if (matches != null && matches[1]) {
+                        //                         // Trim any extra spaces or quotes around the filename
+                        //                         filename = matches[1].trim().replace(/^"|"$/g, '');
+                        //                     }
+                        //                 }
+
+                        //                 var blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                        //                 var link = document.createElement('a');
+                        //                 link.href = window.URL.createObjectURL(blob);
+                        //                 link.download = filename || 'export.xlsx';
+                        //                 document.body.appendChild(link);
+                        //                 link.click();
+                        //                 document.body.removeChild(link);
+                        //                 KTApp.unblock('#export_div');
+                        //             },
+                        //             error: function(response) {
+                        //                 console.log('Error generating Excel file', response);
+                        //             }
+                        //     });
+
+                        // });//laravel export
+                         $(document).on('click', '#assign_export', function(e) {
                             var formData = $('#formSearch').serialize();
                             var chartStatus = "CE_Completed";
                             var recordStatusVal = "Assigned";
@@ -4129,38 +4182,121 @@ use Carbon\Carbon;
                                 message: 'Fetching...',
                             });
                             $.ajax({
-                                    url: "{{ url('qa_production/quality_export') }}",
+                                    url: "{{ url('qa_production/quality_export_assigned') }}",
                                     method: 'POST',
                                     data: formData,
-                                    xhrFields: {
-                                        responseType: 'blob'  // This is crucial for downloading Excel
-                                    },
-                                    success: function(response, status, xhr) {  // Correct order of parameters
-                                        var filename = "";
-                                        var disposition = xhr.getResponseHeader('Content-Disposition');
-                                        if (disposition && disposition.indexOf('attachment') !== -1) {
-                                            var matches = /filename[^;=\n]*=([^;\n]*)/.exec(disposition);                            
-                                            if (matches != null && matches[1]) {
-                                                // Trim any extra spaces or quotes around the filename
-                                                filename = matches[1].trim().replace(/^"|"$/g, '');
-                                            }
+                                    // xhrFields: {
+                                    //     responseType: 'blob'  // This is crucial for downloading Excel
+                                    // },//for laravel export
+                                    dataType: 'json',
+
+                                success: function (response) {
+                                    console.log('Export started response:', response);
+
+                                    if (response.status === true && response.job_id) {
+                                        checkQualityExportFileReady(response.job_id);
+                                    } else {
+                                        KTApp.unblock('#export_div');
+
+                                        alert(
+                                            response.message ||
+                                            'Unable to start quality report.'
+                                        );
+                                    }
+                                },
+
+                                error: function (xhr) {
+                                    console.log('Export start error:', xhr.responseText);
+
+                                    KTApp.unblock('#export_div');
+
+                                    alert(
+                                        xhr.responseJSON?.message ||
+                                        'Failed to start quality report.'
+                                    );
+                                }
+                            });
+                        });
+
+
+                        function checkQualityExportFileReady(jobId) {
+                            var checkUrl =
+                                "{{ url('qa_production/quality-export/check-report') }}/" +
+                                encodeURIComponent(jobId);
+
+                            console.log('Checking report URL:', checkUrl);
+
+                            var interval = setInterval(function () {
+                                $.ajax({
+                                    url: checkUrl,
+                                    type: 'GET',
+                                    dataType: 'json',
+                                    cache: false,
+
+                                    success: function (response) {
+                                        console.log('Report status response:', response);
+
+                                        if (response.failed === true) {
+                                            clearInterval(interval);
+                                            KTApp.unblock('#export_div');
+
+                                            alert(
+                                                response.message ||
+                                                'Quality report generation failed.'
+                                            );
+
+                                            return;
                                         }
 
-                                        var blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-                                        var link = document.createElement('a');
-                                        link.href = window.URL.createObjectURL(blob);
-                                        link.download = filename || 'export.xlsx';
-                                        document.body.appendChild(link);
-                                        link.click();
-                                        document.body.removeChild(link);
-                                        KTApp.unblock('#export_div');
-                                    },
-                                    error: function(response) {
-                                        console.log('Error generating Excel file', response);
-                                    }
-                            });
+                                        if (
+                                            response.ready === true &&
+                                            response.file
+                                        ) {
+                                            clearInterval(interval);
 
-                        });
+                                            var downloadUrl =
+                                                "{{ url('qa_production/quality-export/download-report') }}/" +
+                                                encodeURIComponent(response.file);
+
+                                            console.log('Downloading report:', downloadUrl);
+
+                                            /*
+                                            * Use a temporary anchor instead of window.location.href.
+                                            */
+                                            var downloadLink = document.createElement('a');
+
+                                            downloadLink.href = downloadUrl;
+                                            downloadLink.style.display = 'none';
+
+                                            document.body.appendChild(downloadLink);
+
+                                            downloadLink.click();
+
+                                            document.body.removeChild(downloadLink);
+
+                                            KTApp.unblock('#export_div');
+                                        }
+                                    },
+
+                                    error: function (xhr) {
+                                        console.log(
+                                            'Report status check error:',
+                                            xhr.status,
+                                            xhr.responseText
+                                        );
+
+                                        clearInterval(interval);
+
+                                        KTApp.unblock('#export_div');
+
+                                        alert(
+                                            xhr.responseJSON?.message ||
+                                            'Error checking quality report status.'
+                                        );
+                                    }
+                                });
+                            }, 5000);
+                        }
                         $(document).on('change', '#assigneeArDropdown', function() {               
                             $('#ply_btn_svg').css('display', 'block');
                         });

@@ -127,7 +127,10 @@ Route::group(['prefix' => 'qa_production'], function () {
     Route::any('qa_class_cat_scope', 'App\Http\Controllers\QA\QAProductionController@qaClassCatScope');
     Route::any('quality_export', 'App\Http\Controllers\QA\QAProductionController@qualityExport');
     Route::any('qa_sampling_assignee', 'App\Http\Controllers\QA\QAProductionController@qaSamplingAssignee');
-     Route::any('all_sampling_assignee', 'App\Http\Controllers\QA\QAProductionController@allSamplingAssignee');
+    Route::any('all_sampling_assignee', 'App\Http\Controllers\QA\QAProductionController@allSamplingAssignee');
+    Route::any('quality_export_assigned', 'App\Http\Controllers\QA\QAProductionController@qualityExportAssigned');
+    Route::get('quality-export/check-report/{jobId}','App\Http\Controllers\QA\QAProductionController@checkQualityExportReport');
+    Route::get('quality-export/download-report/{filename}','App\Http\Controllers\QA\QAProductionController@downloadQualityExportReport');
 });
 
 
@@ -274,8 +277,9 @@ Route::group(['prefix' => 'qa_production'], function () {
        Route::post('non-ar-run-python', 'App\Http\Controllers\Reports\ReportsController@nonArRunPython');//python
        Route::get('/non-ar-check-report/{jobId}', 'App\Http\Controllers\Reports\ReportsController@nonArCheckReport');
        Route::get('/non-ar-download-report/{file}',  'App\Http\Controllers\Reports\ReportsController@nonArdownloadReport');
-        
-    
+       Route::any('client_export_assigned', 'App\Http\Controllers\ProductionController@clientExportAssigned');
+       Route::get('client-export/check-report/{jobId}','App\Http\Controllers\ProductionController@checkclientExportReport');
+       Route::get('client-export/download-report/{filename}','App\Http\Controllers\ProductionController@downloadClientExportReport');
     
 
 

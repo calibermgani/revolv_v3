@@ -32,6 +32,7 @@ use App\Jobs\getemailsAboveTlLevelJob;
 use Illuminate\Support\Facades\Cache;
 use App\Jobs\GetProjJob;
 use App\Jobs\GetSubPrjJob;
+use App\Jobs\RunQualityExportJob;
 
 ini_set('memory_limit', '1024M');
 class QAProductionController extends Controller
@@ -2181,7 +2182,235 @@ class QAProductionController extends Controller
     } else {
         return redirect('/');
     }
-}
+   }
+
+    public function qualityExportAssigned(Request $request)
+    {
+        if (
+            !Session::get('loginDetails') ||
+            empty(Session::get('loginDetails')['userDetail']) ||
+            empty(Session::get('loginDetails')['userDetail']['emp_id'])
+        ) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Session expired. Please log in again.',
+            ], 401);
+        }
+
+        try {
+            $loginDetails = Session::get('loginDetails');
+
+            $loginEmpId = $loginDetails['userDetail']['emp_id'] ?? '';
+
+            $empDesignation = $loginDetails['userDetail']['user_hrdetails']['current_designation']
+                ?? '';
+
+            $decodedProjectName = Helpers::encodeAndDecodeID(
+                $request->clientName,
+                'decode'
+            );
+
+            $decodedPracticeName = $request->subProjectName === '--'
+                ? '--'
+                : Helpers::encodeAndDecodeID(
+                    $request->subProjectName,
+                    'decode'
+                );
+
+            $project = Helpers::projectName($decodedProjectName);
+
+            if (!$project) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Invalid project selected.',
+                ], 422);
+            }
+
+            $decodedClientName = $project->project_name;
+
+            $decodedSubProjectName = $decodedPracticeName === '--'
+                ? 'project'
+                : Helpers::subProjectName(
+                    $decodedProjectName,
+                    $decodedPracticeName
+                );
+
+            if (
+                $decodedSubProjectName !== null &&
+                $decodedSubProjectName !== 'project'
+            ) {
+                $decodedSubProjectName =
+                    $decodedSubProjectName->sub_project_name;
+            }
+
+            if (empty($decodedSubProjectName)) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Invalid sub-project selected.',
+                ], 422);
+            }
+
+            /*
+            * Keep the same table-name logic used by the existing export.
+            */
+            $tableName = Str::slug(
+                Str::lower($decodedClientName) . '_' .
+                Str::lower($decodedSubProjectName),
+                '_'
+            );
+
+            /*
+            * These are the dynamic search filters from formSearch.
+            *
+            * Fields used only for export configuration are excluded.
+            */
+            $searchFilters = $request->except([
+                '_token',
+                'parent',
+                'child',
+                'clientName',
+                'subProjectName',
+                'recordStatusVal',
+                'chart_status',
+                'page',
+            ]);
+
+            $jobId = Str::uuid()->toString();
+
+            $payload = [
+                'job_id'            => $jobId,
+                'report_type' => 'quality',
+                'table_name'        => $tableName,
+                'login_emp_id'      => $loginEmpId,
+                'emp_designation'   => $empDesignation,
+                'chart_status'      => $request->chart_status,
+                'record_status_val' => $request->recordStatusVal,
+                'search_filters'    => $searchFilters,
+                'reports_directory' => storage_path('app/reports'),
+                'requested_at'      => now()->toDateTimeString(),
+            ];
+
+            /*
+            * Initial cache status.
+            */
+            Cache::put(
+                'quality_report_' . $jobId,
+                [
+                    'status'  => 'processing',
+                    'file'    => null,
+                    'message' => null,
+                ],
+                now()->addHours(3)
+            );
+
+            RunQualityExportJob::dispatch($payload)
+                ->onQueue('assignedTabExport')
+                ->delay(now()->addSeconds(2));
+
+            return response()->json([
+                'status' => true,
+                'job_id' => $jobId,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Unable to start quality export.', [
+                'message' => $e->getMessage(),
+                'line'    => $e->getLine(),
+                'file'    => $e->getFile(),
+            ]);
+
+            return response()->json([
+                'status'  => false,
+                'message' => 'Unable to start the quality export.',
+            ], 500);
+        }
+    }
+    public function checkQualityExportReport($jobId)
+    {
+        try {
+            $report = Cache::get('quality_report_' . $jobId);
+
+            if (!$report || !is_array($report)) {
+                return response()->json([
+                    'ready'   => false,
+                    'failed'  => false,
+                    'status'  => 'processing',
+                    'message' => 'Report is still being generated.',
+                ]);
+            }
+
+            if (($report['status'] ?? null) === 'failed') {
+                return response()->json([
+                    'ready'   => false,
+                    'failed'  => true,
+                    'status'  => 'failed',
+                    'message' => $report['message']
+                        ?? 'Report generation failed.',
+                ]);
+            }
+
+            $filePath = $report['file'] ?? null;
+
+            if (
+                ($report['status'] ?? null) === 'completed' &&
+                is_string($filePath) &&
+                file_exists($filePath)
+            ) {
+                return response()->json([
+                    'ready'  => true,
+                    'failed' => false,
+                    'status' => 'completed',
+                    'file'   => basename($filePath),
+                ]);
+            }
+
+            return response()->json([
+                'ready'   => false,
+                'failed'  => false,
+                'status'  => 'processing',
+                'message' => 'Report is still being generated.',
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Quality export status check failed.', [
+                'job_id'  => $jobId,
+                'message' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'ready'   => false,
+                'failed'  => true,
+                'status'  => 'failed',
+                'message' => 'Unable to check report status.',
+            ], 500);
+        }
+    }
+    public function downloadQualityExportReport($filename)
+    {
+        $filename = basename($filename);
+
+        $path = storage_path(
+            'app/reports/' . $filename
+        );
+
+        Log::info('Quality report download request.', [
+            'filename' => $filename,
+            'path'     => $path,
+            'exists'   => file_exists($path),
+        ]);
+
+        if (!file_exists($path)) {
+            abort(404, 'Report file not found.');
+        }
+
+        return response()
+            ->download(
+                $path,
+                $filename,
+                [
+                    'Content-Type' => 'text/csv; charset=UTF-8',
+                ]
+            )
+            ->deleteFileAfterSend(true);
+    }
 
     
 }
