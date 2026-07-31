@@ -1607,7 +1607,15 @@ class FormController extends Controller
             'SystemRoot' => getenv('SystemRoot') ?: null,
             'WINDIR' => getenv('WINDIR') ?: null,
 
-            'DYNAMIC_DB_HOST' => config('database.connections.mysql.host'),
+            /*
+            * Force Python stdout and stderr to UTF-8.
+            */
+            'PYTHONUTF8' => '1',
+            'PYTHONIOENCODING' => 'utf-8',
+
+            'DYNAMIC_DB_HOST' => config(
+                'database.connections.mysql.host'
+            ),
             'DYNAMIC_DB_PORT' => (string) config(
                 'database.connections.mysql.port'
             ),
@@ -1657,8 +1665,13 @@ class FormController extends Controller
             ], 500);
         }
 
-        $stdout = trim($process->getOutput());
-        $stderr = trim($process->getErrorOutput());
+        $stdout = $this->normalizeUtf8(
+            trim($process->getOutput())
+        );
+
+        $stderr = $this->normalizeUtf8(
+            trim($process->getErrorOutput())
+        );
 
         Log::info('Dynamic table Python process completed.', [
             'successful' => $process->isSuccessful(),
@@ -1676,32 +1689,75 @@ class FormController extends Controller
         $pythonResponse = $this->decodePythonResponse($stdout);
 
         if (!$process->isSuccessful()) {
-            return response()->json([
-                'status' => 'warning',
-                'message' => is_array($pythonResponse)
-                    ? ($pythonResponse['message']
-                        ?? 'Dynamic table creation failed.')
-                    : 'Dynamic table creation failed.',
-                'errors' => is_array($pythonResponse)
-                    ? ($pythonResponse['errors'] ?? [])
-                    : [],
-            ], 422);
+            $message = 'Dynamic table creation failed.';
+            $errors = [];
+
+            /*
+            * Python should return a JSON object through stdout.
+            */
+            if (is_array($pythonResponse)) {
+                $message = $this->normalizeUtf8(
+                    $pythonResponse['message'] ?? $message
+                );
+
+                $errors = $pythonResponse['errors'] ?? [];
+            } elseif ($stderr !== '') {
+                /*
+                * Fallback when Python did not return valid JSON.
+                */
+                $cleanStderr = preg_replace(
+                    '/^\[dynamic-table\]\s*/m',
+                    '',
+                    $stderr
+                );
+
+                $cleanStderr = $this->normalizeUtf8(
+                    trim((string) $cleanStderr)
+                );
+
+                if ($cleanStderr !== '') {
+                    $message = $cleanStderr;
+                }
+            }
+
+            return response()->json(
+                [
+                    'status' => 'warning',
+                    'message' => $message,
+                    'errors' => $errors,
+                ],
+                422,
+                [],
+                JSON_INVALID_UTF8_SUBSTITUTE
+            );
         }
 
-        if (!is_array($pythonResponse)) {
-            return response()->json([
-                'status' => 'warning',
-                'message' => 'Python returned an invalid response.',
-            ], 500);
+       if (!is_array($pythonResponse)) {
+            return response()->json(
+                [
+                    'status' => 'warning',
+                    'message' => 'Python returned an invalid response.',
+                ],
+                500,
+                [],
+                JSON_INVALID_UTF8_SUBSTITUTE
+            );
         }
 
         if (($pythonResponse['status'] ?? null) !== 'success') {
-            return response()->json([
-                'status' => 'warning',
-                'message' => $pythonResponse['message']
-                    ?? 'Dynamic table creation failed.',
-                'errors' => $pythonResponse['errors'] ?? [],
-            ], 422);
+            return response()->json(
+                [
+                    'status' => 'warning',
+                    'message' => $this->normalizeUtf8(
+                        $pythonResponse['message']
+                            ?? 'Dynamic table creation failed.'
+                    ),
+                    'errors' => $pythonResponse['errors'] ?? [],
+                ],
+                422,
+                [],
+                JSON_INVALID_UTF8_SUBSTITUTE
+            );
         }
 
         return response()->json([
@@ -1762,6 +1818,34 @@ class FormController extends Controller
             ]);
         }
     }
+
+    private function normalizeUtf8(?string $value): string
+    {
+        if ($value === null || $value === '') {
+            return '';
+        }
+
+        if (mb_check_encoding($value, 'UTF-8')) {
+            return $value;
+        }
+
+        /*
+        * Windows Python processes may return Windows-1252 bytes.
+        */
+        $converted = mb_convert_encoding(
+            $value,
+            'UTF-8',
+            [
+                'Windows-1252',
+                'ISO-8859-1',
+            ]
+        );
+
+        return is_string($converted)
+            ? $converted
+            : '';
+    }
+
     public function nonArInventoryConfigurationList()
     {
         if (

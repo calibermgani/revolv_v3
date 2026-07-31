@@ -34,6 +34,20 @@ import pymysql
 from openpyxl.utils.datetime import from_excel
 from pymysql.connections import Connection
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(
+        encoding="utf-8",
+        errors="replace",
+        line_buffering=True,
+    )
+
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(
+        encoding="utf-8",
+        errors="replace",
+        line_buffering=True,
+    )
+
 
 MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024
 MAX_TABLE_NAME_LENGTH = 64
@@ -134,7 +148,14 @@ def log(message: str) -> None:
 
 
 def send_json(payload: dict[str, Any]) -> None:
-    print(json.dumps(payload, ensure_ascii=False, default=str), flush=True)
+    print(
+        json.dumps(
+            payload,
+            ensure_ascii=True,
+            default=str,
+        ),
+        flush=True,
+    )
 
 
 # ---------------------------------------------------------------------
@@ -460,6 +481,42 @@ def fetch_project_and_subproject(
         )
 
     return project_name, sub_project_name
+
+
+def validate_not_existing_in_ar_projects(
+    connection: Connection,
+    definitions: list[TableDefinition],
+) -> None:
+    """
+    Prevent Non-AR table creation when the same active project and
+    sub-project combination already exists in form_configurations.
+    """
+
+    with connection.cursor() as cursor:
+        for definition in definitions:
+            cursor.execute(
+                """
+                SELECT id
+                FROM form_configurations
+                WHERE project_id = %s
+                  AND sub_project_id = %s
+                  AND deleted_at IS NULL
+                LIMIT 1
+                """,
+                (
+                    str(definition.project_id),
+                    str(definition.sub_project_id),
+                ),
+            )
+
+            existing_ar_configuration = cursor.fetchone()
+
+            if existing_ar_configuration:
+                raise ValidationError(
+                    f"{definition.project_name}_{definition.sub_project_name} "
+                    "already exists in AR projects, so it cannot be "
+                    "created in Non-AR projects."
+                )
 
 
 # ---------------------------------------------------------------------
@@ -1335,6 +1392,7 @@ def save_non_ar_upload_configuration(
             """
             SELECT
                 id,
+                table_name,
                 data_columns,
                 db_columns,
                 date_columns,
@@ -1360,6 +1418,7 @@ def save_non_ar_upload_configuration(
                 (
                     project_id,
                     sub_project_id,
+                    table_name,
                     data_columns,
                     db_columns,
                     required_columns,
@@ -1376,6 +1435,7 @@ def save_non_ar_upload_configuration(
                     %s,
                     %s,
                     %s,
+                    %s,
                     NULL,
                     %s,
                     NULL,
@@ -1388,6 +1448,7 @@ def save_non_ar_upload_configuration(
                 (
                     str(definition.project_id),
                     str(definition.sub_project_id),
+                    definition.table_name,
                     data_columns_value,
                     db_columns_value,
                     date_columns_value,
@@ -1409,7 +1470,9 @@ def save_non_ar_upload_configuration(
         )
 
         configuration_changed = (
-            existing_data_columns != data_columns
+            str(existing_configuration.get("table_name") or "")
+            != definition.table_name
+            or existing_data_columns != data_columns
             or existing_db_columns != db_columns
             or existing_date_columns != date_columns
             or existing_configuration.get("deleted_at") is not None
@@ -1421,7 +1484,8 @@ def save_non_ar_upload_configuration(
         cursor.execute(
             """
             UPDATE non_ar_inventory_upload_configuration
-            SET data_columns = %s,
+            SET table_name = %s,
+                data_columns = %s,
                 db_columns = %s,
                 date_columns = %s,
                 updated_at = NOW(),
@@ -1429,6 +1493,7 @@ def save_non_ar_upload_configuration(
             WHERE id = %s
             """,
             (
+                definition.table_name,
                 data_columns_value,
                 db_columns_value,
                 date_columns_value,
@@ -1442,6 +1507,12 @@ def process_table_definitions(
     definitions: list[TableDefinition],
 ) -> list[dict[str, Any]]:
     results: list[dict[str, Any]] = []
+
+    # Prevent Non-AR creation for active AR project configurations.
+    validate_not_existing_in_ar_projects(
+        connection,
+        definitions,
+    )
 
     # Validate all existing tables before processing.
     for definition in definitions:
@@ -1544,6 +1615,13 @@ def main() -> int:
         definitions = parse_workbook(
             file_path,
             connection,
+        )
+
+        # Validate all project/sub-project combinations before creating
+        # dynamic tables or saving Non-AR upload configuration records.
+        validate_not_existing_in_ar_projects(
+            connection,
+            definitions,
         )
 
         results = process_table_definitions(
