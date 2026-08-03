@@ -22,7 +22,7 @@
                         <th width="12%" class="text-center">
                             Inventory Upload
                         </th>
-                        {{-- <th width="4%"></th> --}}
+                        <th width="4%"></th>
                     </tr>
                 </thead>
 
@@ -87,7 +87,7 @@
                                 </a>
                             </td>
 
-                            {{-- <td class="text-center">
+                            <td class="text-center">
                                 <button
                                     type="button"
                                     class="btn btn-link p-1 non-ar-delete"
@@ -100,7 +100,7 @@
                                         style="font-size:15px;"
                                     ></i>
                                 </button>
-                            </td> --}}
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
