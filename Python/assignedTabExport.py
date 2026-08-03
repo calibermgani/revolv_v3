@@ -111,6 +111,7 @@ PRIVILEGED_DESIGNATIONS = (
     "Group Coordinator",
     "Subject Matter Expert",
     "Group Co-ordinator - Quality",
+     "Group Co-ordinator - AR",
 )
 
 

@@ -65,7 +65,7 @@ use Carbon\Carbon;
                                             strpos($empDesignation, 'Leader') !== false ||
                                             strpos($empDesignation, 'Team Lead') !== false ||
                                             strpos($empDesignation, 'CEO') !== false ||
-                                            strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false)
+                                            strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)
                                         <div class="wizard-step mb-0 five" data-wizard-type="done">
                                             <div class="wizard-wrapper py-2">
                                                 <div class="wizard-label p-2 mt-2">
@@ -149,7 +149,7 @@ use Carbon\Carbon;
                                         strpos($empDesignation, 'Leader') !== false ||
                                         strpos($empDesignation, 'Team Lead') !== false ||
                                         strpos($empDesignation, 'CEO') !== false ||
-                                        strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false)
+                                        strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)
                                         <div class="wizard-step mb-0 eight" data-wizard-type="step">
                                             <div class="wizard-wrapper py-2">
                                                 <div class="wizard-label p-2 mt-2">

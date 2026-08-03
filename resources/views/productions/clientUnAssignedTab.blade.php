@@ -17,7 +17,7 @@ use Carbon\Carbon;
                                 </div>
                                 <div class="col-md-6">
                                     <div class="row" style="justify-content: flex-end;margin-right:1.4rem">
-                                     @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false)
+                                     @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)
                                         <div class="col-lg-3 mb-lg-0 mb-6" id="assign_div">
                                             <fieldset class="form-group mb-0 white-smoke-disabled">
                                                 {!! Form::select('assignee_name', ['' => '--Assignee--'] + $assignedDropDown, null, [
@@ -73,7 +73,7 @@ use Carbon\Carbon;
                                             </div>
                                         </div>
                                     </div>
-                                    @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false)
+                                    @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)
                                         <div class="wizard-step mb-0 seven" data-wizard-type="step">
                                             <div class="wizard-wrapper py-2">
                                                 <div class="wizard-label p-2 mt-2">
@@ -130,7 +130,7 @@ use Carbon\Carbon;
                                             </div>
                                         </div>
                                     </div>
-                                    @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false)
+                                    @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)
                                         <div class="wizard-step mb-0 six" data-wizard-type="done">
                                             <div class="wizard-wrapper py-2">
                                                 <div class="wizard-label p-2 mt-2">
@@ -178,7 +178,7 @@ use Carbon\Carbon;
                                             </div>
                                         </div>
                                     </div>
-                                    @if($reworkCount >= 1 && ($loginEmpId !== "Admin" && strpos($empDesignation, 'Manager') !== 0 && strpos($empDesignation, 'VP') !== 0 && strpos($empDesignation, 'Leader') !== 0 && strpos($empDesignation, 'Team Lead') !== 0 && strpos($empDesignation, 'CEO') !== 0 && strpos($empDesignation, 'Vice') !== 0 && strpos($empDesignation, 'Group Coordinator') !== 0 && strpos($empDesignation, 'Subject Matter Expert') !== 0 && strpos($empDesignation, 'Group Co-ordinator - Quality') !== 0))<p style="color:red; font-weight: 600;">*you have rework records!</p>@endif
+                                    @if($reworkCount >= 1 && ($loginEmpId !== "Admin" && strpos($empDesignation, 'Manager') !== 0 && strpos($empDesignation, 'VP') !== 0 && strpos($empDesignation, 'Leader') !== 0 && strpos($empDesignation, 'Team Lead') !== 0 && strpos($empDesignation, 'CEO') !== 0 && strpos($empDesignation, 'Vice') !== 0 && strpos($empDesignation, 'Group Coordinator') !== 0 && strpos($empDesignation, 'Subject Matter Expert') !== 0 && strpos($empDesignation, 'Group Co-ordinator - Quality') !== 0 && strpos($empDesignation, 'Group Co-ordinator - AR') !== 0))<p style="color:red; font-weight: 600;">*you have rework records!</p>@endif
                                 </div>
                             </div>
                         </div>
@@ -310,7 +310,7 @@ use Carbon\Carbon;
                                             <thead>
                                                 @if (!empty($columnsHeader))
                                                     <tr>
-                                                        @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false)
+                                                        @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)
                                                             <th class='notexport'><input type="checkbox" id="ckbCheckAll" class="cursor_hand">
                                                             </th>
                                                         @endif
@@ -361,13 +361,13 @@ use Carbon\Carbon;
                                                         $arrayAttrributes['aging_range']= null;                                       
                                                         @endphp
                                                         <tr>
-                                                            @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false)
+                                                            @if ($loginEmpId  == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)
                                                                 <td><input type="checkbox" class="checkBoxClass cursor_hand" name='check[]'
                                                                         value="{{ $data->id }}">
                                                                 </td>
                                                             @endif
                                                             <td>
-                                                                @if (($loginEmpId !== "Admin" || strpos($empDesignation, 'Manager') !== true || strpos($empDesignation, 'VP') !== true || strpos($empDesignation, 'Leader') !== true || strpos($empDesignation, 'Team Lead') !== true || strpos($empDesignation, 'CEO') !== true || strpos($empDesignation, 'Vice') !== true || strpos($empDesignation, 'Group Coordinator') !== true || strpos($empDesignation, 'Subject Matter Expert') !== true || strpos($empDesignation, 'Group Co-ordinator - Quality') !== true) && $loginEmpId != $data->CE_emp_id)
+                                                                @if (($loginEmpId !== "Admin" || strpos($empDesignation, 'Manager') !== true || strpos($empDesignation, 'VP') !== true || strpos($empDesignation, 'Leader') !== true || strpos($empDesignation, 'Team Lead') !== true || strpos($empDesignation, 'CEO') !== true || strpos($empDesignation, 'Vice') !== true || strpos($empDesignation, 'Group Coordinator') !== true || strpos($empDesignation, 'Subject Matter Expert') !== true || strpos($empDesignation, 'Group Co-ordinator - Quality') !== true | strpos($empDesignation, 'Group Co-ordinator - AR') !== true) && $loginEmpId != $data->CE_emp_id)
                                                                 @else
                                                                     {{-- @if (empty($existingCallerChartsWorkLogs) && !in_array("CE_Inprocess",$unAssignedProjectDetailsStatus) && $reworkCount < 3) --}}
                                                                     @if (empty($existingCallerChartsWorkLogs) && !in_array("CE_Inprocess",$unAssignedProjectDetailsStatus)  && $reworkCount < 6)
