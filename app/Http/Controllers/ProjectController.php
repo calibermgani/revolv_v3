@@ -41,9 +41,11 @@ use Illuminate\Support\Facades\Response;
 use App\Jobs\ProcessDayWiseAimsProduction;
 use App\Jobs\DateRangeWiseAimsProductionUpdate;
 use App\Jobs\DateRangeWiseAimsProduction;
-    use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
 use Throwable;
+use App\Jobs\ProcessDayWiseAimsProductionNonArProjects;
+
 ini_set('max_execution_time', 180);
 class ProjectController extends Controller
 {
@@ -2978,6 +2980,153 @@ public function projectDayWiseAimsProduction()
                 'message' => $e->getMessage()
             ]);
         }
+    }
+
+    //non Ar Projects Production
+    public function getNonArProjects()
+    {
+        try {
+            $clientList = DB::table(
+                'non_ar_inventory_upload_configuration as config'
+            )
+                ->leftJoin(
+                    'subprojects as sub',
+                    function ($join) {
+                        $join->on(
+                            'sub.project_id',
+                            '=',
+                            'config.project_id'
+                        )->on(
+                            'sub.sub_project_id',
+                            '=',
+                            'config.sub_project_id'
+                        );
+                    }
+                )
+                ->select([
+                    'config.project_id',
+                    'config.sub_project_id',
+                    'sub.sub_project_name',
+                ])
+                ->distinct()
+                ->get();
+
+            $projectNames = [];
+
+            $clientDetails = $clientList
+                ->map(function ($clientData) use (&$projectNames) {
+                    if (
+                        !array_key_exists(
+                            $clientData->project_id,
+                            $projectNames
+                        )
+                    ) {
+                        $project = Helpers::projectName(
+                            $clientData->project_id
+                        );
+
+                        $projectNames[$clientData->project_id] =
+                            $project->aims_project_name
+                            ?? $project->project_name
+                            ?? null;
+                    }
+
+                    return [
+                        'id' => $clientData->project_id,
+                        'client_name' =>
+                            $projectNames[$clientData->project_id],
+                        'subprject_name' =>
+                            $clientData->sub_project_name
+                                ? [
+                                    $clientData->sub_project_id =>
+                                        $clientData->sub_project_name,
+                                ]
+                                : [],
+                    ];
+                })
+                ->sortBy(
+                    fn ($item) =>
+                        strtolower($item['client_name'] ?? '')
+                )
+                ->values()
+                ->toArray();
+
+            return $clientDetails;
+        } catch (\Throwable $e) {
+            Log::error(
+                'Unable to fetch non-AR project details',
+                [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]
+            );
+
+            return [];
+        }
+    }
+    public function nonARProjectsDayWiseAimsProduction()
+    {
+        try {
+            $workDate = Carbon::yesterday();
+
+            /*
+            * Saturday -> Friday
+            * Sunday   -> Friday
+            */
+            if ($workDate->isSaturday()) {
+                $workDate->subDay();
+            } elseif ($workDate->isSunday()) {
+                $workDate->subDays(2);
+            }
+
+            $formattedWorkDate = $workDate->format('Y-m-d');
+
+            ProcessDayWiseAimsProductionNonArProjects::dispatch(
+                $formattedWorkDate,
+                $formattedWorkDate,
+                $formattedWorkDate
+            )
+                ->onQueue('nonArAimsCron')
+                ->delay(now()->addSeconds(5));
+
+            return response()->json([
+                'code' => 202,
+                'message' => 'Processing job dispatched successfully.',
+                'work_date' => $formattedWorkDate,
+            ], 202);
+        } catch (\Throwable $e) {
+            Log::error(
+                'Unable to dispatch non-AR production job',
+                [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]
+            );
+
+            return response()->json([
+                'code' => 500,
+                'message' => 'Unable to start processing.',
+            ], 500);
+        }
+    }
+    public function getNonArAimsProductionResults($date){
+        $cacheKey = "non_ar_aims_production_{$date}";
+        $data = Cache::get($cacheKey);
+
+        if (!$data) {
+            return response()->json([
+                'code' => 404,
+                'message' => "No cached results found for date {$date}.",
+            ]);
+        }
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'Success',
+            'data' => $data,
+        ]);
     }
 
 }
