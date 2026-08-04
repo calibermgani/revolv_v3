@@ -457,8 +457,8 @@ use Carbon\Carbon;
                                                         $loginEmpId != $data->QA_emp_id)
                                                 @else
                                                 
-                                                    @if (empty($existingCallerChartsWorkLogs) && !in_array('QA_Inprocess', $assignedProjectDetailsStatus))
-                                                    {{-- @if (empty($existingCallerChartsWorkLogs)) --}}
+                                                    {{-- @if (empty($existingCallerChartsWorkLogs) && !in_array('QA_Inprocess', $assignedProjectDetailsStatus)) --}}
+                                                    @if (empty($existingCallerChartsWorkLogs))
                                                          <button class="task-start clickable-row start" title="Start"><i
                                                                 class="fa fa-play-circle icon-circle1 mt-0"
                                                                 aria-hidden="true" style="color:#ffffff"></i></button>

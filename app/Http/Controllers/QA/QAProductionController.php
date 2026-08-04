@@ -236,7 +236,7 @@ class QAProductionController extends Controller
                 $assignedProjectDetails = collect();
                 $assignedDropDown = [];
                 $dept = Session::get('loginDetails')['userInfo']['department']['id'];
-                $existingCallerChartsWorkLogs = [];
+                $existingCallerChartsWorkLogs = $existingCallerChartsWorkLogsInprocess = [];
                 $assignedProjectDetailsStatus = [];
                 $duplicateCount = 0;
                 $assignedCount = 0;
@@ -245,7 +245,7 @@ class QAProductionController extends Controller
                 $holdCount = 0;
                 $reworkCount = 0;
                 $autoCloseCount = 0;
-                $unAssignedCount = 0;
+                $unAssignedCount = $rebuttalCount = 0;
                 $subProjectId = $subProjectName == '--' ? null : $decodedPracticeName;$startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString();
                 // if($decodedPracticeName == '--') {
                 // $qasamplingDetails = QualitySampling::where('project_id',$decodedProjectName)->first();//dd($qasamplingDetails,$decodedProjectName,$decodedPracticeName);
@@ -256,71 +256,54 @@ class QAProductionController extends Controller
                if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
                     if (class_exists($modelClass)) {
                         $modelClassDuplcates = "App\\Models\\" . $modelName . 'Duplicates';
-                        $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','QA_Inprocess')->orderBy('id','desc')->pluck('record_id')->toArray();
-                        $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('emp_id', $loginEmpId)->where('end_time', null)->whereIn('record_status', ['QA_Assigned','QA_Inprocess'])->orderBy('id', 'desc')->pluck('record_id')->toArray();
-                        // $assignedProjectDetails = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess','Auto_Close'])->where('qa_work_status','Sampling')->orderBy('id', 'ASC')->paginate(50);
+                        // $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','QA_Inprocess')->orderBy('id','desc')->pluck('record_id')->toArray();
+                        // $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('emp_id', $loginEmpId)->where('end_time', null)->whereIn('record_status', ['QA_Assigned','QA_Inprocess'])->orderBy('id', 'desc')->pluck('record_id')->toArray();
                         $assignedProjectDetails = $query->whereIn('chart_status',['CE_Completed','QA_Inprocess'])->whereNotNull('QA_emp_id')->where('qa_work_status','Sampling');                        
-                        if (!empty($existingCallerChartsWorkLogs)) {
-                            $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
-                        }
-                        if (!empty($existingCallerChartsWorkLogsInprocess)) {
-                            $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogsInprocess) . ') DESC');
-                        }
+                        // if (!empty($existingCallerChartsWorkLogs)) {
+                        //     $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
+                        // }
+                        // if (!empty($existingCallerChartsWorkLogsInprocess)) {
+                        //     $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogsInprocess) . ') DESC');
+                        // }
                         $assignedProjectDetails = $assignedProjectDetails->orderBy('id', 'ASC')->paginate(50);
                         $assignedDropDownIds = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->select('QA_emp_id')->groupBy('QA_emp_id')->pluck('QA_emp_id')->toArray();
-                        $assignedCount = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling')->count();
-                        $completedCount = $modelClass::where('chart_status', 'QA_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        $pendingCount = $modelClass::where('chart_status', 'QA_Pending')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        $holdCount = $modelClass::where('chart_status', 'QA_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        $duplicateCount = $modelClassDuplcates::count();
-                        $autoCloseCount = $modelClass::where('qa_work_status', 'Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling')->orderBy('id', 'ASC')->pluck('chart_status')->toArray();
-                        $unAssignedCount = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->whereNull('qa_work_status')->whereNull('QA_emp_id')->count();
-                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        // $payload = [
-                        //     'token' => '1a32e71a46317b9cc6feb7388238c95d',
-                        //     'client_id' => $decodedProjectName,
-                        //     'user_id' => $userId,
-                        // ];
-
-                        // $response = $client->request('POST', config("constants.PRO_CODE_URL").'/api/v1_users/get_resource_name', [
-                        //     'json' => $payload,
-                        // ]);
-                        // if ($response->getStatusCode() == 200) {
-                        //     $data = json_decode($response->getBody(), true);
-                        // } else {
-                        //     return response()->json(['error' => 'API request failed'], $response->getStatusCode());
-                        // }
-                        // $assignedDropDown = array_filter($data['userDetail']);
+                        // $assignedCount = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling')->count();
+                        // $completedCount = $modelClass::where('chart_status', 'QA_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        // $pendingCount = $modelClass::where('chart_status', 'QA_Pending')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        // $holdCount = $modelClass::where('chart_status', 'QA_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        // $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        // $duplicateCount = $modelClassDuplcates::count();
+                        // $autoCloseCount = $modelClass::where('qa_work_status', 'Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        // $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling')->orderBy('id', 'ASC')->pluck('chart_status')->toArray();
+                        // $unAssignedCount = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->whereNull('qa_work_status')->whereNull('QA_emp_id')->count();
+                        // $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->count();
                     } else {
                         return redirect()->back();
                        }
                 } elseif ($loginEmpId) {
                     if (class_exists($modelClass)) {
-                        // $assignedProjectDetails = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess','Auto_Close'])->where('qa_work_status','Sampling')->where('QA_emp_id', $loginEmpId)->orderBy('id', 'ASC')->paginate(50);//dd($assignedProjectDetails);
-                        $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','QA_Inprocess')->orderBy('id','desc')->pluck('record_id')->toArray();
-                        $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('emp_id', $loginEmpId)->where('end_time', null)->whereIn('record_status', ['QA_Assigned','QA_Inprocess'])->orderBy('id', 'desc')->pluck('record_id')->toArray();
+                        // $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','QA_Inprocess')->orderBy('id','desc')->pluck('record_id')->toArray();
+                        // $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('emp_id', $loginEmpId)->where('end_time', null)->whereIn('record_status', ['QA_Assigned','QA_Inprocess'])->orderBy('id', 'desc')->pluck('record_id')->toArray();
                         $assignedProjectDetails = $query->whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling')->where('QA_emp_id',$loginEmpId);
-                        if (!empty($existingCallerChartsWorkLogs)) {
-                            $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
-                        }
-                        if (!empty($existingCallerChartsWorkLogsInprocess)) {
-                            $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogsInprocess) . ') DESC');
-                        }
+                        // if (!empty($existingCallerChartsWorkLogs)) {
+                        //     $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
+                        // }
+                        // if (!empty($existingCallerChartsWorkLogsInprocess)) {
+                        //     $assignedProjectDetails = $assignedProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogsInprocess) . ') DESC');
+                        // }
                         $assignedProjectDetails = $assignedProjectDetails->orderBy('id', 'ASC')->paginate(50);
-                        $assignedCount = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling')->where('QA_emp_id', $loginEmpId)->count();
-                        $completedCount = $modelClass::where('chart_status', 'QA_Completed')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        $pendingCount = $modelClass::where('chart_status', 'QA_Pending')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        $holdCount = $modelClass::where('chart_status', 'QA_Hold')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        $reworkCount = $modelClass::where('chart_status', 'revoke')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        $autoCloseCount = $modelClass::where('qa_work_status', 'Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling')->where('QA_emp_id', $loginEmpId)->orderBy('id', 'ASC')->pluck('chart_status')->toArray();
-                        $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        // $assignedCount = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling')->where('QA_emp_id', $loginEmpId)->count();
+                        // $completedCount = $modelClass::where('chart_status', 'QA_Completed')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        // $pendingCount = $modelClass::where('chart_status', 'QA_Pending')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        // $holdCount = $modelClass::where('chart_status', 'QA_Hold')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        // $reworkCount = $modelClass::where('chart_status', 'revoke')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        // $autoCloseCount = $modelClass::where('qa_work_status', 'Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        // $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Completed','QA_Inprocess'])->where('qa_work_status','Sampling')->where('QA_emp_id', $loginEmpId)->orderBy('id', 'ASC')->pluck('chart_status')->toArray();
+                        // $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     } else {
                         return redirect()->back();
                        }
-                }//dd($assignedProjectDetails);
+                }
                 $popUpHeader = formConfiguration::groupBy(['project_id', 'sub_project_id'])
                     ->where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)
                     ->select('project_id', 'sub_project_id')
