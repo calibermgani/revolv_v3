@@ -281,13 +281,13 @@ def export_to_excel(
             excel_name = excel_name[:-6]
         output_file = output_file or f"{excel_name}.xlsx" #local upto 70000 rows
         # output_file = output_file or f"/tmp/{excel_name}.xlsx" # server upto 70000 rows
-        # os.makedirs("/var/www/html/revolv_v3/storage/app/reports", exist_ok=True) #for bulk report storage in server
-        os.makedirs("storage/app/reports", exist_ok=True) #for bulk report storage in local
+        os.makedirs("/var/www/html/revolv_v3/storage/app/reports", exist_ok=True) #for bulk report storage in server
+        # os.makedirs("storage/app/reports", exist_ok=True) #for bulk report storage in local
  
  
         file_name = f"{excel_name}_{datetime.now().strftime('%Y%m%d%H%M%S')}.xlsx" #for bulk report storage file name
-        # output_file = os.path.join("/var/www/html/revolv_v3/storage/app/reports", file_name) #for bulk report storage in server
-        output_file = os.path.join("storage/app/reports", file_name) #for bulk report storage in local
+        output_file = os.path.join("/var/www/html/revolv_v3/storage/app/reports", file_name) #for bulk report storage in server
+        # output_file = os.path.join("storage/app/reports", file_name) #for bulk report storage in local
 
 
         chunksize = 10000
