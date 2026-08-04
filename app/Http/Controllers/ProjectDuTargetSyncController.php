@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Throwable;
+use App\Models\AimsProjectDuTarget;
 
 class ProjectDuTargetSyncController extends Controller
 {
@@ -896,6 +897,36 @@ class ProjectDuTargetSyncController extends Controller
                 'status'  => false,
                 'message' => 'Project resource allocation synchronization failed.',
                 'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getProjectDuTargets(Request $request)
+    {
+        try {
+            /*
+            * Fetch all records from the aims_project_du_targets table.
+            */
+            $aimsProjectDuTarget = AimsProjectDuTarget::all();
+
+            return response()->json([
+                'code' => 200,
+                'message' => 'AimsProjectDuTarget fetched successfully.',
+                'aimsProjectDuTarget' => $aimsProjectDuTarget,
+            ], 200);
+        } catch (Exception $e) {
+            Log::error(
+                'Unable to fetch AimsProjectDuTarget data.',
+                [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]
+            );
+
+            return response()->json([
+                'code' => 500,
+                'message' => 'Unable to fetch AimsProjectDuTarget data.',
             ], 500);
         }
     }
