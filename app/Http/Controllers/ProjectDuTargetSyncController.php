@@ -901,7 +901,7 @@ class ProjectDuTargetSyncController extends Controller
         }
     }
 
-    public function getProjectDuTargets(Request $request)
+    public function getProjectDuTargets()
     {
         try {
             /*
