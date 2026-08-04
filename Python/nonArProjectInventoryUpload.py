@@ -615,78 +615,102 @@ def validate_mysql_identifier(identifier, label):
     return identifier
 
 
-def laravel_str_slug(value, separator="_"):
+def normalize_table_identifier(value, fallback_prefix):
 
-    value = str(value).lower()
+    import unicodedata
 
-    # Laravel Str::slug first converts the opposite separator into the requested separator.
-    # For separator "_", hyphens are converted to underscores.
-    if separator == "-":
+    text = str(value or "").strip()
 
-        flip = "_"
-
-    else:
-
-        flip = "-"
-
-    value = re.sub(
-        r"[" + re.escape(flip) + r"]+",
-        separator,
-        value
+    text = unicodedata.normalize(
+        "NFKD",
+        text
     )
 
-    # Laravel default slug dictionary converts @ to the word "at".
-    value = value.replace(
-        "@",
-        separator + "at" + separator
+    text = text.encode(
+        "ascii",
+        "ignore"
+    ).decode(
+        "ascii"
     )
 
-    # Match Laravel behavior: remove unsupported characters instead of replacing them.
-    # Example: Dickson/EPIC/No Response becomes dicksonepicno_response.
-    value = re.sub(
-        r"[^" + re.escape(separator) + r"a-z0-9\s]+",
-        "",
-        value
+    text = text.lower()
+
+    text = re.sub(
+        r"[^a-z0-9]+",
+        "_",
+        text
     )
 
-    # Convert whitespace and separator runs into a single separator.
-    value = re.sub(
-        r"[" + re.escape(separator) + r"\s]+",
-        separator,
-        value
+    text = re.sub(
+        r"_+",
+        "_",
+        text
     )
 
-    return value.strip(
-        separator
-    )
+    text = text.strip("_")
 
+    if not text:
 
-def slugify_sub_project(name):
+        raise Exception(
+            "inventory not uploaded: unable to generate a valid "
+            + fallback_prefix
+            + " identifier"
+        )
 
-    return laravel_str_slug(
-        name,
-        "_"
-    )
+    if text[0].isdigit():
+
+        text = (
+            fallback_prefix
+            + "_"
+            + text
+        )
+
+    if not re.fullmatch(
+        r"[a-z][a-z0-9_]*",
+        text
+    ):
+
+        raise Exception(
+            "inventory not uploaded: generated identifier is invalid: "
+            + text
+        )
+
+    return text
 
 
 def generate_table_name(project_name, sub_project_name):
 
-    base_name = (
-        str(project_name).lower()
-        + "_"
-        + str(sub_project_name).lower()
+    project_slug = normalize_table_identifier(
+        project_name,
+        "project"
     )
+
+    sub_project_slug = normalize_table_identifier(
+        sub_project_name,
+        "subproject"
+    )
+
     suffix = "_datas"
-    raw_table_name = f"{base_name}{suffix}"
 
-    table_name = laravel_str_slug(
-        raw_table_name,
-        "_"
+    base_name = (
+        project_slug
+        + "_"
+        + sub_project_slug
     )
 
-    if not table_name:
+    maximum_base_length = (
+        64
+        - len(suffix)
+    )
 
-        raise Exception("invalid generated table name")
+    base_name = base_name[
+        :maximum_base_length
+    ].rstrip("_")
+
+    table_name = (
+        base_name
+        + suffix
+    )
 
     return validate_mysql_identifier(
         table_name,
