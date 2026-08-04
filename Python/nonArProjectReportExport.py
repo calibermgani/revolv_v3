@@ -9,7 +9,7 @@ os.umask(0o002)
 
 db_config = {
     "user": os.environ.get("DB_USER", "root"),
-    "password": os.environ.get("DB_PASSWORD", ""),
+    "password": os.environ.get("DB_PASSWORD", "resolv@2025!"),
     "host": os.environ.get("DB_HOST", "127.0.0.1"),
     "port": int(os.environ.get("DB_PORT", 3306)),
     "database": os.environ.get("DB_DATABASE", "resolv"),
