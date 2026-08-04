@@ -904,19 +904,18 @@ class ProjectDuTargetSyncController extends Controller
     public function getProjectDuTargets()
     {
         try {
-            /*
-            * Fetch all records from the aims_project_du_targets table.
-            */
-            $aimsProjectDuTarget = AimsProjectDuTarget::all();
+            $aimsProjectDuTarget = DB::table(
+                'aims_project_du_targets'
+            )->get();
 
             return response()->json([
                 'code' => 200,
-                'message' => 'AimsProjectDuTarget fetched successfully.',
+                'message' => 'Aims project DU targets fetched successfully.',
                 'aimsProjectDuTarget' => $aimsProjectDuTarget,
             ], 200);
         } catch (Exception $e) {
             Log::error(
-                'Unable to fetch AimsProjectDuTarget data.',
+                'Unable to fetch aims project DU targets.',
                 [
                     'message' => $e->getMessage(),
                     'file' => $e->getFile(),
@@ -926,7 +925,7 @@ class ProjectDuTargetSyncController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => 'Unable to fetch AimsProjectDuTarget data.',
+                'message' => 'Unable to fetch aims project DU targets.',
             ], 500);
         }
     }
