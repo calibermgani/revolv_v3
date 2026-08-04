@@ -55,32 +55,60 @@ def normalize_date_range(date_range_str):
         end_date = datetime.strptime(end_str, "%m/%d/%Y")
     return start_date.date(), end_date.date()
 
-def slugify_sub_project(sub_project_name):
-    sub_project = sub_project_name.lower()
-    # 1. replace ANY non-alphanumeric with space (important)
-    sub_project = re.sub(r"[^a-z0-9]+", " ", sub_project)
-    # 2. convert spaces to underscore
-    sub_project = re.sub(r"\s+", "_", sub_project).strip("_")
-    return sub_project
+MAX_TABLE_NAME_LENGTH = 64
+
+
+def normalize_table_identifier(value, fallback_prefix):
+    text = str(value or "").strip().lower()
+
+    # Match dynamic table creation:
+    # replace every unsupported character group with underscore.
+    text = re.sub(r"[^a-z0-9]+", "_", text)
+    text = re.sub(r"_+", "_", text).strip("_")
+
+    if not text:
+        raise Exception(
+            "Unable to generate a valid "
+            + fallback_prefix
+            + " identifier"
+        )
+
+    if text[0].isdigit():
+        text = fallback_prefix + "_" + text
+
+    if not re.fullmatch(r"[a-z][a-z0-9_]*", text):
+        raise Exception(
+            "Generated identifier is invalid: "
+            + text
+        )
+
+    return text
+
+
 def generate_table_name(project_name, sub_project_name):
-    # Same as Laravel:
-    table_slug = (
-        str(project_name).lower()
-        + "_"
-        + str(sub_project_name).lower()
+    project_slug = normalize_table_identifier(
+        project_name,
+        "project"
     )
 
-    # Laravel Str::slug with separator "_" converts hyphens to underscores.
-    table_slug = re.sub(r"[-]+", "_", table_slug)
+    sub_project_slug = normalize_table_identifier(
+        sub_project_name,
+        "subproject"
+    )
 
-    # Laravel removes symbols like / instead of converting them to underscores.
-    table_slug = table_slug.replace("@", "at")
-    table_slug = re.sub(r"[^a-z0-9_\s]+", "", table_slug)
+    suffix = "_datas"
+    base_name = project_slug + "_" + sub_project_slug
 
-    # Laravel converts spaces and existing underscores to the separator.
-    table_slug = re.sub(r"[_\s]+", "_", table_slug).strip("_")
+    maximum_base_length = (
+        MAX_TABLE_NAME_LENGTH
+        - len(suffix)
+    )
 
-    return f"{table_slug}_datas"
+    base_name = base_name[
+        :maximum_base_length
+    ].rstrip("_")
+
+    return base_name + suffix
 
 def export_to_excel(
     project_id,
