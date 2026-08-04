@@ -153,12 +153,18 @@ class ProjectDuTargetSyncController extends Controller
                 ], 502);
             }
 
-            /*
-             * Active unique mappings:
-             *
-             * API client_id     = form_configurations.project_id
-             * API subproject_id = form_configurations.sub_project_id
-             */
+              /*
+            * Active unique mappings:
+            *
+            * API client_id     = project_id
+            * API subproject_id = sub_project_id
+            *
+            * form_configurations can contain multiple rows for the same pair,
+            * so group only that table.
+            *
+            * non_ar_inventory_upload_configuration already contains only one
+            * row per project/subproject pair.
+            */
             $formConfigurationPairs = DB::table('form_configurations')
                 ->select(
                     'project_id',
@@ -171,12 +177,21 @@ class ProjectDuTargetSyncController extends Controller
                     'project_id',
                     'sub_project_id'
                 )
+                ->union(
+                    DB::table('non_ar_inventory_upload_configuration')
+                        ->select(
+                            'project_id',
+                            'sub_project_id'
+                        )
+                        ->whereNotNull('project_id')
+                        ->whereNotNull('sub_project_id')
+                )
                 ->get();
 
             if ($formConfigurationPairs->isEmpty()) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'No active project/subproject mappings were found in form_configurations. Existing records were not modified.',
+                    'message' => 'No active project/subproject mappings were found in form_configurations or non_ar_inventory_upload_configuration. Existing records were not modified.',
                 ], 422);
             }
 
