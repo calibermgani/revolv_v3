@@ -98,9 +98,8 @@ use Carbon\Carbon;
                                                             <button
                                                                 type="button"
                                                                 class="btn text-white mr-3"
-                                                                style="background-color:#139AB3">
-                                                            </button>
-                                                                SOP
+                                                                style="background-color:#139AB3">SOP
+                                                            </button>                                                               
                                                         </a>
                                                     @else
                                                         <button
@@ -1208,7 +1207,20 @@ use Carbon\Carbon;
                                                 <button type="button" class="close comment_close" data-dismiss="modal" aria-hidden="true">&times;</button>
                                             </div>
                                             <div class="modal-body">
-                                                <iframe src={{ isset($sopDetails) && isset($sopDetails->sop_path) ? asset($sopDetails->sop_path) : '#' }} style="width: 100%; height: 418px;" frameborder="0" type="application/pdf"></iframe>
+                                                @if (isset($sopDetails) && !empty($sopDetails->sop_path))
+                                                    <iframe
+                                                        src="{{ asset($sopDetails->sop_path) }}"
+                                                        style="width: 100%; height: 418px;"
+                                                        frameborder="0"
+                                                        type="application/pdf">
+                                                    </iframe>
+                                                @else
+                                                    <div
+                                                        class="d-flex justify-content-center align-items-center"
+                                                        style="width: 100%; height: 418px;">
+                                                        <span>No SOP document available.</span>
+                                                    </div>
+                                                @endif
                                             </div>
                                             <div class="modal-footer">
                                                <button type="button" class="btn btn-light-danger" data-dismiss="modal">Close</button>
