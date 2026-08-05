@@ -1245,12 +1245,13 @@ def validate_date_column_values(df, date_columns):
 
     if date_errors:
 
-        raise Exception(
-            "inventory not uploaded: invalid date values found. "
-            + " | ".join(date_errors[:20])
-            + ". Date must not contain text, AM/PM, time "
-              "or unsupported special characters."
-        )        
+      raise Exception(
+        "inventory not uploaded: invalid date values found. "
+        + " | ".join(date_errors[:20])
+        + ". Date must not contain text, AM/PM, time, "
+        "or unsupported special characters. "
+        "Date format must follow MM/DD/YYYY."
+    )    
 def prepare_dates(df, date_columns):
 
     for column_name in date_columns:
