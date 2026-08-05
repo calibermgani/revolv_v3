@@ -1223,8 +1223,9 @@ def validate_date_column_values(df, date_columns):
 
             parsed_dates = pd.to_datetime(
                 format_valid_values,
+                format="%m/%d/%Y",
                 errors="coerce",
-                dayfirst=True
+                # dayfirst=True
             )
 
             invalid_date_indexes = parsed_dates.index[
@@ -1281,8 +1282,9 @@ def prepare_dates(df, date_columns):
                 ~empty_mask,
                 None
             ),
+            format="%m/%d/%Y",
             errors="coerce",
-            dayfirst=True
+            # dayfirst=True
         )
 
         formatted_dates = parsed_dates.dt.strftime(
