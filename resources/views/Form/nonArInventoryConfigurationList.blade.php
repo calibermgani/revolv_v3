@@ -25,9 +25,9 @@
                         <th width="12%" class="text-center">
                             Inventory Upload
                         </th>
-                        @if($loginEmpId  == "AM5296") 
+                        {{-- @if($loginEmpId  == "AM5296") 
                           <th width="4%"></th>
-                        @endif
+                        @endif --}}
                     </tr>
                 </thead>
 
@@ -92,7 +92,7 @@
                                 </a>       
                             </td>
 
-                            @if($loginEmpId  == "AM5296") 
+                            {{-- @if($loginEmpId  == "AM5296") 
                                 <td class="text-center">
                                     <button
                                         type="button"
@@ -107,7 +107,7 @@
                                         ></i>
                                     </button>
                                 </td>
-                            @endif
+                            @endif --}}
                         </tr>
                     @endforeach
                 </tbody>
