@@ -2903,10 +2903,10 @@ public function projectDayWiseAimsProduction()
             while ($currentDate->lte($end_date)) {
 
                 // ❌ Skip Saturday & Sunday
-                if ($currentDate->isSaturday() || $currentDate->isSunday()) {
-                    $currentDate->addDay();
-                    continue;
-                }
+                // if ($currentDate->isSaturday() || $currentDate->isSunday()) {
+                //     $currentDate->addDay();
+                //     continue;
+                // }
 
                 // ✅ 8AM to next day 7:59AM
                 $startDate = $currentDate->copy()->setTime(8, 0, 0)->toDateTimeString();
