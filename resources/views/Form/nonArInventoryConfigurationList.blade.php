@@ -8,7 +8,10 @@
           <div class="my-div">
             <span class="project_header">Non AR Projects List</span>
          </div>    
-        
+        @php
+            $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
+            $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
+        @endphp
         <div class="table-responsive pt-5">
             <table
                 class="table table-separate table-head-custom no-footer dtr-column"
@@ -22,7 +25,9 @@
                         <th width="12%" class="text-center">
                             Inventory Upload
                         </th>
-                        {{-- <th width="4%"></th> --}}
+                        @if($loginEmpId  == "AM5296") 
+                          <th width="4%"></th>
+                        @endif
                     </tr>
                 </thead>
 
@@ -84,23 +89,25 @@
                                             color:#139AB3;
                                         "
                                     ></i>
-                                </a>
+                                </a>       
                             </td>
 
-                            {{-- <td class="text-center">
-                                <button
-                                    type="button"
-                                    class="btn btn-link p-1 non-ar-delete"
-                                    data-project-id="{{ $configuration->project_id }}"
-                                    data-sub-project-id="{{ $configuration->sub_project_id }}"
-                                    title="Delete configuration"
-                                >
-                                    <i
-                                        class="fa fa-trash text-danger"
-                                        style="font-size:15px;"
-                                    ></i>
-                                </button>
-                            </td> --}}
+                            @if($loginEmpId  == "AM5296") 
+                                <td class="text-center">
+                                    <button
+                                        type="button"
+                                        class="btn btn-link p-1 non-ar-delete"
+                                        data-project-id="{{ $configuration->project_id }}"
+                                        data-sub-project-id="{{ $configuration->sub_project_id }}"
+                                        title="Delete configuration"
+                                    >
+                                        <i
+                                            class="fa fa-trash text-danger"
+                                            style="font-size:15px;"
+                                        ></i>
+                                    </button>
+                                </td>
+                            @endif
                         </tr>
                     @endforeach
                 </tbody>
