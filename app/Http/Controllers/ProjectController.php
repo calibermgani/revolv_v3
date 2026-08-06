@@ -2954,10 +2954,10 @@ public function projectDayWiseAimsProduction()
 
             while ($currentDate->lte($end_date)) {
 
-                if ($currentDate->isSaturday() || $currentDate->isSunday()) {
-                    $currentDate->addDay();
-                    continue;
-                }
+                // if ($currentDate->isSaturday() || $currentDate->isSunday()) {
+                //     $currentDate->addDay();
+                //     continue;
+                // }
 
                 $date = $currentDate->format('Y-m-d');
                 $cacheKey = "date-range-aims-production_{$date}";
