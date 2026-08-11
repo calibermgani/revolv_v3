@@ -2533,41 +2533,89 @@ class ProjectController extends Controller
                     }
                 }
 
-                // Check if child (modelClass) record exists
-                $existingDataCheck = $modelClass::where($existingData)->exists();
-                if (!$existingDataCheck) {
-                    // Insert into modelClass
-                    if (class_exists($modelClass)) {
-                        $data['parent_id'] = $parentRecord->id;
-                        $callChartData['emp_id'] =  $data['CE_emp_id'];
-                        $callChartData['project_id'] = $request->project_id;
-                        $callChartData['sub_project_id'] = $request->sub_project_id;
-                        $callChartData['record_id'] = $parentRecord->id;
-                        $callChartData['start_time'] = $data['ar_at'] ?? Carbon::now()->format('Y-m-d H:i:s');    
-                        $callChartData['end_time']   = $data['ar_at'] ?? Carbon::now()->format('Y-m-d H:i:s');   
-                        $callChartData['work_time'] = "00:00:00";
-                        $callChartData['record_status'] = "CE_Completed";
+            if (!class_exists($modelClass)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Model class {$modelClass} not found."
+                ], 404);
+            }
 
-                        $modelClass::create($data);
-                        CallerChartsWorkLogs::create($callChartData);
+            // required change
+            // child record is identified by original parent id
+            $data['parent_id'] = $parentRecord->id;
 
-                        return response()->json(['success' => true, 'message' => 'Record inserted.']);
-                    }
-                } else {
-                    // Update existing child records
-                    $duplicateRecords = $modelClass::where($existingData)->get();
-                    if ($duplicateRecords->isNotEmpty()) {
-                        foreach ($duplicateRecords as $duplicateRecord) {
-                            $data['updated_at'] = carbon::now()->format('Y-m-d H:i:s');
-                            $duplicateRecord->update($data);  // ✅ fixed
-                        }
-                    }
-                    return response()->json(['success' => true, 'message' => 'Record updated.']);
-                }
+            $existingChildRecord = $modelClass::where(
+                'parent_id',
+                $parentRecord->id
+            )->first();
 
-        
+            $callChartData = [];
 
-          
+            $callChartData['emp_id'] = $data['CE_emp_id'];
+            $callChartData['project_id'] = $request->project_id;
+            $callChartData['sub_project_id'] = $request->sub_project_id;
+            $callChartData['record_id'] = $parentRecord->id;
+
+            $callChartData['start_time'] =
+                $data['ar_at']
+                ?? Carbon::now()->format('Y-m-d H:i:s');
+
+            $callChartData['end_time'] =
+                $data['ar_at']
+                ?? Carbon::now()->format('Y-m-d H:i:s');
+
+            $callChartData['work_time'] = "00:00:00";
+            $callChartData['record_status'] = "CE_Completed";
+
+            if (!$existingChildRecord) {
+
+                // insert child record
+                $modelClass::create(
+                    $data
+                );
+
+                // required change
+                // prevent duplicate work log for same original record
+                CallerChartsWorkLogs::updateOrCreate(
+                    [
+                        'project_id' => $request->project_id,
+                        'sub_project_id' => $request->sub_project_id,
+                        'record_id' => $parentRecord->id
+                    ],
+                    $callChartData
+                );
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Record inserted.'
+                ]);
+
+            } else {
+
+                // update existing child record
+                $data['updated_at'] = Carbon::now()
+                    ->format('Y-m-d H:i:s');
+
+                $existingChildRecord->update(
+                    $data
+                );
+
+                // required change
+                // update same work log instead of inserting duplicate
+                CallerChartsWorkLogs::updateOrCreate(
+                    [
+                        'project_id' => $request->project_id,
+                        'sub_project_id' => $request->sub_project_id,
+                        'record_id' => $parentRecord->id
+                    ],
+                    $callChartData
+                );
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Record updated.'
+                ]);
+            }
 
         } catch (\Exception $e) {
             return response()->json([
