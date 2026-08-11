@@ -405,7 +405,17 @@ def export_to_excel(
             )
             chunk = chunk.fillna("--")
             chunk.replace("", "--", inplace=True)
-            chunk.to_excel(writer, index=False, startrow=row_num, header=(row_num==0))
+            # chunk.to_excel(writer, index=False, startrow=row_num, header=(row_num==0))
+            # row_num += len(chunk)
+            # print(f"Written {row_num} rows", file=sys.stderr)
+            is_first_chunk = row_num == 0
+            chunk.to_excel(
+                writer,
+                index=False,
+                startrow=row_num if is_first_chunk else row_num + 1,
+                header=is_first_chunk
+            )
+
             row_num += len(chunk)
             print(f"Written {row_num} rows", file=sys.stderr)
 
