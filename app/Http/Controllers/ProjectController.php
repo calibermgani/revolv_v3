@@ -1759,7 +1759,7 @@ class ProjectController extends Controller
                     $today = $today->subDay(2);
                 }
                 $yesterDayStartDate = $yesterday->setTime(8, 0, 0)->toDateTimeString();
-                $yesterDayEndDate = $today->setTime(7, 59, 0)->toDateTimeString();
+                $yesterDayEndDate = $today->setTime(7, 59, 59)->toDateTimeString();
                 $projects = collect($this->getProjects());
                 $projectsPending = []; 
                 $projectIds = $subProjectIds = [];
@@ -1886,7 +1886,7 @@ class ProjectController extends Controller
                
                 $mailHeader = "Resolv Utilization Report for " . $yesterday->format('m/d/Y');
                 $yesterDayStartDate = $yesterday->setTime(8, 0, 0)->toDateTimeString();
-                $yesterDayEndDate = $today->setTime(7, 59, 0)->toDateTimeString();
+                $yesterDayEndDate = $today->setTime(7, 59, 59)->toDateTimeString();
                 $projects = collect($this->getProjects());
                 $projectsPending = []; 
                 $projectIds = $subProjectIds = [];
@@ -2817,7 +2817,7 @@ public function projectDayWiseAimsProduction()
         }
 
         $yesterDayStartDate = $yesterday->copy()->setTime(8, 0, 0)->toDateTimeString();
-        $yesterDayEndDate   = $today->copy()->setTime(7, 59, 0)->toDateTimeString();
+        $yesterDayEndDate   = $today->copy()->setTime(7, 59, 59)->toDateTimeString();
         $workDate = $yesterday->format('Y-m-d');
 
         // Dispatch the heavy processing to a queued job
@@ -2958,7 +2958,7 @@ public function projectDayWiseAimsProduction()
 
                 // ✅ 8AM to next day 7:59AM
                 $startDate = $currentDate->copy()->setTime(8, 0, 0)->toDateTimeString();
-                $endDate   = $currentDate->copy()->addDay()->setTime(7, 59, 0)->toDateTimeString();
+                $endDate   = $currentDate->copy()->addDay()->setTime(7, 59, 59)->toDateTimeString();
 
                 $workDate = $currentDate->format('Y-m-d');
 
