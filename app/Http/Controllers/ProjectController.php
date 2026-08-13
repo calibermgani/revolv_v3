@@ -45,6 +45,7 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
 use Throwable;
 use App\Jobs\ProcessDayWiseAimsProductionNonArProjects;
+use App\Jobs\NonArDateRangeWiseAimsProduction;
 
 ini_set('max_execution_time', 180);
 class ProjectController extends Controller
@@ -2801,46 +2802,46 @@ class ProjectController extends Controller
 //   }
 
  
-public function projectDayWiseAimsProduction()
-{
-    try {
-        $yesterday = Carbon::yesterday();
-        $today = Carbon::today();
+    public function projectDayWiseAimsProduction()
+    {
+        try {
+            $yesterday = Carbon::yesterday();
+            $today = Carbon::today();
 
-        // Adjust for weekends (Saturday/Sunday → Friday)
-        if ($yesterday->isSaturday()) {
-            $yesterday = $yesterday->subDay();
-            $today = $today->subDay();
-        } elseif ($yesterday->isSunday()) {
-            $yesterday = $yesterday->subDays(2);
-            $today = $today->subDays(2);
+            // Adjust for weekends (Saturday/Sunday → Friday)
+            if ($yesterday->isSaturday()) {
+                $yesterday = $yesterday->subDay();
+                $today = $today->subDay();
+            } elseif ($yesterday->isSunday()) {
+                $yesterday = $yesterday->subDays(2);
+                $today = $today->subDays(2);
+            }
+
+            $yesterDayStartDate = $yesterday->copy()->setTime(8, 0, 0)->toDateTimeString();
+            $yesterDayEndDate   = $today->copy()->setTime(7, 59, 59)->toDateTimeString();
+            $workDate = $yesterday->format('Y-m-d');
+
+            // Dispatch the heavy processing to a queued job
+            ProcessDayWiseAimsProduction::dispatch(
+                $yesterDayStartDate,
+                $yesterDayEndDate,
+                $workDate
+            )
+            ->onQueue('aimsCron')
+            ->delay(now()->addSeconds(5));
+
+            return response()->json([
+                'code' => 202,
+                'message' => 'Processing started in background. Check logs or cache for results.',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in projectDayWiseAimsProduction: ' . $e->getMessage());
+            return response()->json([
+                'code' => 500,
+                'message' => 'Server error: ' . $e->getMessage(),
+            ]);
         }
-
-        $yesterDayStartDate = $yesterday->copy()->setTime(8, 0, 0)->toDateTimeString();
-        $yesterDayEndDate   = $today->copy()->setTime(7, 59, 59)->toDateTimeString();
-        $workDate = $yesterday->format('Y-m-d');
-
-        // Dispatch the heavy processing to a queued job
-        ProcessDayWiseAimsProduction::dispatch(
-            $yesterDayStartDate,
-            $yesterDayEndDate,
-            $workDate
-        )
-        ->onQueue('aimsCron')
-        ->delay(now()->addSeconds(5));
-
-        return response()->json([
-            'code' => 202,
-            'message' => 'Processing started in background. Check logs or cache for results.',
-        ]);
-    } catch (\Exception $e) {
-        Log::error('Error in projectDayWiseAimsProduction: ' . $e->getMessage());
-        return response()->json([
-            'code' => 500,
-            'message' => 'Server error: ' . $e->getMessage(),
-        ]);
     }
-}
 
     public function getAimsProductionResults($date){
         $cacheKey = "aims_production_{$date}";
@@ -2981,7 +2982,7 @@ public function projectDayWiseAimsProduction()
             ]);
         }
     }
-       public function getDateWiseRangeResults(Request $request)
+    public function getDateWiseRangeResults(Request $request)
     {
         try {
             $request_values = $request->all();
@@ -3176,5 +3177,88 @@ public function projectDayWiseAimsProduction()
             'data' => $data,
         ]);
     }
+    public function projectDateRangeWiseNonArAimsProduction(Request $request) {
+        try {
+            $request_values = $request->all();
 
+            if (empty($request_values['resolvNonArProductionDateRange'])) {
+                return response()->json([
+                    'code' => 400,
+                    'message' => 'Date range required'
+                ]);
+            }
+
+            $between_dates = explode("-", $request_values['resolvNonArProductionDateRange']);
+            $start_date = Carbon::parse(trim($between_dates[0]));
+            $end_date   = Carbon::parse(trim($between_dates[1]));
+
+            $currentDate = $start_date->copy();
+
+            while ($currentDate->lte($end_date)) {             
+                $startDate = Carbon::parse(trim($between_dates[0]))->format('Y-m-d');
+                $endDate   = Carbon::parse(trim($between_dates[1]))->format('Y-m-d');
+                 $workDate = $currentDate->format('Y-m-d');
+
+                // ✅ Dispatch job per date
+                NonArDateRangeWiseAimsProduction::dispatch($startDate, $endDate, $workDate)->onQueue('nonArAimsDateRange')
+                    ->delay(now()->addSeconds(2));
+
+                $currentDate->addDay();
+            }
+
+            return response()->json([
+                'code' => 202,
+                'message' => 'Jobs dispatched for all working dates'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'code' => 500,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+    public function getNonArDateWiseRangeResults(Request $request)
+    {
+        try {
+            $request_values = $request->all();
+
+            if (empty($request_values['resolvNonArProductionDateRange'])) {
+                return response()->json([
+                    'code' => 400,
+                    'message' => 'Date range required'
+                ]);
+            }
+
+            $between_dates = explode("-", $request_values['resolvNonArProductionDateRange']);
+            $start_date = Carbon::parse(trim($between_dates[0]));
+            $end_date   = Carbon::parse(trim($between_dates[1]));
+
+            $currentDate = $start_date->copy();
+            $finalData = [];
+
+            while ($currentDate->lte($end_date)) {
+                $date = $currentDate->format('Y-m-d');
+                $cacheKey = "date-range-non-ar-aims-production_{$date}";
+
+                $finalData[$date] = Cache::has($cacheKey)
+                    ? Cache::get($cacheKey)
+                    : 'processing';
+
+                $currentDate->addDay();
+            }
+
+            return response()->json([
+                'code' => 200,
+                'data' => $finalData
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'code' => 500,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+    
 }

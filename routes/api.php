@@ -251,6 +251,7 @@ Route::group(['prefix' => 'projects'], function() {
     Route::any('non_ar_projects_day_wise_aims_production', 'App\Http\Controllers\ProjectController@nonARProjectsDayWiseAimsProduction');
     Route::get('non-ar-aims-production-results/{date}',  'App\Http\Controllers\ProjectController@getNonArAimsProductionResults');
     Route::get('get-project-du-targets', 'App\Http\Controllers\ProjectDuTargetSyncController@getProjectDuTargets');   
-
+    Route::any('project_daterange_wise_non_ar_aims_production','App\Http\Controllers\ProjectController@projectDateRangeWiseNonArAimsProduction');
+    Route::get('date-range-non-ar-aims-production-results',  'App\Http\Controllers\ProjectController@getNonArDateWiseRangeResults');
 
 });
