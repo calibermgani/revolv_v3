@@ -6,11 +6,10 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
 use App\Http\Helper\Admin\Helpers as Helpers;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Bus\Queueable;
-use Illuminate\Foundation\Bus\Dispatchable;   // ✅ Important
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
@@ -73,115 +72,147 @@ class NonArDateRangeWiseAimsProduction implements ShouldQueue
                         ? $project['subprject_name']
                         : [0 => 'project'];
 
-                    foreach (
-                        $subProjects as $subKey => $subProject
-                    ) {
-                        $startTime = microtime(true);
+                    foreach ($subProjects as $subKey => $subProject) {
+                        try {
+                            $startTime = microtime(true);
 
-                        $tableName = Str::slug(
-                            Str::lower(
-                                $prjName
-                                . '_'
-                                . $subProject
-                                . '_datas'
-                            ),
-                            '_'
-                        );
-
-                        if (!Schema::hasTable($tableName)) {
-                            Log::warning(
-                                'Dynamic table not found',
-                                [
-                                    'table' => $tableName,
-                                    'project_id' => $project['id'],
-                                    'sub_project_id' => $subKey,
-                                ]
+                            $tableName = Str::slug(
+                                Str::lower(
+                                    $prjName
+                                    . '_'
+                                    . $subProject
+                                    . '_datas'
+                                ),
+                                '_'
                             );
 
-                            continue;
-                        }
+                            if (!Schema::hasTable($tableName)) {
+                                Log::warning(
+                                    'Dynamic table not found',
+                                    [
+                                        'table' => $tableName,
+                                        'project_id' => $project['id'],
+                                        'sub_project_id' => $subKey,
+                                    ]
+                                );
 
-                        $requiredColumns = [
-                            'emp_id',
-                            'work_date',
-                            'charge_status',
-                        ];
-
-                        $missingColumns = [];
-
-                        foreach ($requiredColumns as $column) {
-                            if (
-                                !Schema::hasColumn(
-                                    $tableName,
-                                    $column
-                                )
-                            ) {
-                                $missingColumns[] = $column;
+                                continue;
                             }
-                        }
 
-                        if (!empty($missingColumns)) {
-                            Log::warning(
-                                'Required columns are missing',
-                                [
-                                    'table' => $tableName,
-                                    'missing_columns' =>
-                                        $missingColumns,
-                                ]
-                            );
+                            $requiredColumns = [
+                                'emp_id',
+                                'work_date',
+                                'charge_status',
+                            ];
 
-                            continue;
-                        }
-                        $existingPrjUsers = DB::table($tableName)->where('emp_id', '!=', '0')
-                                            ->whereNotNull('emp_id')
-                                            ->where('emp_id', 'like', '%AM%')
-                                            ->groupBy('emp_id')
-                                            ->pluck('emp_id')
-                                            ->toArray();
-                        /*
-                         * The separate existingPrjUsers query is not
-                         * required. The same employee filters can be
-                         * applied directly to the count query.
-                         */
-                        $nonArData = [];
-                        $nonArData = DB::table($tableName)->selectRaw('emp_id, COUNT(*) as cnt')
-                                        ->whereIn('emp_id', $existingPrjUsers)
-                                         ->whereBetween(
-                                                'work_date',
-                                                [
-                                                    $this->startDate,
-                                                    $this->endDate,
-                                                ]
-                                            )
-                                        ->where('charge_status','CE_Completed')
-                                        ->groupBy('emp_id')
-                                        ->get()
-                                        ->toArray();
+                            $missingColumns = [];
 
+                            foreach ($requiredColumns as $column) {
+                                if (
+                                    !Schema::hasColumn(
+                                        $tableName,
+                                        $column
+                                    )
+                                ) {
+                                    $missingColumns[] = $column;
+                                }
+                            }
 
-                        $BodyDetails[] =[
-                                    'project_id' => $project['id'],
-                                    'sub_project_id' => $subKey,
-                                    'nonArData' => $nonArData,
-                                    'workDate' => $this->workDate,
-                                ];
+                            if (!empty($missingColumns)) {
+                                Log::warning(
+                                    'Required columns are missing',
+                                    [
+                                        'table' => $tableName,
+                                        'missing_columns' =>
+                                            $missingColumns,
+                                    ]
+                                );
 
-                        Log::info(
-                            'Processed non-AR project table',
-                            [
+                                continue;
+                            }
+
+                            $existingPrjUsers = DB::table($tableName)
+                                ->where('emp_id', '!=', '0')
+                                ->whereNotNull('emp_id')
+                                ->where('emp_id', 'like', '%AM%')
+                                ->groupBy('emp_id')
+                                ->pluck('emp_id')
+                                ->toArray();
+
+                            $nonArData = DB::table($tableName)
+                                ->selectRaw(
+                                    'emp_id, COUNT(*) as cnt'
+                                )
+                                ->whereIn(
+                                    'emp_id',
+                                    $existingPrjUsers
+                                )
+                                ->whereBetween(
+                                    'work_date',
+                                    [
+                                        $this->startDate,
+                                        $this->endDate,
+                                    ]
+                                )
+                                ->where(
+                                    'charge_status',
+                                    'CE_Completed'
+                                )
+                                ->groupBy('emp_id')
+                                ->get()
+                                ->toArray();
+
+                            $BodyDetails[] = [
                                 'project_id' => $project['id'],
                                 'sub_project_id' => $subKey,
-                                'table' => $tableName,
-                                'employee_count' =>
-                                    count($nonArData),
-                                'duration_seconds' => round(
-                                    microtime(true) - $startTime,
-                                    2
-                                ),
-                            ]
-                        );
+                                'nonArData' => $nonArData,
+                                'workDate' => $this->workDate,
+                            ];
+
+                            Log::info(
+                                'Processed non-AR project table',
+                                [
+                                    'project_id' =>
+                                        $project['id'],
+                                    'sub_project_id' =>
+                                        $subKey,
+                                    'table' => $tableName,
+                                    'employee_count' =>
+                                        count($nonArData),
+                                    'duration_seconds' =>
+                                        round(
+                                            microtime(true)
+                                                - $startTime,
+                                            2
+                                        ),
+                                ]
+                            );
+                        } catch (\Throwable $subProjectException) {
+                            Log::error(
+                                'Non-AR subproject processing failed',
+                                [
+                                    'project_id' =>
+                                        $project['id'] ?? null,
+                                    'sub_project_id' =>
+                                        $subKey ?? null,
+                                    'sub_project_name' =>
+                                        $subProject ?? null,
+                                    'message' =>
+                                        $subProjectException
+                                            ->getMessage(),
+                                    'file' =>
+                                        $subProjectException
+                                            ->getFile(),
+                                    'line' =>
+                                        $subProjectException
+                                            ->getLine(),
+                                ]
+                            );
+
+                            continue;
+                        }
                     }
-                } catch (Throwable $innerException) {
+                } catch (\Throwable $innerException) {
                     Log::error(
                         'Non-AR project processing failed',
                         [
@@ -196,20 +227,29 @@ class NonArDateRangeWiseAimsProduction implements ShouldQueue
                         ]
                     );
 
-                    /*
-                     * Continue processing other projects.
-                     */
+                    continue;
                 }
             }
 
-            // ✅ Store per dated
-            $cacheKey = "date-range-non-ar-aims-production_{$this->workDate}";
-            Cache::put($cacheKey, $BodyDetails, now()->addHours(6));
+            $cacheKey =
+                "date-range-non-ar-aims-production_{$this->workDate}";
+
+            Cache::put(
+                $cacheKey,
+                $BodyDetails,
+                now()->addHours(6)
+            );
 
             Log::info("Completed {$this->workDate}");
-
-        } catch (\Exception $e) {
-            Log::error("Error: " . $e->getMessage());
+        } catch (\Throwable $e) {
+            Log::error(
+                'NonArDateRangeWiseAimsProduction failed',
+                [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]
+            );
         }
     }
 }
