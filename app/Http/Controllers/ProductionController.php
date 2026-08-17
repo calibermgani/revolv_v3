@@ -4464,7 +4464,7 @@ class ProductionController extends Controller
             }
 
             $exportSubProjectName = $subProject
-                ? ($subProject->new_sub_project_name ?: $subProject->sub_project_name)
+                ? ($subProject->sub_project_name ?: $subProject->sub_project_name)
                 : 'project';
 
             $exportFileName = $exportProjectName
