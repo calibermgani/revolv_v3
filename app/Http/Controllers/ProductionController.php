@@ -3048,7 +3048,8 @@ class ProductionController extends Controller
                 $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName);
                 $exportProjectName = $paProject ? $paProject->aims_project_name : NULL;
-                $exportSubProjectName = Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->new_sub_project_name != null ? Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->new_sub_project_name : Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
+                // $exportSubProjectName = Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->new_sub_project_name != null ? Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->new_sub_project_name : Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
+                $exportSubProjectName = Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name != null ? Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name : Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->new_sub_project_name;
                 $exportFileName = $exportProjectName != NULL ? $exportProjectName .' _ '.$exportSubProjectName : 'Resolv';
                 if($decodedsubProjectName != null &&  $decodedsubProjectName != 'project') {
                     $decodedsubProjectName= $decodedsubProjectName->sub_project_name;
