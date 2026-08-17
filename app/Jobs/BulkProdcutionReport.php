@@ -39,6 +39,7 @@ class BulkProdcutionReport
             if (isset($columns[0]) && $columns[0] === 'all') {
                 $columns = array_diff($columns, ['all']);
             }
+            $columns = Helpers::excludePopupNonVisiblePatientColumns($columns, $requestData["project_id"] ?? null, $requestData["sub_project_id"] ?? null);
 
             // Always include mandatory fields
             $columns[] = "caller_charts_work_logs.work_time";

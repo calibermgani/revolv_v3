@@ -125,6 +125,7 @@ class ReportsController extends Controller
                 //         }                       
                 //     } 
                   
+                $columnsHeader = Helpers::excludePopupNonVisiblePatientColumns($columnsHeader, $request->project_id, $request->sub_project_id);
                 return response()->json([
                     'success' => true,
                     'columnsHeader' => $columnsHeader,
@@ -163,63 +164,37 @@ class ReportsController extends Controller
                     }else{
                         $checkedValues = $request["checkedValues"];
                     }
-                    $columnsHeader = implode(',', $checkedValues);
+                    $checkedValues = Helpers::excludePopupNonVisiblePatientColumns($checkedValues, $request["project_id"], $request["sub_project_id"]);
+                    $columnsHeader = implode(',', array_map(function ($column) {
+                        return '`' . str_replace('`', '', $column) . '`';
+                    }, $checkedValues));
                     $columns = [
                         DB::raw($columnsHeader),
                         "caller_charts_work_logs.work_time",
                         "caller_charts_work_logs.record_status"
                     ];
-                    
-                    // Check if the columns exist in the table
-                    if (Schema::hasColumn($table_name, 'qa_cpt_trends')) {
+
+                    $tableColumns = Schema::hasTable($table_name) ? Schema::getColumnListing($table_name) : [];
+                    if (in_array('qa_cpt_trends', $tableColumns, true)) {
                         $columns[] = 'qa_cpt_trends';
                     }
-                    if (Schema::hasColumn($table_name, 'qa_icd_trends')) {
+                    if (in_array('qa_icd_trends', $tableColumns, true)) {
                         $columns[] = 'qa_icd_trends';
                     }
-                    if (Schema::hasColumn($table_name, 'qa_modifiers')) {
+                    if (in_array('qa_modifiers', $tableColumns, true)) {
                         $columns[] = 'qa_modifiers';
                     }
-                    // $client_data = DB::table($table_name)
-                    //     ->select($columns)
-                    //     ->where('caller_charts_work_logs.project_id', '=', $request["project_id"])
-                    //     ->where('caller_charts_work_logs.sub_project_id', '=', $request["sub_project_id"])
-                    //     ->join('caller_charts_work_logs', 'caller_charts_work_logs.record_id', '=', $table_name . '.parent_id')
-                    //     ->where(function ($query) use ($start_date, $end_date) {
-                    //         if (!empty($start_date) && !empty($end_date)) {
-                    //             $query->whereBetween('caller_charts_work_logs.start_time', [$start_date, $end_date]);
-                    //         }else{
-                    //             $query;
-                    //         }
-                    //     })
-                    //     ->where(function ($query) use ($request) {
-                    //         if ($request->user) {
-                    //             $query->where('CE_emp_id',$request->user);
-                    //             $query->orWhere('QA_emp_id',$request->user);
-                    //         }else{
-                    //             $query;
-                    //         }
-                    //     })
-                    //     ->where(function ($query) use ($request) {
 
-                    //         if ($request->client_status) {
-                    //             // $query->where('chart_status',$request->client_status);
-                    //             $query->where('caller_charts_work_logs.record_status', $request->client_status);
-                    //         }else{
-                    //             $query;
-                    //         }
-                    //     })
-                    //     ->get();//before same status duplicate remove
-                        $latestWorkLogs = DB::table(DB::raw('
-                            (
-                                SELECT *, 
-                                    ROW_NUMBER() OVER (
-                                        PARTITION BY record_id, project_id, sub_project_id, record_status 
-                                        ORDER BY start_time DESC
-                                    ) AS row_num
-                                FROM caller_charts_work_logs
-                            ) as ranked_logs
-                        '))
+                    $rankedWorkLogs = DB::table('caller_charts_work_logs')
+                        ->selectRaw('record_id, project_id, sub_project_id, record_status, work_time, ROW_NUMBER() OVER (
+                            PARTITION BY record_id, project_id, sub_project_id, record_status
+                            ORDER BY start_time DESC
+                        ) AS row_num')
+                        ->where('project_id', $request["project_id"])
+                        ->where('sub_project_id', $request["sub_project_id"]);
+
+                    $latestWorkLogs = DB::query()
+                        ->fromSub($rankedWorkLogs, 'ranked_logs')
                         ->where('row_num', 1);
 
                     $client_data = DB::table($table_name)
@@ -229,9 +204,8 @@ class ReportsController extends Controller
                         ->select($columns)
                         ->where('caller_charts_work_logs.project_id', '=', $request["project_id"])
                         ->where('caller_charts_work_logs.sub_project_id', '=', $request["sub_project_id"])
-                        ->when(!empty($start_date) && !empty($end_date), function ($query) use ($start_date, $end_date,$table_name) {
-                            //  $query->whereBetween('caller_charts_work_logs.start_time', [$start_date, $end_date]);
-                            $query->whereBetween('ar_at', [$start_date, $end_date]);
+                        ->when(!empty($start_date) && !empty($end_date), function ($query) use ($start_date, $end_date, $table_name) {
+                            $query->whereBetween($table_name . '.ar_at', [$start_date, $end_date]);
                         })
                         ->when(!empty($request->user), function ($query) use ($request) {
                             $query->where(function ($q) use ($request) {
@@ -240,7 +214,6 @@ class ReportsController extends Controller
                             });
                         })
                         ->when(!empty($request->client_status), function ($query) use ($request) {
-                           //  $query->where('chart_status', $request->client_status);
                              $query->where('caller_charts_work_logs.record_status', $request->client_status);
                         })
                         ->get();
@@ -1475,6 +1448,7 @@ class ReportsController extends Controller
                     }
 
                 }
+                $columnsHeader = Helpers::excludePopupNonVisiblePatientColumns($columnsHeader, $request->project_id, $request->sub_project_id);
                 return response()->json([
                     'success' => true,
                     'columnsHeader' => $columnsHeader,
@@ -1512,6 +1486,7 @@ class ReportsController extends Controller
                     } else {
                         $checkedValues = $request->checkedValues;
                     }
+                    $checkedValues = Helpers::excludePopupNonVisiblePatientColumns($checkedValues, $request->project_id, $request->sub_project_id);
 
                     // Build safe SQL parts
                     $selectColumns = implode(',', $checkedValues);
@@ -1615,6 +1590,7 @@ class ReportsController extends Controller
                     }else{
                         $checkedValues = $request["checkedValues"];
                     }
+                    $checkedValues = Helpers::excludePopupNonVisiblePatientColumns($checkedValues, $request["project_id"], $request["sub_project_id"]);
                     $columnsHeader = implode(',', $checkedValues);
                     $columns = [
                         DB::raw($columnsHeader),
@@ -1896,6 +1872,7 @@ class ReportsController extends Controller
             } else {
                 $checkedValues = $request["checkedValues"];
             }
+            $checkedValues = Helpers::excludePopupNonVisiblePatientColumns($checkedValues, $request["project_id"], $request["sub_project_id"]);
 
             $columns = $checkedValues;
 
@@ -2020,6 +1997,7 @@ class ReportsController extends Controller
                     ];
 
                     $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
+                    $columnsHeader = Helpers::excludePopupNonVisiblePatientColumns($columnsHeader, $project_id, $sub_project_id);
                     $columnsHeader[] = 'work_hours';
                     $columnsHeader[] = 'record_status';
 
@@ -2124,6 +2102,7 @@ class ReportsController extends Controller
                     ];
 
                     $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
+                    $columnsHeader = Helpers::excludePopupNonVisiblePatientColumns($columnsHeader, $project_id, $sub_project_id);
                     $columnsHeader[] = 'work_time';
                     $columnsHeader[] = 'record_status';
 
@@ -2224,6 +2203,7 @@ class ReportsController extends Controller
                         ];
 
                         $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
+                        $columnsHeader = Helpers::excludePopupNonVisiblePatientColumns($columnsHeader, $project_id, $sub_project_id);
                         $columnsHeader[] = 'work_time';
                         $columnsHeader[] = 'record_status';
 
@@ -2331,6 +2311,7 @@ class ReportsController extends Controller
                     ];
 
                     $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
+                    $columnsHeader = Helpers::excludePopupNonVisiblePatientColumns($columnsHeader, $project_id, $sub_project_id);
                     $columnsHeader[] = 'work_hours';
                     $columnsHeader[] = 'record_status';
 
@@ -2762,6 +2743,7 @@ class ReportsController extends Controller
                 ];
 
                 $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
+                $columnsHeader = Helpers::excludePopupNonVisiblePatientColumns($columnsHeader, $project_id, $sub_project_id);
 
                 if (empty($columnsHeader)) {
                     return response()->json(['error' => true, 'message' => 'No columns found']);
@@ -2901,6 +2883,7 @@ public function exportBulkReport(Request $request)
     ];
 
     $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
+    $columnsHeader = Helpers::excludePopupNonVisiblePatientColumns($columnsHeader, $project_id, $sub_project_id);
 
     return Excel::download(
         new DynamicBulkExport($table_name, $columnsHeader),
@@ -3064,6 +3047,7 @@ public function getBulkColumnsCSV(Request $request)
         ];
 
         $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
+        $columnsHeader = Helpers::excludePopupNonVisiblePatientColumns($columnsHeader, $project_id, $sub_project_id);
         if (empty($columnsHeader)) {
             return response()->json(['error' => true, 'message' => 'No columns found']);
         }
@@ -3486,6 +3470,7 @@ public function getBulkColumnsCSV(Request $request)
             $columnsHeader = array_values(array_filter($checkedValues, function ($col) use ($excludeCols, $importantCols) {
                 return !in_array($col, $excludeCols) || in_array($col, $importantCols);
             }));
+            $columnsHeader = Helpers::excludePopupNonVisiblePatientColumns($columnsHeader, $project_id, $sub_project_id);
 
             // --- Latest Work Logs Join (same as reportClientColumnsList) ---
             $latestWorkLogs = DB::table(DB::raw('(

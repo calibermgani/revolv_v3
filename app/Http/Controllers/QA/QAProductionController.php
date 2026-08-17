@@ -321,6 +321,9 @@ class QAProductionController extends Controller
                 $qaScopeVal = Helpers::qaScope();
                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
+                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));
+                $assignedProjectDetails = Helpers::hidePopupNonVisiblePatientFromRecords($assignedProjectDetails, $excludeColumns);
                 return view('QAProduction/qaClientAssignedTab', compact('assignedProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arStatusList','arDenialList','arSubStatusList'));
 
             } catch (\Exception $e) {
@@ -448,6 +451,9 @@ class QAProductionController extends Controller
                 $qaScopeVal = Helpers::qaScope();
                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
+                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));
+                $pendingProjectDetails = Helpers::hidePopupNonVisiblePatientFromRecords($pendingProjectDetails, $excludeColumns);
                 return view('QAProduction/qaClientPendingTab', compact('pendingProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'existingCallerChartsWorkLogs', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arStatusList','arDenialList','arSubStatusList'));
 
             } catch (\Exception $e) {
@@ -575,6 +581,9 @@ class QAProductionController extends Controller
                 $qaScopeVal = Helpers::qaScope();
                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
+                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));
+                $holdProjectDetails = Helpers::hidePopupNonVisiblePatientFromRecords($holdProjectDetails, $excludeColumns);
                 return view('QAProduction/qaClientOnholdTab', compact('holdProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'existingCallerChartsWorkLogs','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arStatusList','arDenialList','arSubStatusList'));
 
             } catch (\Exception $e) {
@@ -690,6 +699,9 @@ class QAProductionController extends Controller
                 $qaScopeVal = Helpers::qaScope();
                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
+                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));
+                $completedProjectDetails = Helpers::hidePopupNonVisiblePatientFromRecords($completedProjectDetails, $excludeColumns);
                 return view('QAProduction/qaClientCompletedTab', compact('completedProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields','popupQAEditableFields','qaSubStatusListVal','qaStatusList','autoCloseCount','unAssignedCount','arStatusList','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arDenialList','arSubStatusList'));
 
             } catch (\Exception $e) {
@@ -782,6 +794,9 @@ class QAProductionController extends Controller
                 }
                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
+                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));
+                $revokeProjectDetails = Helpers::hidePopupNonVisiblePatientFromRecords($revokeProjectDetails, $excludeColumns);
                 return view('QAProduction/qaClientReworkTab', compact('revokeProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData'));
 
             } catch (\Exception $e) {
@@ -869,6 +884,9 @@ class QAProductionController extends Controller
                 }
                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
+                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));
+                $duplicateProjectDetails = Helpers::hidePopupNonVisiblePatientFromRecords($duplicateProjectDetails, $excludeColumns);
                 return view('QAProduction/qaClientDuplicateTab', compact('duplicateProjectDetails', 'columnsHeader', 'clientName', 'subProjectName', 'modelClass', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData'));
 
             } catch (\Exception $e) {
@@ -913,6 +931,7 @@ class QAProductionController extends Controller
                     $clientData = $modelClass::where('id',$data['record_id'])->first();
                 }
                 if(isset($clientData) && !empty($clientData)) {
+                   $clientData = Helpers::hidePopupNonVisiblePatientFromRecords($clientData, Helpers::getPopupNonVisiblePatientColumns($data['project_id'], $data['sub_project_id']));
                    return response()->json(['success' => true,'clientData'=>$clientData,'startTimeVal'=>$startTimeVal]);
                 } else {
                     return response()->json(['success' => false]);
@@ -949,6 +968,7 @@ class QAProductionController extends Controller
                     $clientData = $modelClass::where('id',$data['record_id'])->first();
                 }
                 if(isset($clientData) && !empty($clientData)) {
+                   $clientData = Helpers::hidePopupNonVisiblePatientFromRecords($clientData, Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $decodedPracticeName == '--' ? null : $decodedPracticeName));
                    return response()->json(['success' => true,'clientData'=>$clientData]);
                 } else {
                     return response()->json(['success' => false]);
@@ -1520,6 +1540,9 @@ class QAProductionController extends Controller
                 $qaScopeVal = Helpers::qaScope();
                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
+                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));
+                $autoCloseProjectDetails = Helpers::hidePopupNonVisiblePatientFromRecords($autoCloseProjectDetails, $excludeColumns);
                 return view('QAProduction/qaClientAutoClose', compact('autoCloseProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arStatusList','arDenialList','arSubStatusList'));
 
             } catch (\Exception $e) {
@@ -1705,6 +1728,9 @@ class QAProductionController extends Controller
                 $qaScopeVal = Helpers::qaScope();
                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
+                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));
+                $unAssignedProjectDetails = Helpers::hidePopupNonVisiblePatientFromRecords($unAssignedProjectDetails, $excludeColumns);
                 return view('QAProduction/qaClientUnAssignedTab', compact('unAssignedProjectDetails', 'columnsHeader', 'popUpHeader', 'popupNonEditableFields', 'popupEditableFields', 'modelClass', 'clientName', 'subProjectName', 'assignedDropDown', 'existingCallerChartsWorkLogs', 'assignedCount', 'completedCount', 'pendingCount', 'holdCount', 'reworkCount', 'duplicateCount', 'assignedProjectDetailsStatus','popupQAEditableFields','qaSubStatusListVal','autoCloseCount','unAssignedCount','arActionListVal','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arStatusList','arDenialList','arSubStatusList'));
 
             } catch (\Exception $e) {
@@ -1846,6 +1872,9 @@ class QAProductionController extends Controller
                 $qaScopeVal = Helpers::qaScope();
                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
+                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));
+                $rebuttalProjectDetails = Helpers::hidePopupNonVisiblePatientFromRecords($rebuttalProjectDetails, $excludeColumns);
                 return view('QAProduction/qaRebuttalTab',compact('rebuttalProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','existingCallerChartsWorkLogs','popUpHeader','popupNonEditableFields','popupEditableFields','popupQAEditableFields','qaSubStatusListVal','unAssignedCount','qaStatusList','rebuttalCount','autoCloseCount','arStatusList','arActionListVal','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arDenialList','arSubStatusList'));
 
         } catch (\Exception $e) {
@@ -2027,6 +2056,8 @@ class QAProductionController extends Controller
                     });
                     array_push($fields,'aging','aging_range');
                 }
+                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                $fields = array_values(array_diff($fields, $excludeColumns));
                 return Excel::download(new ProductionExport($fields,$exportResult), 'Resolv_'.$exStatus.'_Export.xlsx');
                 } catch (\Exception $e) {
                     log::debug($e->getMessage());
@@ -2265,6 +2296,8 @@ class QAProductionController extends Controller
                 'job_id'            => $jobId,
                 'report_type' => 'quality',
                 'table_name'        => $tableName,
+                'project_id'        => $decodedProjectName,
+                'sub_project_id'    => $decodedPracticeName === '--' ? null : $decodedPracticeName,
                 'login_emp_id'      => $loginEmpId,
                 'emp_designation'   => $empDesignation,
                 'chart_status'      => $request->chart_status,

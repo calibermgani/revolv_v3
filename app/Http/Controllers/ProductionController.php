@@ -270,8 +270,16 @@ class ProductionController extends Controller
                     }
                $modelClassDatas = "App\\Models\\" .  $modelName.'Datas'; $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();
                $assignedProjectDetails = collect();$assignedDropDown=[];$dept= Session::get('loginDetails')['userInfo']['department']['id'];$existingCallerChartsWorkLogs = [];$assignedProjectDetailsStatus = [];$unAssignedCount = 0;
-            $arAutoCloseCount=0; $rebuttalCount =0; $arNonWorkableCount =0; $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
-              if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
+               $arAutoCloseCount=0; $rebuttalCount =0; $arNonWorkableCount =0; $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
+                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                $columnsHeader = array_values(
+                    array_diff($columnsHeader, $excludeColumns)
+                );
+                $model = $query->getModel();
+                $allColumns = Schema::getColumnListing($model->getTable());  
+                $selectColumns = array_diff($allColumns, $excludeColumns);
+            
+                if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
                     if (class_exists($modelClass)) {
                        $modelClassDuplcates = "App\\Models\\" . $modelName.'Duplicates';
                            if($resourceName != null) {
@@ -387,6 +395,15 @@ class ProductionController extends Controller
                     return redirect()->back();
                   }
                }
+               $assignedProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
+
+                    foreach ($excludeColumns as $column) {
+                        unset($item->{$column});
+                    }
+
+                    return $item;
+                });
+
                $popUpHeader =  formConfiguration::groupBy(['project_id', 'sub_project_id'])
                ->where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)
                ->select('project_id', 'sub_project_id')
@@ -421,7 +438,7 @@ class ProductionController extends Controller
        } else {
            return redirect('/');
        }
-   }
+    }
    
     public function clientAssignedTab_bk_live(Request $request,$clientName,$subProjectName) {
 
@@ -679,7 +696,15 @@ class ProductionController extends Controller
                 }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();
                $pendingProjectDetails = collect(); $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$existingCallerChartsWorkLogs = [];$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;$unAssignedCount = 0;
-              if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
+                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                    $columnsHeader = array_values(
+                        array_diff($columnsHeader, $excludeColumns)
+                    );
+                $model = $query->getModel();
+                $allColumns = Schema::getColumnListing($model->getTable());  
+                $selectColumns = array_diff($allColumns, $excludeColumns);
+           
+               if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
                    if (class_exists($modelClass)) {
                     //    $pendingProjectDetails = $modelClass::where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','ASC')->get();
                        $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','CE_Pending')->orderBy('id','DESC')->pluck('record_id')->toArray();
@@ -732,7 +757,14 @@ class ProductionController extends Controller
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();                                                
                      
                     }
-                 }
+                }
+                $pendingProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
+                    foreach ($excludeColumns as $column) {
+                        unset($item->{$column});
+                        }
+
+                        return $item;
+                    });
                  $dept= Session::get('loginDetails')['userInfo']['department']['id'];
                  $popUpHeader =  formConfiguration::groupBy(['project_id', 'sub_project_id'])
                  ->where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)
@@ -809,7 +841,15 @@ class ProductionController extends Controller
                 }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
                $holdProjectDetails = collect();$duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$existingCallerChartsWorkLogs = [];$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
-              if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
+               $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+               $columnsHeader = array_values(
+                   array_diff($columnsHeader, $excludeColumns)
+               );
+           $model = $query->getModel();
+           $allColumns = Schema::getColumnListing($model->getTable());  
+           $selectColumns = array_diff($allColumns, $excludeColumns);
+           
+                 if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
                    if (class_exists($modelClass)) {
                         if($resourceName != null) {
                             $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','CE_Hold')->orderBy('id','DESC')->pluck('record_id')->toArray();
@@ -865,21 +905,21 @@ class ProductionController extends Controller
                     }
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
-                      //   $holdProjectDetails = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->where('CE_emp_id',$loginEmpId)->orderBy('id','ASC')->get();
-                      $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','CE_Hold')->orderBy('id','DESC')->pluck('record_id')->toArray();
-                      $holdProjectDetails = $query->where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->where('CE_emp_id',$loginEmpId);
-                      if (!empty($existingCallerChartsWorkLogs)) {
-                          $holdProjectDetails = $holdProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
-                      }
-                      $holdProjectDetails = $holdProjectDetails->orderBy('id', 'DESC')->paginate(50);
-                      $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->count();
-                      $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                      $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                      $holdCount = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                    //   $holdProjectDetails = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->where('CE_emp_id',$loginEmpId)->orderBy('id','ASC')->get();
+                    $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','CE_Hold')->orderBy('id','DESC')->pluck('record_id')->toArray();
+                    $holdProjectDetails = $query->where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->where('CE_emp_id',$loginEmpId);
+                    if (!empty($existingCallerChartsWorkLogs)) {
+                        $holdProjectDetails = $holdProjectDetails->orderByRaw('FIELD(id, ' . implode(',', $existingCallerChartsWorkLogs) . ') DESC'); 
+                    }
+                    $holdProjectDetails = $holdProjectDetails->orderBy('id', 'DESC')->paginate(50);
+                    $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->count();
+                    $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                    $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                    $holdCount = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     //   $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->where('updated_at','<=',$yesterDayDate)->count();
-                      $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                      $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                      $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
+                    $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                    $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                    $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
                                 $query->whereNull('ar_manager_rebuttal_status')
                                     ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
                         })->where('CE_emp_id',$loginEmpId)
@@ -887,7 +927,13 @@ class ProductionController extends Controller
                         ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
-                 }
+                }
+                $holdProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
+                    foreach ($excludeColumns as $column) {
+                        unset($item->{$column});
+                    }
+                    return $item;
+                });
                  $dept= Session::get('loginDetails')['userInfo']['department']['id'];
                  $popUpHeader =  formConfiguration::groupBy(['project_id', 'sub_project_id'])
                  ->where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)
@@ -963,7 +1009,14 @@ class ProductionController extends Controller
                 }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
                $completedProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
-              if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
+               $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                $columnsHeader = array_values(
+                    array_diff($columnsHeader, $excludeColumns)
+                );
+            $model = $query->getModel();
+            $allColumns = Schema::getColumnListing($model->getTable());  
+           $selectColumns = array_diff($allColumns, $excludeColumns);
+               if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
                    if (class_exists($modelClass)) {
                        $completedProjectDetails = $query->where('chart_status','CE_Completed')->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','DESC')->paginate(50); 
                        $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->whereNotNull('CE_emp_id')->count();
@@ -1003,6 +1056,12 @@ class ProductionController extends Controller
                       $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                  }
+                 $completedProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
+                    foreach ($excludeColumns as $column) {
+                        unset($item->{$column});
+                    }
+                    return $item;
+                });
                  $dept= Session::get('loginDetails')['userInfo']['department']['id'];
                  $popUpHeader =  formConfiguration::groupBy(['project_id', 'sub_project_id'])
                  ->where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)
@@ -1078,7 +1137,14 @@ class ProductionController extends Controller
                 }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString();$yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
                $revokeProjectDetails = collect(); $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$existingCallerChartsWorkLogs = [];$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
-              if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
+                    $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                    $columnsHeader = array_values(
+                        array_diff($columnsHeader, $excludeColumns)
+                    );
+                $model = $query->getModel();
+                $allColumns = Schema::getColumnListing($model->getTable());  
+                $selectColumns = array_diff($allColumns, $excludeColumns);
+               if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
                    if (class_exists($modelClass)) {
                     //    $revokeProjectDetails = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','ASC')->paginate(50);
                        $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','DESC')->pluck('record_id')->toArray();
@@ -1128,6 +1194,12 @@ class ProductionController extends Controller
                       $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                  }
+                 $revokeProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
+                    foreach ($excludeColumns as $column) {
+                        unset($item->{$column});
+                    }
+                    return $item;
+                });
                  $dept= Session::get('loginDetails')['userInfo']['department']['id'];
                  $popUpHeader =  formConfiguration::groupBy(['project_id', 'sub_project_id'])
                  ->where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)
@@ -1186,16 +1258,27 @@ class ProductionController extends Controller
                $modelClass = "App\\Models\\" .$modelName;
                $query = $modelClassDuplcates::query();
                $searchData = [];
+               $duplicateTableColumns = class_exists($modelClassDuplcates)
+                    ? Schema::getColumnListing((new $modelClassDuplcates)->getTable())
+                    : [];
                if($request['_token'] != null) {
                     foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
                        $searchData[$key] = $value;
+                        if (!in_array($key, $duplicateTableColumns, true)) {
+                            continue;
+                        }
                         if (is_array($value)) {
                             $value = implode('_el_', $value);  // If it's an array, handle it accordingly
+                        }
+                        if ($value === null || $value === '' || $value === 'null') {
+                            continue;
                         }
 
                         // Assuming 'like' is needed for partial match searches (optional), adjust based on requirements
                         if (is_numeric($value) || is_bool($value)) {
                             $query->where($key, $value);  // Exact match for numeric/boolean
+                        } elseif ($this->isDate($value)) {
+                            $query->whereDate($key, '=', $value);
                         } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                         } else {
@@ -1203,13 +1286,23 @@ class ProductionController extends Controller
                         }
                     }
                 }
+                $query->where(function ($statusQuery) {
+                    $statusQuery->whereNull('duplicate_status')->orWhere('duplicate_status', 'dis_agree');
+                });
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString();$yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
                $duplicateProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
-              if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
+                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                $columnsHeader = array_values(
+                    array_diff($columnsHeader, $excludeColumns)
+                );
+            $model = $query->getModel();
+            $allColumns = Schema::getColumnListing($model->getTable());  
+           $selectColumns = array_diff($allColumns, $excludeColumns);
+               if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
                    if (class_exists($modelClassDuplcates)) {
                         //   $duplicateProjectDetails =  $modelClass::whereNotIn('status',['agree','dis_agree'])->orderBy('id','DESC')->get();
                         // $duplicateProjectDetails = $query->orderBy('id','ASC')->whereBetween('created_at',[$startDate,$endDate])->paginate(50);
-                        $duplicateProjectDetails = $query->whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->orderBy('id','DESC')->paginate(50);
+                        $duplicateProjectDetails = $query->orderBy('id','DESC')->paginate(50);
                         $assignedCount =  $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->whereNotNull('CE_emp_id')->count();
                         $completedCount = $modelClass::where('chart_status','CE_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $pendingCount =   $modelClass::where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate])->count();
@@ -1229,7 +1322,7 @@ class ProductionController extends Controller
                    }
                 } elseif ($loginEmpId) {
                     if (class_exists($modelClassDuplcates)) {
-                       $duplicateProjectDetails = $query->where('chart_status','CE_Assigned')->whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->where('CE_emp_id',$loginEmpId)->orderBy('id','DESC')->paginate(50);
+                       $duplicateProjectDetails = $query->where('chart_status','CE_Assigned')->where('CE_emp_id',$loginEmpId)->orderBy('id','DESC')->paginate(50);
                        $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->count();
                        $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
@@ -1246,6 +1339,12 @@ class ProductionController extends Controller
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 }
+                $duplicateProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
+                    foreach ($excludeColumns as $column) {
+                        unset($item->{$column});
+                    }
+                    return $item;
+                });
                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
                 return view('productions/clientDuplicateTab',compact('duplicateProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount'));
@@ -1867,6 +1966,7 @@ class ProductionController extends Controller
                     $clientData = $modelClass::where('id',$data['record_id'])->first();
                 }
                 if(isset($clientData) && !empty($clientData)) {
+                   $clientData = Helpers::hidePopupNonVisiblePatientFromRecords($clientData, Helpers::getPopupNonVisiblePatientColumns($data['project_id'], $data['sub_project_id']));
                    return response()->json(['success' => true,'clientData'=>$clientData,'startTimeVal'=>$startTimeVal]);
                 } else {
                     return response()->json(['success' => false]);
@@ -2207,6 +2307,7 @@ class ProductionController extends Controller
                     $clientData = $modelClass::where('id',$data['record_id'])->first();
                 }
                 if(isset($clientData) && !empty($clientData)) {
+                   $clientData = Helpers::hidePopupNonVisiblePatientFromRecords($clientData, Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $decodedPracticeName == '--' ? null : $decodedPracticeName));
                    return response()->json(['success' => true,'clientData'=>$clientData]);
                 } else {
                     return response()->json(['success' => false]);
@@ -2246,6 +2347,7 @@ class ProductionController extends Controller
                     $clientData = $modelClass::where('id',$data['record_id'])->first();
                 }
                 if(isset($clientData) && !empty($clientData)) {
+                   $clientData = Helpers::hidePopupNonVisiblePatientFromRecords($clientData, Helpers::getPopupNonVisiblePatientColumns($data['project_id'], $data['sub_project_id']));
                    return response()->json(['success' => true,'clientData'=>$clientData]);
                 } else {
                     return response()->json(['success' => false]);
@@ -2498,7 +2600,14 @@ class ProductionController extends Controller
                $modelClassDatas = "App\\Models\\" .  $modelName.'Datas'; $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();
                $unAssignedProjectDetails = collect();$assignedDropDown=[];$dept= Session::get('loginDetails')['userInfo']['department']['id'];$existingCallerChartsWorkLogs = [];$unAssignedProjectDetailsStatus = [];$unAssignedCount = 0;
                $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
-              if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
+               $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                    $columnsHeader = array_values(
+                        array_diff($columnsHeader, $excludeColumns)
+                    );
+                $model = $query->getModel();
+                $allColumns = Schema::getColumnListing($model->getTable());  
+                $selectColumns = array_diff($allColumns, $excludeColumns);
+               if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
                     if (class_exists($modelClass)) {
                        $modelClassDuplcates = "App\\Models\\" . $modelName.'Duplicates';
                        $unAssignedProjectDetails = $query->where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->orderBy('id','DESC')->paginate(50);
@@ -2558,6 +2667,12 @@ class ProductionController extends Controller
                        $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                }
+               $unAssignedProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
+                    foreach ($excludeColumns as $column) {
+                        unset($item->{$column});
+                    }
+                    return $item;
+                });
                $popUpHeader =  formConfiguration::groupBy(['project_id', 'sub_project_id'])
                ->where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)
                ->select('project_id', 'sub_project_id')
@@ -2671,7 +2786,14 @@ class ProductionController extends Controller
                 }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
                $completedProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
-              if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
+               $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                    $columnsHeader = array_values(
+                        array_diff($columnsHeader, $excludeColumns)
+                    );
+                $model = $query->getModel();
+                $allColumns = Schema::getColumnListing($model->getTable());  
+                $selectColumns = array_diff($allColumns, $excludeColumns);
+               if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
                    if (class_exists($modelClass)) {
                        $arNonWorkableProjectDetails =  $query->where('chart_status','AR_non_workable')->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','DESC')->paginate(50);
                        $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->whereNotNull('CE_emp_id')->count();
@@ -2711,6 +2833,12 @@ class ProductionController extends Controller
                     $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                    }
                  }
+                 $arNonWorkableProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
+                    foreach ($excludeColumns as $column) {
+                        unset($item->{$column});
+                    }
+                    return $item;
+                });
                  $dept= Session::get('loginDetails')['userInfo']['department']['id'];
                  $popUpHeader =  formConfiguration::groupBy(['project_id', 'sub_project_id'])
                  ->where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)
@@ -2782,7 +2910,14 @@ class ProductionController extends Controller
                 }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString();$yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
                $revokeProjectDetails = collect(); $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$existingCallerChartsWorkLogs = [];$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
-              if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
+               $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                    $columnsHeader = array_values(
+                        array_diff($columnsHeader, $excludeColumns)
+                    );
+                $model = $query->getModel();
+                $allColumns = Schema::getColumnListing($model->getTable());  
+                $selectColumns = array_diff($allColumns, $excludeColumns);
+               if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
                    if (class_exists($modelClass)) {
                        $rebuttalProjectDetails = $searchQuery->where('chart_status','Rebuttal')->orderBy('id','DESC')->where(function ($query) {
                                     $query->whereNull('ar_manager_rebuttal_status')
@@ -2827,7 +2962,13 @@ class ProductionController extends Controller
                     $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','DESC')->pluck('record_id')->toArray();
                     $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                    }
-                 }
+                }
+                 $rebuttalProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
+                    foreach ($excludeColumns as $column) {
+                        unset($item->{$column});
+                    }
+                    return $item;
+                });
                  $dept= Session::get('loginDetails')['userInfo']['department']['id'];
                  $popUpHeader =  formConfiguration::groupBy(['project_id', 'sub_project_id'])
                  ->where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)
@@ -3005,7 +3146,9 @@ class ProductionController extends Controller
                     });
                     array_push($fields,'aging','aging_range');
                 }
-                return Excel::download(new ProductionExport($fields,$exportResult), $exportFileName.' _ '.$exStatus.'_export.xlsx');
+                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                $selectColumns = array_values(array_diff($fields, $excludeColumns));
+                return Excel::download(new ProductionExport($selectColumns,$exportResult), $exportFileName.' _ '.$exStatus.'_export.xlsx');
                 } catch (\Exception $e) {
                     log::debug($e->getMessage());
                 }
@@ -3035,10 +3178,19 @@ class ProductionController extends Controller
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName."Duplicates";
                 $query = $modelClass::query();
+                $duplicateTableColumns = class_exists($modelClass)
+                    ? Schema::getColumnListing((new $modelClass)->getTable())
+                    : [];
                 if($request['_token'] != null) {
-                    foreach ($request->except('_token', 'parent', 'child','clientName','subProjectName','page') as $key => $value) {                      
+                    foreach ($request->except('_token', 'parent', 'child','clientName','subProjectName','recordStatusVal','resourceName','chart_status','page') as $key => $value) {
+                        if (!in_array($key, $duplicateTableColumns, true)) {
+                            continue;
+                        }
                         if (is_array($value)) {
                             $value = implode('_el_', $value);  
+                        }
+                        if ($value === null || $value === '' || $value === 'null') {
+                            continue;
                         }
                         if (is_numeric($value) || is_bool($value)) {
                             $query->where($key, $value);  // Exact match for numeric/boolean
@@ -3047,16 +3199,17 @@ class ProductionController extends Controller
                         } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                         } else {
-                            if($value != null) {
-                              $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
-                            }
+                            $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
                         }
                     }
                 }
+                $query->where(function ($statusQuery) {
+                    $statusQuery->whereNull('duplicate_status')->orWhere('duplicate_status', 'dis_agree');
+                });
                if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
-                    $exportResult = $query->whereBetween('updated_at',[$startDate,$endDate])->get();                       
+                    $exportResult = $query->orderBy('id','DESC')->get();
                 } else if ($loginEmpId) {
-                    $exportResult = $query->whereBetween('updated_at',[$startDate,$endDate])->where('CE_emp_id',$loginEmpId)->get();
+                    $exportResult = $query->where('CE_emp_id',$loginEmpId)->orderBy('id','DESC')->get();
                 }
                 $fields = [];
                 if (Schema::hasTable($table_name)) {
@@ -3070,7 +3223,9 @@ class ProductionController extends Controller
                     });
                     array_push($fields,'aging','aging_range');
                 }
-                return Excel::download(new ProductionExport($fields,$exportResult), 'Resolv_Duplicate_Records_Export.xlsx');
+                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                $selectColumns = array_values(array_diff($fields, $excludeColumns));
+                return Excel::download(new ProductionExport($selectColumns,$exportResult), 'Resolv_Duplicate_Records_Export.xlsx');
                 } catch (\Exception $e) {
                     log::debug($e->getMessage());
                 }
@@ -3709,7 +3864,14 @@ class ProductionController extends Controller
                 }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
                $arAutoCloseProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
-              if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
+               $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                    $columnsHeader = array_values(
+                        array_diff($columnsHeader, $excludeColumns)
+                    );
+                $model = $query->getModel();
+                $allColumns = Schema::getColumnListing($model->getTable());  
+                $selectColumns = array_diff($allColumns, $excludeColumns);
+                if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
                    if (class_exists($modelClass)) {
                        $arAutoCloseProjectDetails =  $query->where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','DESC')->paginate(50);
                        $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->whereNotNull('CE_emp_id')->count();
@@ -3749,6 +3911,12 @@ class ProductionController extends Controller
                         ->count();
                    }
                  }
+                 $arAutoCloseProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
+                    foreach ($excludeColumns as $column) {
+                        unset($item->{$column});
+                    }
+                    return $item;
+                });
                  $dept= Session::get('loginDetails')['userInfo']['department']['id'];
                  $popUpHeader =  formConfiguration::groupBy(['project_id', 'sub_project_id'])
                  ->where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)
@@ -3855,7 +4023,7 @@ class ProductionController extends Controller
     }
 
     // public function getClaimHistory(Request $request,$clientName,$subProjectName) {
-        public function getClaimHistory(Request $request) {
+    public function getClaimHistory(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
            try {
                 $uniqueColumnData = $request->input('uniqueColumnData');
@@ -3885,6 +4053,9 @@ class ProductionController extends Controller
                     });
                     array_push($columnsHeader,'aging','aging_range');
                }
+               $subProjectId = $uniqueColumnData['subProjectName'] == '--' ?  NULL : $decodedPracticeName;
+               $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+               $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));
                $modelName = Str::studly($table_name);
                $modelClass = "App\\Models\\" . $modelName.'Datas';
                $query = $modelClass::query();
@@ -3922,6 +4093,7 @@ class ProductionController extends Controller
                       //->paginate(50);                  
                    }
                  }
+                 $claimHistoryDetails = Helpers::hidePopupNonVisiblePatientFromRecords($claimHistoryDetails, $excludeColumns);
                  $dept= Session::get('loginDetails')['userInfo']['department']['id'];
                  $popUpHeader =  formConfiguration::groupBy(['project_id', 'sub_project_id'])
                  ->where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)
@@ -4322,6 +4494,8 @@ class ProductionController extends Controller
                 'job_id' => $jobId,
                 'report_type' => 'client',
                 'table_name' => $tableName,
+                'project_id' => $decodedProjectId,
+                'sub_project_id' => $decodedSubProjectId === '--' ? null : $decodedSubProjectId,
                 'login_emp_id' => $loginEmpId,
                 'emp_designation' => $empDesignation,
                 'chart_status' => $request->chart_status,

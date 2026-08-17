@@ -146,6 +146,43 @@ def log(message):
     print(message, file=sys.stderr, flush=True)
 
 
+def get_popup_non_visible_patient_columns(connection, project_id, sub_project_id):
+    if not project_id:
+        return set()
+
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute(
+            """
+            SELECT label_name
+            FROM form_configurations
+            WHERE project_id = %s
+              AND sub_project_id <=> %s
+              AND field_type_3 = 'popup_non_visible'
+              AND label_name = 'Patient'
+              AND deleted_at IS NULL
+            """,
+            (
+                project_id,
+                None if sub_project_id in (None, "", "--") else sub_project_id,
+            ),
+        )
+
+        columns = set()
+
+        for row in cursor.fetchall():
+            label = str(row.get("label_name") or "").lower()
+            label = label.replace(" ", "_").replace("/", "_else_")
+
+            if label:
+                columns.add(label)
+
+        return columns
+    finally:
+        cursor.close()
+
+
 def create_db_connection():
     try:
         connection = mysql.connector.connect(**DB_CONFIG)
@@ -1214,6 +1251,19 @@ def generate_quality_export(payload):
             for column in all_columns
             if column not in excluded_columns
         ]
+
+        patient_exclude_columns = get_popup_non_visible_patient_columns(
+            connection,
+            payload.get("project_id"),
+            payload.get("sub_project_id"),
+        )
+
+        if patient_exclude_columns:
+            selected_columns = [
+                column
+                for column in selected_columns
+                if column not in patient_exclude_columns
+            ]
 
         if not selected_columns:
             raise RuntimeError(

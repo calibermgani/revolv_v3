@@ -604,13 +604,21 @@ class Helpers
 	}
 	public static function qaStatusById($id)
 	{
-		$data = QAStatus::where('status', 'Active')->where('id', $id)->first('status_code');
-		return $data;
+		static $cache = [];
+		$key = (string) $id;
+		if (!array_key_exists($key, $cache)) {
+			$cache[$key] = QAStatus::where('status', 'Active')->where('id', $id)->first('status_code');
+		}
+		return $cache[$key];
 	}
 	public static function qaSubStatusById($id)
 	{
-		$data = QASubStatus::where('status', 'Active')->where('id', $id)->first('sub_status_code');
-		return $data;
+		static $cache = [];
+		$key = (string) $id;
+		if (!array_key_exists($key, $cache)) {
+			$cache[$key] = QASubStatus::where('status', 'Active')->where('id', $id)->first('sub_status_code');
+		}
+		return $cache[$key];
 	}
 
 	public static function getUserNameByEmpId($id)
@@ -736,28 +744,48 @@ class Helpers
 	}
 	public static function arStatusById($id)
 	{
-		$data = ARStatusCodes::where('status', 'Active')->where('id', $id)->first('status_code');
-		return $data;
+		static $cache = [];
+		$key = (string) $id;
+		if (!array_key_exists($key, $cache)) {
+			$cache[$key] = ARStatusCodes::where('status', 'Active')->where('id', $id)->first('status_code');
+		}
+		return $cache[$key];
 	}
 	public static function arActionById($id)
 	{
-		$data = ARActionCodes::where('status', 'Active')->where('id', $id)->first('action_code');
-		return $data;
+		static $cache = [];
+		$key = (string) $id;
+		if (!array_key_exists($key, $cache)) {
+			$cache[$key] = ARActionCodes::where('status', 'Active')->where('id', $id)->first('action_code');
+		}
+		return $cache[$key];
 	}
 	public static function qaClassificationById($id)
 	{
-		$data = qaClassCatScope::where('status', 'Active')->where('id', $id)->first('qa_classification');
-		return $data;
+		static $cache = [];
+		$key = (string) $id;
+		if (!array_key_exists($key, $cache)) {
+			$cache[$key] = qaClassCatScope::where('status', 'Active')->where('id', $id)->first('qa_classification');
+		}
+		return $cache[$key];
 	}
 	public static function qaCategoryById($id)
 	{
-		$data = qaClassCatScope::where('status', 'Active')->where('id', $id)->first('qa_category');
-		return $data;
+		static $cache = [];
+		$key = (string) $id;
+		if (!array_key_exists($key, $cache)) {
+			$cache[$key] = qaClassCatScope::where('status', 'Active')->where('id', $id)->first('qa_category');
+		}
+		return $cache[$key];
 	}
 	public static function qaScopeById($id)
 	{
-		$data = qaClassCatScope::where('status', 'Active')->where('id', $id)->first('qa_scope');
-		return $data;
+		static $cache = [];
+		$key = (string) $id;
+		if (!array_key_exists($key, $cache)) {
+			$cache[$key] = qaClassCatScope::where('status', 'Active')->where('id', $id)->first('qa_scope');
+		}
+		return $cache[$key];
 	}
 	public static function qaClassification()
 	{
@@ -1337,6 +1365,7 @@ class Helpers
 
 	Public static function getProjectColumns($projectId, $subProjectId)	{
 		
+		$excludeColumns = self::getPopupNonVisiblePatientColumns($projectId, $subProjectId);
 		$columns = formConfiguration::where('project_id', $projectId)
 			->where('sub_project_id', $subProjectId)
 			->pluck('label_name', 'id')
@@ -1346,9 +1375,71 @@ class Helpers
 			->map(function ($label) {
 				return Str::lower(str_replace([' ', '/'], ['_', '_else_'], $label));
 			})
+			->filter(function ($column) use ($excludeColumns) {
+				return !in_array($column, $excludeColumns, true);
+			})
 			->toArray();
 
 		return $columns;
+	}
+
+	public static function labelNameToColumn($labelName)
+	{
+		return Str::lower(str_replace([' ', '/'], ['_', '_else_'], $labelName));
+	}
+
+	public static function getPopupNonVisiblePatientColumns($projectId, $subProjectId = null)
+	{
+		return formConfiguration::where('project_id', $projectId)
+			->where('sub_project_id', $subProjectId)
+			->where('field_type_3', 'popup_non_visible')
+			->where('label_name', 'Patient')
+			->pluck('label_name')
+			->map(function ($fieldName) {
+				return self::labelNameToColumn($fieldName);
+			})
+			->unique()
+			->values()
+			->toArray();
+	}
+
+	public static function excludePopupNonVisiblePatientColumns($columns, $projectId, $subProjectId = null)
+	{
+		$excludeColumns = self::getPopupNonVisiblePatientColumns($projectId, $subProjectId);
+		if (empty($excludeColumns) || empty($columns)) {
+			return is_array($columns) ? array_values($columns) : $columns;
+		}
+
+		return array_values(array_diff($columns, $excludeColumns));
+	}
+
+	public static function hidePopupNonVisiblePatientFromRecords($records, array $excludeColumns)
+	{
+		if (empty($excludeColumns) || empty($records)) {
+			return $records;
+		}
+
+		$transformer = function ($item) use ($excludeColumns) {
+			foreach ($excludeColumns as $column) {
+				if (is_array($item)) {
+					unset($item[$column]);
+				} elseif (is_object($item)) {
+					unset($item->{$column});
+				}
+			}
+			return $item;
+		};
+
+		if (is_object($records) && method_exists($records, 'getCollection')) {
+			$records->getCollection()->transform($transformer);
+			return $records;
+		}
+
+		if ($records instanceof \Illuminate\Support\Collection) {
+			return $records->transform($transformer);
+		}
+
+		return $transformer($records);
 	}
 	
 	public static function arDenialList()
@@ -1358,8 +1449,12 @@ class Helpers
 	}
 	public static function arDenialById($id)
 	{
-		$data = ARDenialCode::select('id', DB::raw("concat(denial_code,' - ',code_description) as denialCode"))->where('status', 'Active')->where('id', $id)->first('denialCode');
-		return $data;
+		static $cache = [];
+		$key = (string) $id;
+		if (!array_key_exists($key, $cache)) {
+			$cache[$key] = ARDenialCode::select('id', DB::raw("concat(denial_code,' - ',code_description) as denialCode"))->where('status', 'Active')->where('id', $id)->first('denialCode');
+		}
+		return $cache[$key];
 	}
 	public static function arSubStatusList()
 	{
@@ -1368,8 +1463,12 @@ class Helpers
 	}
 	public static function arSubStatusById($id)
 	{
-		$data = ARSubStatusCode::select('id', DB::raw("concat(sub_status_code,' - ',sub_status_code_description) as substatusCode"))->where('status', 'Active')->where('id', $id)->first('substatusCode');
-		return $data;
+		static $cache = [];
+		$key = (string) $id;
+		if (!array_key_exists($key, $cache)) {
+			$cache[$key] = ARSubStatusCode::select('id', DB::raw("concat(sub_status_code,' - ',sub_status_code_description) as substatusCode"))->where('status', 'Active')->where('id', $id)->first('substatusCode');
+		}
+		return $cache[$key];
 	}
 	public static function getUserNameByAllEmpId($id)
 	{
