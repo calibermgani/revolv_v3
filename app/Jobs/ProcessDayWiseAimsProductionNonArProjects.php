@@ -91,15 +91,19 @@ class ProcessDayWiseAimsProductionNonArProjects implements ShouldQueue
                     ) {
                         $startTime = microtime(true);
 
-                        $tableName = Str::slug(
-                            Str::lower(
-                                $prjName
-                                . '_'
-                                . $subProject
-                                . '_datas'
-                            ),
-                            '_'
-                        );
+                           $tableName = Str::slug(
+                                Str::lower(
+                                    str_replace(
+                                        ['/', '\\'],
+                                        ' ',
+                                        $prjName
+                                        . '_'
+                                        . $subProject
+                                        . '_datas'
+                                    )
+                                ),
+                                '_'
+                            );
 
                         if (!Schema::hasTable($tableName)) {
                             Log::warning(
