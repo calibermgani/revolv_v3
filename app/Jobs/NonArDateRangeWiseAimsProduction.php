@@ -78,10 +78,14 @@ class NonArDateRangeWiseAimsProduction implements ShouldQueue
 
                             $tableName = Str::slug(
                                 Str::lower(
-                                    $prjName
-                                    . '_'
-                                    . $subProject
-                                    . '_datas'
+                                    str_replace(
+                                        ['/', '\\'],
+                                        ' ',
+                                        $prjName
+                                        . '_'
+                                        . $subProject
+                                        . '_datas'
+                                    )
                                 ),
                                 '_'
                             );
