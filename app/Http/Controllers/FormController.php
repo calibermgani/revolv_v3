@@ -1370,10 +1370,6 @@ class FormController extends Controller
                                 'updated_at' => Carbon::now(),
                             ]);
 
-                        if (DB::transactionLevel() > 0) {
-                            DB::commit();
-                        }
-
                         return response()->json(['success' => true]);
                     } else {
                         return response()->json(['error' => true]);
