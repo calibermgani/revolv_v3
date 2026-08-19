@@ -319,7 +319,7 @@ class QAProductionController extends Controller
                 $qaClassificationVal = Helpers::qaClassification();
                 $qaCategoryVal = Helpers::qaCategory();
                 $qaScopeVal = Helpers::qaScope();
-                $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+                $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
                 $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                 $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));
@@ -449,7 +449,7 @@ class QAProductionController extends Controller
                 $qaClassificationVal = Helpers::qaClassification();
                 $qaCategoryVal = Helpers::qaCategory();
                 $qaScopeVal = Helpers::qaScope();
-                $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+                $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
                 $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                 $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));
@@ -579,7 +579,7 @@ class QAProductionController extends Controller
                 $qaClassificationVal = Helpers::qaClassification();
                 $qaCategoryVal = Helpers::qaCategory();
                 $qaScopeVal = Helpers::qaScope();
-                $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+                $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
                 $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                 $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));
@@ -697,7 +697,7 @@ class QAProductionController extends Controller
                 $qaClassificationVal = Helpers::qaClassification();
                 $qaCategoryVal = Helpers::qaCategory();
                 $qaScopeVal = Helpers::qaScope();
-                $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+                $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
                 $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                 $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));
@@ -792,7 +792,7 @@ class QAProductionController extends Controller
                         $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 }
-                $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+                $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
                 $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                 $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));
@@ -882,7 +882,7 @@ class QAProductionController extends Controller
                         $reworkCount = $modelClass::where('chart_status', 'Revoke')->where('QA_emp_id', $loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where('ar_manager_rebuttal_status','agree')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();                    }
                 }
-                $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+                $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
                 $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                 $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));
@@ -1538,7 +1538,7 @@ class QAProductionController extends Controller
                 $qaClassificationVal = Helpers::qaClassification();
                 $qaCategoryVal = Helpers::qaCategory();
                 $qaScopeVal = Helpers::qaScope();
-                $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+                $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
                 $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                 $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));
@@ -1726,7 +1726,7 @@ class QAProductionController extends Controller
                 $qaClassificationVal = Helpers::qaClassification();
                 $qaCategoryVal = Helpers::qaCategory();
                 $qaScopeVal = Helpers::qaScope();
-                $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+                $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
                 $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                 $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));
@@ -1870,7 +1870,7 @@ class QAProductionController extends Controller
                 $qaClassificationVal = Helpers::qaClassification();
                 $qaCategoryVal = Helpers::qaCategory();
                 $qaScopeVal = Helpers::qaScope();
-                $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+                $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
                 $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                 $columnsHeader = array_values(array_diff($columnsHeader, $excludeColumns));

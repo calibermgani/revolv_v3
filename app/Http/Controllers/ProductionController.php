@@ -410,7 +410,7 @@ class ProductionController extends Controller
                ->first();
                $popupNonEditableFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('field_type_3','popup_visible')->where('field_type','non_editable')->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->get();
                $popupEditableFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('field_type_3','popup_visible')->where('field_type','editable')->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->get();
-               $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+               $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
                $projectTypeSettings = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->first();
                $attributes = [];
@@ -615,7 +615,7 @@ class ProductionController extends Controller
                ->first();
                $popupNonEditableFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('field_type_3','popup_visible')->where('field_type','non_editable')->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->get();
                $popupEditableFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('field_type_3','popup_visible')->where('field_type','editable')->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->get();
-               $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+               $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
                $projectTypeSettings = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->first();
                $attributes = [];
@@ -776,7 +776,7 @@ class ProductionController extends Controller
                  $arActionListVal = Helpers::arActionList();
                  $arDenialList = Helpers::arDenialList();
                  $arSubStatusList = Helpers::arSubStatusList();
-                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+                 $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                  $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
                  $projectTypeSettings = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->first();
                 return view('productions/clientPendingTab',compact('pendingProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','existingCallerChartsWorkLogs','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arDenialList','arSubStatusList','projectTypeSettings'));
@@ -945,7 +945,7 @@ class ProductionController extends Controller
                  $arActionListVal = Helpers::arActionList();
                  $arDenialList = Helpers::arDenialList();
                  $arSubStatusList = Helpers::arSubStatusList();
-                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+                 $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                  $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
                  $projectTypeSettings = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->first();
                 return view('productions/clientOnholdTab',compact('holdProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','existingCallerChartsWorkLogs','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arDenialList','arSubStatusList','projectTypeSettings'));
@@ -1073,7 +1073,7 @@ class ProductionController extends Controller
                  $arActionListVal = Helpers::arActionList();
                  $arDenialList = Helpers::arDenialList();
                  $arSubStatusList = Helpers::arSubStatusList();
-                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+                 $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                  $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
                 return view('productions/clientCompletedTab',compact('completedProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arDenialList','arDenialList','arSubStatusList'));
 
@@ -1217,7 +1217,7 @@ class ProductionController extends Controller
                 $qaClassificationVal = Helpers::qaClassification();
                 $qaCategoryVal = Helpers::qaCategory();
                 $qaScopeVal = Helpers::qaScope();
-                $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+                $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
                  return view('productions/clientReworkTab',compact('revokeProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','existingCallerChartsWorkLogs','popUpHeader','popupNonEditableFields','popupEditableFields','popupQAEditableFields','qaSubStatusListVal','unAssignedCount','qaStatusList','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arDenialList','arSubStatusList'));
 
@@ -1345,7 +1345,7 @@ class ProductionController extends Controller
                     }
                     return $item;
                 });
-                $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+                $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
                 return view('productions/clientDuplicateTab',compact('duplicateProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount'));
 
@@ -2679,7 +2679,7 @@ class ProductionController extends Controller
                ->first();
                $popupNonEditableFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->where('field_type','non_editable')->where('field_type_3','popup_visible')->get();
                $popupEditableFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->where('field_type','editable')->where('field_type_3','popup_visible')->get();
-               $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+               $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
                $projectTypeSettings = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->first();
                    return view('productions/clientUnAssignedTab',compact('unAssignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','unAssignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','projectTypeSettings'));
@@ -2850,7 +2850,7 @@ class ProductionController extends Controller
                  $arActionListVal = Helpers::arActionList();
                  $arDenialList = Helpers::arDenialList();
                  $arSubStatusList = Helpers::arSubStatusList();
-                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+                 $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                  $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
                 return view('productions/clientNonWorkableTab',compact('arNonWorkableProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arDenialList','arSubStatusList'));
 
@@ -2986,7 +2986,7 @@ class ProductionController extends Controller
                 $qaClassificationVal = Helpers::qaClassification();
                 $qaCategoryVal = Helpers::qaCategory();
                 $qaScopeVal = Helpers::qaScope();
-                $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+                $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
                  return view('productions/clientRebuttalTab',compact('rebuttalProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','existingCallerChartsWorkLogs','popUpHeader','popupNonEditableFields','popupEditableFields','popupQAEditableFields','qaSubStatusListVal','unAssignedCount','qaStatusList','arNonWorkableCount','rebuttalCount','arStatusList','arActionListVal','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arDenialList','arSubStatusList'));
 
@@ -3929,7 +3929,7 @@ class ProductionController extends Controller
                  $arActionListVal = Helpers::arActionList();
                  $arDenialList = Helpers::arDenialList();
                  $arSubStatusList = Helpers::arSubStatusList();
-                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+                 $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                  $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
              
                  return view('productions/arAutoClose',compact('arAutoCloseProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arDenialList','arSubStatusList'));
@@ -4102,7 +4102,7 @@ class ProductionController extends Controller
                  ->first();
                  $popupNonEditableFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->where('field_type','non_editable')->where('field_type_3','popup_visible')->get();
                  $popupEditableFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->where('field_type','editable')->where('field_type_3','popup_visible')->get();
-                 $projectColSearchFields = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get();
+                 $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                  $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
              
                  return view('productions/claimHistory',compact('claimHistoryDetails','columnsHeader','clientName','subProjectName','modelClass','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','projectColSearchFields','projectColSearchFieldsType','searchData'));

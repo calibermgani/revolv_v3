@@ -40,7 +40,8 @@ def get_popup_non_visible_patient_columns(cursor, project_id, sub_project_id):
         WHERE project_id = %s
           AND sub_project_id <=> %s
           AND field_type_3 = 'popup_non_visible'
-          AND label_name = 'Patient'
+          AND label_name IS NOT NULL
+          AND label_name != ''
           AND deleted_at IS NULL
         """,
         (

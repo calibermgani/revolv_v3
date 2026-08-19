@@ -24,7 +24,7 @@ class RunPythonReportJob implements ShouldQueue
   public function handle()
 {
     try {
-        // $python = 'C:\Users\cf100\AppData\Local\Programs\Python\Python313\python.exe';//local
+        // $python = 'C:\Users\Vijayalaxmi\AppData\Local\Programs\Python\Python313\python.exe';//local
         // $script = base_path('python\\Reports.py');//local
         $python = '/bin/python3';//server
         $script = base_path('Python/Reports.py');//server

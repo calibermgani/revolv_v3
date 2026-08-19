@@ -1388,12 +1388,17 @@ class Helpers
 		return Str::lower(str_replace([' ', '/'], ['_', '_else_'], $labelName));
 	}
 
-	public static function getPopupNonVisiblePatientColumns($projectId, $subProjectId = null)
+	public static function getPopupNonVisiblePatientColumns($projectId = null, $subProjectId = null)
 	{
+		if (empty($projectId)) {
+			return [];
+		}
+
 		return formConfiguration::where('project_id', $projectId)
 			->where('sub_project_id', $subProjectId)
 			->where('field_type_3', 'popup_non_visible')
-			->where('label_name', 'Patient')
+			->whereNotNull('label_name')
+			->where('label_name', '!=', '')
 			->pluck('label_name')
 			->map(function ($fieldName) {
 				return self::labelNameToColumn($fieldName);
@@ -1411,6 +1416,19 @@ class Helpers
 		}
 
 		return array_values(array_diff($columns, $excludeColumns));
+	}
+
+	public static function excludePopupNonVisibleSearchFields($searchFields, $projectId, $subProjectId = null)
+	{
+		$excludeColumns = self::getPopupNonVisiblePatientColumns($projectId, $subProjectId);
+		if (empty($excludeColumns) || empty($searchFields)) {
+			return $searchFields;
+		}
+
+		return $searchFields->filter(function ($field) use ($excludeColumns) {
+			$columnName = self::labelNameToColumn($field->column_name ?? '');
+			return $columnName === '' || !in_array($columnName, $excludeColumns, true);
+		})->values();
 	}
 
 	public static function hidePopupNonVisiblePatientFromRecords($records, array $excludeColumns)
