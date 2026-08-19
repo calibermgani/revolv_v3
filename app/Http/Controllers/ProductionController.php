@@ -2914,7 +2914,7 @@ class ProductionController extends Controller
                     $columnsHeader = array_values(
                         array_diff($columnsHeader, $excludeColumns)
                     );
-                $model = $query->getModel();
+                $model = $searchQuery->getModel();
                 $allColumns = Schema::getColumnListing($model->getTable());  
                 $selectColumns = array_diff($allColumns, $excludeColumns);
                if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
