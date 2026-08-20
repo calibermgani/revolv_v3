@@ -17,11 +17,11 @@
                     </div>
                     <div 
                         class="d-flex flex-row justify-content-between align-items-center float-right ml-2">
-                          <!-- Upload Icon -->
-                            <i class="fa fa-upload upload-icon cursor_hand mr-3"
+                          <!-- Non AR Crate table Upload Icon -->
+                            {{-- <i class="fa fa-upload upload-icon cursor_hand mr-3"
                             style="font-size:18px; color:#139AB3; cursor:pointer;"
                             title="Non AR Projects tables create from Excel">
-                            </i>
+                            </i> --}}
 
                         <a id="navigate-btn" class="btn btn-white-black font-weight-bolder btn-sm mr-1"
                             href="{{ route('formCreationIndex') }}?parent={{ request()->parent }}&child={{ request()->child }}"><i
