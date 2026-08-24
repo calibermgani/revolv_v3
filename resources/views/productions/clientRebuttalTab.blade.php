@@ -43,11 +43,24 @@ use Carbon\Carbon;
                                         $sopDetails = '';
                                     @endphp
                                 @endif
-                                <a href={{ isset($sopDetails) && isset($sopDetails->sop_path) ? asset($sopDetails->sop_path) : '#' }}
-                                    target="_blank">
-                                    <button type="button" class="btn text-white mr-3"
-                                        style="background-color:#139AB3">SOP</button>
-                                </a>
+                                    @if (isset($sopDetails) && !empty($sopDetails->sop_path))
+                                        <a href="{{ asset($sopDetails->sop_path) }}" target="_blank">
+                                            <button
+                                                type="button"
+                                                class="btn text-white mr-3"
+                                                style="background-color:#139AB3"> SOP
+                                            </button>
+                                                
+                                        </a>
+                                    @else
+                                        <button
+                                            type="button"
+                                            class="btn text-white mr-3"
+                                            style="background-color:#139AB3"
+                                            disabled>
+                                            SOP
+                                        </button>
+                                    @endif
                             </div>
                             <div class="d-flex align-items-center" id="export_div">
                                 <a class="btn btn-primary-export text-white ml-2" href="javascript:void(0);" id='assign_export'  style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
@@ -1362,8 +1375,11 @@ use Carbon\Carbon;
                     getUrlVars()[
                         "parent"] + "&child=" + getUrlVars()["child"];
             })
-            $(document).on('click', '.nine', function() {
-                window.location.href = "{{ url('#') }}";
+            $(document).on('click', '.nine', function(e) {
+                // window.location.href = "{{ url('#') }}";
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return false;
             })
 
             $(document).on('change', '#chart_status', function() {

@@ -408,8 +408,11 @@ use Carbon\Carbon;
                     getUrlVars()[
                         "parent"] + "&child=" + getUrlVars()["child"];
             })
-            $(document).on('click', '.five', function() {
-                window.location.href = "{{ url('#') }}";
+            $(document).on('click', '.five', function(e) {
+                // window.location.href = "{{ url('#') }}";
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return false;
             })
             $(document).on('click', '.six', function() {
                 window.location.href = baseUrl + 'qa_production/qa_projects_duplicate/' + clientName + '/' + subProjectName +

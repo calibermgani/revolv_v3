@@ -1020,7 +1020,7 @@ use Carbon\Carbon;
                     "?parent=" +
                     getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
             })
-            $(document).on('click', '.four', function() {
+            $(document).on('click', '.four', function(e) {
                 // window.location.href = "{{ url('#') }}";
                     e.preventDefault();
                     e.stopImmediatePropagation();

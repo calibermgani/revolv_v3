@@ -43,11 +43,24 @@ use Carbon\Carbon;
                                         $sopDetails = '';
                                     @endphp
                                 @endif
-                                <a href={{ isset($sopDetails) && isset($sopDetails->sop_path) ? asset($sopDetails->sop_path) : '#' }}
-                                    target="_blank">
-                                    <button type="button" class="btn text-white mr-3"
-                                        style="background-color:#139AB3">SOP</button>
-                                </a>
+                                    @if (isset($sopDetails) && !empty($sopDetails->sop_path))
+                                        <a href="{{ asset($sopDetails->sop_path) }}" target="_blank">
+                                            <button
+                                                type="button"
+                                                class="btn text-white mr-3"
+                                                style="background-color:#139AB3">
+                                            </button>
+                                                SOP
+                                        </a>
+                                    @else
+                                        <button
+                                            type="button"
+                                            class="btn text-white mr-3"
+                                            style="background-color:#139AB3"
+                                            disabled>
+                                            SOP
+                                        </button>
+                                    @endif
                             </div>
                             <div class="outside float-right" href="javascript:void(0);"></div>
                         </div>
@@ -1308,8 +1321,11 @@ use Carbon\Carbon;
                     getUrlVars()[
                         "parent"] + "&child=" + getUrlVars()["child"];
             })
-            $(document).on('click', '.eight', function() {
-                window.location.href = "{{ url('#') }}";
+            $(document).on('click', '.eight', function(e) {
+                // window.location.href = "{{ url('#') }}";
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return false;
             })
 
             $(document).on('change', '#chart_status', function() {

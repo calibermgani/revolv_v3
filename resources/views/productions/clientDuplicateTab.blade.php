@@ -578,8 +578,11 @@ use Carbon\Carbon;
                     getUrlVars()[
                         "parent"] + "&child=" + getUrlVars()["child"];
             })
-            $(document).on('click', '.six', function() {
-                window.location.href = "{{ url('#') }}";
+            $(document).on('click', '.six', function(e) {
+                // window.location.href = "{{ url('#') }}";
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return false;
             })
             $(document).on('click', '.seven', function() {
                 window.location.href = baseUrl + 'projects_unassigned/' + clientName + '/' + subProjectName +

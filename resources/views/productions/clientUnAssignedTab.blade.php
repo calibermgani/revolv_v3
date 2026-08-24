@@ -45,9 +45,24 @@ use Carbon\Carbon;
                                                         // $pdfName = '';
                                                     @endphp
                                                 @endif
-                                            <a href= {{ isset($sopDetails) && isset($sopDetails->sop_path) ? asset($sopDetails->sop_path) : '#' }} target="_blank">
-                                            <button type="button" class="btn text-white mr-3" style="background-color:#139AB3">SOP</button>
-                                            </a>
+                                                @if (isset($sopDetails) && !empty($sopDetails->sop_path))
+                                                    <a href="{{ asset($sopDetails->sop_path) }}" target="_blank">
+                                                        <button
+                                                            type="button"
+                                                            class="btn text-white mr-3"
+                                                            style="background-color:#139AB3"> SOP
+                                                        </button>
+                                                            
+                                                    </a>
+                                                @else
+                                                    <button
+                                                        type="button"
+                                                        class="btn text-white mr-3"
+                                                        style="background-color:#139AB3"
+                                                        disabled>
+                                                        SOP
+                                                    </button>
+                                                @endif
                                          </div>
                                         <div class="d-flex align-items-center" id="export_div">
                                             <a class="btn btn-primary-export text-white ml-2" href="javascript:void(0);" id='assign_export'  style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
@@ -957,15 +972,38 @@ use Carbon\Carbon;
                                                 @endif
                                             <div class="modal-header" style="background-color: #139AB3;height: 84px">
                                                 <h5 class="modal-title" id="exampleModalLabel" style="color: #ffffff;" >SOP</h5>
-                                                    <a href= {{ isset($sopDetails) && isset($sopDetails->sop_path) ? asset($sopDetails->sop_path) : '#' }} target="_blank">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-arrow-up-right-square" viewBox="0 0 16 16" style="color: #ffffff; margin-left: 365px;">
-                                                            <path fill-rule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm5.854 8.803a.5.5 0 1 1-.708-.707L9.243 6H6.475a.5.5 0 1 1 0-1h3.975a.5.5 0 0 1 .5.5v3.975a.5.5 0 1 1-1 0V6.707z"/>
-                                                        </svg>
-                                                    </a>
+                                                    @if (isset($sopDetails) && !empty($sopDetails->sop_path))
+                                                        <a href="{{ asset($sopDetails->sop_path) }}" target="_blank">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                width="18"
+                                                                height="18"
+                                                                fill="currentColor"
+                                                                class="bi bi-arrow-up-right-square"
+                                                                viewBox="0 0 16 16"
+                                                                style="color: #ffffff; margin-left: 365px;">
+                                                                <path fill-rule="evenodd"
+                                                                    d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm5.854 8.803a.5.5 0 1 1-.708-.707L9.243 6H6.475a.5.5 0 1 1 0-1h3.975a.5.5 0 0 1 .5.5v3.975a.5.5 0 1 1-1 0V6.707z" />
+                                                            </svg>
+                                                        </a>
+                                                    @endif
                                                 <button type="button" class="close comment_close" data-dismiss="modal" aria-hidden="true">&times;</button>
                                             </div>
                                             <div class="modal-body">
-                                                <iframe src={{ isset($sopDetails) && isset($sopDetails->sop_path) ? asset($sopDetails->sop_path) : '#' }} style="width: 100%; height: 418px;" frameborder="0" type="application/pdf"></iframe>
+                                                @if (isset($sopDetails) && !empty($sopDetails->sop_path))
+                                                    <iframe
+                                                        src="{{ asset($sopDetails->sop_path) }}"
+                                                        style="width: 100%; height: 418px;"
+                                                        frameborder="0"
+                                                        type="application/pdf">
+                                                    </iframe>
+                                                @else
+                                                    <div
+                                                        class="d-flex justify-content-center align-items-center"
+                                                        style="width: 100%; height: 418px;">
+                                                        <span>No SOP document available.</span>
+                                                    </div>
+                                                @endif
                                             </div>
                                             <div class="modal-footer">
                                                <button type="button" class="btn btn-light-danger" data-dismiss="modal">Close</button>
@@ -1468,7 +1506,6 @@ use Carbon\Carbon;
                                 inclass.each(function(element) {
 
                                     var label_id = $(this).attr('id');
-                                     console.log(label_id, 'label_id',$('#' + label_id).val(),$(this).val());
                                     if ($(this).val() == '') {
                                         if ($(this).val() == '') {
                                             e.preventDefault();
@@ -1735,8 +1772,11 @@ use Carbon\Carbon;
                         "parent"] +
                     "&child=" + getUrlVars()["child"];
             })
-            $(document).on('click', '.seven', function() {
-                window.location.href = "{{ url('#') }}";
+            $(document).on('click', '.seven', function(e) {
+                // window.location.href = "{{ url('#') }}";
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return false;
             })
 
             $(document).on('click', '.two', function() {
