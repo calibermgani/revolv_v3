@@ -1462,28 +1462,40 @@ class Helpers
 
 	public static function applyNumericRangeFilter($query, $key, $value, $secondQuery = null)
 	{
-		if (!is_string($value) || $value === '') {
+		if (!is_string($value) || $value === '' || !preg_match('/^[A-Za-z0-9_]+$/', $key)) {
 			return false;
 		}
 
-		if (!preg_match('/^\s*(\d+(?:\.\d+)?)\s*(?:-|to)\s*(\d+(?:\.\d+)?)\s*$/i', $value, $rangeMatch)) {
+		$range = self::parseNumericRangeValue($value);
+		if ($range === null) {
 			return false;
 		}
 
-		$fromValue = (float) $rangeMatch[1];
-		$toValue = (float) $rangeMatch[2];
+		$numericExpr = "CAST(REPLACE(REPLACE(REPLACE(`{$key}`, '$', ''), ',', ''), ' ', '') AS DECIMAL(18,4))";
+		$query->whereRaw("{$numericExpr} BETWEEN ? AND ?", [$range[0], $range[1]]);
+		if ($secondQuery !== null) {
+			$secondQuery->whereRaw("{$numericExpr} BETWEEN ? AND ?", [$range[0], $range[1]]);
+		}
+
+		return true;
+	}
+
+	public static function parseNumericRangeValue($value)
+	{
+		$normalized = str_replace(['$', ','], '', $value);
+		if (!preg_match('/^\s*(-?\s*\d+(?:\.\d+)?)\s*(?:to|-)\s*(-?\s*\d+(?:\.\d+)?)\s*$/i', $normalized, $rangeMatch)) {
+			return null;
+		}
+
+		$fromValue = (float) str_replace(' ', '', $rangeMatch[1]);
+		$toValue = (float) str_replace(' ', '', $rangeMatch[2]);
 		if ($fromValue > $toValue) {
 			$swapValue = $fromValue;
 			$fromValue = $toValue;
 			$toValue = $swapValue;
 		}
 
-		$query->whereBetween($key, [$fromValue, $toValue]);
-		if ($secondQuery !== null) {
-			$secondQuery->whereBetween($key, [$fromValue, $toValue]);
-		}
-
-		return true;
+		return [$fromValue, $toValue];
 	}
 	
 	public static function arDenialList()

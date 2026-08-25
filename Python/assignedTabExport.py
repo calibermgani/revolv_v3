@@ -287,16 +287,17 @@ def parse_numeric_range(value):
     if not isinstance(value, str) or value == "":
         return None
 
+    normalized = value.replace("$", "").replace(",", "")
     match = re.match(
-        r"^\s*(\d+(?:\.\d+)?)\s*(?:-|to)\s*(\d+(?:\.\d+)?)\s*$",
-        value,
+        r"^\s*(-?\s*\d+(?:\.\d+)?)\s*(?:to|-)\s*(-?\s*\d+(?:\.\d+)?)\s*$",
+        normalized,
         re.IGNORECASE,
     )
     if not match:
         return None
 
-    from_value = float(match.group(1))
-    to_value = float(match.group(2))
+    from_value = float(match.group(1).replace(" ", ""))
+    to_value = float(match.group(2).replace(" ", ""))
     if from_value > to_value:
         from_value, to_value = to_value, from_value
 
@@ -336,7 +337,7 @@ def append_dynamic_search_filters(
         elif numeric_range is not None:
             from_value, to_value = numeric_range
             where_clauses.append(
-                f"`{field}` BETWEEN %s AND %s"
+                f"CAST(REPLACE(REPLACE(REPLACE(`{field}`, '$', ''), ',', ''), ' ', '') AS DECIMAL(18,4)) BETWEEN %s AND %s"
             )
             parameters.extend([from_value, to_value])
 
