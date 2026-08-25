@@ -283,6 +283,26 @@ def parse_exact_date(value):
     return None
 
 
+def parse_numeric_range(value):
+    if not isinstance(value, str) or value == "":
+        return None
+
+    match = re.match(
+        r"^\s*(\d+(?:\.\d+)?)\s*(?:-|to)\s*(\d+(?:\.\d+)?)\s*$",
+        value,
+        re.IGNORECASE,
+    )
+    if not match:
+        return None
+
+    from_value = float(match.group(1))
+    to_value = float(match.group(2))
+    if from_value > to_value:
+        from_value, to_value = to_value, from_value
+
+    return from_value, to_value
+
+
 def append_dynamic_search_filters(
     search_filters,
     available_columns,
@@ -299,6 +319,7 @@ def append_dynamic_search_filters(
             continue
 
         exact_date = parse_exact_date(value)
+        numeric_range = parse_numeric_range(value)
 
         if isinstance(value, (int, float, Decimal, bool)):
             where_clauses.append(
@@ -311,6 +332,13 @@ def append_dynamic_search_filters(
                 f"DATE(`{field}`) = %s"
             )
             parameters.append(exact_date)
+
+        elif numeric_range is not None:
+            from_value, to_value = numeric_range
+            where_clauses.append(
+                f"`{field}` BETWEEN %s AND %s"
+            )
+            parameters.extend([from_value, to_value])
 
         elif "$" in str(value) or "." in str(value):
             where_clauses.append(

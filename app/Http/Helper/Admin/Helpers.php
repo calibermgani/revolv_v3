@@ -1459,6 +1459,32 @@ class Helpers
 
 		return $transformer($records);
 	}
+
+	public static function applyNumericRangeFilter($query, $key, $value, $secondQuery = null)
+	{
+		if (!is_string($value) || $value === '') {
+			return false;
+		}
+
+		if (!preg_match('/^\s*(\d+(?:\.\d+)?)\s*(?:-|to)\s*(\d+(?:\.\d+)?)\s*$/i', $value, $rangeMatch)) {
+			return false;
+		}
+
+		$fromValue = (float) $rangeMatch[1];
+		$toValue = (float) $rangeMatch[2];
+		if ($fromValue > $toValue) {
+			$swapValue = $fromValue;
+			$fromValue = $toValue;
+			$toValue = $swapValue;
+		}
+
+		$query->whereBetween($key, [$fromValue, $toValue]);
+		if ($secondQuery !== null) {
+			$secondQuery->whereBetween($key, [$fromValue, $toValue]);
+		}
+
+		return true;
+	}
 	
 	public static function arDenialList()
 	{

@@ -244,7 +244,7 @@ class ProductionController extends Controller
                if (class_exists($modelClass)) {
                     $query = $modelClass::query();
                     $searchData = [];
-                    if($request['_token'] != null) {
+                        if($request['_token'] != null) {
                             foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
                             $searchData[$key] = $value;
                                 if (is_array($value)) {
@@ -256,6 +256,7 @@ class ProductionController extends Controller
                                     $query->where($key, $value);  // Exact match for numeric/boolean
                                 } elseif ($this->isDate($value)) {  // Check if it's a date
                                     $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
+                                } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
                                 } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                                     $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                                 } else {
@@ -488,6 +489,7 @@ class ProductionController extends Controller
                                     $query->where($key, $value);  // Exact match for numeric/boolean
                                 } elseif ($this->isDate($value)) {  // Check if it's a date
                                     $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
+                                } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
                                 } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                                     $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                                 } else {
@@ -685,7 +687,8 @@ class ProductionController extends Controller
                             $query->where($key, $value);  // Exact match for numeric/boolean
                         } elseif ($this->isDate($value)) {  // Check if it's a date
                             $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
-                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
+                                } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                         } else {
                             if($value != null) {
@@ -830,7 +833,8 @@ class ProductionController extends Controller
                             $query->where($key, $value);  // Exact match for numeric/boolean
                         } elseif ($this->isDate($value)) {  // Check if it's a date
                             $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
-                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
+                                } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                         } else {
                             if($value != null) {
@@ -998,7 +1002,8 @@ class ProductionController extends Controller
                             $query->where($key, $value);  // Exact match for numeric/boolean
                         } elseif ($this->isDate($value)) {  // Check if it's a date
                             $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
-                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
+                                } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                         } else {
                             if($value != null) {
@@ -1126,7 +1131,8 @@ class ProductionController extends Controller
                             $query->where($key, $value);  // Exact match for numeric/boolean
                         } elseif ($this->isDate($value)) {  // Check if it's a date
                             $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
-                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
+                                } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                         } else {
                             if($value != null) {
@@ -1279,7 +1285,8 @@ class ProductionController extends Controller
                             $query->where($key, $value);  // Exact match for numeric/boolean
                         } elseif ($this->isDate($value)) {
                             $query->whereDate($key, '=', $value);
-                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
+                                } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                         } else {
                             $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
@@ -2588,7 +2595,8 @@ class ProductionController extends Controller
                             $query->where($key, $value);  // Exact match for numeric/boolean
                         } elseif ($this->isDate($value)) {  // Check if it's a date
                             $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
-                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
+                                } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                         } else {
                             if($value != null) {
@@ -2775,7 +2783,8 @@ class ProductionController extends Controller
                             $query->where($key, $value);  // Exact match for numeric/boolean
                         } elseif ($this->isDate($value)) {  // Check if it's a date
                             $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
-                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
+                                } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                         } else {
                             if($value != null) {
@@ -2901,7 +2910,8 @@ class ProductionController extends Controller
                         // Assuming 'like' is needed for partial match searches (optional), adjust based on requirements
                         if (is_numeric($value) || is_bool($value)) {
                             $searchQuery->where($key, $value);  // Exact match for numeric/boolean
-                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
+                                } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $searchQuery->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                         } else {
                             $searchQuery->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
@@ -3070,7 +3080,8 @@ class ProductionController extends Controller
                             $query->where($key, $value);  // Exact match for numeric/boolean
                         } elseif ($this->isDate($value)) {  // Check if it's a date
                             $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
-                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
+                                } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                         } else {
                             if($value != null) {
@@ -3197,7 +3208,8 @@ class ProductionController extends Controller
                             $query->where($key, $value);  // Exact match for numeric/boolean
                         } elseif ($this->isDate($value)) {  // Check if it's a date
                             $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
-                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
+                                } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                         } else {
                             $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
@@ -3374,7 +3386,8 @@ class ProductionController extends Controller
                             $query->where($key, $value);  
                         } elseif ($this->isDate($value)) {  
                             $query->whereDate($key, '=', $value);  
-                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
+                                } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); 
                         } else {
                             if($value != null) {
@@ -3481,6 +3494,7 @@ class ProductionController extends Controller
                         } elseif ($this->isDate($value)) {  
                             $query->whereDate($key, '=', $value);  
                             $dataQuery->whereDate($key, '=', $value);  
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value, $dataQuery)) {
                         } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); 
                             $dataQuery->where($key, $value);  
@@ -3854,7 +3868,8 @@ class ProductionController extends Controller
                             $query->where($key, $value);  // Exact match for numeric/boolean
                         } elseif ($this->isDate($value)) {  // Check if it's a date
                             $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
-                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
+                                } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
                         } else {
                             if($value != null) {
@@ -3989,7 +4004,8 @@ class ProductionController extends Controller
                             $query->where($key, $value);  
                         } elseif ($this->isDate($value)) {  
                             $query->whereDate($key, '=', $value);  
-                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
+                                } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); 
                         } else {
                             if($value != null) {
@@ -4072,7 +4088,8 @@ class ProductionController extends Controller
                             $query->where($key, $value);  
                         } elseif ($this->isDate($value)) { 
                             $query->whereDate($key, '=', $value);  
-                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
+                                } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); 
                         } else {
                             if($value != null) {
@@ -4179,6 +4196,7 @@ class ProductionController extends Controller
                         } elseif ($this->isDate($value)) {  
                             $query->whereDate($key, '=', $value);  
                             $dataQuery->whereDate($key, '=', $value);  
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value, $dataQuery)) {
                         } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
                             $query->where($key, $value); 
                             $dataQuery->where($key, $value);  
