@@ -4,7 +4,10 @@ var KTFormControls = function () {
 	
 	// Private functions
 	var _initDemo1 = function () {
-	
+		if (!document.getElementById('kt_form_1')) {
+			return;
+		}
+
 		FormValidation.formValidation(
 		
 			document.getElementById('kt_form_1'),
@@ -137,6 +140,10 @@ var KTFormControls = function () {
 	}
 
 	var _initDemo2 = function () {
+		if (!document.getElementById('kt_form_2')) {
+			return;
+		}
+
 		FormValidation.formValidation(
 			document.getElementById('kt_form_2'),
 			{

@@ -8,8 +8,10 @@ var KTCardTools = function () {
 
     // Demo 1
     var demo1 = function() {
-        // This card is lazy initialized using data-card="true" attribute. You can access to the card object as shown below and override its behavior
         var card = new KTCard('kt_card_11');
+        if (!card || typeof card.on !== 'function') {
+            return;
+        }
 
         // Toggle event handlers
         card.on('beforeCollapse', function(card) {
@@ -71,8 +73,10 @@ var KTCardTools = function () {
 
     // Demo 2
     var demo2 = function() {
-        // This card is lazy initialized using data-card="true" attribute. You can access to the card object as shown below and override its behavior
         var card = new KTCard('kt_card_2');
+        if (!card || typeof card.on !== 'function') {
+            return;
+        }
 
         // Toggle event handlers
         card.on('beforeCollapse', function(card) {
@@ -134,8 +138,10 @@ var KTCardTools = function () {
 
     // Demo 3
     var demo3 = function() {
-        // This card is lazy initialized using data-card="true" attribute. You can access to the card object as shown below and override its behavior
         var card = new KTCard('kt_card_3');
+        if (!card || typeof card.on !== 'function') {
+            return;
+        }
 
         // Toggle event handlers
         card.on('beforeCollapse', function(card) {
@@ -195,8 +201,10 @@ var KTCardTools = function () {
 
     // Demo 4
     var demo4 = function() {
-        // This card is lazy initialized using data-card="true" attribute. You can access to the card object as shown below and override its behavior
         var card = new KTCard('kt_card_4');
+        if (!card || typeof card.on !== 'function') {
+            return;
+        }
 
         // Toggle event handlers
         card.on('beforeCollapse', function(card) {

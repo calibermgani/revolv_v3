@@ -937,7 +937,7 @@ class QAProductionController extends Controller
                     $clientData = $modelClass::where('id',$data['record_id'])->first();
                 }
                 if(isset($clientData) && !empty($clientData)) {
-                   $clientData = Helpers::hidePopupNonVisiblePatientFromRecords($clientData, Helpers::getPopupNonVisiblePatientColumns($data['project_id'], $data['sub_project_id']));
+                   //$clientData = Helpers::hidePopupNonVisiblePatientFromRecords($clientData, Helpers::getPopupNonVisiblePatientColumns($data['project_id'], $data['sub_project_id']));
                    return response()->json(['success' => true,'clientData'=>$clientData,'startTimeVal'=>$startTimeVal]);
                 } else {
                     return response()->json(['success' => false]);
@@ -974,7 +974,7 @@ class QAProductionController extends Controller
                     $clientData = $modelClass::where('id',$data['record_id'])->first();
                 }
                 if(isset($clientData) && !empty($clientData)) {
-                   $clientData = Helpers::hidePopupNonVisiblePatientFromRecords($clientData, Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $decodedPracticeName == '--' ? null : $decodedPracticeName));
+                   //$clientData = Helpers::hidePopupNonVisiblePatientFromRecords($clientData, Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $decodedPracticeName == '--' ? null : $decodedPracticeName));
                    return response()->json(['success' => true,'clientData'=>$clientData]);
                 } else {
                     return response()->json(['success' => false]);

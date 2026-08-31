@@ -619,5 +619,9 @@ var KTDatatableChildDataLocalDemo = function() {
 }();
 
 jQuery(document).ready(function() {
+	if ($('#kt_datatable').length === 0) {
+		return;
+	}
+
 	KTDatatableChildDataLocalDemo.init();
 });
