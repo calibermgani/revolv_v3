@@ -1397,6 +1397,10 @@ class Helpers
 		return formConfiguration::where('project_id', $projectId)
 			->where('sub_project_id', $subProjectId)
 			->where('field_type_3', 'popup_non_visible')
+			->whereNotIn('label_name', [
+				'AR Denial Codes',
+				'AR SubStatus Codes',
+			])
 			->whereNotNull('label_name')
 			->where('label_name', '!=', '')
 			->pluck('label_name')
