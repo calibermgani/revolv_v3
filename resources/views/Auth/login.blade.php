@@ -31,11 +31,11 @@
                 </span>
             @enderror
         </div>
-        {{-- <input type="text" name="g-recaptcha-response" id="g-recaptcha-response"> --}}
+        <!-- {{-- <input type="text" name="g-recaptcha-response" id="g-recaptcha-response"> --}} -->
     </div>
     <input type="hidden" id="pro_code_url" value={{config("constants.PRO_CODE_URL")}}>
-    {{-- <div class="g-recaptcha ml-8" data-type="image" data-sitekey="{{ env('NOCAPTCHA_SITEKEY') }}"></div> --}}
-    <div class="g-recaptcha ml-8" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+    <!-- {{-- <div class="g-recaptcha ml-8" data-type="image" data-sitekey="{{ env('NOCAPTCHA_SITEKEY') }}"></div> --}} -->
+    <!-- <div class="g-recaptcha ml-8" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div> -->
 
     @if (session()->has('error'))
         <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 10000)" x-show="show">
@@ -122,7 +122,7 @@
     @push('view.scripts')
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+        <!-- <script src="https://www.google.com/recaptcha/api.js" async defer></script> -->
         <script src="/assets/plugins/global/plugins.bundle.js"></script>
         <script src="/assets/js/scripts.bundle.js"></script>
         <script>
@@ -297,7 +297,7 @@
                             token: token,
                             emp_id: userId,
                             password: userPassword,
-                           ' g-recaptcha-response': grecaptcha.getResponse(),
+                        //    ' g-recaptcha-response': grecaptcha.getResponse(),
                         },
                         success: function(res) {
 
