@@ -3412,7 +3412,7 @@ function showSubmitPopup() {
 
             var total = parseInt($('#assigned_showing_text').attr('data-total'), 10) || 0;
             var first = parseInt($('#assigned_showing_text').attr('data-first'), 10) || 0;
-            var perPage = parseInt($('#assigned_showing_text').attr('data-per-page'), 10) || 25;
+            var perPage = parseInt($('#assigned_showing_text').attr('data-per-page'), 10) || 50;
 
             total = total - 1;
 
