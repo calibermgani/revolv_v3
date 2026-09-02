@@ -3238,7 +3238,11 @@ class ProductionController extends Controller
                 }
                 $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                 $selectColumns = array_values(array_diff($fields, $excludeColumns));
-                return Excel::download(new ProductionExport($selectColumns,$exportResult), 'Resolv_Duplicate_Records_Export.xlsx');
+                $downloadFileName = $exportFileName.' _ '.$exStatus.'_export.xlsx';
+                $downloadFileName = str_replace(['/', '\\'], '_', $downloadFileName);
+                $downloadFileName = preg_replace('/[<>:"|?*]+/', '_', $downloadFileName);
+                return Excel::download(new ProductionExport($selectColumns,$exportResult), $downloadFileName);
+                // return Excel::download(new ProductionExport($selectColumns,$exportResult), 'Resolv_Duplicate_Records_Export.xlsx');
                 } catch (\Exception $e) {
                     log::debug($e->getMessage());
                 }
