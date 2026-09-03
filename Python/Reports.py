@@ -248,6 +248,7 @@ def export_to_excel(
             "cpt_trends",
             "icd_trends",
             "modifiers",
+            "coder_work_date",
             "id",
         )
         project_columns = [c for c in all_columns if c not in exclude_cols]
@@ -386,11 +387,71 @@ def export_to_excel(
 
             chunk = pd.DataFrame(rows, columns=columns)
             for col in chunk.columns:
-                if "date" in col.lower() or col.lower() in ["dos"]:
+ 
+                # AR Work Date based on 8 AM business window
+
+                if col.lower() == "ar_at":
+
                     try:
-                        chunk[col] = pd.to_datetime(chunk[col], errors="coerce").dt.strftime("%m/%d/%y")
+
+                        ar_datetime = pd.to_datetime(
+
+                            chunk[col],
+
+                            errors="coerce"
+
+                        )
+            
+                        cutoff_time = datetime.strptime(
+
+                            "08:00:00",
+
+                            "%H:%M:%S"
+
+                        ).time()
+            
+                        chunk[col] = ar_datetime.apply(
+
+                            lambda x:
+
+                                (x - timedelta(days=1)).strftime("%Y-%m-%d")
+
+                                if pd.notna(x) and x.time() < cutoff_time
+
+                                else (
+
+                                    x.strftime("%Y-%m-%d")
+
+                                    if pd.notna(x)
+
+                                    else None
+
+                                )
+
+                        )
+            
                     except Exception:
+
                         pass
+            
+                # Other date fields
+
+                elif "date" in col.lower() or col.lower() in ["dos"]:
+
+                    try:
+
+                        chunk[col] = pd.to_datetime(
+
+                            chunk[col],
+
+                            errors="coerce"
+
+                        ).dt.strftime("%m/%d/%y")
+            
+                    except Exception:
+
+                        pass
+ 
             for col in CODE_MAPPING:
                 if col in chunk.columns and col in ref_data:
                     chunk[col] = chunk[col].astype(str).map(ref_data[col]).fillna(chunk[col])
@@ -469,7 +530,7 @@ def export_to_excel(
                 "chart_status": "Charge Status",
                 "CE_emp_id": "AR Emp Id",
                 "ce_hold_reason": "AR Hold Reason",
-                "coder_work_date": "AR Work Date",
+                "ar_at": "AR Work Date",
                 "coder_rework_status": "AR Rework Status",
                 "coder_rework_reason": "AR Rework Reason",
                 "coder_error_count": "AR Error Count",
