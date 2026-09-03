@@ -30,35 +30,79 @@ def create_db_connection():
         raise Exception(f"MySQL connection failed: {e}")
 
 def get_popup_non_visible_patient_columns(cursor, project_id, sub_project_id):
+
     if not project_id:
+
         return set()
-
+ 
     cursor.execute(
+
         """
+
         SELECT label_name
+
         FROM form_configurations
+
         WHERE project_id = %s
+
           AND sub_project_id <=> %s
+
           AND field_type_3 = 'popup_non_visible'
+
           AND label_name IS NOT NULL
+
           AND label_name != ''
+
+          AND LOWER(label_name) NOT IN (
+
+              'ar denial codes',
+
+              'ar substatus codes',
+
+              'ar at',
+
+              'qa at'
+
+          )
+
           AND deleted_at IS NULL
+
         """,
+
         (
+
             project_id,
+
             None if sub_project_id in (None, "", "--") else sub_project_id,
+
         ),
+
     )
-
+ 
     columns = set()
+ 
     for row in cursor.fetchall():
+
         label = str(row.get("label_name") or "").lower()
-        label = label.replace(" ", "_").replace("/", "_else_")
+ 
+        # Laravel labelNameToColumn equivalent
+
+        label = (
+
+            label
+
+            .replace(" ", "_")
+
+            .replace("/", "_else_")
+
+        )
+ 
         if label:
+
             columns.add(label)
-
+ 
     return columns
-
+ 
 def get_project_details(project_id, sub_project_id):
     conn = create_db_connection()
     cursor = conn.cursor(dictionary=True, buffered=True)
