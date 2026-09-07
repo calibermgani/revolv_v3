@@ -148,7 +148,7 @@ class ProductionController extends Controller
                 $subProjectsWithCount[$key]['client_name'] = $paProjectName;//$clientDetails['client_name'];
                 $subProjectsWithCount[$key]['sub_project_id'] =$data['id'];
                 $subProjectsWithCount[$key]['sub_project_name'] = $data['name'];
-                $subProjectsWithCount[$key]['project_type'] = $projectType->project_type ?? '--';
+                $subProjectsWithCount[$key]['project_type'] =$projectType ? $projectType->project_type : '--';
                 $subProjectsWithCount[$key]['inventory_upload_config'] = !$configurationExists ? 'no icon' : 'yes';
                 $projectName = $subProjectsWithCount[$key]['client_name'];
                 // $model_name = ucfirst($projectName) . ucfirst($subProjectsWithCount[$key]['sub_project_name']);
