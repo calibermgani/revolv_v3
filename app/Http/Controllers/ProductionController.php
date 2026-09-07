@@ -20,6 +20,7 @@ use GuzzleHttp\Client;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Models\CallerChartsWorkLogs;
+use App\Models\CompletedUserEditable;
 use App\Models\QualitySampling;
 use App\Models\ARActionCodes;
 use App\Models\ProjectColSearchConfig;
@@ -271,7 +272,7 @@ class ProductionController extends Controller
                     }
                $modelClassDatas = "App\\Models\\" .  $modelName.'Datas'; $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();
                $assignedProjectDetails = collect();$assignedDropDown=[];$dept= Session::get('loginDetails')['userInfo']['department']['id'];$existingCallerChartsWorkLogs = [];$assignedProjectDetailsStatus = [];$unAssignedCount = 0;
-               $arAutoCloseCount=0; $rebuttalCount =0; $arNonWorkableCount =0; $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
+               $arAutoCloseCount=0; $rebuttalCount =0; $arNonWorkableCount =0; $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = $arReworkCount = $arNonWorkableCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
                 $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                 $columnsHeader = array_values(
                     array_diff($columnsHeader, $excludeColumns)
@@ -300,7 +301,6 @@ class ProductionController extends Controller
                                     // $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
                                     // $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
                                     // $holdCount = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                                    // $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$resourceName)->where('updated_at','<=',$yesterDayDate)->count();
                                     // $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
                                     // $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                                     // $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
@@ -311,12 +311,13 @@ class ProductionController extends Controller
                                     //                                                 })->where('CE_emp_id',$resourceName)
                                     //                                                 // ->whereBetween('updated_at',[$startDate,$endDate])
                                     //                                                 ->count();
-                                    // $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();                                                
+                                    // $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count(); 
+                                    //   $arReworkCount = CompletedUserEditable::where('project_id',$decodedProjectName)->where('record_status','user_rework')->where('start_time','>=',Carbon::now()->subHours(24))->count();                                               
                                     $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','ASC')->pluck('chart_status')->toArray(); 
                               
                                     } else {
-                                $existingCallerChartsWorkLogsInprocess=[];
-                                $existingCallerChartsWorkLogs=[];
+                                        $existingCallerChartsWorkLogsInprocess=[];
+                                        $existingCallerChartsWorkLogs=[];
                                     // $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','CE_Inprocess')->orderBy('id','DESC')->pluck('record_id')->toArray();
                                     // $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','DESC')->pluck('record_id')->toArray();
                                     
@@ -333,7 +334,6 @@ class ProductionController extends Controller
                                     // $completedCount = $modelClass::where('chart_status','CE_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
                                     // $pendingCount = $modelClass::where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate])->count();
                                     // $holdCount = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                                    //    $reworkCount = $modelClass::where('chart_status','Revoke')->where('updated_at','<=',$yesterDayDate)->count();
                                 //     $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
                                 //     $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                                 //     $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
@@ -345,6 +345,7 @@ class ProductionController extends Controller
                                 //                                            // ->whereBetween('updated_at',[$startDate,$endDate])
                                 //                                             ->count();
                                 //    $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();   
+                                    //  $arReworkCount = CompletedUserEditable::where('project_id',$decodedProjectName)->where('record_status','user_rework')->where('start_time','>=',Carbon::now()->subHours(24))->count();                                               
                                     $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','ASC')->pluck('chart_status')->toArray();   
                          
                                    }
@@ -380,7 +381,6 @@ class ProductionController extends Controller
                     //    $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     //    $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     //    $holdCount = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                    //    $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->where('updated_at','<=',$yesterDayDate)->count();
                     //    $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     //    $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     //    $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
@@ -390,6 +390,7 @@ class ProductionController extends Controller
                     //         // ->whereBetween('updated_at',[$startDate,$endDate])
                     //         ->count();
                     //     $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                    //    $arReworkCount = CompletedUserEditable::where('project_id',$decodedProjectName)->where('emp_id',$loginEmpId)->where('record_status','user_rework')->where('start_time','>=',Carbon::now()->subHours(24))->count();                                                                                              
                        $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->orderBy('id','ASC')->pluck('chart_status')->toArray();
                   
                         } else {
@@ -432,7 +433,7 @@ class ProductionController extends Controller
                         }
                 $popupMulineFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('field_type_3','popup_visible')->where('field_type','editable')->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->get();
                 $arNonWorkableReasonList = Helpers::getArNonWorkableReasonList();
-                return view('productions/clientAssignedTab',compact('assignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','assignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','searchData','resourceName','projectTypeSettings','existingCallerChartsWorkLogsInprocess','attributes','popupMulineFields','arAutoCloseCount','claimHistoryAttributes','arNonWorkableReasonList'));
+                return view('productions/clientAssignedTab',compact('assignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','assignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','searchData','resourceName','projectTypeSettings','existingCallerChartsWorkLogsInprocess','attributes','popupMulineFields','arAutoCloseCount','arReworkCount','claimHistoryAttributes','arNonWorkableReasonList'));
            } catch (\Exception $e) {
                log::debug($e->getMessage());
            }
@@ -504,7 +505,7 @@ class ProductionController extends Controller
                     }
                $modelClassDatas = "App\\Models\\" .  $modelName.'Datas'; $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();
                $assignedProjectDetails = collect();$assignedDropDown=[];$dept= Session::get('loginDetails')['userInfo']['department']['id'];$existingCallerChartsWorkLogs = [];$assignedProjectDetailsStatus = [];$unAssignedCount = 0;
-               $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
+               $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = $arNonWorkableCount = $arReworkCount = $arAutoCloseCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
               if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
                     if (class_exists($modelClass)) {
                        $modelClassDuplcates = "App\\Models\\" . $modelName.'Duplicates';
@@ -523,7 +524,6 @@ class ProductionController extends Controller
                                     $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
                                     $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
                                     $holdCount = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                                    // $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$resourceName)->where('updated_at','<=',$yesterDayDate)->count();
                                     $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
                                     $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                                     $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
@@ -535,7 +535,8 @@ class ProductionController extends Controller
                                                                                     })->where('CE_emp_id',$resourceName)
                                                                                     // ->whereBetween('updated_at',[$startDate,$endDate])
                                                                                     ->count();
-                                    $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();                                                
+                                    $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count(); 
+                                    $arReworkCount = CompletedUserEditable::where('project_id',$decodedProjectName)->where('record_status','user_rework')->where('start_time','>=',Carbon::now()->subHours(24))->count();                                                                                              
                                } else {
                                     $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','CE_Inprocess')->orderBy('id','DESC')->pluck('record_id')->toArray();
                                     $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','DESC')->pluck('record_id')->toArray();
@@ -553,7 +554,6 @@ class ProductionController extends Controller
                                     $completedCount = $modelClass::where('chart_status','CE_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
                                     $pendingCount = $modelClass::where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate])->count();
                                     $holdCount = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                                    //    $reworkCount = $modelClass::where('chart_status','Revoke')->where('updated_at','<=',$yesterDayDate)->count();
                                     $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
                                     $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                                     $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
@@ -565,7 +565,8 @@ class ProductionController extends Controller
                                                                             })
                                                                            // ->whereBetween('updated_at',[$startDate,$endDate])
                                                                             ->count();
-                                   $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();   
+                                   $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count(); 
+                                   $arReworkCount = CompletedUserEditable::where('project_id',$decodedProjectName)->where('record_status','user_rework')->where('start_time','>=',Carbon::now()->subHours(24))->count();                                                                                                
                            }
                    } else {
                         return redirect()->back();
@@ -596,7 +597,6 @@ class ProductionController extends Controller
                        $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $holdCount = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                    //    $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->where('updated_at','<=',$yesterDayDate)->count();
                        $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->orderBy('id','ASC')->pluck('chart_status')->toArray();
                        $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
@@ -607,6 +607,7 @@ class ProductionController extends Controller
                             // ->whereBetween('updated_at',[$startDate,$endDate])
                             ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        $arReworkCount = CompletedUserEditable::where('project_id',$decodedProjectName)->where('emp_id',$loginEmpId)->where('record_status','user_rework')->where('start_time','>=',Carbon::now()->subHours(24))->count();                                                                                              
                   } else {
                     return redirect()->back();
                   }
@@ -638,7 +639,7 @@ class ProductionController extends Controller
                         }
                 $popupMulineFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('field_type_3','popup_visible')->where('field_type','editable')->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->get();
                 $arNonWorkableReasonList = Helpers::getArNonWorkableReasonList();
-                return view('productions/clientAssignedTab',compact('assignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','assignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','searchData','resourceName','projectTypeSettings','existingCallerChartsWorkLogsInprocess','attributes','popupMulineFields','arAutoCloseCount','claimHistoryAttributes','arNonWorkableReasonList'));
+                return view('productions/clientAssignedTab',compact('assignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','assignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','searchData','resourceName','projectTypeSettings','existingCallerChartsWorkLogsInprocess','attributes','popupMulineFields','arAutoCloseCount','arReworkCount','claimHistoryAttributes','arNonWorkableReasonList'));
            } catch (\Exception $e) {
                log::debug($e->getMessage());
            }
@@ -698,7 +699,7 @@ class ProductionController extends Controller
                     }
                 }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();
-               $pendingProjectDetails = collect(); $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$existingCallerChartsWorkLogs = [];$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;$unAssignedCount = 0;
+               $pendingProjectDetails = collect(); $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = $arReworkCount = $arNonWorkableCount = $arAutoCloseCount = 0;$existingCallerChartsWorkLogs = [];$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;$unAssignedCount = 0;
                 $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                     $columnsHeader = array_values(
                         array_diff($columnsHeader, $excludeColumns)
@@ -720,7 +721,6 @@ class ProductionController extends Controller
                        $completedCount = $modelClass::where('chart_status','CE_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $pendingCount = $modelClass::where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $holdCount = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                    //    $reworkCount = $modelClass::where('chart_status','Revoke')->where('updated_at','<=',$yesterDayDate)->count();
                        $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $modelClassDuplcates = "App\\Models\\" .$modelName.'Duplicates';
                        $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
@@ -731,6 +731,20 @@ class ProductionController extends Controller
                                         ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
                             })
                             // ->whereBetween('updated_at',[$startDate,$endDate])
+                            ->count();
+                            $arReworkCount = CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            )
                             ->count();
                        $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();                                                
                      
@@ -748,7 +762,6 @@ class ProductionController extends Controller
                       $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                       $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                       $holdCount = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                    //   $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->where('updated_at','<=',$yesterDayDate)->count();
                       $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->whereBetween('updated_at',[$startDate,$endDate])->count();
                       $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                       $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
@@ -757,6 +770,20 @@ class ProductionController extends Controller
                         })->where('CE_emp_id',$loginEmpId)
                         // ->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
+                        $arReworkCount = CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            )->where('emp_id',$loginEmpId)
+                            ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();                                                
                      
                     }
@@ -782,7 +809,7 @@ class ProductionController extends Controller
                  $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                  $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
                  $projectTypeSettings = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->first();
-                return view('productions/clientPendingTab',compact('pendingProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','existingCallerChartsWorkLogs','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arDenialList','arSubStatusList','projectTypeSettings'));
+                return view('productions/clientPendingTab',compact('pendingProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','existingCallerChartsWorkLogs','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arReworkCount','arDenialList','arSubStatusList','projectTypeSettings'));
 
            } catch (\Exception $e) {
                log::debug($e->getMessage());
@@ -844,7 +871,7 @@ class ProductionController extends Controller
                     }
                 }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
-               $holdProjectDetails = collect();$duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$existingCallerChartsWorkLogs = [];$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
+               $holdProjectDetails = collect();$duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = $arReworkCount = $arNonWorkableCount = $arAutoCloseCount = 0;$existingCallerChartsWorkLogs = [];$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                $columnsHeader = array_values(
                    array_diff($columnsHeader, $excludeColumns)
@@ -867,7 +894,6 @@ class ProductionController extends Controller
                             $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
                             $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
                             $holdCount = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                            // $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$resourceName)->where('updated_at','<=',$yesterDayDate)->count();
                             $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
                             $modelClassDuplcates = "App\\Models\\" . $modelName.'Duplicates';
                             $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
@@ -878,6 +904,20 @@ class ProductionController extends Controller
                                             ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
                                 })->where('CE_emp_id',$resourceName)
                                 // ->whereBetween('updated_at',[$startDate,$endDate])
+                                ->count();
+                                $arReworkCount = CompletedUserEditable::where(
+                                    'project_id',
+                                    $decodedProjectName
+                                )
+                                ->where(
+                                    'record_status',
+                                    'user_rework'
+                                )
+                                ->where(
+                                    'start_time',
+                                    '>=',
+                                    Carbon::now()->subHours(24)
+                                )->where('emp_id',$resourceName)
                                 ->count();
                                 $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
                         } else {
@@ -892,7 +932,6 @@ class ProductionController extends Controller
                             $completedCount = $modelClass::where('chart_status','CE_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
                             $pendingCount = $modelClass::where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate])->count();
                             $holdCount = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                            // $reworkCount = $modelClass::where('chart_status','Revoke')->where('updated_at','<=',$yesterDayDate)->count();
                             $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
                             $modelClassDuplcates = "App\\Models\\" . $modelName.'Duplicates';
                             $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
@@ -903,6 +942,20 @@ class ProductionController extends Controller
                                             ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
                                 })
                                 //->whereBetween('updated_at',[$startDate,$endDate])
+                                ->count();
+                                $arReworkCount = CompletedUserEditable::where(
+                                    'project_id',
+                                    $decodedProjectName
+                                )
+                                ->where(
+                                    'record_status',
+                                    'user_rework'
+                                )
+                                ->where(
+                                    'start_time',
+                                    '>=',
+                                    Carbon::now()->subHours(24)
+                                )
                                 ->count();
                             $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         }
@@ -920,7 +973,6 @@ class ProductionController extends Controller
                     $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     $holdCount = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                    //   $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->where('updated_at','<=',$yesterDayDate)->count();
                     $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->whereBetween('updated_at',[$startDate,$endDate])->count();
                     $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
@@ -929,6 +981,20 @@ class ProductionController extends Controller
                         })->where('CE_emp_id',$loginEmpId)
                         // ->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
+                        $arReworkCount = CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            )->where('emp_id',$loginEmpId)
+                            ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 }
@@ -952,7 +1018,7 @@ class ProductionController extends Controller
                  $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                  $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
                  $projectTypeSettings = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->first();
-                return view('productions/clientOnholdTab',compact('holdProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','existingCallerChartsWorkLogs','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arDenialList','arSubStatusList','projectTypeSettings'));
+                return view('productions/clientOnholdTab',compact('holdProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','existingCallerChartsWorkLogs','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arReworkCount','arDenialList','arSubStatusList','projectTypeSettings'));
 
            } catch (\Exception $e) {
                log::debug($e->getMessage());
@@ -1013,7 +1079,7 @@ class ProductionController extends Controller
                     }
                 }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
-               $completedProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
+               $completedProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = $arReworkCount = $arNonWorkableCount = $arAutoCloseCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                 $columnsHeader = array_values(
                     array_diff($columnsHeader, $excludeColumns)
@@ -1028,7 +1094,6 @@ class ProductionController extends Controller
                        $completedCount = $modelClass::where('chart_status','CE_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $pendingCount = $modelClass::where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $holdCount = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                    //    $reworkCount = $modelClass::where('chart_status','Revoke')->where('updated_at','<=',$yesterDayDate)->count();
                        $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $modelClassDuplcates = "App\\Models\\" . $modelName.'Duplicates';
                        $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
@@ -1041,6 +1106,20 @@ class ProductionController extends Controller
                         // ->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        $arReworkCount = CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            )
+                            ->count();
                    }
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
@@ -1049,7 +1128,6 @@ class ProductionController extends Controller
                       $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                       $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                       $holdCount = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        //   $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->where('updated_at','<=',$yesterDayDate)->count();
                       $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->whereBetween('updated_at',[$startDate,$endDate])->count();
                       $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                       $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
@@ -1059,6 +1137,20 @@ class ProductionController extends Controller
                             // ->whereBetween('updated_at',[$startDate,$endDate])
                             ->count();
                       $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                      $arReworkCount = CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            )->where('emp_id',$loginEmpId)
+                            ->count();
                     }
                  }
                  $completedProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
@@ -1079,8 +1171,17 @@ class ProductionController extends Controller
                  $arDenialList = Helpers::arDenialList();
                  $arSubStatusList = Helpers::arSubStatusList();
                  $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
-                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
-                return view('productions/clientCompletedTab',compact('completedProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arDenialList','arDenialList','arSubStatusList'));
+                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
+                //  $userEditableQuery = CompletedUserEditable::where('project_id',$decodedProjectName)->where('record_status','user_rework');
+                //  if ($subProjectId === NULL) {
+                //      $userEditableQuery->whereNull('sub_project_id');
+                //  } else {
+                //      $userEditableQuery->where('sub_project_id',$subProjectId);
+                //  }
+                //  $userEditableRecordIds = $userEditableQuery->pluck('record_id')->map(function ($id) {
+                //      return (string) $id;
+                //  })->toArray();
+                return view('productions/clientCompletedTab',compact('completedProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount', 'arReworkCount','arDenialList','arDenialList','arSubStatusList'));
 
            } catch (\Exception $e) {
                log::debug($e->getMessage());
@@ -1142,7 +1243,7 @@ class ProductionController extends Controller
                     }
                 }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString();$yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
-               $revokeProjectDetails = collect(); $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$existingCallerChartsWorkLogs = [];$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
+               $revokeProjectDetails = collect(); $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount= $arReworkCount = $arNonWorkableCount = $arAutoCloseCount = 0;$existingCallerChartsWorkLogs = [];$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
                     $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                     $columnsHeader = array_values(
                         array_diff($columnsHeader, $excludeColumns)
@@ -1174,6 +1275,20 @@ class ProductionController extends Controller
                             })
                             // ->whereBetween('updated_at',[$startDate,$endDate])
                             ->count();
+                            $arReworkCount = CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            )
+                            ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 } else if ($loginEmpId) {
@@ -1197,6 +1312,20 @@ class ProductionController extends Controller
                         })->where('CE_emp_id',$loginEmpId)
                         // ->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
+                        $arReworkCount = CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            )->where('emp_id',$loginEmpId)
+                            ->count();
                       $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                  }
@@ -1225,7 +1354,7 @@ class ProductionController extends Controller
                 $qaScopeVal = Helpers::qaScope();
                 $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
-                 return view('productions/clientReworkTab',compact('revokeProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','existingCallerChartsWorkLogs','popUpHeader','popupNonEditableFields','popupEditableFields','popupQAEditableFields','qaSubStatusListVal','unAssignedCount','qaStatusList','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arDenialList','arSubStatusList'));
+                 return view('productions/clientReworkTab',compact('revokeProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','existingCallerChartsWorkLogs','popUpHeader','popupNonEditableFields','popupEditableFields','popupQAEditableFields','qaSubStatusListVal','unAssignedCount','qaStatusList','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arReworkCount','arDenialList','arSubStatusList'));
 
            } catch (\Exception $e) {
                log::debug($e->getMessage());
@@ -1297,7 +1426,7 @@ class ProductionController extends Controller
                     $statusQuery->whereNull('duplicate_status')->orWhere('duplicate_status', 'dis_agree');
                 });
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString();$yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
-               $duplicateProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
+               $duplicateProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount= $arReworkCount = $arNonWorkableCount = $arAutoCloseCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
                 $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                 $columnsHeader = array_values(
                     array_diff($columnsHeader, $excludeColumns)
@@ -1314,7 +1443,6 @@ class ProductionController extends Controller
                         $completedCount = $modelClass::where('chart_status','CE_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $pendingCount =   $modelClass::where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $holdCount = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        // $reworkCount = $modelClass::where('chart_status','Revoke')->where('updated_at','<=',$yesterDayDate)->count();
                         $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                         $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
@@ -1325,6 +1453,20 @@ class ProductionController extends Controller
                             })
                             // ->whereBetween('updated_at',[$startDate,$endDate])
                             ->count();
+                            $arReworkCount = CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            )
+                            ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                    }
                 } elseif ($loginEmpId) {
@@ -1334,7 +1476,6 @@ class ProductionController extends Controller
                        $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $holdCount = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        //    $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->where('updated_at','<=',$yesterDayDate)->count();
                         $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                         $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
@@ -1343,6 +1484,20 @@ class ProductionController extends Controller
                         })->where('CE_emp_id',$loginEmpId)
                         // ->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
+                        $arReworkCount = CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            )->where('emp_id',$loginEmpId)
+                            ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 }
@@ -1354,7 +1509,7 @@ class ProductionController extends Controller
                 });
                 $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
-                return view('productions/clientDuplicateTab',compact('duplicateProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount'));
+                return view('productions/clientDuplicateTab',compact('duplicateProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arReworkCount'));
 
            } catch (\Exception $e) {
                log::debug($e->getMessage());
@@ -1990,10 +2145,10 @@ class ProductionController extends Controller
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
             try {
                  $data = $request->all();
-                 $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
+                $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
+                $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                 $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
                 $decodedPracticeName =  $subProjectName == '--' ? NULL : Helpers::encodeAndDecodeID($subProjectName, 'decode');
-               // $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
                 $paProject = Helpers::projectName($decodedProjectName);
                 $decodedClientName = $paProject ? $paProject->project_name : null;
                 $decodedsubProjectName = $decodedPracticeName == NULL ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
@@ -2012,10 +2167,8 @@ class ProductionController extends Controller
                 $data['invoke_date'] = date('Y-m-d',strtotime($data['invoke_date']));
                 $data['parent_id'] = $data['parentId'];
                 $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','DESC')->first();
-                // $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->get();
                 $coderCompletedRecords = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->get();
                 $coderCompletedRecordsCount = count($coderCompletedRecords); $data['coder_work_date'] = $data['ar_at'] = NULL;
-               // $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
                 $autoCloseRecords = $originalModelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->get();
                 $autoCloseRecordsCount = count($autoCloseRecords);
                 if( $data['chart_status'] == "CE_Completed") {
@@ -2028,16 +2181,11 @@ class ProductionController extends Controller
                                                     $query->where('coder_emp_id', $loginEmpId)
                                                         ->orWhereNull('coder_emp_id');
                                                 })->orderBy('id', 'DESC')->get();
-                        // $qasamplingDetailsList = QualitySampling::where('project_id',$decodedProjectName)->where('coder_emp_id',$loginEmpId)->orderBy('id','DESC')->get();
-                        // if(count($qasamplingDetailsList) == 0) {
-                        //     $qasamplingDetailsList = QualitySampling::where('project_id',$decodedProjectName)->orderBy('id','DESC')->get();
-                        // }
                         $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;
                         foreach ($qasamplingDetailsList as $qasamplingDetails) {
                             if($qasamplingDetails != null) {
                                 $qaPercentage = $qasamplingDetails["qa_percentage"];
                                 $qarecords = $coderCompletedRecordsCount*$qaPercentage/100;
-                                // $samplingRecord = $originalModelClass::where('chart_status','CE_Completed')->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])->where('qa_work_status','Sampling')->get();
                                 $samplingRecord = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])->where('qa_work_status','Sampling')->get();
                                 $samplingRecordCount =  count($samplingRecord);
                                 if($qarecords > $samplingRecordCount ) {
@@ -2046,9 +2194,7 @@ class ProductionController extends Controller
                                     $data['chart_status'] = "CE_Completed";
                                     break;
                                 } else {
-                                    //$data['QA_emp_id'] =  $qasamplingDetails["qa_emp_id"];
                                     $data['qa_work_status'] = "Auto_Close";
-                                    // $data['chart_status'] = "QA_Completed";
 
                                 }
                             }
@@ -2077,15 +2223,13 @@ class ProductionController extends Controller
                                 $qaDynamicValues =  $qasamplingDetails["qa_sample_column_value"];//off1,work2,ins2
                                 $qaDynamicColumnDataType =  $qasamplingDetails["qa_sample_column_data_type"];
                                 $qaDynamicColumnCondition =  $qasamplingDetails["qa_sample_column_condition"];
-                              
-                                // if($qaDynamicColumns != null && $qaDynamicValues != null) {
+
                                 if($qaDynamicColumns != null && $qaDynamicValues != null && $qaDynamicColumnDataType != null && $qaDynamicColumnCondition != null) {
                                     $qaDynamicColumns = explode(',', $qasamplingDetails["qa_sample_column_name"]); // Convert to array
                                     $qaDynamicValues = explode(',', $qasamplingDetails["qa_sample_column_value"]); // Convert to array
                                     $qaDynamicColumnDataType =  explode(',',$qasamplingDetails["qa_sample_column_data_type"]);
                                     $qaDynamicColumnCondition =  explode(',',$qasamplingDetails["qa_sample_column_condition"]);
                                     if(count($qaDynamicColumns) === count($qaDynamicValues) && count($qaDynamicValues) === count($qaDynamicColumnDataType) && count($qaDynamicColumnDataType) === count($qaDynamicColumnCondition)) {
-                                      //  $mergedArray = array_combine($qaDynamicColumns, $qaDynamicValues);
                                          $mergedArray = $qaDynamicColumns;
                                     } else {
                                         $mergedArray = []; // Handle mismatched array lengths
@@ -2095,12 +2239,10 @@ class ProductionController extends Controller
                                     $allValuesMatch = true;
 
                                     foreach ($mergedArray as $key => $value) {
-                                        // if (!array_key_exists($key, $data)) {
                                         if (!array_key_exists($value, $data)) {
                                             $allKeysExist = false;
                                             break;
                                         }                                        
-                                        // if ($data[$key] !== $value) {
                                         if ($qaDynamicColumnDataType[$key] == "string" && $data[$value] !== $qaDynamicValues[$key]) {
                                             $allValuesMatch = false;
                                         }
@@ -2108,8 +2250,6 @@ class ProductionController extends Controller
                                     $samplingRecord = $originalModelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])
                                     ->where('qa_work_status','Sampling');
                                     foreach ($qaDynamicColumns as $index => $column) {
-                                        // $allCompletedRecords->where($column, $qaDynamicValues[$index] ?? null);
-                                        // $samplingRecord->where($column, $qaDynamicValues[$index] ?? null);
                                         $allCompletedRecords->where($column,$qaDynamicColumnCondition[$index],$qaDynamicValues[$index] ?? null);
                                         $samplingRecord->where($column,$qaDynamicColumnCondition[$index],$qaDynamicValues[$index] ?? null);
                                     }
@@ -2118,7 +2258,6 @@ class ProductionController extends Controller
                                     $samplingRecordCount =  count($samplingRecord); 
                                     $allCompletedRecordsCount = count($allCompletedRecords);
                                     $qaPercentage = $qasamplingDetails["qa_percentage"];
-                                    //$qarecords = $allCompletedRecordsTotalCount*(int)$qasamplingDetails["qa_percentage"]/80;
                                     if($allCompletedRecordsCount != 0) {
                                         $qarecords = $allCompletedRecordsCount*(int)$qasamplingDetails["qa_percentage"]/100;  
                                      } else {
@@ -2134,7 +2273,6 @@ class ProductionController extends Controller
                                     $samplingRecordCount =  count($samplingRecord);   
                                     $allCompletedRecordsCount = count($coderCompletedRecords);
                                     $qaPercentage = $qasamplingDetails["qa_percentage"];
-                                    // $qarecords = $allCompletedRecordsCount*$qasamplingDetailsPercentage/100;
                                     $qarecords = $allCompletedRecordsTotalCount;
                                 }                                                                       
                                                  
@@ -2153,57 +2291,10 @@ class ProductionController extends Controller
                     $data['coder_work_date'] = Carbon::now()->format('Y-m-d');
                      $data['ar_at'] = Carbon::now()->format('Y-m-d H:i:s');
                     if($decodedPracticeName == NULL) {
-                        // $qasamplingDetailsList = QualitySampling::where('project_id', $decodedProjectName)
-                        //                         ->where(function($query) use ($loginEmpId) {
-                        //                             $query->where('coder_emp_id', $loginEmpId)
-                        //                                 ->orWhereNull('coder_emp_id');
-                        //                         })->orderBy('id', 'DESC')->get();
                          $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL; $data['chart_status'] = "Auto_Close";
-                        // foreach ($qasamplingDetailsList as $qasamplingDetails) {
-                        //     if($qasamplingDetails != null) {
-                        //         $qaPercentage = $qasamplingDetails["qa_percentage"];
-                        //         $qarecords = $autoCloseRecordsCount*$qaPercentage/100;
-                        //         $samplingRecord = $originalModelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])->where('qa_work_status','Sampling')->get();
-                        //         $samplingRecordCount =  count($samplingRecord);
-                        //         if($qarecords > $samplingRecordCount ) {
-                        //             $data['QA_emp_id'] =  $qasamplingDetails["qa_emp_id"];
-                        //             $data['qa_work_status'] = "Sampling";
-                        //             $data['chart_status'] = "Auto_Close";
-                        //             break;
-                        //         } else {
-                        //             //$data['QA_emp_id'] =  $qasamplingDetails["qa_emp_id"];
-                        //             $data['qa_work_status'] = "Auto_Close";
-                        //             $data['chart_status'] = "Auto_Close";
-
-                        //         }
-                        //     }
-                        // }
                     } else {
-                        // $qasamplingDetailsList = QualitySampling::where('project_id', $decodedProjectName)
-                        //                         ->where('sub_project_id', $decodedPracticeName)
-                        //                         ->where(function($query) use ($loginEmpId) {
-                        //                             $query->where('coder_emp_id', $loginEmpId)
-                        //                                 ->orWhereNull('coder_emp_id');
-                        //                         })->orderBy('id', 'DESC')->get();
                         $data['QA_emp_id'] = NULL; $data['qa_work_status'] = NULL;$data['chart_status'] = "Auto_Close";
-                        // foreach ($qasamplingDetailsList as $qasamplingDetails) {
-                        //     if($qasamplingDetails != null) {
-                        //         $qaPercentage = $qasamplingDetails["qa_percentage"];
-                        //         $qarecords = $autoCloseRecordsCount*$qaPercentage/100;
-                        //         $samplingRecord = $originalModelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->where('QA_emp_id',$qasamplingDetails["qa_emp_id"])->where('qa_work_status','Sampling')->get();
-                        //         $samplingRecordCount =  count($samplingRecord);
-                        //         if($qarecords > $samplingRecordCount) {
-                        //             $data['QA_emp_id'] =  $qasamplingDetails["qa_emp_id"];
-                        //             $data['qa_work_status'] = "Sampling";
-                        //             $data['chart_status'] = "Auto_Close";
-                        //             break;
-                        //         } else {
-                        //              $data['qa_work_status'] = "Auto_Close";
-                        //              $data['chart_status'] = "Auto_Close";
-
-                        //         }
-                        //     }
-                        // }
+                        
                     }
                 }
                 $record = $originalModelClass::where('id', $data['parent_id'])->first();
@@ -2214,7 +2305,7 @@ class ProductionController extends Controller
                 if(isset($data['annex_coder_trends']) && $data['annex_coder_trends'] != null) {
                   $annex_coder_trends = isset($data['annex_coder_trends']) && $data['annex_coder_trends'] != null ?  explode('_el_',str_replace("\r\n", '_el_', $data['annex_coder_trends'])) : null;
                 }
-                  if(isset($annex_coder_trends) && $annex_coder_trends != null) {
+                if(isset($annex_coder_trends) && $annex_coder_trends != null) {
                     foreach( $annex_coder_trends as $trend){
                         if (str_contains($trend, 'CPT -') && !str_contains($trend, 'modifier')) {
                             $array[]= $trend;
@@ -2245,47 +2336,57 @@ class ProductionController extends Controller
                         'annex_qa_trends',
                     ];
                     
-                    $data = array_diff_key($data, array_flip($fieldsToExclude));//dd($data);
-                    $datasRecord->update($data);
-                    ($data['chart_status'] == "CE_Completed" || $data['chart_status'] == "Auto_Close") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'QA_required_sampling' => $data['QA_required_sampling'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
+                        $data = array_diff_key($data, array_flip($fieldsToExclude));
+                        if ($data['chart_status'] == "CE_Completed"  && isset($data['ar_rework_val']) && $data['ar_rework_val'] == "user_rework") {
+                             unset($data['QA_emp_id'],$data['qa_work_status'],$data['QA_required_sampling'],$data['QA_status_code'],$data['QA_sub_status_code'],$data['coder_work_date'],$data['ar_at']);
+                             $datasRecord->update($data);                        
+                        } else {
+                            $datasRecord->update($data);
+                            ($data['chart_status'] == "CE_Completed" || $data['chart_status'] == "Auto_Close") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'QA_required_sampling' => $data['QA_required_sampling'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
+                        }
                 } else {
                     $data['parent_id'] = $data['idValue'];
                     ($data['chart_status'] == "CE_Completed" || $data['chart_status'] == "Auto_Close") ? $record->update( ['chart_status' => $data['chart_status'],'QA_emp_id' => $data['QA_emp_id'],'qa_work_status' => $data['qa_work_status'],'QA_required_sampling' => $data['QA_required_sampling'],'QA_status_code' => $data['QA_status_code'],'QA_sub_status_code' => $data['QA_sub_status_code'],'coder_work_date' => $data['coder_work_date'],'ar_at' => $data['ar_at']]) : $record->update( ['chart_status' => $data['chart_status'],'ce_hold_reason' => $data['ce_hold_reason'],'ar_at' => $data['ar_at']] );
                     $modelClass::create($data);
                 }
                 $currentTime = Carbon::now();
-                // $callChartWorkLogExistingRecord = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
-                // ->where('record_status',$data['record_old_status'])
-                // ->where('project_id', $decodedProjectName)
-                // ->where('sub_project_id', $decodedPracticeName)
-                // ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->first();
-                //   if($callChartWorkLogExistingRecord && $callChartWorkLogExistingRecord != null) {
-                //     $start_time = Carbon::parse($callChartWorkLogExistingRecord->start_time);
-                //     $time_difference = $currentTime->diff($start_time);
-                //     $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
-                //     $callChartWorkLogExistingRecord->update([
-                //         'record_status' => $data['chart_status'],
-                //         'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time
-                //     ]);
-                // }
-                $callChartWorkLogExistingRecords = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
-                ->where('record_status',$data['record_old_status'])
-                ->where('project_id', $decodedProjectName)
-                ->where('sub_project_id', $decodedPracticeName)
-                ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->get();
-                    if ($callChartWorkLogExistingRecords->isNotEmpty()) {
-                        foreach ($callChartWorkLogExistingRecords as $callChartWorkLog) {
-                            $start_time = Carbon::parse($callChartWorkLog->start_time);
-                            $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
-                            $callChartWorkLog->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time] );
-                        }
-                   }
-                $tabUrl = $data['record_old_status'] == "Revoke" ? $data['record_old_status'] : lcfirst(str_replace('CE_', '', $data['record_old_status']));
+                if ($data['chart_status'] == "CE_Completed"  && isset($data['ar_rework_val']) && $data['ar_rework_val'] == "user_rework") {
+                } else {
+                    $callChartWorkLogExistingRecords = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
+                    ->where('record_status',$data['record_old_status'])
+                    ->where('project_id', $decodedProjectName)
+                    ->where('sub_project_id', $decodedPracticeName)
+                    ->where('emp_id', Session::get('loginDetails')['userDetail']['emp_id'])->where('end_time',NULL)->get();
+                        if ($callChartWorkLogExistingRecords->isNotEmpty()) {
+                            foreach ($callChartWorkLogExistingRecords as $callChartWorkLog) {
+                                $start_time = Carbon::parse($callChartWorkLog->start_time);
+                                $work_time = $currentTime->diff($start_time)->format('%H:%I:%S');
+                                $callChartWorkLog->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time] );
+                            }
+                    }
+                }
+                $tabUrl = $data['record_old_status'] == "Revoke" ? $data['record_old_status'] : ($data['record_old_status'] == "CE_Completed" && isset($data['ar_rework_val'])&& $data['ar_rework_val'] == "user_rework" ? "ar_rework" : lcfirst(str_replace('CE_', '', $data['record_old_status'])));
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'Data updated successfully',                    
+                        'redirect_url' => url('/projects_'.$tabUrl.'/'.$clientName.'/'.$subProjectName.'?parent=' .request()->parent .'&child=' .request()->child)
+
+                    ]);
+                }
                 return redirect('/projects_'.$tabUrl.'/'.$clientName.'/'.$subProjectName.'?parent=' .request()->parent .'&child=' .request()->child);
              } catch (\Exception $e) {
                 log::debug($e->getMessage());
                 $data = $request->all();
-                $tabUrl = $data['record_old_status'] == "Revoke" ? $data['record_old_status'] : lcfirst(str_replace('CE_', '', $data['record_old_status']));
+                $tabUrl = $data['record_old_status'] == "Revoke" ? $data['record_old_status'] : ($data['record_old_status'] == "CE_Completed" && isset($data['ar_rework_val'])&& $data['ar_rework_val'] == "user_rework" ? "ar_rework" : lcfirst(str_replace('CE_', '', $data['record_old_status'])));
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'An unexpected error occurred. Please recheck data once.',                    
+                        'redirect_url' => url('/projects_'.$tabUrl.'/'.$clientName.'/'.$subProjectName.'?parent=' .request()->parent .'&child=' .request()->child)
+        
+                    ]);
+                }
                 return redirect('/projects_'.$tabUrl.'/'.$clientName.'/'.$subProjectName.'?parent=' .request()->parent .'&child=' .request()->child)->with('error','An unexpected error occurred. Please recheck data once.');
             }
         } else {
@@ -2365,78 +2466,7 @@ class ProductionController extends Controller
         } else {
             return redirect('/');
         }
-    }
-
-    // public function clientsReworkUpdate(Request $request,$clientName,$subProjectName) {
-    //     if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
-    //         try {
-    //              $data = $request->all();
-    //              $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
-    //             $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
-    //             $decodedPracticeName =  $subProjectName == '--' ? NULL : Helpers::encodeAndDecodeID($subProjectName, 'decode');
-    //             $decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
-    //             $decodedsubProjectName = $decodedPracticeName == NULL ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
-    //             $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
-    //             $modelName = Str::studly($table_name);
-    //             $originalModelClass = "App\\Models\\" . $modelName;
-    //             $modelClass = "App\\Models\\" . $modelName.'Datas';
-    //             $data = [];
-    //             foreach ($request->except('_token', 'parent', 'child') as $key => $value) {
-    //                 if (is_array($value)) {
-    //                     $data[$key] = implode('_el_', $value);
-    //                 } else {
-    //                     $data[$key] = $value;
-    //                 }
-    //             }
-
-    //             $data['parent_id'] = $data['parentId'];
-    //             $datasRecord = $modelClass::where('parent_id', $data['parent_id'])->orderBy('id','DESC')->first();
-    //             $record = $originalModelClass::where('id', $data['parent_id'])->first();
-    //             $qaData = $originalModelClass::where('id', $data['parent_id'])->first()->toArray();
-    //             $excludeKeys = ['id', 'created_at', 'updated_at', 'deleted_at'];
-    //             $filteredQAData = collect($qaData)->except($excludeKeys)->toArray();
-    //             $data = array_merge($data, array_diff_key($filteredQAData, $data));
-    //             if($data['coder_rework_status'] == 'Accept' && $datasRecord['tl_error_count'] == NULL) {//coder accepted
-    //                 $data['chart_status'] = "QA_Completed";
-    //                 $data['QA_required_sampling'] = "Auto_Close";
-    //                 $data['coder_error_count'] = 1;
-    //                 $data['qa_error_count'] = NULL;
-    //                 $data['tl_comments'] = $datasRecord['tl_comments'];
-    //              } else if($data['coder_rework_status'] == 'Accept' &&  $datasRecord['tl_error_count'] == 1) {//maanger assigned to coder
-    //                 $data['chart_status'] = "QA_Completed";
-    //                 $data['QA_required_sampling'] = "Auto_Close";
-    //                 $data['qa_error_count'] = NULL;
-    //                 $data['coder_error_count'] = 1;
-    //                 $data['tl_comments'] = $data['coder_rework_reason'].'@'.$loginEmpId;
-    //                 $data['coder_rework_reason'] = $datasRecord['coder_rework_reason'];
-    //              }
-    //               else if($data['coder_rework_status'] == 'Rebuttal' &&  $datasRecord['tl_error_count'] == 1) {//maanger assigned to QA
-    //                 $data['chart_status'] = "QA_Completed";
-    //                 $data['QA_required_sampling'] = "Auto_Close";
-    //                 $data['qa_error_count'] = 1;
-    //                 $data['coder_error_count'] = NULL;
-    //                 $data['tl_comments'] = $data['coder_rework_reason'].'@'.$loginEmpId;
-    //                 $data['coder_rework_reason'] = $datasRecord['coder_rework_reason'];
-    //              } else {
-    //                 $data['chart_status'] = "CE_Completed";
-    //                 $data['QA_required_sampling'] = "Sampling";
-    //                 $data['coder_error_count'] = NULL;
-    //                 $data['qa_error_count'] = NULL;
-    //                 $data['tl_comments'] = $datasRecord['tl_comments'];
-    //             }
-    //             $datasRecord->update( ['chart_status' => $data['chart_status'],'QA_required_sampling' => $data['QA_required_sampling'],'coder_rework_status' => $data['coder_rework_status'],'coder_rework_reason' => $data['coder_rework_reason'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'], 'tl_comments' => $data['tl_comments']] );
-    //             $record->update( ['chart_status' => $data['chart_status'],'QA_required_sampling' => $data['QA_required_sampling'],'coder_rework_status' => $data['coder_rework_status'],'coder_rework_reason' => $data['coder_rework_reason'],'coder_error_count' => $data['coder_error_count'],'qa_error_count' => $data['qa_error_count'],'tl_comments' => $data['tl_comments']] );
-
-    //             return redirect('/projects_Revoke/'.$clientName.'/'.$subProjectName);
-    //             // $tabUrl = $data['record_old_status'] == "Revoke" ? $data['record_old_status'] : lcfirst(str_replace('CE_', '', $data['record_old_status']));
-    //             // return redirect('/projects_'.$tabUrl.'/'.$clientName.'/'.$subProjectName);
-    //         } catch (\Exception $e) {
-    //             log::debug($e->getMessage());
-    //         }
-    //     } else {
-    //         return redirect('/');
-    //     }
-    // }
+    }   
     public function clientsReworkUpdate(Request $request,$clientName,$subProjectName) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
             try {
@@ -2607,7 +2637,7 @@ class ProductionController extends Controller
                 }
                $modelClassDatas = "App\\Models\\" .  $modelName.'Datas'; $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();
                $unAssignedProjectDetails = collect();$assignedDropDown=[];$dept= Session::get('loginDetails')['userInfo']['department']['id'];$existingCallerChartsWorkLogs = [];$unAssignedProjectDetailsStatus = [];$unAssignedCount = 0;
-               $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
+               $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount= $arReworkCount = $arNonWorkableCount = $arAutoCloseCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                     $columnsHeader = array_values(
                         array_diff($columnsHeader, $excludeColumns)
@@ -2625,7 +2655,6 @@ class ProductionController extends Controller
                        $completedCount = $modelClass::where('chart_status','CE_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $pendingCount = $modelClass::where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $holdCount = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        //    $reworkCount = $modelClass::where('chart_status','Revoke')->where('updated_at','<=',$yesterDayDate)->count();
                         $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
                        $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
@@ -2638,6 +2667,20 @@ class ProductionController extends Controller
                         //->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        $arReworkCount = CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            )
+                            ->count();
                     //    $payload = [
                     //        'token' => '1a32e71a46317b9cc6feb7388238c95d',
                     //        'client_id' => $decodedProjectName,
@@ -2662,7 +2705,6 @@ class ProductionController extends Controller
                        $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $holdCount = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        //    $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->where('updated_at','<=',$yesterDayDate)->count();
                         $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $unAssignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->orderBy('id','DESC')->pluck('chart_status')->toArray();
                        $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
@@ -2673,6 +2715,20 @@ class ProductionController extends Controller
                             //->whereBetween('updated_at',[$startDate,$endDate])
                             ->count();
                        $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                       $arReworkCount = CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            )->where('emp_id',$loginEmpId)
+                            ->count();
                     }
                }
                $unAssignedProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
@@ -2690,7 +2746,7 @@ class ProductionController extends Controller
                $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
                $projectTypeSettings = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->first();
-                   return view('productions/clientUnAssignedTab',compact('unAssignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','unAssignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','projectTypeSettings'));
+                   return view('productions/clientUnAssignedTab',compact('unAssignedProjectDetails','columnsHeader','popUpHeader','popupNonEditableFields','popupEditableFields','modelClass','clientName','subProjectName','assignedDropDown','existingCallerChartsWorkLogs','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','unAssignedProjectDetailsStatus','unAssignedCount','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arReworkCount','projectTypeSettings'));
 
            } catch (\Exception $e) {
                log::debug($e->getMessage());
@@ -2794,7 +2850,7 @@ class ProductionController extends Controller
                     }
                 }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
-               $completedProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
+               $completedProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = $arReworkCount = $arNonWorkableCount = $arAutoCloseCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                     $columnsHeader = array_values(
                         array_diff($columnsHeader, $excludeColumns)
@@ -2809,7 +2865,6 @@ class ProductionController extends Controller
                        $completedCount = $modelClass::where('chart_status','CE_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $pendingCount = $modelClass::where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $holdCount = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                    //    $reworkCount = $modelClass::where('chart_status','Revoke')->where('updated_at','<=',$yesterDayDate)->count();
                        $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $modelClassDuplcates = "App\\Models\\" . $modelName.'Duplicates';
                        $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
@@ -2822,6 +2877,20 @@ class ProductionController extends Controller
                         //->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        $arReworkCount = CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            )
+                            ->count();
                    }
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
@@ -2830,7 +2899,6 @@ class ProductionController extends Controller
                       $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                       $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                       $holdCount = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                    //   $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->where('updated_at','<=',$yesterDayDate)->count();
                     $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->whereBetween('updated_at',[$startDate,$endDate])->count();
                     $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
@@ -2840,6 +2908,20 @@ class ProductionController extends Controller
                         //->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
                     $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                    $arReworkCount = CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            )->where('emp_id',$loginEmpId)
+                            ->count();
                    }
                  }
                  $arNonWorkableProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
@@ -2861,7 +2943,7 @@ class ProductionController extends Controller
                  $arSubStatusList = Helpers::arSubStatusList();
                  $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                  $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
-                return view('productions/clientNonWorkableTab',compact('arNonWorkableProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arDenialList','arSubStatusList'));
+                return view('productions/clientNonWorkableTab',compact('arNonWorkableProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arReworkCount','arDenialList','arSubStatusList'));
 
            } catch (\Exception $e) {
                log::debug($e->getMessage());
@@ -2919,7 +3001,7 @@ class ProductionController extends Controller
                     }
                 }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString();$yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
-               $revokeProjectDetails = collect(); $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$existingCallerChartsWorkLogs = [];$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
+               $revokeProjectDetails = collect(); $duplicateCount = 0; $assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = $arReworkCount = $arNonWorkableCount = $arAutoCloseCount = 0;$existingCallerChartsWorkLogs = [];$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                     $columnsHeader = array_values(
                         array_diff($columnsHeader, $excludeColumns)
@@ -2950,6 +3032,20 @@ class ProductionController extends Controller
                        $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
                        $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','DESC')->pluck('record_id')->toArray();
                        $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                       $arReworkCount = CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            )
+                            ->count();
                    }
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
@@ -2971,6 +3067,20 @@ class ProductionController extends Controller
                             ->count();
                     $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','DESC')->pluck('record_id')->toArray();
                     $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                    $arReworkCount = CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            )->where('emp_id',$loginEmpId)
+                            ->count();
                    }
                 }
                  $rebuttalProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
@@ -2998,7 +3108,7 @@ class ProductionController extends Controller
                 $qaScopeVal = Helpers::qaScope();
                 $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
-                 return view('productions/clientRebuttalTab',compact('rebuttalProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','existingCallerChartsWorkLogs','popUpHeader','popupNonEditableFields','popupEditableFields','popupQAEditableFields','qaSubStatusListVal','unAssignedCount','qaStatusList','arNonWorkableCount','rebuttalCount','arStatusList','arActionListVal','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arDenialList','arSubStatusList'));
+                 return view('productions/clientRebuttalTab',compact('rebuttalProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','existingCallerChartsWorkLogs','popUpHeader','popupNonEditableFields','popupEditableFields','popupQAEditableFields','qaSubStatusListVal','unAssignedCount','qaStatusList','arNonWorkableCount','rebuttalCount','arStatusList','arActionListVal','qaClassificationVal','qaCategoryVal','qaScopeVal','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arReworkCount','arDenialList','arSubStatusList'));
 
            } catch (\Exception $e) {
                log::debug($e->getMessage());
@@ -3090,7 +3200,7 @@ class ProductionController extends Controller
                         }
                     }
                 }
-               if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
+                if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
           
                     if($request->recordStatusVal == "unassigned") {
                         $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->whereNull('CE_emp_id')->get();
@@ -3103,6 +3213,50 @@ class ProductionController extends Controller
                                 $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->where('CE_emp_id',$request->resourceName)->get();
                             }
                             $exStatus = str_replace('CE_', '', $request['chart_status']);
+                        } else if($request->recordStatusVal == "user_rework")  {
+
+                            $reworkQuery =
+                            CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            );
+
+
+                            if($request->subProjectId != null)
+                            {
+                                $reworkQuery->where(
+                                    'sub_project_id',
+                                    $request->subProjectId
+                                );
+                            }
+
+
+                            $reworkIds =
+                            $reworkQuery
+                            ->pluck('record_id')
+                            ->toArray();
+
+
+                            $exportResult =
+                            $query
+                            ->whereIn(
+                                'id',
+                                $reworkIds
+                            )
+                            ->get();
+
+
+                            $exStatus = "user_rework";
+
                         } else {
                             if($request->chart_status == "Rebuttal") {
                                 $exportResult = $query->where('chart_status',$request->chart_status)->whereNull('ar_manager_rebuttal_status')->orWhere('ar_manager_rebuttal_status', '!=', 'agree')
@@ -3127,22 +3281,71 @@ class ProductionController extends Controller
                     if($request->recordStatusVal == "assigned") {
                        $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->get();
                        $exStatus = str_replace('CE_', '', $request['chart_status']);
-                    } else {
-                        if($request->chart_status == "Rebuttal") {
-                            $exportResult = $query->where('chart_status',$request->chart_status)->whereNull('ar_manager_rebuttal_status')->orWhere('ar_manager_rebuttal_status', '!=', 'agree')
-                            ->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->get();
+                    } else if($request->recordStatusVal == "user_rework") {
+                                $reworkQuery =
+                                CompletedUserEditable::where(
+                                    'project_id',
+                                    $decodedProjectName
+                                )
+                                ->where(
+                                    'record_status',
+                                    'user_rework'
+                                )
+                                ->where(
+                                    'start_time',
+                                    '>=',
+                                    Carbon::now()->subHours(24)
+                                )
+                                ->where(
+                                    'emp_id',
+                                    $loginEmpId
+                                );
+
+
+                                if($request->subProjectId != null)
+                                {
+                                    $reworkQuery->where(
+                                        'sub_project_id',
+                                        $request->subProjectId
+                                    );
+                                }
+
+
+                                $reworkIds =
+                                $reworkQuery
+                                ->pluck('record_id')
+                                ->toArray();
+
+
+
+                                $exportResult =
+                                $query
+                                ->whereIn(
+                                    'id',
+                                    $reworkIds
+                                )
+                                ->get();
+
+
+                                $exStatus = "user_rework";
+
+
                         } else {
-                           $exportResult = $query->where('chart_status',$request->chart_status)->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->get();
-                        }
-                        if(str_contains($request['chart_status'],'CE_')) {
-                            $exStatus = str_replace('CE_', '', $request['chart_status']);
-                         } else if(str_contains($request['chart_status'],'AR_')) {
-                            $exStatus = str_replace('AR_', '', $request['chart_status']);
-                         } else if($request['chart_status'] == 'Revoke') {
-                                $exStatus = 'Rework';
-                         } else {
-                            $exStatus = $request['chart_status'];
-                         }
+                            if($request->chart_status == "Rebuttal") {
+                                $exportResult = $query->where('chart_status',$request->chart_status)->whereNull('ar_manager_rebuttal_status')->orWhere('ar_manager_rebuttal_status', '!=', 'agree')
+                                ->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->get();
+                            } else {
+                            $exportResult = $query->where('chart_status',$request->chart_status)->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->get();
+                            }
+                            if(str_contains($request['chart_status'],'CE_')) {
+                                $exStatus = str_replace('CE_', '', $request['chart_status']);
+                            } else if(str_contains($request['chart_status'],'AR_')) {
+                                $exStatus = str_replace('AR_', '', $request['chart_status']);
+                            } else if($request['chart_status'] == 'Revoke') {
+                                    $exStatus = 'Rework';
+                            } else {
+                                $exStatus = $request['chart_status'];
+                            }
                     }
                     
                 }
@@ -3539,6 +3742,101 @@ class ProductionController extends Controller
         }
     }
 
+    public function userEditableStatusUpdate(Request $request) {
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+
+            try {
+                $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
+                $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
+                $isManager = $loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false);
+                if (!$isManager) {
+                    return response()->json(['success' => false]);
+                }
+                $decodedProjectName = Helpers::encodeAndDecodeID($request['clientName'], 'decode');
+                $decodedPracticeName = $request['subProjectName'] == '--' ? '--' : Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
+                $paProject = Helpers::projectName($decodedProjectName);
+                $decodedClientName = $paProject ? $paProject->project_name : null;
+                $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
+                $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
+                $modelName = Str::studly($table_name);
+                $modelClass = "App\\Models\\" . $modelName;
+                $subProjectId = $request['subProjectName'] == '--' ?  NULL : $decodedPracticeName;
+                $checkedValues = json_decode($request->input('checkedRowValues'), true);
+                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();
+                $endDate = Carbon::now()->endOfDay()->toDateTimeString();
+                $completedRecords = collect();
+                if($request['selectedRecords'] == "none") {
+                    if (!empty($checkedValues) && class_exists($modelClass)) {
+                        foreach($checkedValues as $data) {
+                            $existingRecord = $modelClass::where('id',$data['value'])->where('chart_status','CE_Completed')->first();
+                            if ($existingRecord) {
+                                $completedRecords->push($existingRecord);
+                            }
+                        }
+                    }
+                } else {
+                    $query = $modelClass::query();
+                    foreach ($request->except('_token', 'checkedRowValues', 'clientName','subProjectName','selectedRecords','status_val') as $key => $value) {
+                        if (is_numeric($value) || is_bool($value)) {
+                            $query->where($key, $value);
+                        } elseif ($this->isDate($value)) {
+                            $query->whereDate($key, '=', $value);
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
+                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                            $query->where($key, $value);
+                        } else {
+                            if($value != null) {
+                            $query->where($key, 'like', '%' . $value . '%');
+                            }
+                        }
+                    }
+                    $completedRecords = $query->where('chart_status','CE_Completed')->whereBetween('updated_at',[$startDate,$endDate])->get();
+                }
+                foreach($completedRecords as $existingRecord) {
+                    $userEditableLookup = [
+                        'project_id' => $decodedProjectName,
+                        'record_id' => (string) $existingRecord->id,
+                        'record_status' => 'user_rework',
+                    ];
+                    if ($subProjectId === NULL) {
+                        $existingUserEditable = CompletedUserEditable::where($userEditableLookup)->whereNull('sub_project_id')->first();
+                    } else {
+                        $userEditableLookup['sub_project_id'] = $subProjectId;
+                        $existingUserEditable = CompletedUserEditable::where($userEditableLookup)->first();
+                    }
+                    if (!$existingUserEditable) {
+                        CompletedUserEditable::create([
+                            'emp_id' => $existingRecord->CE_emp_id,
+                            'project_id' => $decodedProjectName,
+                            'sub_project_id' => $subProjectId,
+                            'record_id' => (string) $existingRecord->id,
+                            'start_time' => Carbon::now()->toDateTimeString(),
+                            'record_status' => 'user_rework',
+                        ]);
+                    } else {
+                        $existingUserEditable->update([
+                            'emp_id' => $existingRecord->CE_emp_id,
+                            'start_time' => Carbon::now()->toDateTimeString(),
+                            'record_status' => 'user_rework',
+                        ]);
+
+                    }
+                }
+                return response()->json([
+                    'success' => true,
+                    'recordIds' => $completedRecords->pluck('id')->map(function ($id) {
+                        return (string) $id;
+                    })->values()
+                ]);
+            } catch (\Exception $e) {
+                log::debug($e->getMessage());
+                return response()->json(['success' => false]);
+            }
+        } else {
+            return redirect('/');
+        }
+    }
+
     public function projectCallChartWorkLogs(Request $request) {
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
 
@@ -3879,7 +4177,7 @@ class ProductionController extends Controller
                     }
                 }
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
-               $arAutoCloseProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
+               $arAutoCloseProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = $arNonWorkableCount = $arReworkCount = $arAutoCloseCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
                $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                     $columnsHeader = array_values(
                         array_diff($columnsHeader, $excludeColumns)
@@ -3894,7 +4192,6 @@ class ProductionController extends Controller
                        $completedCount = $modelClass::where('chart_status','CE_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $pendingCount = $modelClass::where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $holdCount = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                    //    $reworkCount = $modelClass::where('chart_status','Revoke')->where('updated_at','<=',$yesterDayDate)->count();
                        $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $modelClassDuplcates = "App\\Models\\" . $modelName.'Duplicates';
                        $duplicateCount = $modelClassDuplcates::count();
@@ -3907,6 +4204,20 @@ class ProductionController extends Controller
                         })
                         //->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
+                           $arReworkCount = CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            )
+                            ->count();
                    }
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
@@ -3915,7 +4226,6 @@ class ProductionController extends Controller
                       $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                       $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                       $holdCount = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                    //   $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->where('updated_at','<=',$yesterDayDate)->count();
                     $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->whereBetween('updated_at',[$startDate,$endDate])->count();
                     $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
@@ -3925,6 +4235,20 @@ class ProductionController extends Controller
                         })->where('CE_emp_id',$loginEmpId)
                         //->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
+                           $arReworkCount = CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            )->where('emp_id',$loginEmpId)
+                            ->count();
                    }
                  }
                  $arAutoCloseProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
@@ -3947,7 +4271,7 @@ class ProductionController extends Controller
                  $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                  $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();  
              
-                 return view('productions/arAutoClose',compact('arAutoCloseProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arDenialList','arSubStatusList'));
+                 return view('productions/arAutoClose',compact('arAutoCloseProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount','arReworkCount','arDenialList','arSubStatusList'));
 
            } catch (\Exception $e) {
                log::debug($e->getMessage());
@@ -4099,7 +4423,7 @@ class ProductionController extends Controller
                     }
               
                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
-               $claimHistoryDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = 0;$subProjectId = $uniqueColumnData['subProjectName'] == '--' ?  NULL : $decodedPracticeName;
+               $claimHistoryDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = $arNonWorkableCount = $arReworkCount = $arAutoCloseCount = 0;$subProjectId = $uniqueColumnData['subProjectName'] == '--' ?  NULL : $decodedPracticeName;
               if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
                    if (class_exists($modelClass)) {
                        $claimHistoryDetails =  $query->orderBy('id','ASC')->get();
@@ -4645,6 +4969,347 @@ class ProductionController extends Controller
             ->deleteFileAfterSend(true);
     }
 
+
+
+    public function arReworkTab(Request $request,$clientName,$subProjectName) {
+
+        if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
+           try {
+               $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
+               $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
+               $decodedProjectName = Helpers::encodeAndDecodeID($clientName, 'decode');
+               $decodedPracticeName = $subProjectName == '--' ? '--' :Helpers::encodeAndDecodeID($subProjectName, 'decode');
+                $paProject = Helpers::projectName($decodedProjectName);
+               $decodedClientName = $paProject ? $paProject->project_name : null;
+               $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
+               $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
+               $columnsHeader=[];
+               if (Schema::hasTable($table_name)) {
+                    $column_names = DB::select("DESCRIBE $table_name");
+                    $columns = array_column($column_names, 'Field');
+                    $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
+                    'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                    'updated_at','created_at', 'deleted_at'];
+                    $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
+                        return !in_array($column, $columnsToExclude);
+                    });
+                    array_push($columnsHeader,'aging','aging_range');
+               }
+               $modelName = Str::studly($table_name);
+               $modelClass = "App\\Models\\" . $modelName;
+               $query = $modelClass::query();
+               $searchData = [];
+               if($request['_token'] != null) {
+                    foreach ($request->except('_token', 'parent', 'child','page') as $key => $value) {
+                       $searchData[$key] = $value;
+                        if (is_array($value)) {
+                            $value = implode('_el_', $value);  // If it's an array, handle it accordingly
+                        }
+
+                        // Assuming 'like' is needed for partial match searches (optional), adjust based on requirements
+                        if (is_numeric($value) || is_bool($value)) {
+                            $query->where($key, $value);  // Exact match for numeric/boolean
+                        } elseif ($this->isDate($value)) {  // Check if it's a date
+                            $query->whereDate($key, '=', $value);  // Use `whereDate` for exact date match
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
+                                } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                            $query->where($key, $value); // For amounts (e.g., "$214.44"), adjust as needed
+                        } else {
+                            if($value != null) {
+                              $query->where($key, 'like', '%' . $value . '%'); // Use 'like' for partial text matches
+                            }
+                        }
+                    }
+                }
+               $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();$endDate = Carbon::now()->endOfDay()->toDateTimeString(); $yesterDayDate = Carbon::yesterday()->endOfDay()->toDateTimeString();$unAssignedCount = 0;
+               $completedProjectDetails = collect();$duplicateCount = 0;$assignedCount=0; $completedCount = 0; $pendingCount = 0;   $holdCount =0;$reworkCount = $arReworkCount = $arAutoCloseCount = 0;$subProjectId = $subProjectName == '--' ?  NULL : $decodedPracticeName;
+               $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
+                $columnsHeader = array_values(
+                    array_diff($columnsHeader, $excludeColumns)
+                );
+                    $model = $query->getModel();
+                    $allColumns = Schema::getColumnListing($model->getTable());  
+                $selectColumns = array_diff($allColumns, $excludeColumns);
+                $isManager =
+                (
+                    $loginEmpId == "Admin" ||
+                    strpos($empDesignation,'Manager') !== false ||
+                    strpos($empDesignation,'VP') !== false ||
+                    strpos($empDesignation,'Leader') !== false ||
+                    strpos($empDesignation,'Team Lead') !== false ||
+                    strpos($empDesignation,'CEO') !== false ||
+                    strpos($empDesignation,'Vice') !== false ||
+                    strpos($empDesignation,'Group Coordinator') !== false ||
+                    strpos($empDesignation,'Subject Matter Expert') !== false ||
+                    strpos($empDesignation,'Group Co-ordinator - Quality') !== false ||
+                    strpos($empDesignation,'Group Co-ordinator - AR') !== false
+                );
+                    if($isManager) {
+                      if (class_exists($modelClass)) {
+                                            $reworkQuery =
+                        CompletedUserEditable::where(
+                            'project_id',
+                            $decodedProjectName
+                        )
+                        ->where(
+                            'record_status',
+                            'user_rework'
+                        )
+                        ->where(
+                            'start_time',
+                            '>=',
+                            Carbon::now()->subHours(24)
+                        );
+
+
+                        if($subProjectId == NULL)
+                        {
+                            $reworkQuery->whereNull('sub_project_id');
+                        }
+                        else
+                        {
+                            $reworkQuery->where(
+                                'sub_project_id',
+                                $subProjectId
+                            );
+                        }
+
+
+                        if(!$isManager)
+                        {
+                            $reworkQuery->where(
+                                'emp_id',
+                                $loginEmpId
+                            );
+                        }
+
+
+                        $reworkIds =
+                        $reworkQuery->pluck('record_id')->toArray();
+
+
+
+                        $arReworkDetails = $modelClass::whereRaw('1 = 0')->paginate(50);
+
+
+                        if(class_exists($modelClass) && count($reworkIds)>0)
+                        {
+                            $arReworkDetails =
+                            $modelClass::whereIn(
+                                'id',
+                                $reworkIds
+                            )
+                            ->orderBy(
+                                'id',
+                                'DESC'
+                            )
+                            ->paginate(50);
+                        }
+                        $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->whereNotNull('CE_emp_id')->count();
+                       $completedCount = $modelClass::where('chart_status','CE_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                       $pendingCount = $modelClass::where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                       $holdCount = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                       $reworkCount = $modelClass::where('chart_status','Revoke')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                       $modelClassDuplcates = "App\\Models\\" . $modelName.'Duplicates';
+                       $duplicateCount = $modelClassDuplcates::whereNull('duplicate_status')->orWhere('duplicate_status','dis_agree')->count();
+                       $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
+                       $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                       $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
+                                $query->whereNull('ar_manager_rebuttal_status')
+                                    ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
+                        })
+                        ->count();
+                        $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                        $arReworkQuery =
+                            CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            );
+
+
+                            if($subProjectId == NULL)
+                            {
+                                $arReworkQuery->whereNull(
+                                    'sub_project_id'
+                                );
+                            }
+                            else
+                            {
+                                $arReworkQuery->where(
+                                    'sub_project_id',
+                                    $subProjectId
+                                );
+                            }
+
+
+                            if(!$isManager)
+                            {
+                                $arReworkQuery->where(
+                                    'emp_id',
+                                    $loginEmpId
+                                );
+                            }
+
+
+                            $arReworkCount =
+                            $arReworkQuery->count();
+                   }
+                } else if ($loginEmpId) {                  
+                    if (class_exists($modelClass)) {
+
+
+                        /*
+                        AR Rework records for normal user
+                        Only completed_user_editables table
+                        record_status=user_rework
+                        last 24 hours
+                        own emp_id
+                        */
+
+
+                        $reworkQuery =
+                        CompletedUserEditable::where(
+                            'project_id',
+                            $decodedProjectName
+                        )
+                        ->where(
+                            'record_status',
+                            'user_rework'
+                        )
+                        ->where(
+                            'start_time',
+                            '>=',
+                            Carbon::now()->subHours(24)
+                        )
+                        ->where(
+                            'emp_id',
+                            $loginEmpId
+                        );
+
+
+                        if($subProjectId == NULL)
+                        {
+                            $reworkQuery->whereNull(
+                                'sub_project_id'
+                            );
+
+                        }
+                        else
+                        {
+                            $reworkQuery->where(
+                                'sub_project_id',
+                                $subProjectId
+                            );
+                        }
+
+
+                        $reworkIds =
+                        $reworkQuery
+                        ->pluck('record_id')
+                        ->toArray();
+
+
+
+                        $arReworkDetails = $modelClass::whereRaw('1 = 0')->paginate(50);
+
+
+
+                        if(count($reworkIds) > 0)
+                        {
+
+                            $arReworkDetails =
+                            $modelClass::whereIn(
+                                'id',
+                                $reworkIds
+                            )
+                            ->orderBy(
+                                'id',
+                                'DESC'
+                            )
+                            ->paginate(50);
+
+                        }
+    
+                      $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->count();
+                      $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                      $pendingCount = $modelClass::where('chart_status','CE_Pending')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                      $holdCount = $modelClass::where('chart_status','CE_Hold')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                      $reworkCount = $modelClass::where('chart_status','Revoke')->where('CE_emp_id',$loginEmpId)->whereNull('tl_error_count')->whereBetween('updated_at',[$startDate,$endDate])->count();
+                      $arNonWorkableCount = $modelClass::where('chart_status','AR_non_workable')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                      $rebuttalCount = $modelClass::where('chart_status','Rebuttal')->where(function ($query) {
+                                    $query->whereNull('ar_manager_rebuttal_status')
+                                        ->orWhere('ar_manager_rebuttal_status', '!=', 'agree');
+                            })->where('CE_emp_id',$loginEmpId)
+                            ->count();
+                      $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
+                      $arReworkCount = CompletedUserEditable::where(
+                                'project_id',
+                                $decodedProjectName
+                            )
+                            ->where(
+                                'record_status',
+                                'user_rework'
+                            )
+                            ->where(
+                                'start_time',
+                                '>=',
+                                Carbon::now()->subHours(24)
+                            )->where('emp_id',$loginEmpId)
+                            ->count();
+                    }
+                 }
+                if($arReworkDetails instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                {
+                    $arReworkDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
+
+                        foreach ($excludeColumns as $column) {
+                            unset($item->{$column});
+                        }
+
+                        return $item;
+
+                    });
+                }
+                 $dept= Session::get('loginDetails')['userInfo']['department']['id'];
+                 $popUpHeader =  formConfiguration::groupBy(['project_id', 'sub_project_id'])
+                 ->where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)
+                 ->select('project_id', 'sub_project_id')
+                 ->first();
+                 $popupNonEditableFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->where('field_type','non_editable')->where('field_type_3','popup_visible')->get();
+                 $popupEditableFields = formConfiguration::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->where('field_type','editable')->where('field_type_3','popup_visible')->get();
+                 $arStatusList = Helpers::arStatusList();
+                 $arActionListVal = Helpers::arActionList();
+                 $arDenialList = Helpers::arDenialList();
+                 $arSubStatusList = Helpers::arSubStatusList();
+                 $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
+                 $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
+                 $userEditableQuery = CompletedUserEditable::where('project_id',$decodedProjectName)->where('record_status','user_rework');
+                 if ($subProjectId === NULL) {
+                     $userEditableQuery->whereNull('sub_project_id');
+                 } else {
+                     $userEditableQuery->where('sub_project_id',$subProjectId);
+                 }
+                 $userEditableRecordIds = $userEditableQuery->pluck('record_id')->map(function ($id) {
+                     return (string) $id;
+                 })->toArray();
+                return view('productions/arReworkTab',compact('arReworkDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount', 'arReworkCount','arDenialList','arDenialList','arSubStatusList','userEditableRecordIds'));
+
+           } catch (\Exception $e) {
+               log::debug($e->getMessage());
+           }
+       } else {
+           return redirect('/');
+       }
+    }
 
 
 }

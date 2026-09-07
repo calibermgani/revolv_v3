@@ -4,44 +4,21 @@ use Carbon\Carbon;
 @endphp
 @section('content')
 
-                <div class="card card-custom custom-card" id="production_completed_tab">
+                <div class="card card-custom custom-card" id="production_ar_rework_tab">
                     <div class="card-body p-0">
                         @php
                              $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                              $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
                              $canGrantUserEditable = $loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false;
-                            //  $userEditableRecordIds = isset($userEditableRecordIds) ? $userEditableRecordIds : [];
+                             $userEditableRecordIds = isset($userEditableRecordIds) ? $userEditableRecordIds : [];
                         @endphp
                         <div class="card-header border-0 px-4">
                             <div class="row">
                                 <div class="col-md-6">
-                                {{-- <span class="svg-icon svg-icon-primary svg-icon-lg ">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="16" fill="currentColor"
-                                        class="bi bi-arrow-left project_header_row" viewBox="0 0 16 16"
-                                        style="width: 1.05rem !important;color: #000000 !important;margin-left: 4px !important;">
-                                        <path fill-rule="evenodd"
-                                            d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
-                                    </svg>
-                                </span> --}}
                                 <span class="project_header" style="margin-left: 4px !important;">Practice List</span>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="row" style="justify-content: flex-end;margin-right:1.4rem">
-                                        @if ($canGrantUserEditable)
-                                        <div class="col-lg-3 mb-lg-0 mb-6">
-                                            <fieldset class="form-group mb-0 white-smoke-disabled">
-                                                <button 
-                                                    type="button"
-                                                    value="user_rework"
-                                                    class="btn text-white"
-                                                    id="user_rework_button"
-                                                    style="width:100%;background-color:#139AB3 !important"
-                                                    disabled>
-                                                    AR Rework
-                                                </button>
-                                            </fieldset>
-                                        </div>
-                                        @endif
                                         <div>
                                             @if ($popUpHeader != null)
                                                     @php
@@ -49,12 +26,10 @@ use Carbon\Carbon;
                                                                 $popUpHeader->project_id,
                                                             );
                                                             $sopDetails = App\Models\SopDoc::where('project_id',$popUpHeader->project_id)->where('sub_project_id',$popUpHeader->sub_project_id)->latest()->first('sop_path');
-                                                            // $pdfName =  preg_replace('/[^A-Za-z0-9]/', '_',$clientNameDetails->project_name);
-                                                    @endphp
+                                                   @endphp
                                                     @else
                                                     @php
                                                         $sopDetails = '';
-                                                        // $pdfName = '';
                                                     @endphp
                                                 @endif
                                                    @if (isset($sopDetails) && !empty($sopDetails->sop_path))
@@ -139,7 +114,7 @@ use Carbon\Carbon;
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="wizard-step mb-0 four" data-wizard-type="step">
+                                    <div class="wizard-step mb-0 four" data-wizard-type="done">
                                         <div class="wizard-wrapper py-2">
                                             <div class="wizard-label p-2 mt-2">
                                                 <div class="wizard-title" style="display: flex; align-items: center;">
@@ -214,18 +189,19 @@ use Carbon\Carbon;
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="wizard-step mb-0 eleven" data-wizard-type="done">
+                                    <div class="wizard-step mb-0 eleven" data-wizard-type="step">
                                         <div class="wizard-wrapper py-2">
                                             <div class="wizard-label p-2 mt-2">
                                                 <div class="wizard-title"
-                                                    style="display: flex; align-items: center;">
-                                                    
+                                                    style="display:flex;align-items:center;">
+
                                                     <h6 style="margin-right:5px;">
                                                         AR Rework
                                                     </h6>
 
                                                     <span id="ar_rework_count">
-                                                        @include('CountVar.countRectangle', [
+                                                        @include('CountVar.countRectangle',
+                                                        [
                                                             'count'=>$arReworkCount
                                                         ])
                                                     </span>
@@ -248,7 +224,6 @@ use Carbon\Carbon;
                                         @php $count = 0; @endphp
                                         @foreach ($projectColSearchFields as $key => $data)
                                             @php
-                                            //$decodedClientName = App\Http\Helper\Admin\Helpers::projectName($data->project_id)->project_name;
                                             $paProject =App\Http\Helper\Admin\Helpers::projectName($data->project_id);
                                             $decodedClientName = $paProject ? $paProject->project_name : null;
                                             $decodedsubProjectName = $data->sub_project_id == NULL ? 'project' :App\Http\Helper\Admin\Helpers::subProjectName($data->project_id,$data->sub_project_id);
@@ -277,7 +252,7 @@ use Carbon\Carbon;
                                             @endphp
                                              {!! Form::open([
                                                 'url' =>
-                                                url('projects_completed/' . $clientName . '/' . $subProjectName) .
+                                                url('projects_ar_rework/' . $clientName . '/' . $subProjectName) .
                                                                 '?parent=' .
                                                                 request()->parent .
                                                                 '&child=' .
@@ -352,54 +327,20 @@ use Carbon\Carbon;
                                 {!! Form::close() !!}
                                 @if ($canGrantUserEditable)
                                 @php
-                                $pageSelectedRecord = ($completedProjectDetails->count() > 0) ? (($completedProjectDetails->lastItem() - $completedProjectDetails->firstItem()) + 1) : 0;
+                                $pageSelectedRecord = ($arReworkDetails->count() > 0) ? (($arReworkDetails->lastItem() - $arReworkDetails->firstItem()) + 1) : 0;
                                 @endphp
-                                <p id="select_p1" style="text-align:center;display:none">All {{$pageSelectedRecord}} {{$pageSelectedRecord == 1 ? 'record on this page is selected' : 'records on this page are selected'}} . <a  id="select_all_status" style="color:#6993FF !important;cursor:pointer !important">Select all {{$completedProjectDetails->total()}} records</a></p>
-                                <p id="clear_p1" style="text-align:center;display:none">All {{$completedProjectDetails->total()}} records are selected.<a style="color:#6993FF !important;cursor:pointer !important" id="clear_all_status">Clear Selection.</a></p>
+                                <p id="select_p1" style="text-align:center;display:none">All {{$pageSelectedRecord}} {{$pageSelectedRecord == 1 ? 'record on this page is selected' : 'records on this page are selected'}} . <a  id="select_all_status" style="color:#6993FF !important;cursor:pointer !important">Select all {{$arReworkDetails->total()}} records</a></p>
+                                <p id="clear_p1" style="text-align:center;display:none">All {{$arReworkDetails->total()}} records are selected.<a style="color:#6993FF !important;cursor:pointer !important" id="clear_all_status">Clear Selection.</a></p>
                                 @endif
                             <div class="card-body py-0 px-7">
-                                {{-- <input type="hidden" value={{ $databaseConnection }} id="dbConnection">
-                                <input type="hidden" value={{ $encodedId }} id="encodeddbConnection"> --}}
                                 <input type="hidden" value={{ $clientName }} id="clientName">
                                 <input type="hidden" value={{ $subProjectName }} id="subProjectName">
                                 <div class="table-responsive pt-5 pb-5 clietnts_table">
                                     <table class="table table-separate table-head-custom no-footer dtr-column "
-                                        id="client_completed_list" data-order='[[ 0, "desc" ]]'>
-                                        {{-- <thead>
-
-                                            <tr>
-                                                @if ($completedProjectDetails->contains('key', 'value'))
-                                                    @foreach ($completedProjectDetails[0]->getAttributes() as $columnName => $columnValue)
-                                                        @php
-                                                            $columnsToExclude = ['id','QA_emp_id', 'created_at', 'updated_at', 'deleted_at'];
-                                                        @endphp
-                                                        @if (!in_array($columnName, $columnsToExclude))
-                                                            <th style="width:12%"><input type="hideen"
-                                                                    value={{ $columnValue }}>{{ str_replace(['_', '_or_'], [' ', '/'], ucwords(str_replace('_', ' ', $columnValue))) }}
-                                                            </th>
-                                                        @endif
-                                                    @endforeach
-                                                    <th style="width:16%">Action</th>
-                                                @else
-                                                    @foreach ($columnsHeader as $columnName => $columnValue)
-                                                        <th style="width:12%"><input type="hidden"
-                                                                value={{ $columnValue }}>
-                                                            {{ ucwords(str_replace(['_or_', '_'], ['/', ' '], $columnValue)) }}
-                                                        </th>
-                                                    @endforeach
-                                                @endif
-                                                <th style="width:16%">Action</th>
-                                            </tr>
-
-
-                                        </thead> --}}
+                                        id="ar_rework_list" data-order='[[ 0, "desc" ]]'>
                                         <thead>
                                             @if (!empty($columnsHeader))
                                                 <tr>
-                                                    @if ($canGrantUserEditable)
-                                                    <th class='notexport'><input type="checkbox" id="ckbCheckAll" class="cursor_hand">
-                                                    </th>
-                                                    @endif
                                                     <th class='notexport' style="color:white !important">Action</th>
                                                     @foreach ($columnsHeader as $columnName => $columnValue)
                                                         @if ($columnValue != 'id')
@@ -439,13 +380,13 @@ use Carbon\Carbon;
 
                                         </thead>
                                         <tbody>
-                                            @if (isset($completedProjectDetails))
+                                            @if (isset($arReworkDetails))
                                                 @php
                                                     $currentArDate = Carbon::today();
                                                     $currentArAtStart = $currentArDate->copy()->setTime(8, 0, 0)->toDateTimeString();
                                                     $currentArAtEnd = $currentArDate->copy()->addDay()->setTime(7, 59, 59)->toDateTimeString();
                                                 @endphp
-                                                @foreach ($completedProjectDetails as $data)
+                                                @foreach ($arReworkDetails as $data)
                                                     @php
                                                     $arrayAttrributes = $data->getAttributes();
                                                     $arrayAttrributes['aging']= null; 
@@ -454,29 +395,24 @@ use Carbon\Carbon;
                                                     $isCurrentArAt = !empty($arAtValue)
                                                         && strtotime($arAtValue) >= strtotime($currentArAtStart)
                                                         && strtotime($arAtValue) <= strtotime($currentArAtEnd);
-                                                    //  $isUserEditable = in_array((string) $data->id, array_map('strval', $userEditableRecordIds), true);                                                                          
+                                                    $isUserEditable = true;                                                                          
                                                     @endphp
                                                     <tr>
-                                                    @if ($canGrantUserEditable)
-                                                            <td><input type="checkbox" class="checkBoxClass cursor_hand" name='check[]'
-                                                                value="{{ $data->id }}">
-                                                        </td>
-                                                    @endif
                                                     <td>
-                                                             @if (($loginEmpId !== "Admin" || strpos($empDesignation, 'Manager') !== true || strpos($empDesignation, 'VP') !== true || strpos($empDesignation, 'Leader') !== true || strpos($empDesignation, 'Team Lead') !== true || strpos($empDesignation, 'CEO') !== true || strpos($empDesignation, 'Vice') !== true || strpos($empDesignation, 'Group Coordinator - AR') !== true || strpos($empDesignation, 'Subject Matter Expert') !== true) && $loginEmpId != $data->CE_emp_id)
-                                                             @else                                                         
-                                                                @if ($isCurrentArAt)   
-                                                                   <button class="task-start clickable-row start"
+                                                         @if (($loginEmpId !== "Admin" || strpos($empDesignation, 'Manager') !== true || strpos($empDesignation, 'VP') !== true || strpos($empDesignation, 'Leader') !== true || strpos($empDesignation, 'Team Lead') !== true || strpos($empDesignation, 'CEO') !== true || strpos($empDesignation, 'Vice') !== true || strpos($empDesignation, 'Group Coordinator - AR') !== true || strpos($empDesignation, 'Subject Matter Expert') !== true) && $loginEmpId != $data->CE_emp_id)
+                                                         @else  
+                                                                @if ($isCurrentArAt || $isUserEditable)
+                                                                    <button class="task-start clickable-row start"
                                                                             title="Edit">
                                                                         <i class="fa fa-edit icon-circle1 mt-0" aria-hidden="true" style="color:#ffffff"></i>
                                                                     </button>
                                                                 @endif
-                                                             @endif
+                                                        @endif
                                                             <button class="task-start clickable-view"
                                                                     title="View">
                                                                 <i class="fa fa-eye text-eye icon-circle1 mt-0"></i>
                                                             </button>
-                                                        </td>
+                                                    </td>
                                                         @foreach ($arrayAttrributes as $columnName => $columnValue)
                                                             @php
                                                                 $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date', 
@@ -507,17 +443,6 @@ use Carbon\Carbon;
                                                              }
                                                             @endphp
                                                             @if (!in_array($columnName, $columnsToExclude))
-                                                                {{-- <td style="max-width: 300px;white-space: normal;">
-                                                                    @if (str_contains($columnValue, '-') && strtotime($columnValue))
-                                                                        {{ date('m/d/Y', strtotime($columnValue)) }}
-                                                                    @else
-                                                                        @if ($columnName == 'chart_status' && str_contains($columnValue, 'CE_'))
-                                                                            {{ str_replace('CE_', '', $columnValue) }}
-                                                                        @else
-                                                                            {{ $columnValue }}
-                                                                        @endif
-                                                                    @endif
-                                                                </td> --}}
                                                                 @if ($columnName != 'id')
                                                                 <td style="max-width: 300px;
                                                                 white-space: normal;">
@@ -561,15 +486,15 @@ use Carbon\Carbon;
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="ml-3" 
-                                           id="completed_showing_text"
-                                            data-first="{{ $completedProjectDetails->firstItem() != null ? $completedProjectDetails->firstItem() : 0 }}"
-                                            data-total="{{ $completedProjectDetails->total() }}"
-                                            data-per-page="{{ $completedProjectDetails->perPage() }}">
+                                           id="ar_rework_showing_text"
+                                            data-first="{{ $arReworkDetails->firstItem() != null ? $arReworkDetails->firstItem() : 0 }}"
+                                            data-total="{{ $arReworkDetails->total() }}"
+                                            data-per-page="{{ $arReworkDetails->perPage() }}">
 
-                                            Showing {{ $completedProjectDetails->firstItem() != null ? $completedProjectDetails->firstItem() : 0 }} to {{ $completedProjectDetails->lastItem() != null ? $completedProjectDetails->lastItem() : 0 }} of {{ $completedProjectDetails->total() }} entries
+                                            Showing {{ $arReworkDetails->firstItem() != null ? $arReworkDetails->firstItem() : 0 }} to {{ $arReworkDetails->lastItem() != null ? $arReworkDetails->lastItem() : 0 }} of {{ $arReworkDetails->total() }} entries
                                     </div>
-                                     <div id="completed_pagination">
-                                        {{ $completedProjectDetails->appends(request()->except([ 'page']))->links() }}
+                                     <div id="ar_rework_pagination">
+                                        {{ $arReworkDetails->appends(request()->except([ 'page']))->links() }}
                                     </div>
                                 </div>          
                             </div>
@@ -607,7 +532,7 @@ use Carbon\Carbon;
 
                                     <div class="modal-content" style="margin-top: 7rem">
                                         <div class="modal-header" style="background-color: #139AB3;height: 84px">
-                                            <div class="row" style="height: auto;width:100%">
+                                            {{-- <div class="row" style="height: auto;width:100%"> --}}
                                                 <div class="col-md-4">
                                                     <div class="align-items-center" style="display: -webkit-box !important;">
                                                         <div class="rounded-circle bg-white text-black mr-2" style="width: 50px; height: 50px; display: flex; justify-content: center; align-items: center;font-weight;bold">
@@ -624,16 +549,12 @@ use Carbon\Carbon;
                                                     <div class="bg-white rounded-pill px-2 text-black" style="margin-bottom: 2rem;margin-left:2.2px;font-size:10px;font-weight:500;background-color:#E9F3FF;color:#139AB3;">
                                                             <span id="title_status"></span>
                                                         </div>
-                                                    </div>
+                                                    </div>                                                         
                                                 </div>
-
-                                                {{-- <div class="col-md-8 justify-content-end" style="display: -webkit-box !important;"> --}}
-                                                    {{-- <a href="" class="btn btn-black-white mr-3" style="padding: 0.35rem 1rem;">Reference</a>
-                                                    <a href="" class="btn btn-black-white mr-3" style="padding: 0.35rem 1rem;">MOM</a> --}}
-                                                    {{-- <button type="button" class="btn btn-black-white mr-3 sop_click" id="sop_click" style="padding: 0.35rem 1rem;">SOP</button> --}}
-                                                    {{-- <a href="" class="btn btn-black-white mr-3" style="padding: 0.35rem 1rem;">Custom</a> --}}
-                                                {{-- </div> --}}
-                                        </div>
+                                                <button type="button" class="close comment_close" data-dismiss="modal"
+                                                       aria-hidden="true" style="color:#ffffff !important">&times;</button>
+                                            {{-- </div> --}}
+                                            
                                         </div>
                                         {!! Form::open([
                                             'url' =>
@@ -643,7 +564,7 @@ use Carbon\Carbon;
                                                 '&child=' .
                                                 request()->child,
                                             'class' => 'form',
-                                            'id' => 'completedFormConfiguration',
+                                            'id' => 'reworkTabFormConfiguration',
                                             'enctype' => 'multipart/form-data',
                                         ]) !!}
                                         @csrf
@@ -654,6 +575,7 @@ use Carbon\Carbon;
                                                     <input type="hidden" name="idValue">
                                                     <input type="hidden" name="parentId">
                                                     <input type="hidden" name="record_old_status">
+                                                     <input type="hidden" name="ar_rework_val" value="user_rework">
                                                     @if (count($popupNonEditableFields) > 0)
                                                         @php $count = 0; @endphp
                                                         @foreach ($popupNonEditableFields as $data)
@@ -665,11 +587,6 @@ use Carbon\Carbon;
                                                                 $data->label_name,
                                                             ),
                                                         );
-                                                        // $inputType = $data->input_type;
-                                                        // $options =
-                                                        //     $data->options_name != null
-                                                        //         ? explode(',', $data->options_name)
-                                                        //         : null;
                                                     @endphp
 
                                                         <label
@@ -827,20 +744,6 @@ use Carbon\Carbon;
                                                     @endif
                                                         @endforeach
                                                     @endif
-                                                                                        
-                                                    {{-- <div class="row mt-4 trends_div">
-                                                        <div class="col-md-12">
-                                                            <div class="form-group row">
-                                                                <label class="col-md-12">
-                                                                    Coder Trends
-                                                                </label>
-                                                                <div class="col-md-11">
-                                                                    {!!Form::textarea('annex_coder_trends',  null, ['class' => 'text-black form-control white-smoke annex_coder_trends','rows' => 6,'readonly']) !!}
-
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div> --}}
                                                     @php
                                                     if($popUpHeader->sub_project_id != null && $popUpHeader->sub_project_id != "") {
                                                         $statusActionShow = App\Models\projectInputSetting::where('sub_project_id',$popUpHeader->sub_project_id)->first();                                                                                                                              
@@ -848,9 +751,7 @@ use Carbon\Carbon;
                                                         $statusActionShow = null;
                                                     }
                                                @endphp
-                                                {{-- @if($statusActionShow != null) --}}
                                                     <div class="row mt-4">
-                                                        {{-- @if($statusActionShow->status_input == 1) --}}
                                                             <div class="col-md-6">
                                                                 <div class="form-group row">
                                                                     <label class="col-md-12 required">
@@ -874,8 +775,6 @@ use Carbon\Carbon;
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        {{-- @endif
-                                                        @if($statusActionShow->action_input == 1) --}}
                                                             <div class="col-md-6">
                                                                 <div class="form-group row">
                                                                     <label class="col-md-12 required">
@@ -898,9 +797,7 @@ use Carbon\Carbon;
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        {{-- @endif --}}
                                                     </div>
-                                                {{-- @endif --}}
                                                 <div class="row mt-4">
                                                     <div class="col-md-6">
                                                         <div class="form-group row">
@@ -990,24 +887,10 @@ use Carbon\Carbon;
                                                            
                                                 </div>
                                             </div>
-                                            <div class="modal-footer" style="justify-content: space-between;">
-
-
-                                                <p class="timer_1" aria-haspopup="true" aria-expanded="false" data-toggle="modal"
-                                                    data-target="#exampleModalCustomScrollable" style="margin-left: -2rem">
-
-                                                    <span title="Total hours">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="22"
-                                                            fill="currentColor" class="bi bi-stopwatch" viewBox="0 0 16 16">
-                                                            <path d="M8.5 5.6a.5.5 0 1 0-1 0v2.9h-3a.5.5 0 0 0 0 1H8a.5.5 0 0 0 .5-.5z" />
-                                                            <path
-                                                                d="M6.5 1A.5.5 0 0 1 7 .5h2a.5.5 0 0 1 0 1v.57c1.36.196 2.594.78 3.584 1.64l.012-.013.354-.354-.354-.353a.5.5 0 0 1 .707-.708l1.414 1.415a.5.5 0 1 1-.707.707l-.353-.354-.354.354-.013.012A7 7 0 1 1 7 2.071V1.5a.5.5 0 0 1-.5-.5M8 3a6 6 0 1 0 .001 12A6 6 0 0 0 8 3" />
-                                                        </svg>
-                                                    </span><span id="elapsedTime" class="timer_2"></span>
-                                                </p>
-
-                                                <button type="submit" class="btn1" id="project_complete_save" style="margin-right: -2rem">Submit</button>
+                                            <div class="modal-footer">
+                                                 <button type="submit" class="btn1 float-right" id="project_complete_save" style="margin-right: -2rem">Submit</button>                                       
                                             </div>
+                                            
                                         </div>
                                         {!! Form::close() !!}
                                     </div>
@@ -1069,14 +952,6 @@ use Carbon\Carbon;
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                            {{-- <div class="col-md-8 d-flex justify-content-end" style="display: -webkit-box !important;"> --}}
-                                                {{-- <a href="" class="btn btn-black-white mr-3" style="padding: 0.35rem 1rem;">Reference</a>
-                                                <a href="" class="btn btn-black-white mr-3" style="padding: 0.35rem 1rem;">MOM</a> --}}
-                                                {{-- <button type="button" class="btn btn-black-white mr-3" id="sop_click" style="padding: 0.35rem 1rem;">SOP</button> --}}
-                                                {{-- <a href="" class="btn btn-black-white mr-3" style="padding: 0.35rem 1rem;">Custom</a> --}}
-                                            {{-- </div> --}}
-
                                                 <button type="button" class="close comment_close" data-dismiss="modal"
                                                     aria-hidden="true" style="color:#ffffff !important">&times;</button>
 
@@ -1099,11 +974,6 @@ use Carbon\Carbon;
                                                                     $data->label_name,
                                                                 ),
                                                             );
-                                                            // $inputType = $data->input_type;
-                                                            // $options =
-                                                            //     $data->options_name != null
-                                                            //         ? explode(',', $data->options_name)
-                                                            //         : null;
                                                         @endphp
 
                                                             <label
@@ -1159,9 +1029,8 @@ use Carbon\Carbon;
                                                             $statusActionShow = null;
                                                         }
                                                     @endphp
-                                                    {{-- @if($statusActionShow != null) --}}
+                                                   
                                                         <div class="row mt-4">
-                                                            {{-- @if($statusActionShow->status_input == 1) --}}
                                                                 <div class="col-md-6">
                                                                     <div class="form-group row">
                                                                         <label class="col-md-12" id="ar_status_label">
@@ -1171,8 +1040,6 @@ use Carbon\Carbon;
                                                                         </label>
                                                                     </div>
                                                                 </div>
-                                                            {{-- @endif
-                                                            @if($statusActionShow->action_input == 1) --}}
                                                                 <div class="col-md-6">
                                                                     <div class="form-group row">
                                                                         <label class="col-md-12" id="ar_action_label">
@@ -1182,9 +1049,7 @@ use Carbon\Carbon;
                                                                         </label>
                                                                     </div>
                                                                 </div>
-                                                            {{-- @endif --}}
                                                         </div>
-                                                    {{-- @endif --}}
                                                     <div class="row mt-4">             
                                                             <div class="col-md-6">
                                                                 <div class="form-group row">
@@ -1240,7 +1105,6 @@ use Carbon\Carbon;
                                                 $clientName = App\Http\Helper\Admin\Helpers::projectName(
                                                     $popUpHeader->project_id,
                                                 );
-                                                // $pdfName =  preg_replace('/[^A-Za-z0-9]/', '_',$clientName->project_name);
                                                 $sopDetails = App\Models\SopDoc::where('project_id',$popUpHeader->project_id)->where('sub_project_id',$popUpHeader->sub_project_id)->latest()->first('sop_path');                     
                                         @endphp
                                     @endif
@@ -1280,7 +1144,6 @@ use Carbon\Carbon;
                                         @endif
                                 </div>
                                 <div class="modal-footer">
-                                    {{-- <a href={{ asset('/pdf_folder/sample_1234.pdf') }} target="_blank" class="btn btn-black-white mr-3" style="padding: 0.35rem 1rem;">Tab</a> --}}
                                     <button type="button" class="btn btn-light-danger" data-dismiss="modal">Close</button>
                                     <!-- Additional buttons can be added here -->
                                 </div>
@@ -1320,7 +1183,6 @@ use Carbon\Carbon;
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script>
-               var startTime_db;
         $(document).ready(function() {
             $("#filterExpandButton").click(function() {
                 var div = document.getElementById('filter_section');
@@ -1331,7 +1193,7 @@ use Carbon\Carbon;
                     div.style.display = 'block';
                 }
             });
-            var countDigits = {{ strlen($completedCount) }};
+            var countDigits = {{ strlen($arReworkCount) }};
             var newWidth = 30 + (countDigits - 1) * 6;
             var newHeight = 30 + (countDigits - 1) * 6;
             $('.code-badge-tab-selected').css({
@@ -1356,7 +1218,7 @@ use Carbon\Carbon;
                 var day = d.getDate();
                 var date = (month < 10 ? '0' : '') + month + '-' +
                     (day < 10 ? '0' : '') + day + '-' + d.getFullYear();
-            var table = $("#client_completed_list").DataTable({
+            var table = $("#ar_rework_list").DataTable({
                 processing: true,
                 ordering: true,
                 clientSide: true,
@@ -1374,17 +1236,6 @@ use Carbon\Carbon;
                     "search": '',
                     "searchPlaceholder": "   Search",
                 },
-                // buttons: [{
-                //     "extend": 'excel',
-                //     "text": `<span data-dismiss="modal" data-toggle="tooltip" data-placement="left" data-original-title="Export" style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
-                //              </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></span>`,
-                //     "className": 'btn btn-primary-export text-white',
-                //     "title": 'PROCODE',
-                //     "filename": 'procode_completed_'+date,
-                //     "exportOptions": {
-                //         "columns": ':not(.notexport)'// Exclude first two columns
-                //     }
-                // }],
                 dom: "<'row'<'col-md-12'f><'col-md-12't>><'row'<'col-md-5 pt-2'i><'col-md-7 pt-2'p>>"
             })
             table.buttons().container()
@@ -1393,7 +1244,7 @@ use Carbon\Carbon;
                 var clientName = $('#clientName').val();
                 var subProjectName = $('#subProjectName').val();
                 $(document).on('click', '#filter_clear', function(e) {
-                    window.location.href = baseUrl + 'projects_completed/' + clientName + '/' + subProjectName +
+                    window.location.href = baseUrl + 'projects_ar_rework/' + clientName + '/' + subProjectName +
                         "?parent=" +
                         getUrlVars()[
                             "parent"] +
@@ -1406,9 +1257,8 @@ use Carbon\Carbon;
                     var $row = currentWorkRow;
                     var record_id = $row.find('#table_id').text().trim();
 
-                    $('#completedFormConfiguration')[0].reset();
+                    $('#reworkTabFormConfiguration')[0].reset();
                     $('#myModal_status').modal('show');
-                    startTime_db = new Date().toISOString();
                     if (typeof showGlobalLoader === 'function') {
                         showGlobalLoader('Loading...', false, false);
                     } else {
@@ -1454,8 +1304,6 @@ use Carbon\Carbon;
                         success: function(response) {
                             if(lastClass == 'start'){
                                 if (response.success == true) {
-                                    // $('#myModal_status').modal('show');
-                                    startTime_db = response.startTimeVal;
                                     handleClientCompletedData(response.clientData,headers);
                                 } else {
                                     $('#myModal_status').modal('hide');
@@ -1695,8 +1543,6 @@ use Carbon\Carbon;
                     }
             });
             $(document).on('click', '.clickable-view', function(e) {
-                    // var record_id = $(this).closest('tr').find('td:eq(0)').text();
-                    // var record_id = $(this).closest('tr').find('td:eq(1)').text();
                     var record_id =  $(this).closest('tr').find('#table_id').text();
                     var $row = $(this).closest('tr');
                     var tdCount = $row.find('td').length;
@@ -1722,7 +1568,6 @@ use Carbon\Carbon;
                             record_id: record_id,
                             clientName: clientName,
                             subProjectName: subProjectName,
-                            // urlDynamicValue: urlDynamicValue
                         },
                         success: function(response) {
                             if (response.success == true) {
@@ -1743,12 +1588,6 @@ use Carbon\Carbon;
                         var values = value.split('_el_');
                         var formattedDatas = [];
                         values.forEach(function(data, index) {
-                            // if (data.includes('-')) {
-                            //     var formattedData = formatDate(data);
-                            // } else {
-                            //     var formattedData = data;
-                            // }
-                            // var span = $('<span>').addClass('date-label').text(formattedData);
                             var circle = $('<span>').addClass('circle');
                             var span = $('<span>').addClass('date-label').text(data);
                                 span.prepend(circle);
@@ -1819,12 +1658,11 @@ use Carbon\Carbon;
                         var formattedDatas = parts[1] + '/' + parts[2] + '/' + parts[0];
                         return formattedDatas;
                     }
-                        // $('label[id="' + header + '"]').text(value);
+                        
                   });
 
                }
             });
-            // var encodedProjectId = $('#encodeddbConnection').val();
 
             $(document).on('click', '.one', function() {
                 window.location.href = baseUrl + 'projects_assigned/' + clientName + '/' + subProjectName +
@@ -1845,9 +1683,9 @@ use Carbon\Carbon;
             })
             $(document).on('click', '.four', function(e) {
                 // window.location.href = "{{ url('#') }}";
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
-                    return false;
+                window.location.href = baseUrl + 'projects_completed/' + clientName + '/' + subProjectName +
+                    "?parent=" +
+                    getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
             })
             $(document).on('click', '.five', function() {
                 window.location.href = baseUrl + 'projects_Revoke/' + clientName + '/' + subProjectName +
@@ -1884,8 +1722,8 @@ use Carbon\Carbon;
                         "parent"] + "&child=" + getUrlVars()["child"];
             })
             $(document).on('click', '.eleven', function() {
-                window.location.href = baseUrl + 'projects_ar_rework/' + clientName + '/' + subProjectName + "?parent=" + getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
-
+                window.location.href = baseUrl + 'projects_ar_rework/' + clientName + '/' + subProjectName +
+                    "?parent=" + getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
             });
                 function actionCode(statusVal,value) {
                     $.ajaxSetup({
@@ -1938,7 +1776,7 @@ use Carbon\Carbon;
                 $(document).on('click', '#project_complete_save', function(e) {
                     e.preventDefault();
             
-                    var fieldNames = $('#completedFormConfiguration').serializeArray().map(function(input) {
+                    var fieldNames = $('#reworkTabFormConfiguration').serializeArray().map(function(input) {
                         return input.name;
                     });
                     var requiredFields = {};
@@ -1956,21 +1794,6 @@ use Carbon\Carbon;
                                     inputTypeValue = 0;
                             }
                         }
-                        // if($('#ar_denial_codes').val() == '') {
-                        //     $('#ar_denial_codes').next('.select2').find(".select2-selection").css('border-color', 'red', 'important');
-                        //     inputTypeValue = 1;
-                        // } else {
-                        //     $('#ar_denial_codes').next('.select2').find(".select2-selection").css('border-color', '');
-                        //     inputTypeValue = 0;
-                        // }  
-                    // if (
-                    //     (statusActionShowJson['status_input'] == 1 && ($('#ar_status_code').val() == '' || $('#ar_status_code').val() == null)) ||
-                    //     (statusActionShowJson['action_input'] == 1 && ($('#ar_action_code').val() == '' || $('#ar_action_code').val() == null)) ||
-                    //     ($('#ar_denial_codes').val() == '' || $('#ar_denial_codes').val() == null)
-                    // ) {
-                    //     e.preventDefault(); // block form submission
-                    //     inputTypeValue = 1; // at least one field is invalid
-                    // }
 
                    if (
                        ($('#ar_status_code').val() == '' || $('#ar_status_code').val() == null) ||
@@ -2000,7 +1823,7 @@ use Carbon\Carbon;
                     } else {
                         $('#ar_denial_codes').next('.select2-container').find('.select2-selection').css('border', '');
                     }         
-                    $('#completedFormConfiguration').find(':input[required], select[required], textarea[required]',
+                    $('#reworkTabFormConfiguration').find(':input[required], select[required], textarea[required]',
                         ':input[type="checkbox"][required], input[type="radio"][required]').each(
                         function() {
                             var fieldName = $(this).attr('name');
@@ -2106,7 +1929,7 @@ use Carbon\Carbon;
                                 type: 'hidden',
                                 name: fieldName + '[]',
                                 value: value
-                            }).appendTo('form#completedFormConfiguration');
+                            }).appendTo('form#reworkTabFormConfiguration');
                         });
                     });
 
@@ -2128,31 +1951,26 @@ use Carbon\Carbon;
                             if (result.value == true) {
                             
                                 var statusVal = $('#chart_status').val();
-                                var formData = new FormData($('#completedFormConfiguration')[0]);
+                                var formData = new FormData($('#reworkTabFormConfiguration')[0]);
 
                                 $('#project_complete_save').prop('disabled', true);
                                 /* hide popup immediately */
                                 $('#myModal_status').modal('hide');
                                 $('.modal-backdrop').remove();
-                                $('body').removeClass('modal-open').css('padding-right', '');
-                                /* update UI immediately - no waiting for controller */
-                                updateCompletedPageCount(statusVal);
-                                if (statusVal !== 'CE_Completed') {
-                                    removeCompletedRowAfterSubmit();
-                                }
+                                $('body').removeClass('modal-open').css('padding-right', '');                           
                                 
                             
                                 /* stop global loader */
                                 window.skipGlobalLoader = true;
                                 $('.blockUI, .blockOverlay').remove();
-                                KTApp.block('#production_completed_tab', {
+                                KTApp.block('#production_ar_rework_tab', {
                                     overlayColor: '#000000',
                                     state: 'danger',
                                     opacity: 0.1,
                                     message: 'Updating...',
                                 });
                                 $.ajax({
-                                    url: $('#completedFormConfiguration').attr('action'),
+                                    url: $('#reworkTabFormConfiguration').attr('action'),
                                     method: 'POST',
                                     data: formData,
                                     processData: false,
@@ -2175,14 +1993,13 @@ use Carbon\Carbon;
                                         $('#project_complete_save').prop('disabled', false);
                                         window.skipGlobalLoader = false;
                                         $('#global-loader').hide();
-                                            KTApp.unblock('#production_completed_tab');
+                                            KTApp.unblock('#production_ar_rework_tab');
                                             js_notification('success', 'Updated successfully');                                         
                                         $('.blockUI, .blockOverlay').remove();
                                         
                                     }
                                 });
                             } else {
-                                //   location.reload();
                             }
                         });
                     } else {
@@ -2193,10 +2010,12 @@ use Carbon\Carbon;
                     var resourceName = null; 
                     var formData = $('#formSearch').serialize();
                     var chartStatus = "CE_Completed";
+                    var recordStatusVal = "user_rework";
                     formData += '&chart_status=' + chartStatus;
                     formData += '&clientName=' + clientName;
                     formData += '&subProjectName=' + subProjectName;
-                    formData += '&resourceName=' + resourceName;
+                    formData += '&resourceName=' + resourceName;                    
+                    formData += '&recordStatusVal=' + recordStatusVal;
                     $.ajaxSetup({
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
@@ -2241,280 +2060,7 @@ use Carbon\Carbon;
                             }
                       });
 
-                });
-                function updateCompletedPageCount(statusVal) {
-                    updateCountById('#completed_count', -1);
-
-                    if (statusVal === 'CE_Pending') {
-                        updateCountById('#pending_count', 1);
-                    } else if (statusVal === 'CE_Completed') {
-                        updateCountById('#completed_count', 1);
-                    } else if (statusVal === 'CE_Hold') {
-                        updateCountById('#hold_count', 1);
-                    } else if (statusVal === 'AR_non_workable') {
-                        updateCountById('#non_workable_count', 1);
-                    } else if (statusVal === 'Auto_Close') {
-                        updateCountById('#auto_close_count', 1);
-                    }
-                }
-                function updateCountById(wrapperId, diff) {
-                    var $wrapper = $(wrapperId);
-
-                    if (!$wrapper.length) {
-                        return;
-                    }
-
-                    var $count = $wrapper.find('.count');
-
-                    if (!$count.length) {
-                        return;
-                    }
-
-                    var oldCount = parseInt($.trim($count.text()), 10) || 0;
-                    var newCount = Math.max(0, oldCount + diff);
-
-                    $count.text(newCount);
-
-                    // Update width like Blade does
-                    var width;
-                    if (String(newCount).length === 1) {
-                        width = 15;
-                    } else if (String(newCount).length === 2) {
-                        width = String(newCount).length * 9;
-                    } else {
-                        width = String(newCount).length * 8;
-                    }
-
-                    $wrapper.find('.rectangle').css('width', width + 'px');
-                }
-                function removeCompletedRowAfterSubmit() {
-                    if (!currentWorkRow || !currentWorkRow.length) {
-                        return;
-                    }
-
-                    if ($.fn.DataTable.isDataTable('#client_completed_list')) {
-                        $('#client_completed_list').DataTable()
-                            .row(currentWorkRow)
-                            .remove()
-                            .draw(false);
-                    } else {
-                        currentWorkRow.remove();
-                    }
-
-                    currentWorkRow = null;
-
-                    var total = parseInt($('#completed_showing_text').attr('data-total'), 10) || 0;
-                    var first = parseInt($('#completed_showing_text').attr('data-first'), 10) || 0;
-                    var perPage = parseInt($('#completed_showing_text').attr('data-per-page'), 10) || 25;
-
-                    total = total - 1;
-
-                    if (total < 0) {
-                        total = 0;
-                    }
-
-                    $('#completed_showing_text').attr('data-total', total);
-
-                    var visibleRows = $('#client_completed_list tbody tr').filter(function() {
-                        return $(this).find('td').length > 1 && !$(this).find('td').hasClass('dataTables_empty');
-                    }).length;
-
-                    var last = 0;
-
-                    if (visibleRows > 0 && total > 0) {
-                        last = first + visibleRows - 1;
-
-                        if (last > total) {
-                            last = total;
-                        }
-                    } else {
-                        first = 0;
-                        last = 0;
-                    }
-
-                    $('#completed_showing_text').text('Showing ' + first + ' to ' + last + ' of ' + total + ' entries');
-
-                    if (total <= perPage) {
-                        $('#completed_pagination').hide();
-                    } else {
-                        $('#completed_pagination').show();
-                    }
-                }
-                @if ($canGrantUserEditable)
-                $("#ckbCheckAll").click(function() {
-                    var isChecked = $(this).prop('checked');
-                    
-                    $(".checkBoxClass").prop('checked', isChecked);
-                    var completedTable = $('#client_completed_list').DataTable();
-                    for (var i = 0; i < completedTable.page.info().pages; i++) {
-                        completedTable.page(i).draw(false); 
-                        $(".checkBoxClass").prop('checked', isChecked); 
-                    }
-                    if ($(this).prop('checked') == true && $('.checkBoxClass:checked').length > 0) {
-                        $('#user_rework_button').prop('disabled', false);
-                        $('#select_p1').css('display', 'block');
-                    
-                    } else {
-                        $('#select_p1').css('display','none')
-                        $('#user_rework_button').prop('disabled', true);
-
-                    }
-            });
-            $('#select_all_status').click(function() {
-                $('#select_p1').css('display','none');
-                $('#clear_p1').css('display','block');
-               
-            });
-            $('#clear_all_status').click(function() {
-                var isChecked = false;
-                $("#ckbCheckAll").prop('checked', isChecked);
-                $(".checkBoxClass").prop('checked', isChecked);
-                $('#clear_p1').css('display','none');              
-                $('#user_rework_button').prop('disabled', true);           
-               
-            });
-            function handleCheckboxChange() {
-                var anyCheckboxChecked = $('.checkBoxClass:checked').length > 0;
-                var allCheckboxesChecked = $('.checkBoxClass:checked').length === $('.checkBoxClass')
-                    .length;
-                if (allCheckboxesChecked) {
-                    $("#ckbCheckAll").prop('checked', $(this).prop('checked'));
-                    $('#select_p1').css('display','block');
-                } else {
-                    $("#ckbCheckAll").prop('checked', false);
-                    $('#select_p1').css('display','none');
-                    $('#clear_p1').css('display','none');
-                }
-             
-                $('#user_rework_button').prop('disabled', !(anyCheckboxChecked || allCheckboxesChecked));
-              
-            }            
-
-            function attachCheckboxHandlers() {
-                $('.checkBoxClass').off('change').on('change', handleCheckboxChange);
-            }
-            attachCheckboxHandlers();
-
-                table.on('draw', function() {
-                    attachCheckboxHandlers();
-                });
-            function resetUserEditableSelection() {
-                $("#ckbCheckAll").prop('checked', false);
-                $(".checkBoxClass").prop('checked', false);
-                $('#select_p1').css('display','none');
-                $('#clear_p1').css('display','none')
-                $('#user_rework_button').prop('disabled', true);
-            }
-            $(document).on('click', '#user_rework_button', function(){
-                if ($(this).val() !== 'user_rework') {
-                    return;
-                }
-                var checkedRowValues = [];
-                $('#client_completed_list').DataTable().$('input[name="check[]"]:checked').each(function() {
-                    var rowData = {
-                        name: 'check[]',
-                        value: $(this).val()
-                    };
-                    checkedRowValues.push(rowData);
-                });
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
-                            'content')
-                    }
-                });
-                var selectId = $('#select_p1').css('display');
-                var clearId = $('#clear_p1').css('display');
-                var popupRecord = clearId == "none" ? <?= json_encode($completedProjectDetails->lastItem()); ?> : <?= json_encode($completedProjectDetails->total()); ?>;
-                var recordText = checkedRowValues.length > 1 ? "Do you want to update all "+ checkedRowValues.length + " records to AR Rework?" : "Do you want to update this record to AR Rework?";
-                var allRecordText = popupRecord > 1 ? "Do you want to update all "+ popupRecord + " records to AR Rework?" : "Do you want to update this record to AR Rework?";
-                var formData = $('#formSearch').serialize();
-                    formData += '&checkedRowValues=' + encodeURIComponent(JSON.stringify(checkedRowValues));
-                    formData += '&clientName=' + clientName;
-                    formData += '&subProjectName=' + subProjectName;
-                    formData += '&selectedRecords=' + clearId;
-                swal.fire({
-                    text: selectId == "none" && clearId == "none" ?  recordText: allRecordText ,
-                    icon: "success",
-                    buttonsStyling: false,
-                    showCancelButton: true,
-                    confirmButtonText: "Yes",
-                    cancelButtonText: "No",
-                    customClass: {
-                        confirmButton: "btn font-weight-bold btn-white-black",
-                        cancelButton: "btn font-weight-bold  btn-light-danger",
-                    }
-
-                }).then(function(result) {
-                    if (result.value == true) {
-                        if (typeof showGlobalLoader === 'function') {
-                            showGlobalLoader('Updating...', false, false);
-                        } else {
-                            $('#global-loader').css({
-                                display: 'flex',
-                                opacity: 1
-                            });
-                        }
-                        $.ajax({
-                            url: "{{ url('user_rework_status_update') }}",
-                            method: 'POST',
-                            global: false,
-                            data: formData,
-                            success: function(response) {
-                                if (response.success == true) {
-                                    js_notification('success',
-                                        'AR Rework Updated Successfully');
-                                    resetUserEditableSelection();
-                                     updateCountById('#ar_rework_count', checkedRowValues.length);
-                                } else {
-                                    js_notification('error', 'Something went wrong');
-                                    // $('#user_rework_dropdown').val('').trigger('change.select2');
-                                    $('#user_rework_button').prop('disabled', true);
-                                }
-                            },
-                            error: function() {
-                                js_notification('error', 'Something went wrong');
-                                // $('#user_rework_dropdown').val('').trigger('change.select2');
-                                $('#user_rework_button').prop('disabled', true);
-                            },
-                            complete: function() {
-                                if (typeof hideGlobalLoader === 'function') {
-                                    hideGlobalLoader();
-                                } else {
-                                    $('#global-loader').hide();
-                                }
-                            }
-                        });
-
-                    } else {
-                        // $('#user_rework_dropdown').val('').trigger('change.select2');
-                        
-                    }
-                });
-            })
-                @endif
-                function updateTime() {
-                    var now = new Date();
-                    var hours = now.getHours();
-                    var minutes = now.getMinutes();
-                    var seconds = now.getSeconds();
-                    var startTime = new Date(startTime_db).getTime();
-                    var elapsedTimeMs = new Date().getTime() - startTime;
-                    var elapsedHours = Math.floor(elapsedTimeMs / (1000 * 60 * 60));
-                    var remainingMinutes = Math.floor((elapsedTimeMs % (1000 * 60 * 60)) / (1000 * 60));
-                    elapsedHours = (elapsedHours < 10 ? "0" : "") + elapsedHours;
-                    remainingMinutes = (remainingMinutes < 10 ? "0" : "") + remainingMinutes;
-                    var elapsedTimeElement = document.getElementById("elapsedTime");
-                    if (elapsedTimeElement) {
-                        elapsedTimeElement.innerHTML = elapsedHours + " : " + remainingMinutes;
-                    }            
-                    setTimeout(updateTime, 3000);
-                };
-                updateTime();
-                document.addEventListener("DOMContentLoaded", function() {
-                    updateTime();
-            });
-   
+                });             
         })
     </script>
 @endpush

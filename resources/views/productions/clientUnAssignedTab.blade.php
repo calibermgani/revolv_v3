@@ -37,12 +37,10 @@ use Carbon\Carbon;
                                                                 $popUpHeader->project_id,
                                                             );
                                                             $sopDetails = App\Models\SopDoc::where('project_id',$popUpHeader->project_id)->where('sub_project_id',$popUpHeader->sub_project_id)->latest()->first('sop_path');
-                                                            // $pdfName =  preg_replace('/[^A-Za-z0-9]/', '_',$clientNameDetails->project_name);
                                                     @endphp
                                                     @else
                                                     @php
                                                         $sopDetails = '';
-                                                        // $pdfName = '';
                                                     @endphp
                                                 @endif
                                                 @if (isset($sopDetails) && !empty($sopDetails->sop_path))
@@ -68,7 +66,6 @@ use Carbon\Carbon;
                                             <a class="btn btn-primary-export text-white ml-2" href="javascript:void(0);" id='assign_export'  style="font-size:13px"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
                                             </svg>&nbsp;&nbsp;&nbsp;<span>Export</span></a>
                                         </div>
-                                        {{-- <div class="outside" href="javascript:void(0);"></div> --}}
                                     </div>
                                 </div>
                           </div>
@@ -189,6 +186,21 @@ use Carbon\Carbon;
                                                     @include('CountVar.countRectangle', [
                                                         'count' => $arAutoCloseCount,
                                                     ])
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="wizard-step mb-0 eleven" data-wizard-type="done">
+                                        <div class="wizard-wrapper py-2">
+                                            <div class="wizard-label p-2 mt-2">
+                                                <div class="wizard-title"
+                                                    style="display: flex; align-items: center;">                                                    
+                                                    <h6 style="margin-right:5px;">
+                                                        AR Rework
+                                                    </h6>
+                                                        @include('CountVar.countRectangle', [
+                                                            'count'=>$arReworkCount
+                                                        ])
                                                 </div>
                                             </div>
                                         </div>
@@ -1827,6 +1839,10 @@ use Carbon\Carbon;
                     getUrlVars()[
                         "parent"] + "&child=" + getUrlVars()["child"];
             })
+            $(document).on('click', '.eleven', function() {
+                window.location.href = baseUrl + 'projects_ar_rework/' + clientName + '/' + subProjectName + "?parent=" + getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
+
+            });
             $(document).on('change', '#chart_status', function() {
                     var claimStatus = $(this).val();
                     if(claimStatus == "CE_Hold") {

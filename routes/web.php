@@ -84,6 +84,7 @@ Route::any('manual_caller_chart_work_logs', 'App\Http\Controllers\ProductionCont
 Route::any('manual_duplicate_column_check', 'App\Http\Controllers\ProductionController@manualDuplicateColumnCheck');
 Route::any('nonworkable_status_update', 'App\Http\Controllers\ProductionController@nonworkableStatusUpdate');
 Route::any('workable_status_update', 'App\Http\Controllers\ProductionController@workableStatusUpdate');
+Route::any('user_rework_status_update', 'App\Http\Controllers\ProductionController@userEditableStatusUpdate');
 Route::any('project_call_chart_work_logs_reset', 'App\Http\Controllers\ProductionController@projectCallChartWorkLogs');
 Route::any('project_multi_store', 'App\Http\Controllers\ProductionController@clientMultiStore');
 Route::any('projects_auto_close/{clientName}/{subProjectName}', 'App\Http\Controllers\ProductionController@arAutoClose')->name('arAutoClose');
@@ -280,7 +281,7 @@ Route::group(['prefix' => 'qa_production'], function () {
        Route::any('client_export_assigned', 'App\Http\Controllers\ProductionController@clientExportAssigned');
        Route::get('client-export/check-report/{jobId}','App\Http\Controllers\ProductionController@checkclientExportReport');
        Route::get('client-export/download-report/{filename}','App\Http\Controllers\ProductionController@downloadClientExportReport');
-    
+       Route::any('projects_ar_rework/{clientName}/{subProjectName}','App\Http\Controllers\ProductionController@arReworkTab')->name('arReworkTab');
 
 
 

@@ -37,12 +37,10 @@ use Carbon\Carbon;
                                                                 $popUpHeader->project_id,
                                                             );
                                                             $sopDetails = App\Models\SopDoc::where('project_id',$popUpHeader->project_id)->where('sub_project_id',$popUpHeader->sub_project_id)->latest()->first('sop_path');
-                                                            // $pdfName =  preg_replace('/[^A-Za-z0-9]/', '_',$clientNameDetails->project_name);
                                                     @endphp
                                                     @else
                                                     @php
                                                         $sopDetails = '';
-                                                        // $pdfName = '';
                                                     @endphp
                                                 @endif
                                                    @if (isset($sopDetails) && !empty($sopDetails->sop_path))
@@ -81,9 +79,6 @@ use Carbon\Carbon;
                                             <div class="wizard-label p-2 mt-2">
                                                 <div class="wizard-title" style="display: flex; align-items: center;">
                                                     <h6 style="margin-right: 5px;">Assigned</h6>
-                                                    {{-- <div class="rounded-circle code-badge-tab">
-                                                        {{ $assignedCount }}
-                                                    </div> --}}
                                                     @include('CountVar.countRectangle', ['count' => $assignedCount])
                                                 </div>
                                             </div>
@@ -107,9 +102,6 @@ use Carbon\Carbon;
                                             <div class="wizard-label p-2 mt-2">
                                                 <div class="wizard-title" style="display: flex; align-items: center;">
                                                     <h6 style="margin-right: 5px;">Pending</h6>
-                                                    {{-- <div class="rounded-circle code-badge-tab-selected">
-                                                        {{ $pendingCount }}
-                                                    </div> --}}
                                                     @include('CountVar.countRectangle', ['count' => $pendingCount])
                                                 </div>
                                             </div>
@@ -120,9 +112,6 @@ use Carbon\Carbon;
                                             <div class="wizard-label p-2 mt-2">
                                                 <div class="wizard-title" style="display: flex; align-items: center;">
                                                     <h6 style="margin-right: 5px;">Hold</h6>
-                                                    {{-- <div class="rounded-circle code-badge-tab">
-                                                        {{ $holdCount }}
-                                                    </div> --}}
                                                     @include('CountVar.countRectangle', ['count' => $holdCount])
                                                 </div>
                                             </div>
@@ -143,9 +132,6 @@ use Carbon\Carbon;
                                             <div class="wizard-label p-2 mt-2">
                                                 <div class="wizard-title" style="display: flex; align-items: center;">
                                                     <h6 style="margin-right: 5px;">Audit Rework</h6>
-                                                    {{-- <div class="rounded-circle code-badge-tab">
-                                                        {{ $reworkCount }}
-                                                    </div> --}}
                                                     @include('CountVar.countRectangle', ['count' => $reworkCount])
                                                 </div>
                                             </div>
@@ -157,9 +143,6 @@ use Carbon\Carbon;
                                                 <div class="wizard-label p-2 mt-2">
                                                     <div class="wizard-title" style="display: flex; align-items: center;">
                                                         <h6 style="margin-right: 5px;">Duplicate</h6>
-                                                            {{-- <div class="rounded-circle code-badge-tab">
-                                                                {{ $duplicateCount }}
-                                                            </div> --}}
                                                             @include('CountVar.countRectangle', ['count' => $duplicateCount])
                                                     </div>
                                                 </div>
@@ -197,6 +180,21 @@ use Carbon\Carbon;
                                                     @include('CountVar.countRectangle', [
                                                         'count' => $arAutoCloseCount,
                                                     ])
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="wizard-step mb-0 eleven" data-wizard-type="done">
+                                        <div class="wizard-wrapper py-2">
+                                            <div class="wizard-label p-2 mt-2">
+                                                <div class="wizard-title"
+                                                    style="display: flex; align-items: center;">                                                    
+                                                    <h6 style="margin-right:5px;">
+                                                        AR Rework
+                                                    </h6>
+                                                        @include('CountVar.countRectangle', [
+                                                            'count'=>$arReworkCount
+                                                        ])
                                                 </div>
                                             </div>
                                         </div>
@@ -1836,7 +1834,7 @@ use Carbon\Carbon;
 
                     }
             });
-            function actionCode(statusVal,value) {
+                function actionCode(statusVal,value) {
                     $.ajaxSetup({
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -2173,6 +2171,10 @@ use Carbon\Carbon;
                     getUrlVars()[
                         "parent"] + "&child=" + getUrlVars()["child"];
             })
+            $(document).on('click', '.eleven', function() {
+                window.location.href = baseUrl + 'projects_ar_rework/' + clientName + '/' + subProjectName + "?parent=" + getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
+
+            });
                 $(document).on('change', '#chart_status', function() {
                     var claimStatus = $(this).val();
                     if(claimStatus == "CE_Hold") {

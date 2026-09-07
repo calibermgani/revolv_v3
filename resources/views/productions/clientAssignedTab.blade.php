@@ -240,6 +240,21 @@ use Carbon\Carbon;
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="wizard-step mb-0 eleven" data-wizard-type="done">
+                                        <div class="wizard-wrapper py-2">
+                                            <div class="wizard-label p-2 mt-2">
+                                                <div class="wizard-title"
+                                                    style="display: flex; align-items: center;">                                                    
+                                                    <h6 style="margin-right:5px;">
+                                                        AR Rework
+                                                    </h6>
+                                                        @include('CountVar.countRectangle', [
+                                                            'count'=>$arReworkCount
+                                                        ])
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     @if($reworkCount >= 1 && ($loginEmpId  !== "Admin" && strpos($empDesignation, 'Manager') !== 0 && strpos($empDesignation, 'VP') !== 0 && strpos($empDesignation, 'Leader') !== 0 && strpos($empDesignation, 'Team Lead') !== 0 && strpos($empDesignation, 'CEO') !== 0 && strpos($empDesignation, 'Vice') !== 0 && strpos($empDesignation, 'Group Coordinator') !== 0 && strpos($empDesignation, 'Subject Matter Expert') !== 0 && strpos($empDesignation, 'Group Co-ordinator - Quality') !== 0 && strpos($empDesignation, 'Group Co-ordinator - AR') !== 0))<p style="color:red; font-weight: 600;">*you have rework records!</p>@endif
                                 </div>
                             </div>
@@ -2629,6 +2644,10 @@ function showSubmitPopup() {
                     getUrlVars()[
                         "parent"] + "&child=" + getUrlVars()["child"];
             })
+            $(document).on('click', '.eleven', function() {
+                window.location.href = baseUrl + 'projects_ar_rework/' + clientName + '/' + subProjectName + "?parent=" + getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
+
+            });
             $(document).on('change', '#chart_status', function() {
                     var claimStatus = $(this).val();
                     if(claimStatus == "CE_Hold") {

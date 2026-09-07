@@ -13,14 +13,6 @@ use Carbon\Carbon;
                         <div class="card-header border-0 px-4">
                             <div class="row">
                                     <div class="col-md-6">
-                                    {{-- <span class="svg-icon svg-icon-primary svg-icon-lg ">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="16" fill="currentColor"
-                                            class="bi bi-arrow-left project_header_row" viewBox="0 0 16 16"
-                                            style="width: 1.05rem !important;color: #000000 !important;margin-left: 4px !important;">
-                                            <path fill-rule="evenodd"
-                                                d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
-                                        </svg>
-                                    </span> --}}
                                     <span class="project_header" style="margin-left: 4px !important;">Practice List</span>
                                 </div>
                                 <div class="col-md-6">
@@ -32,12 +24,10 @@ use Carbon\Carbon;
                                                                 $popUpHeader->project_id,
                                                             );
                                                             $sopDetails = App\Models\SopDoc::where('project_id',$popUpHeader->project_id)->where('sub_project_id',$popUpHeader->sub_project_id)->latest()->first('sop_path');
-                                                            // $pdfName =  preg_replace('/[^A-Za-z0-9]/', '_',$clientNameDetails->project_name);
                                                     @endphp
                                                     @else
                                                     @php
                                                         $sopDetails = '';
-                                                        // $pdfName = '';
                                                     @endphp
                                                 @endif
                                                 @if (isset($sopDetails) && !empty($sopDetails->sop_path))
@@ -77,9 +67,6 @@ use Carbon\Carbon;
                                             <div class="wizard-label p-2 mt-2">
                                                 <div class="wizard-title" style="display: flex; align-items: center;">
                                                     <h6 style="margin-right: 5px;">Assigned</h6>
-                                                    {{-- <div class="rounded-circle code-badge-tab">
-                                                        {{ $assignedCount }}
-                                                    </div> --}}
                                                     @include('CountVar.countRectangle', ['count' => $assignedCount])
                                                 </div>
                                             </div>
@@ -103,9 +90,6 @@ use Carbon\Carbon;
                                             <div class="wizard-label p-2 mt-2">
                                                 <div class="wizard-title" style="display: flex; align-items: center;">
                                                     <h6 style="margin-right: 5px;">Pending</h6>
-                                                    {{-- <div class="rounded-circle code-badge-tab">
-                                                        {{ $pendingCount }}
-                                                    </div> --}}
                                                     @include('CountVar.countRectangle', ['count' => $pendingCount])
                                                 </div>
                                             </div>
@@ -116,9 +100,6 @@ use Carbon\Carbon;
                                             <div class="wizard-label p-2 mt-2">
                                                 <div class="wizard-title" style="display: flex; align-items: center;">
                                                     <h6 style="margin-right: 5px;">Hold</h6>
-                                                    {{-- <div class="rounded-circle code-badge-tab-selected">
-                                                        {{ $holdCount }}
-                                                    </div> --}}
                                                     @include('CountVar.countRectangle', ['count' => $holdCount])
                                                 </div>
                                             </div>
@@ -139,9 +120,6 @@ use Carbon\Carbon;
                                             <div class="wizard-label p-2 mt-2">
                                                 <div class="wizard-title" style="display: flex; align-items: center;">
                                                     <h6 style="margin-right: 5px;">Audit Rework</h6>
-                                                    {{-- <div class="rounded-circle code-badge-tab">
-                                                        {{ $reworkCount }}
-                                                    </div> --}}
                                                     @include('CountVar.countRectangle', ['count' => $reworkCount])
                                                 </div>
                                             </div>
@@ -153,9 +131,6 @@ use Carbon\Carbon;
                                                 <div class="wizard-label p-2 mt-2">
                                                     <div class="wizard-title" style="display: flex; align-items: center;">
                                                         <h6 style="margin-right: 5px;">Duplicate</h6>
-                                                            {{-- <div class="rounded-circle code-badge-tab">
-                                                                {{ $duplicateCount }}
-                                                            </div> --}}
                                                             @include('CountVar.countRectangle', ['count' => $duplicateCount])
                                                     </div>
                                                 </div>
@@ -193,6 +168,21 @@ use Carbon\Carbon;
                                                     @include('CountVar.countRectangle', [
                                                         'count' => $arAutoCloseCount,
                                                     ])
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="wizard-step mb-0 eleven" data-wizard-type="done">
+                                        <div class="wizard-wrapper py-2">
+                                            <div class="wizard-label p-2 mt-2">
+                                                <div class="wizard-title"
+                                                    style="display: flex; align-items: center;">                                                    
+                                                    <h6 style="margin-right:5px;">
+                                                        AR Rework
+                                                    </h6>
+                                                        @include('CountVar.countRectangle', [
+                                                            'count'=>$arReworkCount
+                                                        ])
                                                 </div>
                                             </div>
                                         </div>
@@ -2162,6 +2152,10 @@ use Carbon\Carbon;
                     getUrlVars()[
                         "parent"] + "&child=" + getUrlVars()["child"];
             })
+            $(document).on('click', '.eleven', function() {
+                window.location.href = baseUrl + 'projects_ar_rework/' + clientName + '/' + subProjectName + "?parent=" + getUrlVars()["parent"] + "&child=" + getUrlVars()["child"];
+
+            });
                 $(document).on('change', '#chart_status', function() {
                         var claimStatus = $(this).val();
                         if(claimStatus == "CE_Hold") {
