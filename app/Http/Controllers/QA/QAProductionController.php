@@ -2068,7 +2068,11 @@ class QAProductionController extends Controller
                 }
                 $excludeColumns = Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $subProjectId);
                 $fields = array_values(array_diff($fields, $excludeColumns));
-                return Excel::download(new ProductionExport($fields,$exportResult), 'Resolv_'.$exStatus.'_Export.xlsx');
+                $downloadFileName = 'Resolv_'.$exStatus.'_Export.xlsx';
+                $downloadFileName = str_replace(['/', '\\'], '_', $downloadFileName);
+                $downloadFileName = preg_replace('/[<>:"|?*]+/', '_', $downloadFileName);
+                return Excel::download(new ProductionExport($fields,$exportResult), $downloadFileName);
+                // return Excel::download(new ProductionExport($fields,$exportResult), 'Resolv_'.$exStatus.'_Export.xlsx');
                 } catch (\Exception $e) {
                     log::debug($e->getMessage());
                 }
