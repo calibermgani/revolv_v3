@@ -312,7 +312,7 @@ class ProductionController extends Controller
                                     //                                                 // ->whereBetween('updated_at',[$startDate,$endDate])
                                     //                                                 ->count();
                                     // $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count(); 
-                                    //   $arReworkCount = CompletedUserEditable::where('project_id',$decodedProjectName)->where('record_status','user_rework')->where('start_time','>=',Carbon::now()->subHours(24))->count();                                               
+                                    //   $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);                                               
                                     $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','ASC')->pluck('chart_status')->toArray(); 
                               
                                     } else {
@@ -345,7 +345,7 @@ class ProductionController extends Controller
                                 //                                            // ->whereBetween('updated_at',[$startDate,$endDate])
                                 //                                             ->count();
                                 //    $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();   
-                                    //  $arReworkCount = CompletedUserEditable::where('project_id',$decodedProjectName)->where('record_status','user_rework')->where('start_time','>=',Carbon::now()->subHours(24))->count();                                               
+                                    //  $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);                                               
                                     $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','ASC')->pluck('chart_status')->toArray();   
                          
                                    }
@@ -390,7 +390,7 @@ class ProductionController extends Controller
                     //         // ->whereBetween('updated_at',[$startDate,$endDate])
                     //         ->count();
                     //     $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                    //    $arReworkCount = CompletedUserEditable::where('project_id',$decodedProjectName)->where('emp_id',$loginEmpId)->where('record_status','user_rework')->where('start_time','>=',Carbon::now()->subHours(24))->count();                                                                                              
+                    //    $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId, $loginEmpId);                                                                                              
                        $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->orderBy('id','ASC')->pluck('chart_status')->toArray();
                   
                         } else {
@@ -536,7 +536,7 @@ class ProductionController extends Controller
                                                                                     // ->whereBetween('updated_at',[$startDate,$endDate])
                                                                                     ->count();
                                     $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count(); 
-                                    $arReworkCount = CompletedUserEditable::where('project_id',$decodedProjectName)->where('record_status','user_rework')->where('start_time','>=',Carbon::now()->subHours(24))->count();                                                                                              
+                                    $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);                                                                                              
                                } else {
                                     $existingCallerChartsWorkLogsInprocess = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('record_status','CE_Inprocess')->orderBy('id','DESC')->pluck('record_id')->toArray();
                                     $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->whereIn('record_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','DESC')->pluck('record_id')->toArray();
@@ -566,7 +566,7 @@ class ProductionController extends Controller
                                                                            // ->whereBetween('updated_at',[$startDate,$endDate])
                                                                             ->count();
                                    $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count(); 
-                                   $arReworkCount = CompletedUserEditable::where('project_id',$decodedProjectName)->where('record_status','user_rework')->where('start_time','>=',Carbon::now()->subHours(24))->count();                                                                                                
+                                   $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);                                                                                                
                            }
                    } else {
                         return redirect()->back();
@@ -607,7 +607,7 @@ class ProductionController extends Controller
                             // ->whereBetween('updated_at',[$startDate,$endDate])
                             ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        $arReworkCount = CompletedUserEditable::where('project_id',$decodedProjectName)->where('emp_id',$loginEmpId)->where('record_status','user_rework')->where('start_time','>=',Carbon::now()->subHours(24))->count();                                                                                              
+                        $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId, $loginEmpId);                                                                                              
                   } else {
                     return redirect()->back();
                   }
@@ -732,20 +732,7 @@ class ProductionController extends Controller
                             })
                             // ->whereBetween('updated_at',[$startDate,$endDate])
                             ->count();
-                            $arReworkCount = CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            )
-                            ->count();
+                            $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);
                        $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();                                                
                      
                    }
@@ -770,20 +757,7 @@ class ProductionController extends Controller
                         })->where('CE_emp_id',$loginEmpId)
                         // ->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
-                        $arReworkCount = CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            )->where('emp_id',$loginEmpId)
-                            ->count();
+                        $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId, $loginEmpId);
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();                                                
                      
                     }
@@ -905,20 +879,7 @@ class ProductionController extends Controller
                                 })->where('CE_emp_id',$resourceName)
                                 // ->whereBetween('updated_at',[$startDate,$endDate])
                                 ->count();
-                                $arReworkCount = CompletedUserEditable::where(
-                                    'project_id',
-                                    $decodedProjectName
-                                )
-                                ->where(
-                                    'record_status',
-                                    'user_rework'
-                                )
-                                ->where(
-                                    'start_time',
-                                    '>=',
-                                    Carbon::now()->subHours(24)
-                                )->where('emp_id',$resourceName)
-                                ->count();
+                                $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId, $resourceName);
                                 $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count();
                         } else {
                             // $holdProjectDetails = $modelClass::where('chart_status','CE_Hold')->whereBetween('updated_at',[$startDate,$endDate])->orderBy('id','ASC')->get();
@@ -943,20 +904,7 @@ class ProductionController extends Controller
                                 })
                                 //->whereBetween('updated_at',[$startDate,$endDate])
                                 ->count();
-                                $arReworkCount = CompletedUserEditable::where(
-                                    'project_id',
-                                    $decodedProjectName
-                                )
-                                ->where(
-                                    'record_status',
-                                    'user_rework'
-                                )
-                                ->where(
-                                    'start_time',
-                                    '>=',
-                                    Carbon::now()->subHours(24)
-                                )
-                                ->count();
+                                $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);
                             $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                         }
                     }
@@ -981,20 +929,7 @@ class ProductionController extends Controller
                         })->where('CE_emp_id',$loginEmpId)
                         // ->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
-                        $arReworkCount = CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            )->where('emp_id',$loginEmpId)
-                            ->count();
+                        $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId, $loginEmpId);
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 }
@@ -1106,20 +1041,7 @@ class ProductionController extends Controller
                         // ->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        $arReworkCount = CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            )
-                            ->count();
+                        $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);
                    }
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
@@ -1137,20 +1059,7 @@ class ProductionController extends Controller
                             // ->whereBetween('updated_at',[$startDate,$endDate])
                             ->count();
                       $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                      $arReworkCount = CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            )->where('emp_id',$loginEmpId)
-                            ->count();
+                      $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId, $loginEmpId);
                     }
                  }
                  $completedProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
@@ -1275,20 +1184,7 @@ class ProductionController extends Controller
                             })
                             // ->whereBetween('updated_at',[$startDate,$endDate])
                             ->count();
-                            $arReworkCount = CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            )
-                            ->count();
+                            $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 } else if ($loginEmpId) {
@@ -1312,20 +1208,7 @@ class ProductionController extends Controller
                         })->where('CE_emp_id',$loginEmpId)
                         // ->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
-                        $arReworkCount = CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            )->where('emp_id',$loginEmpId)
-                            ->count();
+                        $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId, $loginEmpId);
                       $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                  }
@@ -1453,20 +1336,7 @@ class ProductionController extends Controller
                             })
                             // ->whereBetween('updated_at',[$startDate,$endDate])
                             ->count();
-                            $arReworkCount = CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            )
-                            ->count();
+                            $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
                    }
                 } elseif ($loginEmpId) {
@@ -1484,20 +1354,7 @@ class ProductionController extends Controller
                         })->where('CE_emp_id',$loginEmpId)
                         // ->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
-                        $arReworkCount = CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            )->where('emp_id',$loginEmpId)
-                            ->count();
+                        $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId, $loginEmpId);
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
                     }
                 }
@@ -2667,20 +2524,7 @@ class ProductionController extends Controller
                         //->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        $arReworkCount = CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            )
-                            ->count();
+                        $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);
                     //    $payload = [
                     //        'token' => '1a32e71a46317b9cc6feb7388238c95d',
                     //        'client_id' => $decodedProjectName,
@@ -2715,20 +2559,7 @@ class ProductionController extends Controller
                             //->whereBetween('updated_at',[$startDate,$endDate])
                             ->count();
                        $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                       $arReworkCount = CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            )->where('emp_id',$loginEmpId)
-                            ->count();
+                       $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId, $loginEmpId);
                     }
                }
                $unAssignedProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
@@ -2877,20 +2708,7 @@ class ProductionController extends Controller
                         //->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        $arReworkCount = CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            )
-                            ->count();
+                        $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);
                    }
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
@@ -2908,20 +2726,7 @@ class ProductionController extends Controller
                         //->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
                     $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                    $arReworkCount = CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            )->where('emp_id',$loginEmpId)
-                            ->count();
+                    $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId, $loginEmpId);
                    }
                  }
                  $arNonWorkableProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
@@ -3032,20 +2837,7 @@ class ProductionController extends Controller
                        $unAssignedCount = $modelClass::where('chart_status','CE_Assigned')->whereNull('CE_emp_id')->count();
                        $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','DESC')->pluck('record_id')->toArray();
                        $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                       $arReworkCount = CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            )
-                            ->count();
+                       $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);
                    }
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
@@ -3067,20 +2859,7 @@ class ProductionController extends Controller
                             ->count();
                     $existingCallerChartsWorkLogs = CallerChartsWorkLogs::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('emp_id',$loginEmpId)->where('end_time',NULL)->where('record_status','Revoke')->orderBy('id','DESC')->pluck('record_id')->toArray();
                     $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                    $arReworkCount = CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            )->where('emp_id',$loginEmpId)
-                            ->count();
+                    $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId, $loginEmpId);
                    }
                 }
                  $rebuttalProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
@@ -4212,20 +3991,7 @@ class ProductionController extends Controller
                         })
                         //->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
-                           $arReworkCount = CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            )
-                            ->count();
+                           $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);
                    }
                 } else if ($loginEmpId) {
                     if (class_exists($modelClass)) {
@@ -4243,20 +4009,7 @@ class ProductionController extends Controller
                         })->where('CE_emp_id',$loginEmpId)
                         //->whereBetween('updated_at',[$startDate,$endDate])
                         ->count();
-                           $arReworkCount = CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            )->where('emp_id',$loginEmpId)
-                            ->count();
+                           $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId, $loginEmpId);
                    }
                  }
                  $arAutoCloseProjectDetails->getCollection()->transform(function ($item) use ($excludeColumns) {
@@ -5168,8 +4921,7 @@ class ProductionController extends Controller
                             }
 
 
-                            $arReworkCount =
-                            $arReworkQuery->count();
+                            $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);
                    }
                 } else if ($loginEmpId) {                  
                     if (class_exists($modelClass)) {
@@ -5259,20 +5011,7 @@ class ProductionController extends Controller
                             })->where('CE_emp_id',$loginEmpId)
                             ->count();
                       $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                      $arReworkCount = CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            )->where('emp_id',$loginEmpId)
-                            ->count();
+                      $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId, $loginEmpId);
                     }
                  }
                 if($arReworkDetails instanceof \Illuminate\Pagination\LengthAwarePaginator)
@@ -5317,6 +5056,29 @@ class ProductionController extends Controller
        } else {
            return redirect('/');
        }
+    }
+
+    protected function getArReworkCount($modelClass, $decodedProjectName, $subProjectId = null, $empId = null)
+    {
+        if (empty($modelClass) || !class_exists($modelClass)) {
+            return 0;
+        }
+        $reworkQuery = CompletedUserEditable::where('project_id', $decodedProjectName)
+            ->where('record_status', 'user_rework')
+            ->where('start_time', '>=', Carbon::now()->subHours(24));
+        if ($subProjectId === null) {
+            $reworkQuery->whereNull('sub_project_id');
+        } else {
+            $reworkQuery->where('sub_project_id', $subProjectId);
+        }
+        if ($empId !== null && $empId !== '' && $empId !== 'null') {
+            $reworkQuery->where('emp_id', $empId);
+        }
+        $reworkIds = $reworkQuery->pluck('record_id')->filter()->unique()->values()->toArray();
+        if (empty($reworkIds)) {
+            return 0;
+        }
+        return $modelClass::whereIn('id', $reworkIds)->where('chart_status', 'CE_Completed')->count();
     }
 
 
