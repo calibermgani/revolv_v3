@@ -1888,13 +1888,50 @@ class ProductionController extends Controller
                 // $modelClass = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',ucfirst($decodedClientName).ucfirst($decodedsubProjectName));
                 // $modelHistory = "App\\Models\\" . preg_replace('/[^A-Za-z0-9]/', '',ucfirst($decodedClientName).ucfirst($decodedsubProjectName)).'History';
                 $checkedValues = json_decode($request->input('checkedRowValues'), true);
-                foreach($checkedValues as $data) {
-                    $existingRecord = $modelClass::where('id',$data['value'])->first();
-                    $historyRecord = $existingRecord->toArray();
-                    $historyRecord['parent_id']= $historyRecord['id'];
-                    unset($historyRecord['id']);
-                    $modelHistory::create($historyRecord);
-                    $existingRecord->update(['CE_emp_id' => $assigneeId]);
+                set_time_limit(600);
+                if($request['selectedRecords'] == "none" || empty($request['selectedRecords'])) {
+                    $recordsToAssign = collect();
+                    if (!empty($checkedValues)) {
+                        $checkedIds = array_filter(array_map(function ($data) {
+                            return isset($data['value']) ? $data['value'] : null;
+                        }, $checkedValues));
+                        if (!empty($checkedIds)) {
+                            $recordsToAssign = $modelClass::whereIn('id', $checkedIds)
+                                ->whereIn('chart_status',['CE_Assigned','CE_Inprocess'])
+                                ->get();
+                        }
+                    }
+                    $this->applyAssigneeChange($recordsToAssign, $modelClass, $modelHistory, $assigneeId);
+                } else {
+                    $query = $modelClass::query();
+                    foreach ($request->except('_token', 'checkedRowValues', 'clientName','subProjectName','selectedRecords','assigneeId','assignee_name','resourceName','parent','child','page','recordStatusVal') as $key => $value) {
+                        if (is_array($value)) {
+                            $value = implode('_el_', $value);
+                        }
+                        if (is_numeric($value) || is_bool($value)) {
+                            $query->where($key, $value);
+                        } elseif ($this->isDate($value)) {
+                            $query->whereDate($key, '=', $value);
+                        } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
+                        } elseif (strpos($value, '$') !== false || strpos($value, '.') !== false) {
+                            $query->where($key, $value);
+                        } else {
+                            if($value != null) {
+                                $query->where($key, 'like', '%' . $value . '%');
+                            }
+                        }
+                    }
+                    if ($request['recordStatusVal'] == 'unassigned') {
+                        $query->where('chart_status','CE_Assigned')->whereNull('CE_emp_id');
+                    } else {
+                        $query->whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->whereNotNull('CE_emp_id');
+                        if (!empty($request['resourceName']) && $request['resourceName'] != 'null') {
+                            $query->where('CE_emp_id', $request['resourceName']);
+                        }
+                    }
+                    $query->orderBy('id')->chunkById(300, function ($records) use ($modelClass, $modelHistory, $assigneeId) {
+                        $this->applyAssigneeChange($records, $modelClass, $modelHistory, $assigneeId);
+                    });
                 }
                 return response()->json(['success' => true]);
             } catch (\Exception $e) {
@@ -5079,6 +5116,36 @@ class ProductionController extends Controller
             return 0;
         }
         return $modelClass::whereIn('id', $reworkIds)->where('chart_status', 'CE_Completed')->count();
+    }
+
+    protected function applyAssigneeChange($records, $modelClass, $modelHistory, $assigneeId)
+    {
+        if (empty($records) || count($records) == 0) {
+            return;
+        }
+        $historyColumns = Schema::getColumnListing((new $modelHistory)->getTable());
+        $now = Carbon::now();
+        $historyRows = [];
+        $recordIds = [];
+        foreach ($records as $existingRecord) {
+            $historyRecord = $existingRecord->getAttributes();
+            $historyRecord['parent_id'] = $historyRecord['id'];
+            unset($historyRecord['id']);
+            if (in_array('created_at', $historyColumns)) {
+                $historyRecord['created_at'] = $now;
+            }
+            if (in_array('updated_at', $historyColumns)) {
+                $historyRecord['updated_at'] = $now;
+            }
+            $historyRows[] = array_intersect_key($historyRecord, array_flip($historyColumns));
+            $recordIds[] = $existingRecord->id;
+        }
+        foreach (array_chunk($historyRows, 200) as $historyChunk) {
+            $modelHistory::insert($historyChunk);
+        }
+        foreach (array_chunk($recordIds, 300) as $idChunk) {
+            $modelClass::whereIn('id', $idChunk)->update(['CE_emp_id' => $assigneeId]);
+        }
     }
 
 

@@ -1722,6 +1722,11 @@ use Carbon\Carbon;
                     };
                     checkedRowValues.push(rowData);
                 });
+                var selectId = $('#select_p1').css('display');
+                var clearId = $('#clear_p1').css('display');
+                var popupRecord = clearId == "none" ? <?= json_encode($unAssignedProjectDetails->lastItem()); ?> : <?= json_encode($unAssignedProjectDetails->total()); ?>;
+                var recordText = checkedRowValues.length > 1 ? "Do you want to assign all "+ checkedRowValues.length + " records?" : "Do you want to assign this record?";
+                var allRecordText = popupRecord > 1 ? "Do you want to assign all "+ popupRecord + " records?" : "Do you want to assign this record?";
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
@@ -1733,8 +1738,10 @@ use Carbon\Carbon;
                     formData += '&clientName=' + clientName;
                     formData += '&subProjectName=' + subProjectName;
                     formData += '&assigneeId=' + assigneeId;
+                    formData += '&selectedRecords=' + clearId;
+                    formData += '&recordStatusVal=unassigned';
                 swal.fire({
-                    text: "Do you want to assign?",
+                    text: selectId == "none" && clearId == "none" ? recordText : allRecordText,
                     icon: "success",
                     buttonsStyling: false,
                     showCancelButton: true,
@@ -1747,9 +1754,13 @@ use Carbon\Carbon;
 
                 }).then(function(result) {
                     if (result.value == true) {
+                        if (typeof showGlobalLoader === 'function') {
+                            showGlobalLoader('Assigning...', false, false);
+                        }
                         $.ajax({
                             url: "{{ url('assignee_change') }}",
                             method: 'POST',
+                            timeout: 0,
                             data: formData,
                             // data: {
                             //     assigneeId: assigneeId,
@@ -1769,6 +1780,14 @@ use Carbon\Carbon;
                                     location.reload();
                                 }, 2000);
                             },
+                            error: function() {
+                                js_notification('error', 'Something went wrong');
+                            },
+                            complete: function() {
+                                if (typeof hideGlobalLoader === 'function') {
+                                    hideGlobalLoader();
+                                }
+                            }
                         });
 
                     } else {

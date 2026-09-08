@@ -2438,9 +2438,11 @@ function showSubmitPopup() {
                     };
                     checkedRowValues.push(rowData);
                 });
-                // var selectId = $('#select_p1').css('display');
-                // var clearId = $('#clear_p1').css('display');
-                // var popupRecord = clearId == "none" ? <?= json_encode($assignedProjectDetails->lastItem()); ?> : <?= json_encode($assignedProjectDetails->total()); ?>;
+                var selectId = $('#select_p1').css('display');
+                var clearId = $('#clear_p1').css('display');
+                var popupRecord = clearId == "none" ? <?= json_encode($assignedProjectDetails->lastItem()); ?> : <?= json_encode($assignedProjectDetails->total()); ?>;
+                var recordText = checkedRowValues.length > 1 ? "Do you want to change assignee for all "+ checkedRowValues.length + " records?" : "Do you want to change assignee for this record?";
+                var allRecordText = popupRecord > 1 ? "Do you want to change assignee for all "+ popupRecord + " records?" : "Do you want to change assignee for this record?";
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
@@ -2452,8 +2454,13 @@ function showSubmitPopup() {
                     formData += '&clientName=' + clientName;
                     formData += '&subProjectName=' + subProjectName;
                     formData += '&assigneeId=' + assigneeId;
+                    formData += '&selectedRecords=' + clearId;
+                    formData += '&recordStatusVal=assigned';
+                    if (typeof resourceName !== 'undefined' && resourceName !== null && resourceName !== '') {
+                        formData += '&resourceName=' + encodeURIComponent(resourceName);
+                    }
                 swal.fire({
-                    text: "Do you want to change assignee?",
+                    text: selectId == "none" && clearId == "none" ? recordText : allRecordText,
                     icon: "success",
                     buttonsStyling: false,
                     showCancelButton: true,
@@ -2466,9 +2473,13 @@ function showSubmitPopup() {
 
                 }).then(function(result) {
                     if (result.value == true) {
+                        if (typeof showGlobalLoader === 'function') {
+                            showGlobalLoader('Assigning...', false, false);
+                        }
                         $.ajax({
                             url: "{{ url('assignee_change') }}",
                             method: 'POST',
+                            timeout: 0,
                             data: formData,
                             // data: {
                             //     assigneeId: assigneeId,
@@ -2487,6 +2498,14 @@ function showSubmitPopup() {
                                     location.reload();
                                 }, 2000);
                             },
+                            error: function() {
+                                js_notification('error', 'Something went wrong');
+                            },
+                            complete: function() {
+                                if (typeof hideGlobalLoader === 'function') {
+                                    hideGlobalLoader();
+                                }
+                            }
                         });
 
                     } else {
