@@ -5106,7 +5106,7 @@ class ProductionController extends Controller
                             $modelClass::whereIn(
                                 'id',
                                 $reworkIds
-                            )
+                            )->where('chart_status','CE_Completed')
                             ->orderBy(
                                 'id',
                                 'DESC'
@@ -5238,7 +5238,7 @@ class ProductionController extends Controller
                             $modelClass::whereIn(
                                 'id',
                                 $reworkIds
-                            )
+                            )->where('chart_status','CE_Completed')
                             ->orderBy(
                                 'id',
                                 'DESC'
