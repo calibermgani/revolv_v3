@@ -3025,29 +3025,11 @@ public function exportBulkReport(Request $request)
         $filename = basename($filename);
         $path = storage_path('app/reports/' . $filename);
 
-        if (!file_exists($path) || !is_file($path)) {
+        if (!file_exists($path)) {
             abort(404, "File not found");
         }
 
-        while (ob_get_level() > 0) {
-            ob_end_clean();
-        }
-
-        $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        $mime = 'application/octet-stream';
-        if ($extension === 'zip') {
-            $mime = 'application/zip';
-        } elseif ($extension === 'xlsx') {
-            $mime = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-        } elseif ($extension === 'csv') {
-            $mime = 'text/csv';
-        }
-
-        return response()->download($path, $filename, [
-            'Content-Type' => $mime,
-            'Content-Length' => (string) filesize($path),
-            'Cache-Control' => 'private, no-transform, no-store',
-        ]);
+        return response()->download($path, $filename);
     }
 public function getBulkColumnsCSV(Request $request)
 {

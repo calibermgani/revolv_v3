@@ -342,49 +342,46 @@
                 }, 2000);
             }
             function downloadReadyFile(filename) {
-                var downloadUrl = "{{ url('download-report') }}/" + encodeURIComponent(filename);
                 KTApp.block('#filterForm', {
                     overlayColor: '#000000',
                     state: 'primary',
                     opacity: 0.2,
                     message: 'Downloading report... Please wait',
                 });
-
-                function startBrowserDownload() {
+                fetch("{{ url('download-report') }}/" + encodeURIComponent(filename), {
+                    method: 'GET',
+                    credentials: 'same-origin'
+                }).then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Download failed');
+                    }
+                    var downloadName = filename;
+                    var disposition = response.headers.get('Content-Disposition');
+                    if (disposition) {
+                        var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+                        if (matches && matches[1]) {
+                            downloadName = matches[1].replace(/['"]/g, '');
+                        }
+                    }
+                    return response.blob().then(function(blob) {
+                        return {
+                            blob: blob,
+                            downloadName: downloadName
+                        };
+                    });
+                }).then(function(result) {
+                    var url = window.URL.createObjectURL(result.blob);
                     var link = document.createElement('a');
-                    link.href = downloadUrl;
-                    link.download = filename;
+                    link.href = url;
+                    link.download = result.downloadName;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
                     KTApp.unblock('#filterForm');
-                }
-
-                fetch(downloadUrl, {
-                    method: 'HEAD',
-                    credentials: 'same-origin'
-                }).then(function(response) {
-                    if (response.ok) {
-                        startBrowserDownload();
-                        return;
-                    }
-                    throw new Error('Download failed');
                 }).catch(function() {
-                    fetch(downloadUrl, {
-                        method: 'GET',
-                        credentials: 'same-origin'
-                    }).then(function(response) {
-                        if (!response.ok) {
-                            throw new Error('Download failed');
-                        }
-                        if (response.body && response.body.cancel) {
-                            response.body.cancel();
-                        }
-                        startBrowserDownload();
-                    }).catch(function() {
-                        KTApp.unblock('#filterForm');
-                        alert("Failed to download report");
-                    });
+                    KTApp.unblock('#filterForm');
+                    alert("Failed to download report");
                 });
             }
         });
