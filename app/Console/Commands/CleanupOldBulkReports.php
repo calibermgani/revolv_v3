@@ -29,6 +29,38 @@ class CleanupOldBulkReports extends Command
         }
     }
 
+    public static function deletePreviousForCombination($reuseKey, $newPath): void
+    {
+        if ($reuseKey === null || $reuseKey === '' || !$newPath) {
+            return;
+        }
+
+        $dir = storage_path('app/reports/.reuse');
+        if (!File::isDirectory($dir)) {
+            File::makeDirectory($dir, 0775, true);
+        }
+
+        $marker = $dir . DIRECTORY_SEPARATOR . preg_replace('/[^a-f0-9]/i', '', (string) $reuseKey);
+        $oldPath = null;
+        if (is_file($marker)) {
+            $oldPath = trim((string) @file_get_contents($marker));
+        }
+
+        if ($oldPath) {
+            $oldReal = is_file($oldPath) ? realpath($oldPath) : $oldPath;
+            $newReal = realpath($newPath) ?: $newPath;
+            if ($oldReal !== $newReal) {
+                self::deleteFileIfExists($oldPath);
+                $sameFolderCopy = storage_path('app/reports/' . basename($oldPath));
+                if ($sameFolderCopy !== $oldPath) {
+                    self::deleteFileIfExists($sameFolderCopy);
+                }
+            }
+        }
+
+        @file_put_contents($marker, $newPath);
+    }
+
     public static function deleteExpiredTempCopies(): int
     {
         $directory = storage_path('app/reports');

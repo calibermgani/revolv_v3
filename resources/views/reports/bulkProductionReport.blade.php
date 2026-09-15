@@ -299,8 +299,29 @@
             //         }
             //     });
             // });//worked for excel upto 70000 rows
+            var reportInProgress = false;
+            var downloadStarted = false;
+
+            function showReportLoader(message) {
+                KTApp.block('body', {
+                    overlayColor: '#000000',
+                    state: 'primary',
+                    opacity: 0.2,
+                    message: message,
+                });
+            }
+
+            function hideReportLoader() {
+                KTApp.unblock('body');
+                KTApp.unblock('#filterForm');
+                reportInProgress = false;
+            }
+
             $('#formUpdate_save').on('click', function(e) {
                 e.preventDefault();
+                if (reportInProgress) {
+                    return false;
+                }
                 $('#sub_project_id').next('.select2').find(".select2-selection").css('border-color', '');
                 if ($('#project_id').val() == '') {
                     $('#project_id').next('.select2').find(".select2-selection").css('border-color',
@@ -310,44 +331,36 @@
                     $('#project_id').next('.select2').find(".select2-selection").css('border-color',
                         '');
                 }
-                // ✅ START LOADER
-                KTApp.block('#filterForm', {
-                    overlayColor: '#000000',
-                    state: 'primary',
-                    opacity: 0.2,
-                    message: 'Generating report... Please wait',
-                });
+                reportInProgress = true;
+                downloadStarted = false;
+                showReportLoader('Generating report... Please wait');
 
                 var formData = $('#filterForm').serialize();
                 $.post("{{ url('run-python') }}", formData, function(res) {
                     checkFileReady(res.job_id);
                 }).fail(function() {
-                    KTApp.unblock('#filterForm');
+                    hideReportLoader();
                     alert("Failed to start report");
                 });
             });
             function checkFileReady(jobId) {
                 var interval = setInterval(function() {
                     $.get("{{ url('check-report') }}/" + jobId, function(res) {
-                        if (res.ready) {
+                        if (res.ready && !downloadStarted) {
+                            downloadStarted = true;
                             clearInterval(interval);
                             downloadReadyFile(res.file);
                         }
                     }).fail(function() {
                         clearInterval(interval);
-                        KTApp.unblock('#filterForm');
+                        hideReportLoader();
                         alert("Error checking report status");
                     });
 
                 }, 2000);
             }
             function downloadReadyFile(filename) {
-                KTApp.block('#filterForm', {
-                    overlayColor: '#000000',
-                    state: 'primary',
-                    opacity: 0.2,
-                    message: 'Downloading report... Please wait',
-                });
+                showReportLoader('Downloading report... Please wait');
                 fetch("{{ url('download-report') }}/" + encodeURIComponent(filename), {
                     method: 'GET',
                     credentials: 'same-origin'
@@ -378,9 +391,9 @@
                     link.click();
                     document.body.removeChild(link);
                     window.URL.revokeObjectURL(url);
-                    KTApp.unblock('#filterForm');
+                    hideReportLoader();
                 }).catch(function() {
-                    KTApp.unblock('#filterForm');
+                    hideReportLoader();
                     alert("Failed to download report");
                 });
             }

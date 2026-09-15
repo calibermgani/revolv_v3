@@ -53,10 +53,7 @@ class RunPythonReportJob implements ShouldQueue
             Cache::put('report_' . $this->payload['job_id'], $output, 3600);
             if (!empty($this->payload['reuse_key']) && $output && file_exists($output)) {
                 $reuseKey = 'report_reuse_' . $this->payload['reuse_key'];
-                $previousPath = Cache::get($reuseKey);
-                if (is_string($previousPath) && $previousPath !== $output) {
-                    CleanupOldBulkReports::deleteFileIfExists($previousPath);
-                }
+                CleanupOldBulkReports::deletePreviousForCombination($this->payload['reuse_key'], $output);
                 Cache::put($reuseKey, $output, 1200);
             }
             Log::info('Cache stored: report_' . $this->payload['job_id']);
