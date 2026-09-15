@@ -544,7 +544,7 @@ def export_project_to_zip(
                     quoting=csv.QUOTE_MINIMAL,
                 )
 
-            os.chmod(output_file, 0o664)
+            os.chmod(output_file, 0o777)
             csv_files.append(output_file)
 
         zip_name = f"{slugify_sub_project(project_name)}_{timestamp}.zip"
@@ -554,7 +554,7 @@ def export_project_to_zip(
         ) as zf:
             for csv_path in csv_files:
                 zf.write(csv_path, os.path.basename(csv_path))
-        os.chmod(zip_path, 0o664)
+        os.chmod(zip_path, 0o777)
 
         for csv_path in csv_files:
             try:
@@ -644,7 +644,7 @@ def export_to_excel(
             output_file = os.path.join(reports_dir, file_name)
 
             df_empty.to_excel(output_file, index=False, engine="xlsxwriter")
-            os.chmod(output_file, 0o664)
+            os.chmod(output_file, 0o777)
             return os.path.abspath(output_file)
 
         cursor.execute(f"SHOW COLUMNS FROM {table_name}")
@@ -831,7 +831,7 @@ def export_to_excel(
         if writer is not None and not external_writer:
             writer.close()
         if output_file and (not shared_output):
-            os.chmod(output_file, 0o664)
+            os.chmod(output_file, 0o777)
         if owns_conn:
             close_quietly(conn)
         if owns_work_conn:
