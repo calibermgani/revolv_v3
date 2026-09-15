@@ -49,14 +49,19 @@ class RunPythonReportJob implements ShouldQueue
             if (!$process->isSuccessful()) {
                 throw new \Exception($error);
             }
-        // ✅ FIXED: use job_id instead of project_id
-            Cache::put('report_' . $this->payload['job_id'], $output, 3600);
-            if (!empty($this->payload['reuse_key']) && $output && file_exists($output)) {
-                $reuseKey = 'report_reuse_' . $this->payload['reuse_key'];
-                CleanupOldBulkReports::deletePreviousForCombination($this->payload['reuse_key'], $output);
-                Cache::put($reuseKey, $output, 1200);
+
+            $filePath = CleanupOldBulkReports::resolveReportPath($output);
+            if (!$filePath) {
+                throw new \Exception('Report file path not found in Python output: ' . $output);
             }
-            Log::info('Cache stored: report_' . $this->payload['job_id']);
+
+            Cache::put('report_' . $this->payload['job_id'], $filePath, 3600);
+            CleanupOldBulkReports::deletePreviousProjectFiles($filePath);
+            if (!empty($this->payload['reuse_key'])) {
+                CleanupOldBulkReports::deletePreviousForCombination($this->payload['reuse_key'], $filePath);
+                Cache::put('report_reuse_' . $this->payload['reuse_key'], $filePath, 1200);
+            }
+            Log::info('Cache stored: report_' . $this->payload['job_id'] . ' file=' . $filePath);
         } catch (\Exception $e) {
             Log::error("Job Failed: " . $e->getMessage());
         } finally {
