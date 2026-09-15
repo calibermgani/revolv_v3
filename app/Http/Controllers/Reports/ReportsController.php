@@ -3029,12 +3029,7 @@ public function exportBulkReport(Request $request)
             abort(404, "File not found");
         }
 
-        $tmp = storage_path('app/reports/tmp_' . uniqid('', true) . '_' . $filename);
-        if (!@copy($path, $tmp)) {
-            return response()->download($path);
-        }
-
-        return response()->download($tmp, $filename)->deleteFileAfterSend(true);
+        return response()->download($path, $filename);
     }
 public function getBulkColumnsCSV(Request $request)
 {

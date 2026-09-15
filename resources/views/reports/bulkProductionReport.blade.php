@@ -331,8 +331,7 @@
                     $.get("{{ url('check-report') }}/" + jobId, function(res) {
                         if (res.ready) {
                             clearInterval(interval);
-                            window.location.href = "{{ url('download-report') }}/" + res.file;
-                            KTApp.unblock('#filterForm');
+                            downloadReadyFile(res.file);
                         }
                     }).fail(function() {
                         clearInterval(interval);
@@ -340,7 +339,50 @@
                         alert("Error checking report status");
                     });
 
-                }, 3000);
+                }, 2000);
+            }
+            function downloadReadyFile(filename) {
+                KTApp.block('#filterForm', {
+                    overlayColor: '#000000',
+                    state: 'primary',
+                    opacity: 0.2,
+                    message: 'Downloading report... Please wait',
+                });
+                fetch("{{ url('download-report') }}/" + encodeURIComponent(filename), {
+                    method: 'GET',
+                    credentials: 'same-origin'
+                }).then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Download failed');
+                    }
+                    var downloadName = filename;
+                    var disposition = response.headers.get('Content-Disposition');
+                    if (disposition) {
+                        var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+                        if (matches && matches[1]) {
+                            downloadName = matches[1].replace(/['"]/g, '');
+                        }
+                    }
+                    return response.blob().then(function(blob) {
+                        return {
+                            blob: blob,
+                            downloadName: downloadName
+                        };
+                    });
+                }).then(function(result) {
+                    var url = window.URL.createObjectURL(result.blob);
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = result.downloadName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                    KTApp.unblock('#filterForm');
+                }).catch(function() {
+                    KTApp.unblock('#filterForm');
+                    alert("Failed to download report");
+                });
             }
         });
     </script>
