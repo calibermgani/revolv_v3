@@ -36,14 +36,14 @@
                                         {!! Form::select('sub_project_id', $subProjectList, $searchData['sub_project_id'] ?? null, [
                                             'class' => 'text-black form-control select2 sub_project_select',
                                             'id' => 'sub_project_id',
-                                            'placeholder' => 'Select Sub Project',
+                                            'placeholder' => 'Select Sub Project (optional)',
                                         ]) !!}
                                     @else
                                         @php $subProjectList = []; @endphp
                                         {!! Form::select('sub_project_id', $subProjectList, null, [
                                             'class' => 'text-black form-control select2 sub_project_select',
                                             'id' => 'sub_project_id',
-                                            'placeholder' => 'Select Sub Project',
+                                            'placeholder' => 'Select Sub Project (optional)',
                                         ]) !!}
                                     @endif
                                 </div>
@@ -301,22 +301,14 @@
             // });//worked for excel upto 70000 rows
             $('#formUpdate_save').on('click', function(e) {
                 e.preventDefault();
-                if ($('#project_id').val() == '' || $('#sub_project_id').val() == '') {
-                    if ($('#project_id').val() == '') {
-                        $('#project_id').next('.select2').find(".select2-selection").css('border-color',
-                            'red');
-                    } else {
-                        $('#project_id').next('.select2').find(".select2-selection").css('border-color',
-                            '');
-                    }
-                    if ($('#sub_project_id').val() == '') {
-                        $('#sub_project_id').next('.select2').find(".select2-selection").css('border-color',
-                            'red');
-                    } else {
-                        $('#sub_project_id').next('.select2').find(".select2-selection").css('border-color',
-                            '');
-                    }
+                $('#sub_project_id').next('.select2').find(".select2-selection").css('border-color', '');
+                if ($('#project_id').val() == '') {
+                    $('#project_id').next('.select2').find(".select2-selection").css('border-color',
+                        'red');
                     return false;
+                } else {
+                    $('#project_id').next('.select2').find(".select2-selection").css('border-color',
+                        '');
                 }
                 // ✅ START LOADER
                 KTApp.block('#filterForm', {
@@ -348,7 +340,7 @@
                         alert("Error checking report status");
                     });
 
-                }, 5000);
+                }, 3000);
             }
         });
     </script>

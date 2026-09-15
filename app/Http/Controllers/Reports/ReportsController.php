@@ -2966,12 +2966,37 @@ public function exportBulkReport(Request $request)
         $payload = [
             'job_id'         => $jobId,
             'project_id'     => $request->project_id,
-            'sub_project_id' => $request->sub_project_id,
+            'sub_project_id' => $request->filled('sub_project_id') ? $request->sub_project_id : null,
             'date_range'     => $request->work_date,
             'user_id'        => $request->user,
             'client_status'  => $request->client_status
         ];
 
+        $reuseKey = hash('sha256', implode('|', [
+            (string) ($payload['project_id'] ?? ''),
+            (string) ($payload['sub_project_id'] ?? ''),
+            (string) ($payload['date_range'] ?? ''),
+            (string) ($payload['user_id'] ?? ''),
+            (string) ($payload['client_status'] ?? ''),
+        ]));
+        $payload['reuse_key'] = $reuseKey;
+
+        $reusePath = Cache::get('report_reuse_' . $reuseKey);
+        if (is_string($reusePath) && file_exists($reusePath) && (time() - filemtime($reusePath) < 1200)) {
+            Cache::put('report_' . $jobId, $reusePath, 3600);
+            return response()->json([
+                "job_id" => $jobId
+            ]);
+        }
+
+        $runningJobId = Cache::get('report_running_' . $reuseKey);
+        if (is_string($runningJobId) && $runningJobId !== '') {
+            return response()->json([
+                "job_id" => $runningJobId
+            ]);
+        }
+
+        Cache::put('report_running_' . $reuseKey, $jobId, 7200);
         RunPythonReportJob::dispatch($payload)->onQueue('pythonReport')->delay(now()->addSeconds(2));
 
         return response()->json([
@@ -2997,13 +3022,19 @@ public function exportBulkReport(Request $request)
     }
     public function downloadReport($filename)
     {
+        $filename = basename($filename);
         $path = storage_path('app/reports/' . $filename);
 
         if (!file_exists($path)) {
             abort(404, "File not found");
         }
 
-        return response()->download($path)->deleteFileAfterSend(true);
+        $tmp = storage_path('app/reports/tmp_' . uniqid('', true) . '_' . $filename);
+        if (!@copy($path, $tmp)) {
+            return response()->download($path);
+        }
+
+        return response()->download($tmp, $filename)->deleteFileAfterSend(true);
     }
 public function getBulkColumnsCSV(Request $request)
 {
