@@ -687,7 +687,13 @@ def export_to_excel(
         if ref_data is None:
             ref_data = load_ref_data(cursor, cols_to_select)
 
-        select_cols_sql = ", ".join([f"`{col}`" for col in cols_to_select])
+        select_col_parts = []
+        for col in cols_to_select:
+            if col == "ar_at" and "updated_at" in all_columns:
+                select_col_parts.append("COALESCE(`ar_at`, `updated_at`) AS `ar_at`")
+            else:
+                select_col_parts.append(f"`{col}`")
+        select_cols_sql = ", ".join(select_col_parts)
         main_query = f"SELECT {select_cols_sql} FROM `{table_name}`"
         where_clauses, params = [], []
 
