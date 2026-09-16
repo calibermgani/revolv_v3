@@ -169,7 +169,35 @@ def format_ar_at_series(series):
     ).dt.strftime("%Y-%m-%d")
     return result
 
+def is_missing_datetime(series):
+    parsed = pd.to_datetime(series, errors="coerce")
+    as_str = series.astype(str).str.strip()
+    empty_str = as_str.isin(
+        [
+            "",
+            "None",
+            "NaT",
+            "nan",
+            "NaN",
+            "NULL",
+            "null",
+            "--",
+            "0000-00-00",
+            "0000-00-00 00:00:00",
+        ]
+    )
+    return parsed.isna() | empty_str
+
+def fill_null_ar_at_from_updated_at(chunk):
+    if "ar_at" not in chunk.columns or "updated_at" not in chunk.columns:
+        return chunk
+    missing = is_missing_datetime(chunk["ar_at"])
+    if missing.any():
+        chunk.loc[missing, "ar_at"] = chunk.loc[missing, "updated_at"]
+    return chunk
+
 def format_chunk_dates(chunk):
+    fill_null_ar_at_from_updated_at(chunk)
     for col in list(chunk.columns):
         col_l = col.lower()
         if col_l == "ar_at":
@@ -177,11 +205,15 @@ def format_chunk_dates(chunk):
                 chunk[col] = format_ar_at_series(chunk[col])
             except Exception:
                 pass
+        elif col_l == "updated_at":
+            continue
         elif "date" in col_l or col_l == "dos":
             try:
                 chunk[col] = pd.to_datetime(chunk[col], errors="coerce").dt.strftime("%m/%d/%y")
             except Exception:
                 pass
+    if "updated_at" in chunk.columns:
+        chunk.drop(columns=["updated_at"], inplace=True)
     return chunk
 
 def add_aging_columns(chunk):
@@ -687,12 +719,9 @@ def export_to_excel(
         if ref_data is None:
             ref_data = load_ref_data(cursor, cols_to_select)
 
-        select_col_parts = []
-        for col in cols_to_select:
-            if col == "ar_at" and "updated_at" in all_columns:
-                select_col_parts.append("COALESCE(`ar_at`, `updated_at`) AS `ar_at`")
-            else:
-                select_col_parts.append(f"`{col}`")
+        select_col_parts = [f"`{col}`" for col in cols_to_select]
+        if "ar_at" in cols_to_select and "updated_at" in all_columns:
+            select_col_parts.append("`updated_at`")
         select_cols_sql = ", ".join(select_col_parts)
         main_query = f"SELECT {select_cols_sql} FROM `{table_name}`"
         where_clauses, params = [], []
