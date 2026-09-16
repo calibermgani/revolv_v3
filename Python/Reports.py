@@ -42,7 +42,6 @@ STATUS_MAPPING = {
     "QA Pending": "QA_Pending",
     "QA Completed": "QA_Completed",
     "QA Hold": "QA_Hold",
-    "AR Assigned": "CE_Assigned",
     "AR Non Workable": "AR_non_workable",
     "Auto Close": "Auto_Close",
 }
@@ -50,7 +49,6 @@ STATUS_MAPPING = {
 NULL_AR_AT_STATUSES = (
     "CE_Hold",
     "CE_Pending",
-    "CE_Assigned",
     "CE_Inprocess",
     "QA_Hold",
     "QA_Pending",
@@ -710,14 +708,29 @@ def export_to_excel(
                 params.append(mapped_status)
 
         if date_range and "ar_at" in all_columns:
-            if "chart_status" in all_columns:
+            if "chart_status" in all_columns and "updated_at" in all_columns:
                 status_placeholders = ", ".join(["%s"] * len(NULL_AR_AT_STATUSES))
                 where_clauses.append(
-                    f"(ar_at BETWEEN %s AND %s OR (ar_at IS NULL AND chart_status IN ({status_placeholders})))"
+                    "("
+                    "ar_at BETWEEN %s AND %s"
+                    " OR ("
+                    "ar_at IS NULL"
+                    f" AND chart_status IN ({status_placeholders})"
+                    " AND updated_at BETWEEN %s AND %s"
+                    ")"
+                    ")"
                 )
-                params.extend([start_datetime, end_datetime, *NULL_AR_AT_STATUSES])
+                params.extend(
+                    [
+                        start_datetime,
+                        end_datetime,
+                        *NULL_AR_AT_STATUSES,
+                        start_datetime,
+                        end_datetime,
+                    ]
+                )
             else:
-                where_clauses.append("(ar_at BETWEEN %s AND %s OR ar_at IS NULL)")
+                where_clauses.append("ar_at BETWEEN %s AND %s")
                 params.extend([start_datetime, end_datetime])
 
         if where_clauses:
