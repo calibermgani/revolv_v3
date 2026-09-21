@@ -3369,6 +3369,12 @@ class ProductionController extends Controller
                 $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                 $checkedValues = json_decode($request->input('checkedRowValues'), true);
                 $column_value = $request['selectedValue'];
+                if ($column_value === null || $column_value === '' || $column_value === 'undefined' || $column_value === 'null') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Please select a non-workable reason.',
+                    ], 422);
+                }
                 $columns = Schema::getColumnListing($table_name);
                 $possibleColumns = ['ar_notes', 'notes', 'remarks', 'comments'];
                 $columnToUpdate = null;
@@ -3378,36 +3384,26 @@ class ProductionController extends Controller
                         break; // Stop at the first found column
                     }
                 }
+                $updateData = ['chart_status' => 'AR_non_workable'];
+                if ($columnToUpdate) {
+                    $updateData[$columnToUpdate] = $column_value;
+                }
+                $isPrivileged = $loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false);
                 if($request['selectedRecords'] == "none") {
-                   if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
-                        foreach($checkedValues as $data) {
-                            $existingRecord = $modelClass::where('id',$data['value'])->where('chart_status','CE_Assigned')->first();
-                           // $existingRecord->update(['chart_status' => 'AR_non_workable']);
-                           if ($existingRecord) {
-                                $updateData = ['chart_status' => 'AR_non_workable'];                            
-                                if ($columnToUpdate) {
-                                    $updateData[$columnToUpdate] = $column_value;
-                                }                            
-                              $existingRecord->update($updateData);
-                           }
+                    foreach($checkedValues as $data) {
+                        $existingRecordQuery = $modelClass::where('id',$data['value'])->where('chart_status','CE_Assigned');
+                        if (!$isPrivileged) {
+                            $existingRecordQuery->where('CE_emp_id',$loginEmpId);
                         }
-                    } else {
-                        foreach($checkedValues as $data) {
-                            $existingRecord = $modelClass::where('id',$data['value'])->where('CE_emp_id',$loginEmpId)->where('chart_status','CE_Assigned')->first();
-                            //$existingRecord->update(['chart_status' => 'AR_non_workable']);
-                            if ($existingRecord) {
-                                $updateData = ['chart_status' => 'AR_non_workable'];                            
-                                if ($columnToUpdate) {
-                                    $updateData[$columnToUpdate] = $column_value;
-                                }                            
-                              $existingRecord->update($updateData);
-                           }
+                        $existingRecord = $existingRecordQuery->first();
+                        if ($existingRecord) {
+                            $existingRecord->update($updateData);
                         }
-                    }   
+                    }
                 } else {
                     $query = $modelClass::query();
                     $searchData = []; 
-                    foreach ($request->except('_token', 'checkedRowValues', 'clientName','subProjectName','selectedRecords','selectedValue') as $key => $value) {
+                    foreach ($request->except('_token', 'checkedRowValues', 'clientName','subProjectName','selectedRecords','selectedValue','parent','child','status_val') as $key => $value) {
                         $searchData[$key] = $value;
                         if (is_numeric($value) || is_bool($value)) {
                             $query->where($key, $value);  
@@ -3422,28 +3418,11 @@ class ProductionController extends Controller
                             }
                         }
                     }
-                   if ($loginEmpId && ($loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)) {
-                        $query->where('chart_status', 'CE_Assigned')->update(['chart_status' => 'AR_non_workable']);
-                    //     $existingRecord =$query->where('chart_status', 'CE_Assigned')->first();
-                    //     if ($existingRecord) {
-                    //         $updateData = ['chart_status' => 'AR_non_workable'];                            
-                    //         if ($columnToUpdate) {
-                    //             $updateData[$columnToUpdate] = $column_value;
-                    //         }                            
-                    //        $existingRecord->update($updateData);
-                    //    }
-
-                    } else {
-                       $query->where('CE_emp_id',$loginEmpId)->where('chart_status','CE_Assigned')->update(['chart_status' => 'AR_non_workable']);
-                        // $existingRecord =$query->where('CE_emp_id',$loginEmpId)->where('chart_status', 'CE_Assigned')->first();
-                        // if ($existingRecord) {
-                        //     $updateData = ['chart_status' => 'AR_non_workable'];                            
-                        //     if ($columnToUpdate) {
-                        //         $updateData[$columnToUpdate] = $column_value;
-                        //     }                            
-                        //     $existingRecord->update($updateData);
-                        // }
+                    $query->where('chart_status', 'CE_Assigned');
+                    if (!$isPrivileged) {
+                        $query->where('CE_emp_id',$loginEmpId);
                     }
+                    $query->update($updateData);
                 }
                 return response()->json(['success' => true]);
             } catch (\Exception $e) {
