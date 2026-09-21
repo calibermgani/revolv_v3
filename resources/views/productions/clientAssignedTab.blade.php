@@ -2557,6 +2557,8 @@ function showSubmitPopup() {
                     showCancelButton: true,
                     confirmButtonText: "Yes",
                     cancelButtonText: "No",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
                     customClass: {
                         confirmButton: "btn font-weight-bold btn-white-black",
                         cancelButton: "btn font-weight-bold btn-light-danger",
