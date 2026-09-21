@@ -68,7 +68,10 @@ class ProductionExport implements FromCollection, WithHeadings
                     $exportRow[$headerField] = 'Auto Close';
                 } else if(($record->{$chartStatus} == 'AR_non_workable') && ($field == 'ar_notes' || $field == 'notes' || $field == 'remarks' || $field =='comments')){
                     if($record->{$field} != null) {
-                        $exportRow[$headerField] = Helpers::nonWorkableReasonName($record->{$field})->reason_type;
+                        $reason = Helpers::nonWorkableReasonName($record->{$field});
+                        $exportRow[$headerField] = ($reason && isset($reason->reason_type))
+                            ? $reason->reason_type
+                            : $record->{$field};
                     } else {
                         $exportRow[$headerField]= '';
                     }
