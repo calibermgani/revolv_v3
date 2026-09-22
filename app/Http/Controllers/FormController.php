@@ -746,7 +746,7 @@ class FormController extends Controller
                         "Production Type",
                         // "Question Json",
                         // "Scenario"
-                        "AR Rework Reason",
+                        "Rework Reason",
                     ];
                     $additionalInputTypeArray = [
                         "text",
