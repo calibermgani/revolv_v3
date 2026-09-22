@@ -2433,20 +2433,61 @@ use Carbon\Carbon;
                     formData += '&clientName=' + clientName;
                     formData += '&subProjectName=' + subProjectName;
                     formData += '&selectedRecords=' + clearId;
-                swal.fire({
-                    text: selectId == "none" && clearId == "none" ?  recordText: allRecordText ,
+                var hasArReworkReasonColumn = @json($hasArReworkReasonColumn ?? false);
+                var swalConfig = {
                     icon: "success",
                     buttonsStyling: false,
                     showCancelButton: true,
                     confirmButtonText: "Yes",
                     cancelButtonText: "No",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
                     customClass: {
                         confirmButton: "btn font-weight-bold btn-white-black",
                         cancelButton: "btn font-weight-bold  btn-light-danger",
                     }
-
-                }).then(function(result) {
-                    if (result.value == true) {
+                };
+                if (hasArReworkReasonColumn) {
+                    swalConfig.html = `
+                        <p style="font-size:1rem">${selectId == "none" && clearId == "none" ? recordText : allRecordText}</p>
+                        <textarea id="swal-rework-reason" class="form-control" rows="3" placeholder="Enter rework reason"></textarea>
+                    `;
+                    swalConfig.onOpen = function () {
+                        var textarea = document.getElementById("swal-rework-reason");
+                        if (textarea) {
+                            textarea.addEventListener("input", function () {
+                                textarea.style.borderColor = "";
+                                textarea.style.boxShadow = "";
+                            });
+                        }
+                    };
+                    swalConfig.preConfirm = function () {
+                        var textarea = document.getElementById("swal-rework-reason");
+                        var reworkReason = (textarea && textarea.value ? textarea.value : "").trim();
+                        if (!reworkReason) {
+                            if (textarea) {
+                                textarea.style.borderColor = "#dc3545";
+                                textarea.style.boxShadow = "0 0 0 0.2rem rgba(220, 53, 69, 0.25)";
+                                textarea.focus();
+                            }
+                            return false;
+                        }
+                        textarea.style.borderColor = "";
+                        textarea.style.boxShadow = "";
+                        return reworkReason;
+                    };
+                } else {
+                    swalConfig.text = selectId == "none" && clearId == "none" ? recordText : allRecordText;
+                }
+                swal.fire(swalConfig).then(function(result) {
+                    var canSubmit = hasArReworkReasonColumn
+                        ? (!result.dismiss && result.value)
+                        : (result.value == true);
+                        
+                    if (canSubmit) {
+                        if (hasArReworkReasonColumn) {
+                            formData += '&rework_reason=' + encodeURIComponent(result.value);
+                        }
                         if (typeof showGlobalLoader === 'function') {
                             showGlobalLoader('Updating...', false, false);
                         } else {
@@ -2472,8 +2513,12 @@ use Carbon\Carbon;
                                     $('#user_rework_button').prop('disabled', true);
                                 }
                             },
-                            error: function() {
-                                js_notification('error', 'Something went wrong');
+                            error: function(xhr) {
+                                var message = 'Something went wrong';
+                                if (xhr.responseJSON && xhr.responseJSON.message) {
+                                    message = xhr.responseJSON.message;
+                                }
+                                js_notification('error', message);
                                 // $('#user_rework_dropdown').val('').trigger('change.select2');
                                 $('#user_rework_button').prop('disabled', true);
                             },

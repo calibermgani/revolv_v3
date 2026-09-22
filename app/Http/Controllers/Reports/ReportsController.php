@@ -165,6 +165,10 @@ class ReportsController extends Controller
                         $checkedValues = $request["checkedValues"];
                     }
                     $checkedValues = Helpers::excludePopupNonVisiblePatientColumns($checkedValues, $request["project_id"], $request["sub_project_id"]);
+                    $tableColumns = Schema::hasTable($table_name) ? Schema::getColumnListing($table_name) : [];
+                    if (in_array('rework_reason', $tableColumns, true) && !in_array('rework_reason', $checkedValues, true)) {
+                        $checkedValues[] = 'rework_reason';
+                    }
                     $columnsHeader = implode(',', array_map(function ($column) {
                         return '`' . str_replace('`', '', $column) . '`';
                     }, $checkedValues));
@@ -173,8 +177,6 @@ class ReportsController extends Controller
                         "caller_charts_work_logs.work_time",
                         "caller_charts_work_logs.record_status"
                     ];
-
-                    $tableColumns = Schema::hasTable($table_name) ? Schema::getColumnListing($table_name) : [];
                     if (in_array('qa_cpt_trends', $tableColumns, true)) {
                         $columns[] = 'qa_cpt_trends';
                     }
@@ -3772,8 +3774,8 @@ public function getBulkColumnsCSV(Request $request)
             'sub_project_name' => $subProjectName,
         ];
 
-        // $python = env('PYTHON_BIN', 'python');
-        $python = '/bin/python3';
+         $python = env('PYTHON_BIN', 'python');
+        // $python = '/bin/python3';
         $script = realpath(base_path('Python/inventoryUploadNew.py'));
 
         if (!$script || !file_exists($script)) {

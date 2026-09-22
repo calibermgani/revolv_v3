@@ -1090,7 +1090,10 @@ class ProductionController extends Controller
                 //  $userEditableRecordIds = $userEditableQuery->pluck('record_id')->map(function ($id) {
                 //      return (string) $id;
                 //  })->toArray();
-                return view('productions/clientCompletedTab',compact('completedProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount', 'arReworkCount','arDenialList','arDenialList','arSubStatusList'));
+                $datasTableName = $table_name . '_datas';
+                $hasArReworkReasonColumn = Schema::hasTable($datasTableName)
+                    && Schema::hasColumn($datasTableName, 'rework_reason');
+                return view('productions/clientCompletedTab',compact('completedProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount', 'arReworkCount','arDenialList','arDenialList','arSubStatusList','hasArReworkReasonColumn'));
 
            } catch (\Exception $e) {
                log::debug($e->getMessage());
@@ -3565,6 +3568,17 @@ class ProductionController extends Controller
                 $modelClass = "App\\Models\\" . $modelName;
                 $subProjectId = $request['subProjectName'] == '--' ?  NULL : $decodedPracticeName;
                 $checkedValues = json_decode($request->input('checkedRowValues'), true);
+                $datasTableName = $table_name . '_datas';
+                $datasModelClass = "App\\Models\\" . $modelName . 'Datas';
+                $hasArReworkReasonColumn = Schema::hasTable($datasTableName)
+                    && Schema::hasColumn($datasTableName, 'rework_reason');
+                $reworkReason = trim((string) $request->input('rework_reason', ''));
+                if ($hasArReworkReasonColumn && $reworkReason === '') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Please enter a rework reason.',
+                    ], 422);
+                }
                 $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();
                 $endDate = Carbon::now()->endOfDay()->toDateTimeString();
                 $completedRecords = collect();
@@ -3579,7 +3593,7 @@ class ProductionController extends Controller
                     }
                 } else {
                     $query = $modelClass::query();
-                    foreach ($request->except('_token', 'checkedRowValues', 'clientName','subProjectName','selectedRecords','status_val') as $key => $value) {
+                    foreach ($request->except('_token', 'checkedRowValues', 'clientName','subProjectName','selectedRecords','status_val','rework_reason') as $key => $value) {
                         if (is_numeric($value) || is_bool($value)) {
                             $query->where($key, $value);
                         } elseif ($this->isDate($value)) {
@@ -3622,7 +3636,25 @@ class ProductionController extends Controller
                             'start_time' => Carbon::now()->toDateTimeString(),
                             'record_status' => 'user_rework',
                         ]);
-
+                    }
+                    if ($hasArReworkReasonColumn && class_exists($datasModelClass)) {
+                        $reasonEntry = Carbon::now()->format('m/d/Y H:i:s') . ' - ' . $reworkReason;
+                        $datasRecord = $datasModelClass::where('parent_id', $existingRecord->id)
+                            ->orderBy('id', 'DESC')
+                            ->first();
+                        if ($datasRecord) {
+                            $existingReason = trim((string) $datasRecord->rework_reason);
+                            $datasRecord->update([
+                                'rework_reason' => $existingReason !== ''
+                                    ? $existingReason . ', ' . $reasonEntry
+                                    : $reasonEntry,
+                            ]);
+                        } else {
+                            $datasModelClass::create([
+                                'parent_id' => $existingRecord->id,
+                                'rework_reason' => $reasonEntry,
+                            ]);
+                        }
                     }
                 }
                 return response()->json([

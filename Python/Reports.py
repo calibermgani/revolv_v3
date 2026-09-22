@@ -10,6 +10,11 @@ import pandas as pd
 import mysql.connector
 os.umask(0o002)
 
+try:
+    pd.options.future.infer_string = False
+except Exception:
+    pass
+
 db_config = {
     "user": os.environ.get("DB_USER", "root"),
     "password": os.environ.get("DB_PASSWORD", "resolv@2025!"),
@@ -58,6 +63,41 @@ NULL_AR_AT_STATUSES = (
 
 CHUNKSIZE = 20000
 
+COLUMN_RENAME_MAPPING = {
+    "chart_status": "Charge Status",
+    "CE_emp_id": "AR Emp Id",
+    "ce_hold_reason": "AR Hold Reason",
+    "ar_at": "AR Work Date",
+    "coder_rework_status": "AR Rework Status",
+    "coder_rework_reason": "AR Rework Reason",
+    "coder_error_count": "AR Error Count",
+    "ar_status_code": "Status Code",
+    "ar_action_code": "Action Code",
+    "ar_denial_codes": "Denial Code",
+    "ar_substatus_codes": "Sub Status Code",
+}
+
+EXCLUDE_EXPORT_COLS = (
+    "QA_required_sampling",
+    "QA_followup_date",
+    "annex_coder_trends",
+    "annex_qa_trends",
+    "qa_cpt_trends",
+    "qa_icd_trends",
+    "qa_modifiers",
+    "CE_status_code",
+    "CE_sub_status_code",
+    "CE_followup_date",
+    "updated_at",
+    "created_at",
+    "deleted_at",
+    "cpt_trends",
+    "icd_trends",
+    "modifiers",
+    "coder_work_date",
+    "id",
+)
+
 def create_db_connection():
     try:
         conn = mysql.connector.connect(**db_config)
@@ -90,6 +130,106 @@ def create_excel_writer(path):
     except TypeError:
         return pd.ExcelWriter(path, engine="xlsxwriter")
 
+def is_blank_value(value):
+    if value is None:
+        return True
+    try:
+        if pd.isna(value):
+            return True
+    except (TypeError, ValueError):
+        pass
+    return value == ""
+
+def object_series(values, index):
+    return pd.Series(list(values), index=index, dtype=object)
+
+def fill_blank_values(chunk):
+    filled = pd.DataFrame(index=chunk.index)
+    for column in chunk.columns:
+        column_values = [
+            "--" if is_blank_value(value) else value
+            for value in chunk[column].tolist()
+        ]
+        filled[column] = object_series(column_values, chunk.index)
+    return filled
+
+def map_code_column(series, mapping):
+    mapped_values = []
+    for value in series.tolist():
+        if is_blank_value(value):
+            mapped_values.append(value)
+            continue
+        mapped = mapping.get(str(value), value)
+        mapped_values.append(mapped)
+    return object_series(mapped_values, series.index)
+
+def get_display_column_name(column):
+    return COLUMN_RENAME_MAPPING.get(
+        column,
+        column.replace("_", " ").title(),
+    )
+
+def build_group_column_order(conn, project_id, group, checked_values):
+    cursor = conn.cursor(dictionary=True, buffered=True)
+    ordered = ["Sub Project Name"]
+    seen = set(ordered)
+    try:
+        for sp in group:
+            try:
+                project_name, sub_project_name = get_project_details(
+                    project_id,
+                    sp["sub_project_id"],
+                    conn=conn,
+                )
+            except Exception:
+                continue
+            table_name = generate_table_name(project_name, sub_project_name)
+            cursor.execute(f"SHOW TABLES LIKE '{table_name}'")
+            if not cursor.fetchone():
+                continue
+            cursor.execute(f"SHOW COLUMNS FROM `{table_name}`")
+            all_columns = [row["Field"] for row in cursor.fetchall()]
+            project_columns = [
+                column for column in all_columns if column not in EXCLUDE_EXPORT_COLS
+            ]
+            patient_exclude_columns = get_popup_non_visible_patient_columns(
+                cursor,
+                project_id,
+                sp["sub_project_id"],
+            )
+            if patient_exclude_columns:
+                project_columns = [
+                    column
+                    for column in project_columns
+                    if column not in patient_exclude_columns
+                ]
+            if checked_values:
+                if checked_values[0] == "all":
+                    cols_to_select = project_columns
+                else:
+                    cols_to_select = [
+                        column
+                        for column in checked_values
+                        if column in project_columns
+                    ]
+            else:
+                cols_to_select = project_columns
+            display_columns = []
+            for column in cols_to_select:
+                if column == "parent_id":
+                    display_columns.append("Work Time")
+                    continue
+                display_columns.append(get_display_column_name(column))
+            if "dos" in cols_to_select:
+                display_columns.extend(["Aging", "Aging Range"])
+            for name in display_columns:
+                if name not in seen:
+                    ordered.append(name)
+                    seen.add(name)
+    finally:
+        cursor.close()
+    return ordered
+
 def sanitize_csv_chunk(chunk):
     chunk = chunk.copy()
     chunk.columns = [
@@ -100,15 +240,14 @@ def sanitize_csv_chunk(chunk):
     if unnamed:
         chunk = chunk.drop(columns=unnamed)
 
-    object_cols = chunk.select_dtypes(include=["object", "string"]).columns
-    for col in object_cols:
-        chunk[col] = (
-            chunk[col]
-            .astype(str)
-            .str.replace(r"[\r\n\t]+", " ", regex=True)
-            .str.replace(r" {2,}", " ", regex=True)
-            .str.strip()
-        )
+    for col in chunk.columns:
+        cleaned_values = []
+        for value in chunk[col].tolist():
+            text = "" if is_blank_value(value) else str(value)
+            text = re.sub(r"[\r\n\t]+", " ", text)
+            text = re.sub(r" {2,}", " ", text).strip()
+            cleaned_values.append(text)
+        chunk[col] = object_series(cleaned_values, chunk.index)
     return chunk
 
 def write_chunk_to_csv(chunk, path, write_header):
@@ -160,14 +299,16 @@ def load_ref_data(cursor, cols_to_select=None):
 
 def format_ar_at_series(series):
     ar_datetime = pd.to_datetime(series, errors="coerce")
-    result = pd.Series(None, index=series.index, dtype=object)
-    valid = ar_datetime.notna()
-    before_cutoff = valid & (ar_datetime.dt.hour < 8)
-    result.loc[valid & ~before_cutoff] = ar_datetime.loc[valid & ~before_cutoff].dt.strftime("%Y-%m-%d")
-    result.loc[before_cutoff] = (
-        ar_datetime.loc[before_cutoff] - pd.Timedelta(days=1)
-    ).dt.strftime("%Y-%m-%d")
-    return result
+    values = []
+    for value in ar_datetime.tolist():
+        if is_blank_value(value):
+            values.append(None)
+            continue
+        stamp = pd.Timestamp(value)
+        if stamp.hour < 8:
+            stamp = stamp - pd.Timedelta(days=1)
+        values.append(stamp.strftime("%Y-%m-%d"))
+    return object_series(values, series.index)
 
 def is_missing_datetime(series):
     parsed = pd.to_datetime(series, errors="coerce")
@@ -193,8 +334,26 @@ def fill_null_ar_at_from_updated_at(chunk):
         return chunk
     missing = is_missing_datetime(chunk["ar_at"])
     if missing.any():
-        chunk.loc[missing, "ar_at"] = chunk.loc[missing, "updated_at"]
+        combined = []
+        ar_at_values = chunk["ar_at"].tolist()
+        updated_values = chunk["updated_at"].tolist()
+        for is_missing, ar_at_value, updated_value in zip(
+            missing.tolist(),
+            ar_at_values,
+            updated_values,
+        ):
+            combined.append(updated_value if is_missing else ar_at_value)
+        chunk["ar_at"] = object_series(combined, chunk.index)
     return chunk
+
+def format_date_column(series, date_format):
+    parsed = pd.to_datetime(series, errors="coerce")
+    formatted = parsed.dt.strftime(date_format)
+    values = [
+        None if is_blank_value(value) else value
+        for value in formatted.tolist()
+    ]
+    return object_series(values, series.index)
 
 def format_chunk_dates(chunk):
     fill_null_ar_at_from_updated_at(chunk)
@@ -209,7 +368,7 @@ def format_chunk_dates(chunk):
             continue
         elif "date" in col_l or col_l == "dos":
             try:
-                chunk[col] = pd.to_datetime(chunk[col], errors="coerce").dt.strftime("%m/%d/%y")
+                chunk[col] = format_date_column(chunk[col], "%m/%d/%y")
             except Exception:
                 pass
     if "updated_at" in chunk.columns:
@@ -238,7 +397,7 @@ def apply_work_time(chunk, work_conn, project_id, sub_project_id):
     parent_ids = chunk["parent_id"].dropna().unique().tolist()
     parent_ids = [int(x) for x in parent_ids if str(x).isdigit()]
     if not parent_ids:
-        chunk["work_time"] = None
+        chunk["work_time"] = object_series([None] * len(chunk), chunk.index)
         return chunk.drop(columns=["parent_id"])
 
     placeholders = ", ".join(["%s"] * len(parent_ids))
@@ -254,9 +413,13 @@ def apply_work_time(chunk, work_conn, project_id, sub_project_id):
     results = sub_cursor.fetchall()
     sub_cursor.close()
     work_time_map = {int(r["record_id"]): r["work_time"] for r in results} if results else {}
-    chunk["work_time"] = chunk["parent_id"].map(
-        lambda pid: work_time_map.get(int(pid), None) if pd.notna(pid) and str(pid).isdigit() else None
-    )
+    work_times = []
+    for pid in chunk["parent_id"].tolist():
+        if is_blank_value(pid) or not str(pid).isdigit():
+            work_times.append(None)
+        else:
+            work_times.append(work_time_map.get(int(pid), None))
+    chunk["work_time"] = object_series(work_times, chunk.index)
     return chunk.drop(columns=["parent_id"])
 
 def get_popup_non_visible_patient_columns(cursor, project_id, sub_project_id):
@@ -291,7 +454,8 @@ def get_popup_non_visible_patient_columns(cursor, project_id, sub_project_id):
 
               'ar at',
 
-              'qa at'
+              'qa at',
+              'rework reason'
 
           )
 
@@ -538,7 +702,12 @@ def export_project_to_zip(
             file_name = f"{excel_base}_{timestamp}.csv"
             output_file = os.path.join(REPORTS_DIR, file_name)
             row_num = 0
-            column_order = None
+            column_order = build_group_column_order(
+                conn,
+                project_id,
+                group,
+                checked_values,
+            )
 
             for sp in group:
                 result = export_to_excel(
@@ -679,27 +848,7 @@ def export_to_excel(
 
         cursor.execute(f"SHOW COLUMNS FROM {table_name}")
         all_columns = [row["Field"] for row in cursor.fetchall()]
-        exclude_cols = (
-            "QA_required_sampling",
-            "QA_followup_date",
-            "annex_coder_trends",
-            "annex_qa_trends",
-            "qa_cpt_trends",
-            "qa_icd_trends",
-            "qa_modifiers",
-            "CE_status_code",
-            "CE_sub_status_code",
-            "CE_followup_date",
-            "updated_at",
-            "created_at",
-            "deleted_at",
-            "cpt_trends",
-            "icd_trends",
-            "modifiers",
-            "coder_work_date",
-            "id",
-        )
-        project_columns = [c for c in all_columns if c not in exclude_cols]
+        project_columns = [c for c in all_columns if c not in EXCLUDE_EXPORT_COLS]
         patient_exclude_columns = get_popup_non_visible_patient_columns(
             cursor, project_id, sub_project_id
         )
@@ -814,49 +963,40 @@ def export_to_excel(
             if not rows:
                 break
 
-            chunk = pd.DataFrame(rows, columns=columns)
+            chunk = pd.DataFrame(rows, columns=columns, dtype=object)
             if "dos" in chunk.columns:
                 add_aging_columns(chunk)
             format_chunk_dates(chunk)
 
             for col in CODE_MAPPING:
                 if col in chunk.columns and col in ref_data:
-                    chunk[col] = chunk[col].astype(str).map(ref_data[col]).fillna(chunk[col])
+                    chunk[col] = map_code_column(chunk[col], ref_data[col])
 
             if "chart_status" in chunk.columns:
-                chunk["chart_status"] = chunk["chart_status"].map(reverse_status_mapping).fillna(chunk["chart_status"])
+                chunk["chart_status"] = map_code_column(
+                    chunk["chart_status"],
+                    reverse_status_mapping,
+                )
 
             chunk = apply_work_time(chunk, work_conn, project_id, sub_project_id)
 
-            # rename columns
-            COLUMN_RENAME_MAPPING = {
-                "chart_status": "Charge Status",
-                "CE_emp_id": "AR Emp Id",
-                "ce_hold_reason": "AR Hold Reason",
-                "ar_at": "AR Work Date",
-                "coder_rework_status": "AR Rework Status",
-                "coder_rework_reason": "AR Rework Reason",
-                "coder_error_count": "AR Error Count",
-                "ar_status_code": "Status Code",
-                "ar_action_code": "Action Code",
-                "ar_denial_codes": "Denial Code",
-                "ar_substatus_codes": "Sub Status Code",
-            }
-
             chunk.rename(
                 columns={**COLUMN_RENAME_MAPPING,
-                         **{c: c.replace("_", " ").title() for c in chunk.columns if c not in COLUMN_RENAME_MAPPING}},
+                         **{c: get_display_column_name(c) for c in chunk.columns if c not in COLUMN_RENAME_MAPPING}},
                 inplace=True
             )
-            chunk = chunk.fillna("--")
-            chunk.replace("", "--", inplace=True)
-            if include_sub_project_name:
+            chunk = fill_blank_values(chunk)
+            if include_sub_project_name and "Sub Project Name" not in chunk.columns:
                 chunk.insert(0, "Sub Project Name", sub_project_name)
             if column_order is None:
                 column_order = list(chunk.columns)
             else:
+                if row_num == 0:
+                    extra_cols = [c for c in chunk.columns if c not in column_order]
+                    if extra_cols:
+                        column_order = list(column_order) + extra_cols
                 chunk = chunk.reindex(columns=column_order)
-                chunk = chunk.fillna("--")
+                chunk = fill_blank_values(chunk)
             # chunk.to_excel(writer, index=False, startrow=row_num, header=(row_num==0))
             # row_num += len(chunk)
             # print(f"Written {row_num} rows", file=sys.stderr)
@@ -903,6 +1043,8 @@ def export_to_excel(
             close_quietly(conn)
         if owns_work_conn:
             close_quietly(work_conn)
+        import traceback
+        traceback.print_exc(file=sys.stderr)
         raise Exception(f"Export failed: {e}")
 
 if __name__ == "__main__":
@@ -938,5 +1080,7 @@ if __name__ == "__main__":
             file_path = export_project_to_zip(**common_kwargs)
         print(file_path)
     except Exception as e:
+        import traceback
+        traceback.print_exc(file=sys.stderr)
         print(f"Export failed: {e}", file=sys.stderr)
         sys.exit(1)
