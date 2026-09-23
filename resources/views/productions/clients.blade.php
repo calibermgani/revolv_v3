@@ -1,5 +1,13 @@
 @extends('layouts.app3')
 @section('content')
+    @php
+        $empDesignation =
+            Session::get('loginDetails') &&
+            Session::get('loginDetails')['userDetail']['user_hrdetails'] &&
+            Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation'] != null
+                ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']
+                : '';
+    @endphp
     <div class="card card-custom custom-card" id="clientsDiv">
         <div class="card-body pt-4 pb-0 px-2">
             <div class="my-client-div">

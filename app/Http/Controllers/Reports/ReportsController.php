@@ -406,6 +406,9 @@ class ReportsController extends Controller
                         if ($header === 'aging_range') {
                             $data = $agingRange;
                         }
+                        if ($header === 'CE_emp_id' || $header === 'QA_emp_id') {
+                            $data = Helpers::empIdWithUserName($data);
+                        }
                         if ($header == 'ar_manager_rebuttal_status' && str_contains($data, 'dis_agree')) {
                             $data = 'Disagree';
                         }
@@ -1546,6 +1549,9 @@ class ReportsController extends Controller
                     $body_info .= '<tr>';
                     foreach ($checkedValues as $header) {
                         $data = isset($row->{$header}) && $row->{$header} !== '' ? $row->{$header} : "--";
+                        if ($header === 'CE_emp_id' || $header === 'QA_emp_id') {
+                            $data = Helpers::empIdWithUserName($data);
+                        }
                         $body_info .= '<td class="wrap-text">' . $data . '</td>';
                     }
                     $body_info .= '</tr>';
@@ -1829,6 +1835,9 @@ class ReportsController extends Controller
                         }
                         if ($header === 'aging_range') {
                             $data = $agingRange;
+                        }
+                        if ($header === 'CE_emp_id' || $header === 'QA_emp_id') {
+                            $data = Helpers::empIdWithUserName($data);
                         }
                         $body_info .= '<td class="wrap-text">' . $data . '</td>';
                     }
@@ -3168,7 +3177,11 @@ public function getBulkColumnsCSV(Request $request)
                     $dataRow = [];
 
                     foreach ($columnsHeader as $col) {
-                        $dataRow[] = $row->$col ?? '';
+                        $cell = $row->$col ?? '';
+                        if ($col === 'CE_emp_id' || $col === 'QA_emp_id') {
+                            $cell = Helpers::empIdWithUserName($cell);
+                        }
+                        $dataRow[] = $cell;
                     }
 
                     // Work Time
@@ -3213,6 +3226,14 @@ public function getBulkColumnsCSV(Request $request)
 
         $totalRecords = $query->count();
         $records = $query->skip($start)->take($length)->get();
+        foreach ($records as $record) {
+            if (isset($record->CE_emp_id)) {
+                $record->CE_emp_id = Helpers::empIdWithUserName($record->CE_emp_id);
+            }
+            if (isset($record->QA_emp_id)) {
+                $record->QA_emp_id = Helpers::empIdWithUserName($record->QA_emp_id);
+            }
+        }
 
         return response()->json([
             "draw" => $draw,

@@ -729,6 +729,28 @@ def load_qa_reference_maps(connection):
     }
 
 
+def load_emp_user_names(connection):
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute(
+        """
+        SELECT emp_id, user_name
+        FROM aims_users
+        WHERE deleted_at IS NULL
+          AND emp_id IS NOT NULL
+          AND emp_id != ''
+          AND user_name IS NOT NULL
+          AND user_name != ''
+        """
+    )
+    mapping = {}
+    for row in cursor.fetchall():
+        emp_id = str(row["emp_id"])
+        if emp_id not in mapping:
+            mapping[emp_id] = f"{emp_id} - {row['user_name']}"
+    cursor.close()
+    return mapping
+
+
 def find_non_workable_reason_table(connection):
     cursor = connection.cursor(dictionary=True)
 
@@ -953,6 +975,7 @@ def write_query_directly_to_csv(
     output_file,
     reference_maps,
     non_workable_reason_map,
+    emp_name_map,
 ):
     total_started_at = perf_counter()
 
@@ -1024,6 +1047,9 @@ def write_query_directly_to_csv(
 
             elif field in reference_maps:
                 processor_type = "reference"
+
+            elif field in ("CE_emp_id", "QA_emp_id"):
+                processor_type = "emp_name"
 
             elif field in NON_WORKABLE_FIELDS:
                 processor_type = "non_workable"
@@ -1109,6 +1135,15 @@ def write_query_directly_to_csv(
                                         str(value),
                                         value,
                                     )
+                                )
+
+                        elif processor_type == "emp_name":
+                            if value is None or value == "":
+                                value = "--"
+                            else:
+                                value = emp_name_map.get(
+                                    str(value),
+                                    value,
                                 )
 
                         elif (
@@ -1401,6 +1436,10 @@ def generate_quality_export(payload):
             )
         )
 
+        emp_name_map = load_emp_user_names(
+            connection
+        )
+
         log(
             "Reference mapping time: "
             f"{perf_counter() - mapping_started_at:.2f} seconds"
@@ -1420,6 +1459,7 @@ def generate_quality_export(payload):
                 non_workable_reason_map=(
                     non_workable_reason_map
                 ),
+                emp_name_map=emp_name_map,
             )
         )
 

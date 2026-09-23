@@ -422,7 +422,7 @@ use Carbon\Carbon;
                                                                             @elseif ($columnName == 'aging_range')
                                                                                 {{ $agingRange }}
                                                                             @else
-                                                                                {{ $columnValue }}
+                                                                                @include('partials.empIdColumnValue', ['columnName' => $columnName, 'columnValue' => $columnValue])
                                                                             @endif
                                                                         @endif
                                                                     </td>
@@ -437,7 +437,7 @@ use Carbon\Carbon;
                                                                         @elseif ($columnName == 'aging_range')
                                                                             {{ $agingRange }}
                                                                         @else
-                                                                            {{ $columnValue }}
+                                                                            @include('partials.empIdColumnValue', ['columnName' => $columnName, 'columnValue' => $columnValue])
                                                                         @endif
                                                                     </td>
                                                                 @endif

@@ -297,6 +297,25 @@ def load_ref_data(cursor, cols_to_select=None):
             }
     return ref_data
 
+def load_emp_user_names(cursor):
+    cursor.execute(
+        """
+        SELECT emp_id, user_name
+        FROM aims_users
+        WHERE deleted_at IS NULL
+          AND emp_id IS NOT NULL
+          AND emp_id != ''
+          AND user_name IS NOT NULL
+          AND user_name != ''
+        """
+    )
+    mapping = {}
+    for row in cursor.fetchall():
+        emp_id = str(row["emp_id"])
+        if emp_id not in mapping:
+            mapping[emp_id] = f"{emp_id} - {row['user_name']}"
+    return mapping
+
 def format_ar_at_series(series):
     ar_datetime = pd.to_datetime(series, errors="coerce")
     values = []
@@ -684,6 +703,7 @@ def export_project_to_zip(
 
         meta_cursor = conn.cursor(dictionary=True, buffered=True)
         ref_data = load_ref_data(meta_cursor)
+        emp_name_map = load_emp_user_names(meta_cursor)
         meta_cursor.close()
 
         os.makedirs(REPORTS_DIR, exist_ok=True)
@@ -724,6 +744,7 @@ def export_project_to_zip(
                     conn=conn,
                     work_conn=work_conn,
                     ref_data=ref_data,
+                    emp_name_map=emp_name_map,
                     output_format="csv",
                     shared_output=True,
                 )
@@ -781,6 +802,7 @@ def export_to_excel(
     conn=None,
     work_conn=None,
     ref_data=None,
+    emp_name_map=None,
     output_format="excel",
     shared_output=False,
 ):
@@ -867,6 +889,8 @@ def export_to_excel(
 
         if ref_data is None:
             ref_data = load_ref_data(cursor, cols_to_select)
+        if emp_name_map is None:
+            emp_name_map = load_emp_user_names(cursor)
 
         select_col_parts = [f"`{col}`" for col in cols_to_select]
         if "ar_at" in cols_to_select and "updated_at" in all_columns:
@@ -971,6 +995,11 @@ def export_to_excel(
             for col in CODE_MAPPING:
                 if col in chunk.columns and col in ref_data:
                     chunk[col] = map_code_column(chunk[col], ref_data[col])
+
+            if emp_name_map:
+                for col in ("CE_emp_id", "QA_emp_id"):
+                    if col in chunk.columns:
+                        chunk[col] = map_code_column(chunk[col], emp_name_map)
 
             if "chart_status" in chunk.columns:
                 chunk["chart_status"] = map_code_column(

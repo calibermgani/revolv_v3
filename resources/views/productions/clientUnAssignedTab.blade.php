@@ -462,7 +462,7 @@ use Carbon\Carbon;
                                                                                 @elseif ($columnName == 'aging_range')
                                                                                     {{ $agingRange }}
                                                                                 @else
-                                                                                    {{ $columnValue }}
+                                                                                    @include('partials.empIdColumnValue', ['columnName' => $columnName, 'columnValue' => $columnValue])
                                                                                 @endif
                                                                             @endif
                                                                         </td>
@@ -477,7 +477,7 @@ use Carbon\Carbon;
                                                                             @elseif ($columnName == 'aging_range')
                                                                                 {{ $agingRange }}
                                                                             @else
-                                                                                {{ $columnValue }}
+                                                                                @include('partials.empIdColumnValue', ['columnName' => $columnName, 'columnValue' => $columnValue])
                                                                             @endif
                                                                         </td>
                                                                     @endif
@@ -1344,6 +1344,10 @@ use Carbon\Carbon;
                 $row.find('td:not(:eq(' + tdCount + '))').each(function(index) {
                     var header = headers[index-1];console.log(headers,'headers',header);
                     var value = $(this).text().trim();
+                    var empIdValue = $(this).find('[data-emp-id]').attr('data-emp-id');
+                    if (empIdValue !== undefined) {
+                        value = empIdValue;
+                    }
                     if (header == 'id') {
                         $('input[name="idValue"]').val(value);
                     }

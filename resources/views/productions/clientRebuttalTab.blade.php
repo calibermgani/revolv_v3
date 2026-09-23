@@ -511,7 +511,7 @@ use Carbon\Carbon;
                                                                 @if ($columnName == 'chart_status' && str_contains($columnValue, 'CE_'))
                                                                     {{ str_replace('CE_', '', $columnValue) }}
                                                                 @else
-                                                                    {{ $columnValue }}
+                                                                    @include('partials.empIdColumnValue', ['columnName' => $columnName, 'columnValue' => $columnValue])
                                                                 @endif
                                                             @endif
                                                         </td>
@@ -523,7 +523,7 @@ use Carbon\Carbon;
                                                             @if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $columnValue))
                                                                 {{ date('m/d/Y', strtotime($columnValue)) }}
                                                             @else
-                                                                {{ $columnValue }}
+                                                                @include('partials.empIdColumnValue', ['columnName' => $columnName, 'columnValue' => $columnValue])
                                                             @endif
                                                         </td>
                                                     @endif

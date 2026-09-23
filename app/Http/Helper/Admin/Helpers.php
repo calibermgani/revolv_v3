@@ -1682,6 +1682,30 @@ class Helpers
             return $practiceId && isset($configMap[$projectId][$practiceId]);
         }));
     }
+	public static function empIdWithUserName($empId)
+	{
+		if ($empId === null || $empId === '' || $empId === '--') {
+			return $empId;
+		}
+
+		static $cache = [];
+		$key = (string) $empId;
+		if (!array_key_exists($key, $cache)) {
+			$cache[$key] = DB::table('aims_users')
+				->where('emp_id', $key)
+				->whereNull('deleted_at')
+				->whereNotNull('user_name')
+				->where('user_name', '!=', '')
+				->value('user_name');
+		}
+
+		if (!empty($cache[$key])) {
+			return $key . ' - ' . $cache[$key];
+		}
+
+		return $empId;
+	}
+
 	public static function getAimsSubProjectSpan($prjArray,$subPrjArray)
     {
 	

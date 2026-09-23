@@ -96,10 +96,13 @@ class ProductionExport implements FromCollection, WithHeadings
                       $qaCategory = Helpers::qaCategoryById($record->{$field});
                       $exportRow[$headerField] = $qaCategory['qa_category'] ?? '';
                    //  $exportRow[$headerField] = Helpers::qaCategoryById($record->{$field})['qa_category'] ;
-                } else if($field == 'qa_scope') {
+                }                 else if($field == 'qa_scope') {
                       $qaScope = Helpers::qaScopeById($record->{$field});
                       $exportRow[$headerField] = $qaScope['qa_scope'] ?? '';
                    //  $exportRow[$headerField] = Helpers::qaScopeById($record->{$field})['qa_scope'] ;
+                }
+                else if ($field == 'CE_emp_id' || $field == 'QA_emp_id') {
+                    $exportRow[$headerField] = Helpers::empIdWithUserName($record->{$field});
                 }
                 else {
                     $exportRow[$headerField] = $record->{$field};

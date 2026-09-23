@@ -690,6 +690,7 @@ class DashboardController extends Controller
                                 $subProjectsWithCount[$key][$resourceKey]['sub_project_id'] = $subProjectData['id'];
                                 $subProjectsWithCount[$key][$resourceKey]['sub_project_name'] = $subProjectData['name'];
                                                                 $subProjectsWithCount[$key][$resourceKey]['resource_emp_id'] = $resourceDataVal["CE_emp_id"];
+                                                                $subProjectsWithCount[$key][$resourceKey]['resource_emp_display'] = Helpers::empIdWithUserName($resourceDataVal["CE_emp_id"]);
 
                                 /* ===== ORIGINAL QUERIES (UNCHANGED LOGIC) ===== */
                                 $subProjectsWithCount[$key][$resourceKey]['assignedCount'] =
@@ -759,6 +760,7 @@ class DashboardController extends Controller
                             $subProjectsWithCount[$key][$resourceKey]['sub_project_id'] = '--';
                             $subProjectsWithCount[$key][$resourceKey]['sub_project_name'] = '--';
                             $subProjectsWithCount[$key][$resourceKey]['resource_emp_id'] = $resourceDataVal["CE_emp_id"];
+                            $subProjectsWithCount[$key][$resourceKey]['resource_emp_display'] = Helpers::empIdWithUserName($resourceDataVal["CE_emp_id"]);
 
                             $subProjectsWithCount[$key][$resourceKey]['assignedCount'] =
                                 $modelClass::where('chart_status', 'CE_Assigned')

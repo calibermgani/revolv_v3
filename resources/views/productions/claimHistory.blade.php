@@ -183,7 +183,7 @@
                                                                 @endphp 
                                                                 {{$columnValue}}  
                                                             @else
-                                                                {{ $columnValue }}
+                                                                @include('partials.empIdColumnValue', ['columnName' => $columnName, 'columnValue' => $columnValue])
                                                             @endif
                                                         @endif
                                                     </td>
@@ -222,7 +222,7 @@
                                                             @endphp 
                                                             {{$columnValue}}  
                                                         @else
-                                                            {{ $columnValue }}
+                                                            @include('partials.empIdColumnValue', ['columnName' => $columnName, 'columnValue' => $columnValue])
                                                         @endif
                                                     </td>
                                                 @endif

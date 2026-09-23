@@ -798,7 +798,7 @@
                             html +=
                                 '<tbody><tr class="clickable-row cursor_hand">' +
                                 '<td><input type="hidden" value=' + data.client_id + '></td>' +
-                                '<td>' + data.resource_emp_id + '<input type="hidden" value=' + data
+                                '<td>' + (data.resource_emp_display || data.resource_emp_id) + '<input type="hidden" value=' + data
                                 .resource_emp_id + '></td>' +
                                 '<td>' + data.sub_project_name + '<input type="hidden" value=' +
                                 data
@@ -920,7 +920,7 @@
                         html +=
                             '<tbody><tr class="hold-clickable-row cursor_hand">' +
                             '<td><input type="hidden" value=' + data.client_id + '></td>' +
-                            '<td>' + data.resource_emp_id +
+                            '<td>' + (data.resource_emp_display || data.resource_emp_id) +
                             '<input type="hidden" value=' + data
                             .resource_emp_id + '></td>' + '<td>' + data.sub_project_name +
                             '<input type="hidden" value=' +

@@ -103,8 +103,11 @@ class ProductionBulkExport implements FromCollection, WithHeadings, WithStyles
                 } else if ($field == 'ar_action_code') {
                     $action = Helpers::arActionById($record->{$field});
                     $exportRow[$headerField] = $action['action_code'] ?? '';
-                } else if ($field == 'ar_manager_rebuttal_status' && str_contains($record->{$field}, 'dis_agree')) {
+                }                 else if ($field == 'ar_manager_rebuttal_status' && str_contains($record->{$field}, 'dis_agree')) {
                     $exportRow[$headerField] = 'Disagree';
+                }
+                else if ($field == 'CE_emp_id' || $field == 'QA_emp_id') {
+                    $exportRow[$headerField] = Helpers::empIdWithUserName($record->{$field});
                 }
                 //    else if ($field === 'aging') {dd($headerField,$field);
                 //     $exportRow[$headerField] = $agingCount;
