@@ -13,6 +13,7 @@ class Kernel extends ConsoleKernel
               Commands\procodeProjectOnHoldMail::class,
               Commands\ProjectDuTargetSyncCommand::class,
               Commands\AimsProjectResourceAllocationCommand::class,
+              Commands\AimsUserSyncCommand::class,
               Commands\CleanupOldBulkReports::class,
     ];
     /**
@@ -33,6 +34,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('project:duonehourlymail')->hourly();
         $schedule->command('project:dutargetsync')->dailyAt('09:00');
          $schedule->command('project:resourceallocation')->dailyAt('15:00');
+        $schedule->command('project:aimsusers')->dailyAt('09:00');
         $schedule->command('reports:cleanup-old')->hourly();
       
 
