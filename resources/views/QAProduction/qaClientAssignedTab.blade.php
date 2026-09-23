@@ -611,10 +611,14 @@ use Carbon\Carbon;
                         </table>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
-                        <div class="ml-3">
+                        <div class="ml-3"
+                            id="assigned_showing_text"
+                            data-first="{{ $assignedProjectDetails->firstItem() != null ? $assignedProjectDetails->firstItem() : 0 }}"
+                            data-total="{{ $assignedProjectDetails->total() }}"
+                            data-per-page="{{ $assignedProjectDetails->perPage() }}">
                             Showing {{ $assignedProjectDetails->firstItem() != null ? $assignedProjectDetails->firstItem() : 0 }} to {{ $assignedProjectDetails->lastItem() != null ? $assignedProjectDetails->lastItem() : 0 }} of {{ $assignedProjectDetails->total() }} entries
                         </div>
-                         <div>
+                         <div id="assigned_pagination">
                             {{ $assignedProjectDetails->appends(request()->all())->links() }}
                         </div>
                     </div>
@@ -1759,6 +1763,7 @@ use Carbon\Carbon;
         });
         $('.date_range').val('');
         var startTime_db;
+        var currentAssignedRow = null;
         $(document).ready(function() {
             $('.cpt').attr('readonly', true);
             $('.icd').attr('readonly', true);
@@ -2011,6 +2016,7 @@ use Carbon\Carbon;
             var clientName = $('#clientName').val();
             var subProjectName = $('#subProjectName').val();
             $(document).on('click', '.clickable-row', function(e) {
+                currentAssignedRow = $(this).closest('tr');
                 var classes = $(this).attr('class');
                 var lastClass = '';
                 if (classes) {
@@ -2063,6 +2069,7 @@ use Carbon\Carbon;
                 });
 
                 function handleClientPendData(clientData, headers) {
+                    var $modal = $('#myModal_status');
 
                     $.each(headers, function(index, header) {
                         value = clientData[header];
@@ -2070,22 +2077,22 @@ use Carbon\Carbon;
                                 if (/_el_/.test(value)) {
                                     var commentsValues = value.split('_el_');
                                     var commentsText = commentsValues.join('\n');
-                                    $('textarea[name="annex_coder_trends"]').val(commentsText);
+                                    $modal.find('textarea[name="annex_coder_trends"]').val(commentsText);
                                 } else {
-                                    $('textarea[name="annex_coder_trends"]').val(value);
+                                    $modal.find('textarea[name="annex_coder_trends"]').val(value);
                                 }
                            }
                           if (header == 'QA_rework_comments') {
                                 if (/_el_/.test(value)) {
                                     var commentsValues = value.split('_el_');
                                     var commentsText = commentsValues.join('\n');
-                                    $('textarea[name="QA_rework_comments"]').val(commentsText);
+                                    $modal.find('textarea[name="QA_rework_comments"]').val(commentsText);
                                 } else {
-                                    $('textarea[name="QA_rework_comments"]').val(value);
+                                    $modal.find('textarea[name="QA_rework_comments"]').val(value);
                                 }
                            }
-                        $('label[id="' + header + '"]').html("");
-                        $('input[name="' + header + '[]"]').html("");
+                        $modal.find('label[id="' + header + '"]').html("");
+                        $modal.find('input[name="' + header + '[]"]').html("");
                         if (/_el_/.test(value)) {
                             elementToRemove = 'add_more_' + header;
                             $('#' + elementToRemove).remove();
@@ -2096,22 +2103,22 @@ use Carbon\Carbon;
                             var optionsArray = optionsObject ? Object.values(optionsObject) : null;
                             var addMandatory =  $('.'+header).closest('.dynamic-field').find('.add_mandatory').val();
                             var inputType;
-                            $('select[name="' + header + '[]"]').val(values[0]).trigger('change');
-                            $('textarea[name="' + header + '[]"]').val(values[0]);
-                            if ($('input[name="' + header + '[]"][type="checkbox"]').length > 0) {
+                            $modal.find('select[name="' + header + '[]"]').val(values[0]).trigger('change');
+                            $modal.find('textarea[name="' + header + '[]"]').val(values[0]);
+                            if ($modal.find('input[name="' + header + '[]"][type="checkbox"]').length > 0) {
                                 var checkboxValues = values[0].split(',');
-                                $('input[name="' + header + '[]"]').each(function() {
+                                $modal.find('input[name="' + header + '[]"]').each(function() {
                                     var checkboxValue = $(this).val();
                                     var isChecked = checkboxValues.includes(checkboxValue);
                                     $(this).prop('checked', isChecked);
                                 });
-                            } else if ($('input[name="' + header + '"][type="radio"]').length > 0) {
+                            } else if ($modal.find('input[name="' + header + '"][type="radio"]').length > 0) {
 
-                                $('input[name="' + header + '"]').filter('[value="' + values[0] +
+                                $modal.find('input[name="' + header + '"]').filter('[value="' + values[0] +
                                     '"]').prop(
                                     'checked', true);
                             } else {
-                                $('input[name="' + header + '[]"]').val(values[0]);
+                                $modal.find('input[name="' + header + '[]"]').val(values[0]);
                             }
 
 
@@ -2119,7 +2126,7 @@ use Carbon\Carbon;
                                 var selectType;
                                 var isLastValue = i === values.length - 1;
                                 var newElementId = 'dynamicElement_' + header + i;
-                                if ($('select[name="' + header + '[]"]').prop('tagName') !=
+                                if ($modal.find('select[name="' + header + '[]"]').prop('tagName') !=
                                     undefined) {
                                     selectType = $('<select>', {
                                         name: header + '[]',
@@ -2161,10 +2168,10 @@ use Carbon\Carbon;
                                         class: 'row mt-4',
                                         id: newElementId
                                     }).append(selectWrapper, colLabel);
-                                    $('select[name="' + header + '[]"]').closest('.dynamic-field')
+                                    $modal.find('select[name="' + header + '[]"]').closest('.dynamic-field')
                                         .append(rowDiv);
 
-                                } else if ($('textarea[name="' + header + '[]"]').prop(
+                                } else if ($modal.find('textarea[name="' + header + '[]"]').prop(
                                     'nodeName') != undefined) {
                                     inputType = '<textarea name="' + header +
                                         '[]" '+addMandatory+' class="form-control ' + header +
@@ -2182,9 +2189,9 @@ use Carbon\Carbon;
                                         '<div class="col-md-10">' + inputType +
                                         '</div><div class="col-md-1 col-form-label text-lg-right pt-0 pb-4" style="margin-left: -1.3rem;">' +
                                         minusButton + '</div><div></div></div>';
-                                    $('textarea[name="' + header + '[]"]').closest('.dynamic-field')
+                                    $modal.find('textarea[name="' + header + '[]"]').closest('.dynamic-field')
                                         .append(span);
-                                } else if ($('input[name="' + header + '[]"][type="checkbox"]')
+                                } else if ($modal.find('input[name="' + header + '[]"][type="checkbox"]')
                                     .length > 0 && Array.isArray(optionsArray)) {
                                     inputType = '<div class="form-group row">';
                                     optionsArray.forEach(function(option) {
@@ -2219,9 +2226,9 @@ use Carbon\Carbon;
                                         '</div><div  class="col-md-1 col-form-label text-lg-right pt-0 pb-4" style="margin-left: -1.3rem;">' +
                                         minusButton + '</div><div></div></div>';
 
-                                    $('input[name="' + header + '[]"]').closest('.dynamic-field')
+                                    $modal.find('input[name="' + header + '[]"]').closest('.dynamic-field')
                                         .append(span);
-                                } else if ($('input[name="' + header + '"][type="radio"]').length >
+                                } else if ($modal.find('input[name="' + header + '"][type="radio"]').length >
                                     0 && Array.isArray(optionsArray)) {
                                     inputType = '<div class="form-group row">';
                                     optionsArray.forEach(function(option) {
@@ -2255,7 +2262,7 @@ use Carbon\Carbon;
                                         '<div class="col-md-10">' + inputType +
                                         '</div><div  class="col-md-1 col-form-label text-lg-right pt-0 pb-4" style="margin-left: -1.3rem;">' +
                                         minusButton + '</div><div></div></div>';
-                                    $('input[name="' + header + '"]').closest('.dynamic-field')
+                                    $modal.find('input[name="' + header + '"]').closest('.dynamic-field')
                                         .append(span);
                                 } else {
                                     var fieldType = $('.' + header).attr('type');
@@ -2308,7 +2315,7 @@ use Carbon\Carbon;
                                         '<div class="col-md-10">' + inputType +
                                         '</div><div  class="col-md-1 col-form-label text-lg-right pt-0 pb-4" style="margin-left: -1.3rem;">' +
                                         minusButton + '</div><div></div></div>';
-                                    $('input[name="' + header + '[]"]').closest('.dynamic-field')
+                                    $modal.find('input[name="' + header + '[]"]').closest('.dynamic-field')
                                         .append(span);
                                 }
                             }
@@ -2320,51 +2327,51 @@ use Carbon\Carbon;
                             }).attr("autocomplete", "off");
 
 
-                        } else if ($('input[name="' + header + '[]"]').is(':checkbox') && value !== null) {
+                        } else if ($modal.find('input[name="' + header + '[]"]').is(':checkbox') && value !== null) {
                             var checkboxValues = value.split(',');
-                            $('input[name="' + header + '[]"]').each(function() {
+                            $modal.find('input[name="' + header + '[]"]').each(function() {
                                 $(this).prop('checked', checkboxValues.includes($(this)
                                 .val()));
                             });
-                        } else if ($('input[name="' + header + '"]').is(':radio') && value !== '' && value !== null) {
+                        } else if ($modal.find('input[name="' + header + '"]').is(':radio') && value !== '' && value !== null) {
                           if(value.length > 0) {
-                                $('input[name="' + header + '"]').filter('[value="' + value + '"]')
+                                $modal.find('input[name="' + header + '"]').filter('[value="' + value + '"]')
                                     .prop(
                                         'checked', true);
                           }
-                        } else if ($('select[name="' + header + '[]"]').length) {
-                            $('select[name="' + header + '[]"]').val(value).trigger('change');
+                        } else if ($modal.find('select[name="' + header + '[]"]').length) {
+                            $modal.find('select[name="' + header + '[]"]').val(value).trigger('change');
                         } else {
-                             $('input[name="idValue"]').val(clientData['parent_id']);
-                             $('input[name="parentId"]').val(clientData['parent_id']);
-                             $('input[name="record_old_status"]').val('QA_Assigned');
+                             $modal.find('input[name="idValue"]').val(clientData['parent_id']);
+                             $modal.find('input[name="parentId"]').val(clientData['parent_id']);
+                             $modal.find('input[name="record_old_status"]').val('QA_Assigned');
                             if (header === 'chart_status' && value.includes('CE_')) {
                                 claimStatus = value;
                                 value = value.replace('CE_', '');
-                                $('select[name="chart_status"]').val('QA_Inprocess').trigger(
+                                $modal.find('select[name="chart_status"]').val('QA_Inprocess').trigger(
                                     'change');
                                 $('#title_status').text("In Process");
-                                $('input[name="record_old_status"]').val('QA_Assigned');
+                                $modal.find('input[name="record_old_status"]').val('QA_Assigned');
                             } else if(header === 'chart_status' && value.includes('QA_')) {
                                 claimStatus = value;
                                 value = value.replace('QA_', '');
-                                $('select[name="chart_status"]').val('QA_Inprocess').trigger(
+                                $modal.find('select[name="chart_status"]').val('QA_Inprocess').trigger(
                                     'change');
                                 $('#title_status').text("In Process");
-                                $('input[name="record_old_status"]').val('QA_Inprocess');
+                                $modal.find('input[name="record_old_status"]').val('QA_Inprocess');
                             }
                             // if (header == 'id') {
-                            //     $('input[name="idValue"]').val(value);
+                            //     $modal.find('input[name="idValue"]').val(value);
                             // }
                             if (header == 'invoke_date') {
-                                $('input[name="invoke_date"]').val(value);
+                                $modal.find('input[name="invoke_date"]').val(value);
                             }
                             if (header == 'QA_emp_id') {
-                                $('input[name="QA_emp_id"]').val(value);
+                                $modal.find('input[name="QA_emp_id"]').val(value);
                             }
 
                             if (header == 'QA_status_code') {
-                                $('select[name="QA_status_code"]').val(value).trigger('change');
+                                $modal.find('select[name="QA_status_code"]').val(value).trigger('change');
                                 $('#status_val').val(value);
                             }
                             if (header == 'QA_sub_status_code') {
@@ -2394,7 +2401,7 @@ use Carbon\Carbon;
                                 }
                             }
                             if (header == 'ar_status_code') {
-                                $('select[name="ar_status_code"]').val(value).trigger('change');
+                                $modal.find('select[name="ar_status_code"]').val(value).trigger('change');
                                 $('#ar_status_val').val(value);
                             }
                             if (header == 'ar_action_code') {
@@ -2402,21 +2409,21 @@ use Carbon\Carbon;
                                 actionCode(statusVal,value);
                             }
                             if (header == 'ar_denial_codes') {
-                                $('select[name="ar_denial_codes"]').val(value).trigger('change');
+                                $modal.find('select[name="ar_denial_codes"]').val(value).trigger('change');
                                 $('#ar_denial_codes').val(value);
                             }
                             if (header == 'ar_substatus_codes') {
-                                $('select[name="ar_substatus_codes"]').val(value).trigger('change');
+                                $modal.find('select[name="ar_substatus_codes"]').val(value).trigger('change');
                                 $('#ar_substatus_val').val(value);
                             }
-                            $('textarea[name="' + header + '[]"]').val(value);
-                            $('label[id="' + header + '"]').text(value);
+                            $modal.find('textarea[name="' + header + '[]"]').val(value);
+                            $modal.find('label[id="' + header + '"]').text(value);
                             if(value != null) {
-                                $('input[name="' + header + '[]"]').val(value);
-                                $('input[name="' + header + '"]').val(value);
+                                $modal.find('input[name="' + header + '[]"]').val(value);
+                                $modal.find('input[name="' + header + '"]').val(value);
                             }
                             if (header == 'am_cpt' || header == 'am_icd') {
-                                $('textarea[name="' + header + '_hidden[]"]').val(value);
+                                $modal.find('textarea[name="' + header + '_hidden[]"]').val(value);
                             }
                         }
                     });
@@ -2442,10 +2449,10 @@ use Carbon\Carbon;
                                 sla_options += '<option value="' + key + '" ' + '>' + value +
                                     '</option>';
                             });
-                            $('select[name="QA_sub_status_code"]').html(sla_options);
-                            $('select[name="QA_sub_status_code"]').val(12).change();
+                            $('#myModal_status').find('select[name="QA_sub_status_code"]').html(sla_options);
+                            $('#myModal_status').find('select[name="QA_sub_status_code"]').val(12).change();
                             if (value) {
-                                $('select[name="QA_sub_status_code"]').val(value);
+                                $('#myModal_status').find('select[name="QA_sub_status_code"]').val(value);
                             }
                         },
                         error: function(jqXHR, exception) {}
@@ -2764,10 +2771,10 @@ use Carbon\Carbon;
                                 sla_options += '<option value="' + key + '" ' + '>' + value +
                                     '</option>';
                             });
-                            $('select[name="ar_action_code"]').html(sla_options);
+                            $('#myModal_status').find('select[name="ar_action_code"]').html(sla_options);
                             // $('select[name="QA_sub_status_code"]').val(12).change();
                             if (value) {
-                                $('select[name="ar_action_code"]').val(value);
+                                $('#myModal_status').find('select[name="ar_action_code"]').val(value);
                             }
                         },
                         error: function(jqXHR, exception) {}
@@ -2991,8 +2998,7 @@ use Carbon\Carbon;
                                 opacity: 0.1,
                                 message: 'Fetching...',
                             });
-                            document.querySelector('#formConfiguration').submit();
-                            KTApp.unblock('#myModal_status');
+                            submitFormConfigurationAjax();
 
                         } else {
                             //   location.reload();
@@ -4530,5 +4536,125 @@ use Carbon\Carbon;
             setTimeout(updateTime, 1000);
         }
         updateTime();
+
+        function submitFormConfigurationAjax() {
+            var form = $('#formConfiguration')[0];
+            var formData = new FormData(form);
+
+            $('#project_assign_save').prop('disabled', true);
+            $.ajax({
+                url: $('#formConfiguration').attr('action'),
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                cache: false,
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    $('#project_assign_save').prop('disabled', false);
+
+                    if (typeof KTApp !== 'undefined') {
+                        KTApp.unblock('#myModal_status');
+                    }
+
+                    if (response.status === 'success' || response.success === true) {
+                        js_notification('success', response.message || 'Data updated successfully');
+                        $('#myModal_status').modal('hide');
+                        removeAssignedRowAfterSubmit();
+                        return false;
+                    }
+                    js_notification('error', response.message || 'Something went wrong');
+                },
+                error: function(xhr) {
+                    $('#project_assign_save').prop('disabled', false);
+
+                    if (typeof KTApp !== 'undefined') {
+                        KTApp.unblock('#myModal_status');
+                    }
+
+                    if (xhr.status === 401) {
+                        js_notification('error', 'Session expired. Please login again.');
+                        if (xhr.responseJSON && xhr.responseJSON.redirect_url) {
+                            window.location.href = xhr.responseJSON.redirect_url;
+                        }
+                        return;
+                    }
+
+                    if (xhr.status === 409) {
+                        js_notification('error', xhr.responseJSON?.message || 'Duplicate Entry');
+                        return;
+                    }
+
+                    if (xhr.status === 422) {
+                        var errorMessage = 'Validation error';
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            errorMessage = '';
+                            $.each(xhr.responseJSON.errors, function(key, value) {
+                                errorMessage += value[0] + '<br>';
+                            });
+                        }
+                        js_notification('error', errorMessage);
+                        return;
+                    }
+
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        js_notification('error', xhr.responseJSON.message);
+                    } else {
+                        js_notification('error', 'Server error. Please try again.');
+                    }
+                }
+            });
+        }
+
+        function removeAssignedRowAfterSubmit() {
+            if (!currentAssignedRow || !currentAssignedRow.length) {
+                return;
+            }
+
+            if ($.fn.DataTable.isDataTable('#client_assigned_list')) {
+                $('#client_assigned_list').DataTable().row(currentAssignedRow).remove().draw(false);
+            } else {
+                currentAssignedRow.remove();
+            }
+
+            currentAssignedRow = null;
+
+            var total = parseInt($('#assigned_showing_text').attr('data-total'), 10) || 0;
+            var first = parseInt($('#assigned_showing_text').attr('data-first'), 10) || 0;
+            var perPage = parseInt($('#assigned_showing_text').attr('data-per-page'), 10) || 50;
+
+            total = total - 1;
+            if (total < 0) {
+                total = 0;
+            }
+
+            $('#assigned_showing_text').attr('data-total', total);
+
+            var visibleRows = $('#client_assigned_list tbody tr').filter(function() {
+                return $(this).find('td').length > 1 && !$(this).find('td').hasClass('dataTables_empty');
+            }).length;
+
+            var last = 0;
+            if (visibleRows > 0 && total > 0) {
+                last = first + visibleRows - 1;
+                if (last > total) {
+                    last = total;
+                }
+            } else {
+                first = 0;
+                last = 0;
+            }
+
+            $('#assigned_showing_text').text('Showing ' + first + ' to ' + last + ' of ' + total + ' entries');
+
+            if (total <= perPage) {
+                $('#assigned_pagination').hide();
+            } else {
+                $('#assigned_pagination').show();
+            }
+        }
     </script>
 @endpush
