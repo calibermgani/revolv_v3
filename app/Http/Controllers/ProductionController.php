@@ -2237,6 +2237,7 @@ class ProductionController extends Controller
                         'qa_icd_trends',
                         'qa_modifiers',
                         'annex_qa_trends',
+                        'rework_reason',
                     ];
                     
                         $data = array_diff_key($data, array_flip($fieldsToExclude));
