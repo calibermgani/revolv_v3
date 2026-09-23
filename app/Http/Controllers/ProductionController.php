@@ -2005,14 +2005,20 @@ class ProductionController extends Controller
                 $decodedsubProjectName = $data['sub_project_id'] == NULL ? 'project' :Helpers::subProjectName($data['project_id'] ,$data['sub_project_id'])->sub_project_name;
                 $data['start_time'] = $currentTime->format('Y-m-d H:i:s');
                 $data['record_status'] = $data['urlDynamicValue'] == "Revoke" ? "Revoke" : 'CE_'.ucwords($data['urlDynamicValue']) ;//dd($data['urlDynamicValue'],$data['record_status']);
-                $existingRecordId = CallerChartsWorkLogs::where('project_id', $data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('record_id',$data['record_id'])->where('record_status',$data['record_status'])->where('end_time',NULL)->first();
-
-                if(empty($existingRecordId)) {
+                $isArRework = ($data['urlDynamicValue'] ?? '') === 'ar_rework';
+                if ($isArRework) {
                     $startTimeVal = $data['start_time'];
-                    $save_flag = CallerChartsWorkLogs::create($data);
-                } else {
-                    $startTimeVal = $existingRecordId->start_time;
                     $save_flag = 1;
+                } else {
+                    $existingRecordId = CallerChartsWorkLogs::where('project_id', $data['project_id'])->where('sub_project_id',$data['sub_project_id'])->where('record_id',$data['record_id'])->where('record_status',$data['record_status'])->where('end_time',NULL)->first();
+
+                    if(empty($existingRecordId)) {
+                        $startTimeVal = $data['start_time'];
+                        $save_flag = CallerChartsWorkLogs::create($data);
+                    } else {
+                        $startTimeVal = $existingRecordId->start_time;
+                        $save_flag = 1;
+                    }
                 }
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
