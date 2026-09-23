@@ -1886,10 +1886,10 @@ use Carbon\Carbon;
                                                     '') + '>' + value +
                                     '</option>';
                             });
-                            $('select[name="ar_action_code"]').html(sla_options);
+                            $('#myModal_status').find('select[name="ar_action_code"]').html(sla_options);
                             // $('select[name="QA_sub_status_code"]').val(12).change();
                             if (value) {
-                                $('select[name="ar_action_code"]').val(value);
+                                $('#myModal_status').find('select[name="ar_action_code"]').val(value);
                             }
                         },
                         error: function(jqXHR, exception) {}
@@ -1964,6 +1964,7 @@ use Carbon\Carbon;
                     }
                 });
 
+                var $modal = $('#myModal_status');
                 $row.find('td:not(:eq(' + tdCount + '))').each(function(index) {
                     var header = headers[index-1];
                     var value = $(this).text().trim();
@@ -1973,33 +1974,33 @@ use Carbon\Carbon;
                     }
                     
                     if (header == 'id') {
-                        $('input[name="idValue"]').val(value);
+                        $modal.find('input[name="idValue"]').val(value);
                     }
                     if (header == 'invoke_date') {
-                        $('input[name="invoke_date"]').val(value);
+                        $modal.find('input[name="invoke_date"]').val(value);
                     }
                     if (header == 'CE_emp_id') {
-                        $('input[name="CE_emp_id"]').val(value);
+                        $modal.find('input[name="CE_emp_id"]').val(value);
                     }
                     if (header == 'chart_status') {
-                        // $('select[name="chart_status"]').val(value).trigger('change');
-                        $('select[name="chart_status"]').val('CE_Inprocess').trigger('change');
+                        // $modal.find('select[name="chart_status"]').val(value).trigger('change');
+                        $modal.find('select[name="chart_status"]').val('CE_Inprocess').trigger('change');
                         $('#title_status').text('In Process');
                     }
-                    if ($('input[name="' + header + '[]"]').is(':checkbox') && value !== null) {
+                    if ($modal.find('input[name="' + header + '[]"]').is(':checkbox') && value !== null) {
                         var checkboxValues = value.split(',');
-                        $('input[name="' + header + '[]"]').each(function() {
+                        $modal.find('input[name="' + header + '[]"]').each(function() {
                             $(this).prop('checked', checkboxValues.includes($(this).val()));
                         });
-                    } else if ($('input[name="' + header + '"]').is(':radio') && value !== '' && value !== null) {
+                    } else if ($modal.find('input[name="' + header + '"]').is(':radio') && value !== '' && value !== null) {
                             if(value.length > 0) {
-                                $('input[name="' + header + '"]').filter('[value="' + value + '"]').prop(
+                                $modal.find('input[name="' + header + '"]').filter('[value="' + value + '"]').prop(
                                     'checked', true);
                             }
-                    } else if ($('select[name="' + header + '[]"]').length) {
-                        $('select[name="' + header + '[]"]').val(value).trigger('change');
+                    } else if ($modal.find('select[name="' + header + '[]"]').length) {
+                        $modal.find('select[name="' + header + '[]"]').val(value).trigger('change');
                     } else {
-                        $('textarea[name="' + header + '[]"]').val(value);
+                        $modal.find('textarea[name="' + header + '[]"]').val(value);
                         if (!isNaN(Date.parse(value))) {
                             var momentDate = moment(value, ['MM/DD/YYYY', 'YYYY-MM-DD'], true);
                             if (momentDate.isValid()) {
@@ -2009,27 +2010,27 @@ use Carbon\Carbon;
                                     day: '2-digit'
                                 });
                                 customDate = moment(value, 'MM/DD/YYYY').format('YYYY-MM-DD');
-                                $('label[id="' + header + '"]').text(formattedDate);
-                                if ($('input[name="' + header + '[]"]').attr('type') === 'date') {
-                                    $('input[name="' + header + '[]"]').val(customDate)
+                                $modal.find('label[id="' + header + '"]').text(formattedDate);
+                                if ($modal.find('input[name="' + header + '[]"]').attr('type') === 'date') {
+                                    $modal.find('input[name="' + header + '[]"]').val(customDate)
                                 } else {
                                     if(value != null) {
-                                        $('input[name="' + header + '[]"]').val(value);
-                                        $('input[name="' + header + '"]').val(value);
+                                        $modal.find('input[name="' + header + '[]"]').val(value);
+                                        $modal.find('input[name="' + header + '"]').val(value);
                                   }
                                 }
                             } else {
-                                 $('label[id="' + header + '"]').text(value);
+                                 $modal.find('label[id="' + header + '"]').text(value);
                                  if(value != null) {
-                                    $('input[name="' + header + '[]"]').val(value);
-                                    $('input[name="' + header + '"]').val(value);
+                                    $modal.find('input[name="' + header + '[]"]').val(value);
+                                    $modal.find('input[name="' + header + '"]').val(value);
                                 }
                             }
                         } else {
-                             $('label[id="' + header + '"]').text(value);
+                             $modal.find('label[id="' + header + '"]').text(value);
                              if(value != null) {
-                                $('input[name="' + header + '[]"]').val(value);
-                                $('input[name="' + header + '"]').val(value);
+                                $modal.find('input[name="' + header + '[]"]').val(value);
+                                $modal.find('input[name="' + header + '"]').val(value);
                             }
                         }
 
@@ -3072,7 +3073,7 @@ function showSubmitPopup() {
                         if (response.success == true) {
                             $('#myModal_status').modal('show');
                             startTime_db = response.startTimeVal;
-                            $('select[name="chart_status"]').val('CE_Completed').trigger('change');
+                            $('#myModal_status').find('select[name="chart_status"]').val('CE_Completed').trigger('change');
                             $('#title_status').text('New');
                             $('#project_assign_save').prop('disabled', false);
                         } else {

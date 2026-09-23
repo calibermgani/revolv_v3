@@ -1476,10 +1476,11 @@ use Carbon\Carbon;
                             }
                     });
                     function handleClientCompletedData(clientData,headers) {
+                        var $modal = $('#myModal_status');
                         $.each(headers, function(index, header) {
                             value = clientData[header];
-                            $('label[id="' + header + '"]').html("");
-                            $('input[name="' + header + '[]"]').html("");
+                            $modal.find('label[id="' + header + '"]').html("");
+                            $modal.find('input[name="' + header + '[]"]').html("");
                                 if (/_el_/.test(value)) {
                                     elementToRemove = 'add_more_'+header;
                                     $('#'+elementToRemove).remove();
@@ -1489,27 +1490,27 @@ use Carbon\Carbon;
                                     var optionsArray = optionsObject ? Object.values(optionsObject) : null;
                                     var addMandatory =  $('.'+header).closest('.dynamic-field').find('.add_mandatory').val();
                                     var inputType;
-                                    $('select[name="' + header + '[]"]').val(values[0]).trigger('change');
-                                        $('textarea[name="' + header + '[]"]').val(values[0]);
-                                        if ($('input[name="' + header + '[]"][type="checkbox"]').length > 0) {
+                                    $modal.find('select[name="' + header + '[]"]').val(values[0]).trigger('change');
+                                        $modal.find('textarea[name="' + header + '[]"]').val(values[0]);
+                                        if ($modal.find('input[name="' + header + '[]"][type="checkbox"]').length > 0) {
                                             var checkboxValues = values[0].split(','); 
-                                            $('input[name="' + header + '[]"]').each(function() {
+                                            $modal.find('input[name="' + header + '[]"]').each(function() {
                                                 var checkboxValue = $(this).val(); 
                                                 var isChecked = checkboxValues.includes(checkboxValue);
                                                 $(this).prop('checked', isChecked);
                                             });
-                                        } else if($('input[name="' + header + '"][type="radio"]').length > 0) {
+                                        } else if($modal.find('input[name="' + header + '"][type="radio"]').length > 0) {
 
-                                            $('input[name="' + header + '"]').filter('[value="' + values[0] + '"]').prop(
+                                            $modal.find('input[name="' + header + '"]').filter('[value="' + values[0] + '"]').prop(
                                                 'checked', true);
                                         } else {
-                                            $('input[name="' + header + '[]"]').val(values[0]);
+                                            $modal.find('input[name="' + header + '[]"]').val(values[0]);
                                         }
                                         for (var i = 1; i < values.length; i++) {
                                             var selectType;
                                             var isLastValue = i === values.length - 1;
                                             var newElementId =  'dynamicElement_' + header + i;
-                                                if ($('select[name="' + header + '[]"]').prop('tagName') != undefined) {
+                                                if ($modal.find('select[name="' + header + '[]"]').prop('tagName') != undefined) {
                                                         selectType = $('<select>', {
                                                             name: header + '[]',
                                                             class: 'form-control ' + header + ' white-smoke pop-non-edt-val',
@@ -1533,9 +1534,9 @@ use Carbon\Carbon;
                                                         }
                                                         var colLabel = $('<div>', { class: 'col-md-1 col-form-label text-lg-right pt-0 pb-4', style: 'margin-left: -1.3rem;' }).append(minusButton);
                                                         var rowDiv = $('<div>', { class: 'row mt-4', id: newElementId}).append(selectWrapper, colLabel);
-                                                        $('select[name="' + header + '[]"]').closest('.dynamic-field').append(rowDiv);
+                                                        $modal.find('select[name="' + header + '[]"]').closest('.dynamic-field').append(rowDiv);
 
-                                                } else if ($('textarea[name="' + header + '[]"]').prop('nodeName') != undefined) {
+                                                } else if ($modal.find('textarea[name="' + header + '[]"]').prop('nodeName') != undefined) {
                                                         inputType =  '<textarea name="' + header + '[]" '+addMandatory+' class="form-control ' + header + ' white-smoke pop-non-edt-val mt-0" rows="3" id="' + header + i + '">' + values[i] + '</textarea>';
                                                         if(i === values.length - 1) {
                                                             var minusButton = '<i class="fa fa-plus add_more" id="' +'add_more_'+header +'"></i>';
@@ -1545,8 +1546,8 @@ use Carbon\Carbon;
                                                             var span = '<div class="row mt-4" id="' + newElementId + '">' +
                                                                 '<div class="col-md-10">' + inputType + '</div><div class="col-md-1 col-form-label text-lg-right pt-0 pb-4" style="margin-left: -1.3rem;">' +
                                                                     minusButton +'</div><div></div></div>';
-                                                            $('textarea[name="' + header + '[]"]').closest('.dynamic-field').append(span);
-                                                } else if ($('input[name="' + header + '[]"][type="checkbox"]').length > 0 && Array.isArray(optionsArray)) {
+                                                            $modal.find('textarea[name="' + header + '[]"]').closest('.dynamic-field').append(span);
+                                                } else if ($modal.find('input[name="' + header + '[]"][type="checkbox"]').length > 0 && Array.isArray(optionsArray)) {
                                                             inputType = '<div class="form-group row">';
                                                             optionsArray.forEach(function(option) {
                                                                 var checked = (values[i] && values[i].split(',').includes(option.toString())) ? 'checked' : '';
@@ -1571,8 +1572,8 @@ use Carbon\Carbon;
                                                                 '<div class="col-md-10">' + inputType + '</div><div  class="col-md-1 col-form-label text-lg-right pt-0 pb-4" style="margin-left: -1.3rem;">' +
                                                                     minusButton + '</div><div></div></div>';
 
-                                                            $('input[name="' + header + '[]"]').closest('.dynamic-field').append(span);
-                                                } else if ($('input[name="' + header + '"][type="radio"]').length > 0 && Array.isArray(optionsArray)) {
+                                                            $modal.find('input[name="' + header + '[]"]').closest('.dynamic-field').append(span);
+                                                } else if ($modal.find('input[name="' + header + '"][type="radio"]').length > 0 && Array.isArray(optionsArray)) {
                                                             inputType = '<div class="form-group row">';
                                                             optionsArray.forEach(function(option) {
                                                                 var checked = (values[i] && values[i].split(',').includes(option.toString())) ? 'checked' : '';
@@ -1597,7 +1598,7 @@ use Carbon\Carbon;
                                                             var span = '<div class="row mt-4" id="' + newElementId + '">' +
                                                                 '<div class="col-md-10">' + inputType + '</div><div  class="col-md-1 col-form-label text-lg-right pt-0 pb-4" style="margin-left: -1.3rem;">' +
                                                                     minusButton + '</div><div></div></div>';
-                                                            $('input[name="' + header + '"]').closest('.dynamic-field').append(span);
+                                                            $modal.find('input[name="' + header + '"]').closest('.dynamic-field').append(span);
                                                 } else {
                                                     var fieldType =  $('.'+header).attr('type');
                                                     var classes = $('.'+header).attr('class');
@@ -1628,7 +1629,7 @@ use Carbon\Carbon;
                                                     var span = '<div class="row mt-4"  id="' +newElementId+ '">' +
                                                         '<div class="col-md-10">'+ inputType +'</div><div  class="col-md-1 col-form-label text-lg-right pt-0 pb-4" style="margin-left: -1.3rem;">' +
                                                             minusButton +'</div><div></div></div>';
-                                                        $('input[name="' + header + '[]"]').closest('.dynamic-field').append(span);
+                                                        $modal.find('input[name="' + header + '[]"]').closest('.dynamic-field').append(span);
                                                 }
                                         }
                                         $('.date_range').daterangepicker({
@@ -1637,38 +1638,38 @@ use Carbon\Carbon;
                                             $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
                                         }).attr("autocomplete", "off");
 
-                                } else if ($('input[name="' + header + '[]"]').is(':checkbox') && value !== null) {
+                                } else if ($modal.find('input[name="' + header + '[]"]').is(':checkbox') && value !== null) {
                                     var checkboxValues = value.split(',');
-                                    $('input[name="' + header + '[]"]').each(function() {
+                                    $modal.find('input[name="' + header + '[]"]').each(function() {
                                         $(this).prop('checked', checkboxValues.includes($(this).val()));
                                     });
-                                } else if ($('input[name="' + header + '"]').is(':radio') && value !== '' && value !== null) {
+                                } else if ($modal.find('input[name="' + header + '"]').is(':radio') && value !== '' && value !== null) {
                                 if(value.length > 0) {
-                                        $('input[name="' + header + '"]').filter('[value="' + value + '"]').prop(
+                                        $modal.find('input[name="' + header + '"]').filter('[value="' + value + '"]').prop(
                                             'checked', true);
                                 }
-                                } else if ($('select[name="' + header + '[]"]').length) {
-                                $('select[name="' + header + '[]"]').val(value).trigger('change');
+                                } else if ($modal.find('select[name="' + header + '[]"]').length) {
+                                $modal.find('select[name="' + header + '[]"]').val(value).trigger('change');
                                 } else {
-                                    $('input[name="parentId"]').val(clientData['parent_id']);
-                                    $('input[name="record_old_status"]').val(clientData['chart_status']);
+                                    $modal.find('input[name="parentId"]').val(clientData['parent_id']);
+                                    $modal.find('input[name="record_old_status"]').val(clientData['chart_status']);
                                     if (header === 'chart_status' && value.includes('CE_')) {
                                             claimStatus = value;
                                             value = value.replace('CE_', '');
-                                            $('select[name="chart_status"]').val(claimStatus).trigger('change');
+                                            $modal.find('select[name="chart_status"]').val(claimStatus).trigger('change');
                                         $('#title_status').text(value);
                                     }
                                     if (header == 'id') {
-                                        $('input[name="idValue"]').val(value);
+                                        $modal.find('input[name="idValue"]').val(value);
                                     }
                                     if (header == 'invoke_date') {
-                                        $('input[name="invoke_date"]').val(value);
+                                        $modal.find('input[name="invoke_date"]').val(value);
                                     }
                                     if (header == 'CE_emp_id') {
-                                        $('input[name="CE_emp_id"]').val(value);
+                                        $modal.find('input[name="CE_emp_id"]').val(value);
                                     }
                                     if (header == 'ar_status_code') {
-                                        $('select[name="ar_status_code"]').val(value).trigger('change');
+                                        $modal.find('select[name="ar_status_code"]').val(value).trigger('change');
                                         $('#ar_status_val').val(value);
                                     }
                                     if (header == 'ar_action_code') {
@@ -1676,18 +1677,18 @@ use Carbon\Carbon;
                                         actionCode(statusVal,value);
                                     }
                                     if (header == 'ar_denial_codes') {
-                                        $('select[name="ar_denial_codes"]').val(value).trigger('change');
+                                        $modal.find('select[name="ar_denial_codes"]').val(value).trigger('change');
                                         $('#ar_denial_val').val(value);
                                     }
                                     if (header == 'ar_substatus_codes') {
-                                        $('select[name="ar_substatus_codes"]').val(value).trigger('change');
+                                        $modal.find('select[name="ar_substatus_codes"]').val(value).trigger('change');
                                         $('#ar_substatus_val').val(value);
                                     }
-                                    $('textarea[name="' + header + '[]"]').val(value);
-                                    $('label[id="' + header + '"]').text(value);
+                                    $modal.find('textarea[name="' + header + '[]"]').val(value);
+                                    $modal.find('label[id="' + header + '"]').text(value);
                                         if(value != null) {
-                                            $('input[name="' + header + '[]"]').val(value);
-                                            $('input[name="' + header + '"]').val(value);
+                                            $modal.find('input[name="' + header + '[]"]').val(value);
+                                            $modal.find('input[name="' + header + '"]').val(value);
                                         }
                                 }
                         });
@@ -1906,9 +1907,9 @@ use Carbon\Carbon;
                                 sla_options += '<option value="' + key + '" ' + '>' + value +
                                     '</option>';
                             });
-                            $('select[name="ar_action_code"]').html(sla_options);
+                            $('#myModal_status').find('select[name="ar_action_code"]').html(sla_options);
                              if (value) {
-                                $('select[name="ar_action_code"]').val(value);
+                                $('#myModal_status').find('select[name="ar_action_code"]').val(value);
                             }
                         },
                         error: function(jqXHR, exception) {}
