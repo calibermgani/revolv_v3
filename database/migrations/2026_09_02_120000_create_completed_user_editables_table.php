@@ -23,6 +23,8 @@ class CreateCompletedUserEditablesTable extends Migration
             $table->string('end_time')->nullable();
             $table->string('work_time')->nullable();
             $table->string('record_status')->nullable();
+            $table->int('rework_status')->nullable();
+            $table->string('rework_assigned_by_emp_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

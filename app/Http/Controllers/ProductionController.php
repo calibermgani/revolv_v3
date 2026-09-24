@@ -312,7 +312,7 @@ class ProductionController extends Controller
                                     //                                                 // ->whereBetween('updated_at',[$startDate,$endDate])
                                     //                                                 ->count();
                                     // $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$resourceName)->whereBetween('updated_at',[$startDate,$endDate])->count(); 
-                                    //   $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);                                               
+                                      $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);                                               
                                     $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','ASC')->pluck('chart_status')->toArray(); 
                               
                                     } else {
@@ -345,7 +345,7 @@ class ProductionController extends Controller
                                 //                                            // ->whereBetween('updated_at',[$startDate,$endDate])
                                 //                                             ->count();
                                 //    $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();   
-                                    //  $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);                                               
+                                     $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);                                               
                                     $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->orderBy('id','ASC')->pluck('chart_status')->toArray();   
                          
                                    }
@@ -390,7 +390,7 @@ class ProductionController extends Controller
                     //         // ->whereBetween('updated_at',[$startDate,$endDate])
                     //         ->count();
                     //     $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
-                    //    $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId, $loginEmpId);                                                                                              
+                       $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId, $loginEmpId);                                                                                              
                        $assignedProjectDetailsStatus = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->orderBy('id','ASC')->pluck('chart_status')->toArray();
                   
                         } else {
@@ -1081,19 +1081,14 @@ class ProductionController extends Controller
                  $arSubStatusList = Helpers::arSubStatusList();
                  $projectColSearchFields = Helpers::excludePopupNonVisibleSearchFields(ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->get(), $decodedProjectName, $subProjectId);
                  $projectColSearchFieldsType = ProjectColSearchConfig::where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)->where('status','Yes')->pluck('column_type','column_name')->toArray();
-                //  $userEditableQuery = CompletedUserEditable::where('project_id',$decodedProjectName)->where('record_status','user_rework');
-                //  if ($subProjectId === NULL) {
-                //      $userEditableQuery->whereNull('sub_project_id');
-                //  } else {
-                //      $userEditableQuery->where('sub_project_id',$subProjectId);
-                //  }
-                //  $userEditableRecordIds = $userEditableQuery->pluck('record_id')->map(function ($id) {
-                //      return (string) $id;
-                //  })->toArray();
+                $pageRecordIds = $completedProjectDetails->pluck('id')->map(function ($id) {
+                    return (string) $id;
+                })->values()->toArray();
+                $openReworkRecordIds = $this->getOpenReworkRecordIds($decodedProjectName, $subProjectId, $pageRecordIds);
                 $datasTableName = $table_name . '_datas';
                 $hasArReworkReasonColumn = Schema::hasTable($datasTableName)
                     && Schema::hasColumn($datasTableName, 'rework_reason');
-                return view('productions/clientCompletedTab',compact('completedProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount', 'arReworkCount','arDenialList','arDenialList','arSubStatusList','hasArReworkReasonColumn'));
+                return view('productions/clientCompletedTab',compact('completedProjectDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount', 'arReworkCount','arDenialList','arDenialList','arSubStatusList','hasArReworkReasonColumn','openReworkRecordIds'));
 
            } catch (\Exception $e) {
                log::debug($e->getMessage());
@@ -2031,7 +2026,9 @@ class ProductionController extends Controller
                     $clientData = $modelClass::where('id',$data['record_id'])->first();
                 }
                 if(isset($clientData) && !empty($clientData)) {
+                   $reworkReason = $this->extractReworkReason($clientData);
                    $clientData = Helpers::hidePopupNonVisiblePatientFromRecords($clientData, Helpers::getPopupNonVisiblePatientColumns($data['project_id'], $data['sub_project_id']));
+                   $clientData = $this->putBackArReworkReason($clientData, $reworkReason, $data['urlDynamicValue'] ?? '');
                    return response()->json(['success' => true,'clientData'=>$clientData,'startTimeVal'=>$startTimeVal]);
                 } else {
                     return response()->json(['success' => false]);
@@ -2255,6 +2252,7 @@ class ProductionController extends Controller
                 }
                 $currentTime = Carbon::now();
                 if ($data['chart_status'] == "CE_Completed"  && isset($data['ar_rework_val']) && $data['ar_rework_val'] == "user_rework") {
+                    $this->markArReworkAddressed($decodedProjectName, $decodedPracticeName, $data['parent_id'] ?? $data['parentId'] ?? null);
                 } else {
                     $callChartWorkLogExistingRecords = CallerChartsWorkLogs::where('record_id', $data['parent_id'])
                     ->where('record_status',$data['record_old_status'])
@@ -2319,7 +2317,9 @@ class ProductionController extends Controller
                     $clientData = $modelClass::where('id',$data['record_id'])->first();
                 }
                 if(isset($clientData) && !empty($clientData)) {
+                   $reworkReason = $this->extractReworkReason($clientData);
                    $clientData = Helpers::hidePopupNonVisiblePatientFromRecords($clientData, Helpers::getPopupNonVisiblePatientColumns($decodedProjectName, $decodedPracticeName == '--' ? null : $decodedPracticeName));
+                   $clientData = $this->putBackArReworkReason($clientData, $reworkReason, $data['urlDynamicValue'] ?? '');
                    return response()->json(['success' => true,'clientData'=>$clientData]);
                 } else {
                     return response()->json(['success' => false]);
@@ -3040,47 +3040,7 @@ class ProductionController extends Controller
                             }
                             $exStatus = str_replace('CE_', '', $request['chart_status']);
                         } else if($request->recordStatusVal == "user_rework")  {
-
-                            $reworkQuery =
-                            CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            );
-
-
-                            if($request->subProjectId != null)
-                            {
-                                $reworkQuery->where(
-                                    'sub_project_id',
-                                    $request->subProjectId
-                                );
-                            }
-
-
-                            $reworkIds =
-                            $reworkQuery
-                            ->pluck('record_id')
-                            ->toArray();
-
-
-                            $exportResult =
-                            $query
-                            ->whereIn(
-                                'id',
-                                $reworkIds
-                            )
-                            ->get();
-
-
+                            $exportResult = $this->getArReworkExportRecords($query, $decodedProjectName, $subProjectId);
                             $exStatus = "user_rework";
 
                         } else {
@@ -3108,51 +3068,7 @@ class ProductionController extends Controller
                        $exportResult = $query->whereIn('chart_status',[$request->chart_status,'CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->get();
                        $exStatus = str_replace('CE_', '', $request['chart_status']);
                     } else if($request->recordStatusVal == "user_rework") {
-                                $reworkQuery =
-                                CompletedUserEditable::where(
-                                    'project_id',
-                                    $decodedProjectName
-                                )
-                                ->where(
-                                    'record_status',
-                                    'user_rework'
-                                )
-                                ->where(
-                                    'start_time',
-                                    '>=',
-                                    Carbon::now()->subHours(24)
-                                )
-                                ->where(
-                                    'emp_id',
-                                    $loginEmpId
-                                );
-
-
-                                if($request->subProjectId != null)
-                                {
-                                    $reworkQuery->where(
-                                        'sub_project_id',
-                                        $request->subProjectId
-                                    );
-                                }
-
-
-                                $reworkIds =
-                                $reworkQuery
-                                ->pluck('record_id')
-                                ->toArray();
-
-
-
-                                $exportResult =
-                                $query
-                                ->whereIn(
-                                    'id',
-                                    $reworkIds
-                                )
-                                ->get();
-
-
+                                $exportResult = $this->getArReworkExportRecords($query, $decodedProjectName, $subProjectId, $loginEmpId);
                                 $exStatus = "user_rework";
 
 
@@ -3616,6 +3532,16 @@ class ProductionController extends Controller
                     }
                     $completedRecords = $query->where('chart_status','CE_Completed')->whereBetween('updated_at',[$startDate,$endDate])->get();
                 }
+                $openReworkIds = $this->getOpenReworkRecordIds(
+                    $decodedProjectName,
+                    $subProjectId,
+                    $completedRecords->pluck('id')->map(function ($id) {
+                        return (string) $id;
+                    })->values()->toArray()
+                );
+                $completedRecords = $completedRecords->filter(function ($record) use ($openReworkIds) {
+                    return !in_array((string) $record->id, $openReworkIds, true);
+                })->values();
                 foreach($completedRecords as $existingRecord) {
                     $userEditableLookup = [
                         'project_id' => $decodedProjectName,
@@ -3628,6 +3554,9 @@ class ProductionController extends Controller
                         $userEditableLookup['sub_project_id'] = $subProjectId;
                         $existingUserEditable = CompletedUserEditable::where($userEditableLookup)->first();
                     }
+                    if ($existingUserEditable && $this->isOpenReworkStatus($existingUserEditable->rework_status)) {
+                        continue;
+                    }
                     if (!$existingUserEditable) {
                         CompletedUserEditable::create([
                             'emp_id' => $existingRecord->CE_emp_id,
@@ -3636,12 +3565,16 @@ class ProductionController extends Controller
                             'record_id' => (string) $existingRecord->id,
                             'start_time' => Carbon::now()->toDateTimeString(),
                             'record_status' => 'user_rework',
+                            'rework_status' => '0',
+                            'rework_assigned_by_emp_id' => $loginEmpId,
                         ]);
                     } else {
                         $existingUserEditable->update([
                             'emp_id' => $existingRecord->CE_emp_id,
                             'start_time' => Carbon::now()->toDateTimeString(),
                             'record_status' => 'user_rework',
+                            'rework_status' => '0',
+                            'rework_assigned_by_emp_id' => $loginEmpId,
                         ]);
                     }
                     if ($hasArReworkReasonColumn && class_exists($datasModelClass)) {
@@ -4862,65 +4795,8 @@ class ProductionController extends Controller
                 );
                     if($isManager) {
                       if (class_exists($modelClass)) {
-                                            $reworkQuery =
-                        CompletedUserEditable::where(
-                            'project_id',
-                            $decodedProjectName
-                        )
-                        ->where(
-                            'record_status',
-                            'user_rework'
-                        )
-                        ->where(
-                            'start_time',
-                            '>=',
-                            Carbon::now()->subHours(24)
-                        );
-
-
-                        if($subProjectId == NULL)
-                        {
-                            $reworkQuery->whereNull('sub_project_id');
-                        }
-                        else
-                        {
-                            $reworkQuery->where(
-                                'sub_project_id',
-                                $subProjectId
-                            );
-                        }
-
-
-                        if(!$isManager)
-                        {
-                            $reworkQuery->where(
-                                'emp_id',
-                                $loginEmpId
-                            );
-                        }
-
-
-                        $reworkIds =
-                        $reworkQuery->pluck('record_id')->toArray();
-
-
-
-                        $arReworkDetails = $modelClass::whereRaw('1 = 0')->paginate(50);
-
-
-                        if(class_exists($modelClass) && count($reworkIds)>0)
-                        {
-                            $arReworkDetails =
-                            $modelClass::whereIn(
-                                'id',
-                                $reworkIds
-                            )->where('chart_status','CE_Completed')
-                            ->orderBy(
-                                'id',
-                                'DESC'
-                            )
-                            ->paginate(50);
-                        }
+                        $reworkIds = $this->getArReworkRecordIds($decodedProjectName, $subProjectId);
+                        $arReworkDetails = $this->paginateArReworkDetails($modelClass, $reworkIds);
                         $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->whereNotNull('CE_emp_id')->count();
                        $completedCount = $modelClass::where('chart_status','CE_Completed')->whereBetween('updated_at',[$startDate,$endDate])->count();
                        $pendingCount = $modelClass::where('chart_status','CE_Pending')->whereBetween('updated_at',[$startDate,$endDate])->count();
@@ -4936,123 +4812,14 @@ class ProductionController extends Controller
                         })
                         ->count();
                         $arAutoCloseCount = $modelClass::where('chart_status','Auto_Close')->whereBetween('updated_at',[$startDate,$endDate])->count();
-                        $arReworkQuery =
-                            CompletedUserEditable::where(
-                                'project_id',
-                                $decodedProjectName
-                            )
-                            ->where(
-                                'record_status',
-                                'user_rework'
-                            )
-                            ->where(
-                                'start_time',
-                                '>=',
-                                Carbon::now()->subHours(24)
-                            );
-
-
-                            if($subProjectId == NULL)
-                            {
-                                $arReworkQuery->whereNull(
-                                    'sub_project_id'
-                                );
-                            }
-                            else
-                            {
-                                $arReworkQuery->where(
-                                    'sub_project_id',
-                                    $subProjectId
-                                );
-                            }
-
-
-                            if(!$isManager)
-                            {
-                                $arReworkQuery->where(
-                                    'emp_id',
-                                    $loginEmpId
-                                );
-                            }
-
-
-                            $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);
+                        $arReworkCount = $this->getArReworkCount($modelClass, $decodedProjectName, $subProjectId);
                    }
                 } else if ($loginEmpId) {                  
                     if (class_exists($modelClass)) {
 
 
-                        /*
-                        AR Rework records for normal user
-                        Only completed_user_editables table
-                        record_status=user_rework
-                        last 24 hours
-                        own emp_id
-                        */
-
-
-                        $reworkQuery =
-                        CompletedUserEditable::where(
-                            'project_id',
-                            $decodedProjectName
-                        )
-                        ->where(
-                            'record_status',
-                            'user_rework'
-                        )
-                        ->where(
-                            'start_time',
-                            '>=',
-                            Carbon::now()->subHours(24)
-                        )
-                        ->where(
-                            'emp_id',
-                            $loginEmpId
-                        );
-
-
-                        if($subProjectId == NULL)
-                        {
-                            $reworkQuery->whereNull(
-                                'sub_project_id'
-                            );
-
-                        }
-                        else
-                        {
-                            $reworkQuery->where(
-                                'sub_project_id',
-                                $subProjectId
-                            );
-                        }
-
-
-                        $reworkIds =
-                        $reworkQuery
-                        ->pluck('record_id')
-                        ->toArray();
-
-
-
-                        $arReworkDetails = $modelClass::whereRaw('1 = 0')->paginate(50);
-
-
-
-                        if(count($reworkIds) > 0)
-                        {
-
-                            $arReworkDetails =
-                            $modelClass::whereIn(
-                                'id',
-                                $reworkIds
-                            )->where('chart_status','CE_Completed')
-                            ->orderBy(
-                                'id',
-                                'DESC'
-                            )
-                            ->paginate(50);
-
-                        }
+                        $reworkIds = $this->getArReworkRecordIds($decodedProjectName, $subProjectId, $loginEmpId);
+                        $arReworkDetails = $this->paginateArReworkDetails($modelClass, $reworkIds);
     
                       $assignedCount = $modelClass::whereIn('chart_status',['CE_Assigned','CE_Inprocess'])->where('CE_emp_id',$loginEmpId)->count();
                       $completedCount = $modelClass::where('chart_status','CE_Completed')->where('CE_emp_id',$loginEmpId)->whereBetween('updated_at',[$startDate,$endDate])->count();
@@ -5103,7 +4870,10 @@ class ProductionController extends Controller
                  $userEditableRecordIds = $userEditableQuery->pluck('record_id')->map(function ($id) {
                      return (string) $id;
                  })->toArray();
-                return view('productions/arReworkTab',compact('arReworkDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount', 'arReworkCount','arDenialList','arDenialList','arSubStatusList','userEditableRecordIds'));
+                $datasTableName = $table_name . '_datas';
+                $hasArReworkReasonColumn = Schema::hasTable($datasTableName)
+                    && Schema::hasColumn($datasTableName, 'rework_reason');
+                return view('productions/arReworkTab',compact('arReworkDetails','columnsHeader','clientName','subProjectName','modelClass','assignedCount','completedCount','pendingCount','holdCount','reworkCount','duplicateCount','popUpHeader','popupNonEditableFields','popupEditableFields','unAssignedCount','arStatusList','arActionListVal','arNonWorkableCount','rebuttalCount','projectColSearchFields','projectColSearchFieldsType','searchData','arAutoCloseCount', 'arReworkCount','arDenialList','arDenialList','arSubStatusList','userEditableRecordIds','hasArReworkReasonColumn'));
 
            } catch (\Exception $e) {
                log::debug($e->getMessage());
@@ -5113,27 +4883,132 @@ class ProductionController extends Controller
        }
     }
 
+    protected function extractReworkReason($clientData)
+    {
+        if (is_array($clientData) && array_key_exists('rework_reason', $clientData)) {
+            return $clientData['rework_reason'];
+        }
+        if (is_object($clientData) && isset($clientData->rework_reason)) {
+            return $clientData->rework_reason;
+        }
+        return null;
+    }
+
+    protected function putBackArReworkReason($clientData, $reworkReason, $urlDynamicValue)
+    {
+        if (!in_array((string) $urlDynamicValue, ['completed', 'ar_rework'], true)) {
+            return $clientData;
+        }
+        if ($reworkReason === null || trim((string) $reworkReason) === '') {
+            return $clientData;
+        }
+        if (is_array($clientData)) {
+            $clientData['rework_reason'] = $reworkReason;
+        } elseif (is_object($clientData)) {
+            $clientData->rework_reason = $reworkReason;
+        }
+        return $clientData;
+    }
+
+    protected function isOpenReworkStatus($reworkStatus)
+    {
+        return $reworkStatus === 0 || $reworkStatus === '0';
+    }
+
+    protected function applyArReworkEditableFilters($query, $decodedProjectName, $subProjectId = null, $empId = null)
+    {
+        $query->where('project_id', $decodedProjectName)
+            ->where('record_status', 'user_rework')
+            ->whereIn('rework_status', [0, '0']);
+        if ($subProjectId === null) {
+            $query->whereNull('sub_project_id');
+        } else {
+            $query->where('sub_project_id', $subProjectId);
+        }
+        if ($empId !== null && $empId !== '' && $empId !== 'null') {
+            $query->where('emp_id', $empId);
+        }
+        return $query;
+    }
+
+    protected function getArReworkRecordIds($decodedProjectName, $subProjectId = null, $empId = null)
+    {
+        return $this->applyArReworkEditableFilters(
+            CompletedUserEditable::query(),
+            $decodedProjectName,
+            $subProjectId,
+            $empId
+        )->pluck('record_id')->filter()->unique()->values()->toArray();
+    }
+
+    protected function paginateArReworkDetails($modelClass, array $reworkIds)
+    {
+        if (empty($modelClass) || !class_exists($modelClass)) {
+            return new \Illuminate\Pagination\LengthAwarePaginator([], 0, 50);
+        }
+        if (empty($reworkIds)) {
+            return $modelClass::whereRaw('1 = 0')->paginate(50);
+        }
+        return $modelClass::whereIn('id', $reworkIds)
+            ->where('chart_status', 'CE_Completed')
+            ->orderBy('id', 'DESC')
+            ->paginate(50);
+    }
+
+    protected function getArReworkExportRecords($query, $decodedProjectName, $subProjectId = null, $empId = null)
+    {
+        $reworkIds = $this->getArReworkRecordIds($decodedProjectName, $subProjectId, $empId);
+        if (empty($reworkIds)) {
+            return $query->whereRaw('1 = 0')->get();
+        }
+        return $query->whereIn('id', $reworkIds)->where('chart_status', 'CE_Completed')->get();
+    }
+
     protected function getArReworkCount($modelClass, $decodedProjectName, $subProjectId = null, $empId = null)
     {
         if (empty($modelClass) || !class_exists($modelClass)) {
             return 0;
         }
-        $reworkQuery = CompletedUserEditable::where('project_id', $decodedProjectName)
-            ->where('record_status', 'user_rework')
-            ->where('start_time', '>=', Carbon::now()->subHours(24));
-        if ($subProjectId === null) {
-            $reworkQuery->whereNull('sub_project_id');
-        } else {
-            $reworkQuery->where('sub_project_id', $subProjectId);
-        }
-        if ($empId !== null && $empId !== '' && $empId !== 'null') {
-            $reworkQuery->where('emp_id', $empId);
-        }
-        $reworkIds = $reworkQuery->pluck('record_id')->filter()->unique()->values()->toArray();
+        $reworkIds = $this->getArReworkRecordIds($decodedProjectName, $subProjectId, $empId);
         if (empty($reworkIds)) {
             return 0;
         }
         return $modelClass::whereIn('id', $reworkIds)->where('chart_status', 'CE_Completed')->count();
+    }
+
+    protected function getOpenReworkRecordIds($decodedProjectName, $subProjectId, array $recordIds)
+    {
+        if (empty($recordIds)) {
+            return [];
+        }
+        $query = CompletedUserEditable::where('project_id', $decodedProjectName)
+            ->where('record_status', 'user_rework')
+            ->whereIn('record_id', array_map('strval', $recordIds))
+            ->whereIn('rework_status', [0, '0']);
+        if ($subProjectId === null) {
+            $query->whereNull('sub_project_id');
+        } else {
+            $query->where('sub_project_id', $subProjectId);
+        }
+        return $query->pluck('record_id')->map(function ($id) {
+            return (string) $id;
+        })->unique()->values()->toArray();
+    }
+
+    protected function markArReworkAddressed($decodedProjectName, $subProjectId, $recordId)
+    {
+        if ($recordId === null || $recordId === '') {
+            return;
+        }
+        $query = CompletedUserEditable::where('project_id', $decodedProjectName)
+            ->where('record_id', (string) $recordId)
+            ->where('record_status', 'user_rework');
+        if ($subProjectId === null) {
+            $query->whereNull('sub_project_id');
+        } else {
+            $query->where('sub_project_id', $subProjectId);
+        }
+        $query->update(['rework_status' => '1']);
     }
 
     protected function applyAssigneeChange($records, $modelClass, $modelHistory, $assigneeId)

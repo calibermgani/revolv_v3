@@ -600,6 +600,13 @@ use Carbon\Carbon;
                                                         <hr style="margin-left:1rem">
                                                         @endforeach
                                                     @endif
+                                                    @if(!empty($hasArReworkReasonColumn))
+                                                    <div id="rework_reason_wrap" style="display:none;">
+                                                        <label class="col-md-12">Rework Reason</label>
+                                                        <label class="col-md-12 pop-non-edt-val" id="rework_reason_display"></label>
+                                                        <hr style="margin-left:1rem">
+                                                    </div>
+                                                    @endif
                                                 </div>
                                                 <div class="col-md-9" style="border-left: 1px solid #ccc;" data-scroll="true" data-height="400">
                                                     <h6 class="title-h6">AR</h6>&nbsp;&nbsp;
@@ -987,6 +994,13 @@ use Carbon\Carbon;
                                                             <hr style="margin-left:1rem">
                                                             @endforeach
                                                         @endif
+                                                        @if(!empty($hasArReworkReasonColumn))
+                                                        <div id="rework_reason_wrap_view" style="display:none;">
+                                                            <label class="col-md-12">Rework Reason</label>
+                                                            <label class="col-md-12 pop-non-edt-val" id="rework_reason_display_view"></label>
+                                                            <hr style="margin-left:1rem">
+                                                        </div>
+                                                        @endif
                                                     </div>
                                                     <div class="col-md-9" style="border-left: 1px solid #ccc;" data-scroll="true" data-height="400">
                                                         <h6 class="title-h6">AR</h6>&nbsp;&nbsp;
@@ -1324,6 +1338,14 @@ use Carbon\Carbon;
                             }
                     });
                     function handleClientCompletedData(clientData,headers) {
+                        var reworkReason = clientData && clientData.rework_reason != null ? String(clientData.rework_reason).trim() : '';
+                        if ((urlDynamicValue === 'ar_rework' || urlDynamicValue === 'completed') && reworkReason !== '') {
+                            $('#rework_reason_wrap').show();
+                            $('#rework_reason_display').text(reworkReason);
+                        } else {
+                            $('#rework_reason_wrap').hide();
+                            $('#rework_reason_display').text('');
+                        }
                         $.each(headers, function(index, header) {
                             value = clientData[header];
                             $('label[id="' + header + '"]').html("");
@@ -1568,6 +1590,7 @@ use Carbon\Carbon;
                             record_id: record_id,
                             clientName: clientName,
                             subProjectName: subProjectName,
+                            urlDynamicValue: urlDynamicValue
                         },
                         success: function(response) {
                             if (response.success == true) {
@@ -1581,6 +1604,14 @@ use Carbon\Carbon;
                         },
                     });
                     function handleClientData(clientData,headers) {
+                    var reworkReason = clientData && clientData.rework_reason != null ? String(clientData.rework_reason).trim() : '';
+                    if ((urlDynamicValue === 'ar_rework' || urlDynamicValue === 'completed') && reworkReason !== '') {
+                        $('#rework_reason_wrap_view').show();
+                        $('#rework_reason_display_view').text(reworkReason);
+                    } else {
+                        $('#rework_reason_wrap_view').hide();
+                        $('#rework_reason_display_view').text('');
+                    }
                     $.each(headers, function(index, header) {
                         value = clientData[header];
                         $('label[id="' + header + '"]').html("");
@@ -1957,8 +1988,9 @@ use Carbon\Carbon;
                                 /* hide popup immediately */
                                 $('#myModal_status').modal('hide');
                                 $('.modal-backdrop').remove();
-                                $('body').removeClass('modal-open').css('padding-right', '');                           
-                                
+                                $('body').removeClass('modal-open').css('padding-right', '');
+                                updateCountById('#ar_rework_count', -1);
+                                removeArReworkRowAfterSubmit();
                             
                                 /* stop global loader */
                                 window.skipGlobalLoader = true;
@@ -2060,7 +2092,89 @@ use Carbon\Carbon;
                             }
                       });
 
-                });             
+                });
+                function updateCountById(wrapperId, diff) {
+                    var $wrapper = $(wrapperId);
+
+                    if (!$wrapper.length) {
+                        return;
+                    }
+
+                    var $count = $wrapper.find('.count');
+
+                    if (!$count.length) {
+                        return;
+                    }
+
+                    var oldCount = parseInt($.trim($count.text()), 10) || 0;
+                    var newCount = Math.max(0, oldCount + diff);
+
+                    $count.text(newCount);
+
+                    var width;
+                    if (String(newCount).length === 1) {
+                        width = 15;
+                    } else if (String(newCount).length === 2) {
+                        width = String(newCount).length * 9;
+                    } else {
+                        width = String(newCount).length * 8;
+                    }
+
+                    $wrapper.find('.rectangle').css('width', width + 'px');
+                }
+                function removeArReworkRowAfterSubmit() {
+                    if (!currentWorkRow || !currentWorkRow.length) {
+                        return;
+                    }
+
+                    if ($.fn.DataTable.isDataTable('#ar_rework_list')) {
+                        $('#ar_rework_list').DataTable()
+                            .row(currentWorkRow)
+                            .remove()
+                            .draw(false);
+                    } else {
+                        currentWorkRow.remove();
+                    }
+
+                    currentWorkRow = null;
+
+                    var total = parseInt($('#ar_rework_showing_text').attr('data-total'), 10) || 0;
+                    var first = parseInt($('#ar_rework_showing_text').attr('data-first'), 10) || 0;
+                    var perPage = parseInt($('#ar_rework_showing_text').attr('data-per-page'), 10) || 50;
+
+                    total = total - 1;
+
+                    if (total < 0) {
+                        total = 0;
+                    }
+
+                    $('#ar_rework_showing_text').attr('data-total', total);
+
+                    var visibleRows = $('#ar_rework_list tbody tr').filter(function() {
+                        return $(this).find('td').length > 1 && !$(this).find('td').hasClass('dataTables_empty');
+                    }).length;
+
+                    var last = 0;
+
+                    if (visibleRows > 0 && total > 0) {
+                        last = first + visibleRows - 1;
+
+                        if (last > total) {
+                            last = total;
+                        }
+                    } else {
+                        first = 0;
+                        last = 0;
+                    }
+
+                    $('#ar_rework_showing_text').text('Showing ' + first + ' to ' + last + ' of ' + total + ' entries');
+
+                    if (total <= perPage) {
+                        $('#ar_rework_pagination').hide();
+                    } else {
+                        $('#ar_rework_pagination').show();
+                    }
+                }
         })
     </script>
 @endpush

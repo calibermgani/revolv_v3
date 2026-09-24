@@ -11,6 +11,7 @@ class CompletedUserEditable extends Model
     use SoftDeletes;
     protected $table = 'completed_user_editables';
     protected $fillable = [
-        'emp_id', 'project_id', 'sub_project_id', 'record_id', 'start_time', 'end_time', 'work_time', 'record_status'
+        'emp_id', 'project_id', 'sub_project_id', 'record_id', 'start_time', 'end_time', 'work_time', 'record_status',
+        'rework_status', 'rework_assigned_by_emp_id'
     ];
 }

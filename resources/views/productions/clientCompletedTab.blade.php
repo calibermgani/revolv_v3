@@ -10,7 +10,7 @@ use Carbon\Carbon;
                              $empDesignation = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail']['user_hrdetails'] &&  Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']  !=null ? Session::get('loginDetails')['userDetail']['user_hrdetails']['current_designation']: "";
                              $loginEmpId = Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null ? Session::get('loginDetails')['userDetail']['emp_id']:"";
                              $canGrantUserEditable = $loginEmpId == "Admin" || strpos($empDesignation, 'Manager') !== false || strpos($empDesignation, 'VP') !== false || strpos($empDesignation, 'Leader') !== false || strpos($empDesignation, 'Team Lead') !== false || strpos($empDesignation, 'CEO') !== false || strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false;
-                            //  $userEditableRecordIds = isset($userEditableRecordIds) ? $userEditableRecordIds : [];
+                            $openReworkRecordIds = isset($openReworkRecordIds) ? $openReworkRecordIds : [];
                         @endphp
                         <div class="card-header border-0 px-4">
                             <div class="row">
@@ -454,12 +454,12 @@ use Carbon\Carbon;
                                                     $isCurrentArAt = !empty($arAtValue)
                                                         && strtotime($arAtValue) >= strtotime($currentArAtStart)
                                                         && strtotime($arAtValue) <= strtotime($currentArAtEnd);
-                                                    //  $isUserEditable = in_array((string) $data->id, array_map('strval', $userEditableRecordIds), true);                                                                          
+                                                    $isOpenRework = in_array((string) $data->id, array_map('strval', $openReworkRecordIds), true);
                                                     @endphp
                                                     <tr>
                                                     @if ($canGrantUserEditable)
                                                             <td><input type="checkbox" class="checkBoxClass cursor_hand" name='check[]'
-                                                                value="{{ $data->id }}">
+                                                                value="{{ $data->id }}" @if($isOpenRework) disabled @endif>
                                                         </td>
                                                     @endif
                                                     <td>
@@ -682,6 +682,13 @@ use Carbon\Carbon;
                                                         </label>
                                                         <hr style="margin-left:1rem">
                                                         @endforeach
+                                                    @endif
+                                                    @if(!empty($hasArReworkReasonColumn))
+                                                    <div id="rework_reason_wrap" style="display:none;">
+                                                        <label class="col-md-12">Rework Reason</label>
+                                                        <label class="col-md-12 pop-non-edt-val" id="rework_reason_display"></label>
+                                                        <hr style="margin-left:1rem">
+                                                    </div>
                                                     @endif
                                                 </div>
                                                 <div class="col-md-9" style="border-left: 1px solid #ccc;" data-scroll="true" data-height="400">
@@ -1117,6 +1124,13 @@ use Carbon\Carbon;
                                                             <hr style="margin-left:1rem">
                                                             @endforeach
                                                         @endif
+                                                        @if(!empty($hasArReworkReasonColumn))
+                                                        <div id="rework_reason_wrap_view" style="display:none;">
+                                                            <label class="col-md-12">Rework Reason</label>
+                                                            <label class="col-md-12 pop-non-edt-val" id="rework_reason_display_view"></label>
+                                                            <hr style="margin-left:1rem">
+                                                        </div>
+                                                        @endif
                                                     </div>
                                                     <div class="col-md-9" style="border-left: 1px solid #ccc;" data-scroll="true" data-height="400">
                                                         <h6 class="title-h6">AR</h6>&nbsp;&nbsp;
@@ -1477,6 +1491,14 @@ use Carbon\Carbon;
                     });
                     function handleClientCompletedData(clientData,headers) {
                         var $modal = $('#myModal_status');
+                        var reworkReason = clientData && clientData.rework_reason != null ? String(clientData.rework_reason).trim() : '';
+                        if ((urlDynamicValue === 'ar_rework' || urlDynamicValue === 'completed') && reworkReason !== '') {
+                            $('#rework_reason_wrap').show();
+                            $('#rework_reason_display').text(reworkReason);
+                        } else {
+                            $('#rework_reason_wrap').hide();
+                            $('#rework_reason_display').text('');
+                        }
                         $.each(headers, function(index, header) {
                             value = clientData[header];
                             $modal.find('label[id="' + header + '"]').html("");
@@ -1723,7 +1745,7 @@ use Carbon\Carbon;
                             record_id: record_id,
                             clientName: clientName,
                             subProjectName: subProjectName,
-                            // urlDynamicValue: urlDynamicValue
+                            urlDynamicValue: urlDynamicValue
                         },
                         success: function(response) {
                             if (response.success == true) {
@@ -1737,6 +1759,14 @@ use Carbon\Carbon;
                         },
                     });
                     function handleClientData(clientData,headers) {
+                    var reworkReason = clientData && clientData.rework_reason != null ? String(clientData.rework_reason).trim() : '';
+                    if ((urlDynamicValue === 'ar_rework' || urlDynamicValue === 'completed') && reworkReason !== '') {
+                        $('#rework_reason_wrap_view').show();
+                        $('#rework_reason_display_view').text(reworkReason);
+                    } else {
+                        $('#rework_reason_wrap_view').hide();
+                        $('#rework_reason_display_view').text('');
+                    }
                     $.each(headers, function(index, header) {
                         value = clientData[header];
                         $('label[id="' + header + '"]').html("");
@@ -2345,11 +2375,11 @@ use Carbon\Carbon;
                 $("#ckbCheckAll").click(function() {
                     var isChecked = $(this).prop('checked');
                     
-                    $(".checkBoxClass").prop('checked', isChecked);
+                    $(".checkBoxClass:not(:disabled)").prop('checked', isChecked);
                     var completedTable = $('#client_completed_list').DataTable();
                     for (var i = 0; i < completedTable.page.info().pages; i++) {
                         completedTable.page(i).draw(false); 
-                        $(".checkBoxClass").prop('checked', isChecked); 
+                        $(".checkBoxClass:not(:disabled)").prop('checked', isChecked); 
                     }
                     if ($(this).prop('checked') == true && $('.checkBoxClass:checked').length > 0) {
                         $('#user_rework_button').prop('disabled', false);
@@ -2375,8 +2405,9 @@ use Carbon\Carbon;
                
             });
             function handleCheckboxChange() {
-                var anyCheckboxChecked = $('.checkBoxClass:checked').length > 0;
-                var allCheckboxesChecked = $('.checkBoxClass:checked').length === $('.checkBoxClass')
+                var enabledBoxes = $('.checkBoxClass:not(:disabled)');
+                var anyCheckboxChecked = enabledBoxes.filter(':checked').length > 0;
+                var allCheckboxesChecked = enabledBoxes.length > 0 && enabledBoxes.filter(':checked').length === enabledBoxes
                     .length;
                 if (allCheckboxesChecked) {
                     $("#ckbCheckAll").prop('checked', $(this).prop('checked'));
@@ -2506,8 +2537,15 @@ use Carbon\Carbon;
                                 if (response.success == true) {
                                     js_notification('success',
                                         'AR Rework Updated Successfully');
+                                    if (response.recordIds && response.recordIds.length) {
+                                        response.recordIds.forEach(function(id) {
+                                            $('#client_completed_list').find('input.checkBoxClass[value="' + id + '"]')
+                                                .prop('checked', false)
+                                                .prop('disabled', true);
+                                        });
+                                    }
                                     resetUserEditableSelection();
-                                     updateCountById('#ar_rework_count', checkedRowValues.length);
+                                     updateCountById('#ar_rework_count', (response.recordIds && response.recordIds.length) ? response.recordIds.length : checkedRowValues.length);
                                 } else {
                                     js_notification('error', 'Something went wrong');
                                     // $('#user_rework_dropdown').val('').trigger('change.select2');
