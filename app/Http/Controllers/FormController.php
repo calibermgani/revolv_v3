@@ -118,7 +118,10 @@ class FormController extends Controller
             'AR Denial Codes',
             'AR SubStatus Codes',
             'Production Type',
-            'Rework Reason'
+            'Rework Reason',
+            'Need To Call Flag',
+            'Need To Call At',
+            'Need To Call Sub Project Id',
         ];
 
         try {
@@ -149,6 +152,7 @@ class FormController extends Controller
             $storePayload = [
                 'project_id' => $request->project_id,
                 'sub_project_id' => $request->sub_project_id,
+                // 'source_sub_project_id'=>$request->source_sub_project_id,
                 'project_type' => $first->project_type,
                 'claim_type' => $first->claim_type,
                 'label_name' => $sourceConfigs->pluck('label_name')->all(),
@@ -211,7 +215,10 @@ class FormController extends Controller
                     "Production Type",
                     // "Question Json",
                     //  "Scenario"
-                    "Rework Reason"
+                    "Rework Reason",
+                    "Need To Call Flag",
+                    "Need To Call At",
+                    "Need To Call Sub Project Id",
                 ];
                 $additionalInputTypeArray = [
                     "text",
@@ -219,7 +226,10 @@ class FormController extends Controller
                      "select",
                     //  "longtext",
                     //  "text"
-                    "longtext"
+                    "longtext",
+                    "text",
+                    "datetime",
+                    "text",
                 ];
                 $additionalOptionsArray = [
                     null,
@@ -227,7 +237,10 @@ class FormController extends Controller
                     "Calling,Non-Calling,Webportal",
                     // null,
                     // null
-                    null
+                    null,
+                    null,
+                    null,
+                    null,
                 ];
                  $additionalUserTypeArray = [
                     "3",
@@ -235,7 +248,10 @@ class FormController extends Controller
                      "3",
                     //  "3",
                     //  "3"
-                    "3"
+                    "3",
+                    "3",
+                    "3",
+                    "3",
                 ];
                 $additionalInputTypeEditableArray = [
                     "1",
@@ -243,7 +259,10 @@ class FormController extends Controller
                     "1",
                     // "3",
                     // "3"
-                    "3"
+                    "3",
+                    "3",
+                    "3",
+                    "3",
 
                 ];
                
@@ -254,7 +273,10 @@ class FormController extends Controller
                     "editable",
                     // "non_editable",
                     // "non_editable"
-                    "non_editable"
+                    "non_editable",
+                    "non_editable",
+                    "non_editable",
+                    "non_editable",
                 ];
                 $additionalFieldType1Array = [
                     "single",
@@ -262,7 +284,10 @@ class FormController extends Controller
                     "single",
                     // "single",
                     // "single"
-                    "single"
+                    "single",
+                    "single",
+                    "single",
+                    "single",
                 ];
                 $additionalFieldType2Array = [
                     "mandatory",
@@ -270,7 +295,10 @@ class FormController extends Controller
                     "mandatory",
                     // "non-mandatory",
                     // "non-mandatory"
-                    "non-mandatory"
+                    "non-mandatory",
+                    "non-mandatory",
+                    "non-mandatory",
+                    "non-mandatory",
                 ];
                 $additionalFieldType3Array = [
                     "popup_non_visible",
@@ -278,7 +306,10 @@ class FormController extends Controller
                     "popup_visible",
                     // "popup_non_visible",
                     // "popup_non_visible"
-                    "popup_non_visible"
+                    "popup_non_visible",
+                    "popup_non_visible",
+                    "popup_non_visible",
+                    "popup_non_visible",
                 ];
                 $data['label_name'] = array_merge($data['label_name'], $additionalLabelArray);
                 $data['input_type'] = array_merge($data['input_type'], $additionalInputTypeArray);
@@ -297,6 +328,7 @@ class FormController extends Controller
                 for($i=0;$i<count($data['label_name']);$i++) {
                     $requiredData['project_id'] = $data['project_id'];
                     $requiredData['sub_project_id'] = $data['sub_project_id'] != null ? $data['sub_project_id'] : NULL;
+                    // $requiredData['source_sub_project_id'] = $data['source_sub_project_id'] != null ? $data['source_sub_project_id'] : NULL;
                     $requiredData['label_name'] = $data['label_name'][$i];
                     $requiredData['input_type'] = $data['input_type'][$i];
                     $requiredData['options_name'] = $data['options_name'][$i];
@@ -757,6 +789,9 @@ class FormController extends Controller
                         // "Question Json",
                         // "Scenario"
                         "Rework Reason",
+                        "Need To Call Flag",
+                        "Need To Call At",
+                        "Need To Call Sub Project Id",
                     ];
                     $additionalInputTypeArray = [
                         "text",
@@ -765,6 +800,9 @@ class FormController extends Controller
                         // "longtext",
                         // "text"
                         "longtext",
+                        "text",
+                        "datetime",
+                        "text",
                     ];
                     $additionalOptionsArray = [
                         null,
@@ -772,7 +810,10 @@ class FormController extends Controller
                         "Calling,Non-Calling,Webportal",
                         // null,
                         // null
-                        null
+                        null,
+                        null,
+                        null,
+                        null,
                     ];
                     $additionalUserTypeArray = [
                         "3",
@@ -780,7 +821,10 @@ class FormController extends Controller
                         "3",
                         // "3",
                         // "3"
-                        "3"
+                        "3",
+                        "3",
+                        "3",
+                        "3",
                     ];
                     $additionalInputTypeEditableArray = [
                         "1",
@@ -788,7 +832,10 @@ class FormController extends Controller
                         "1",
                         // "3",
                         // "3"
-                        "3"
+                        "3",
+                        "3",
+                        "3",
+                        "3",
 
                     ];
                 
@@ -799,7 +846,10 @@ class FormController extends Controller
                         "editable",
                         // "non_editable",
                         // "non_editable"
-                        "non_editable"
+                        "non_editable",
+                        "non_editable",
+                        "non_editable",
+                        "non_editable",
                     ];
                     $additionalFieldType1Array = [
                         "single",
@@ -807,7 +857,10 @@ class FormController extends Controller
                         "single",
                         // "single",
                         // "single"
-                        "single"
+                        "single",
+                        "single",
+                        "single",
+                        "single",
                     ];
                     $additionalFieldType2Array = [
                         "mandatory",
@@ -815,7 +868,10 @@ class FormController extends Controller
                         "mandatory",
                         // "non-mandatory",
                         // "non-mandatory"
-                        "non-mandatory"
+                        "non-mandatory",
+                        "non-mandatory",
+                        "non-mandatory",
+                        "non-mandatory",
                     ];
                     $additionalFieldType3Array = [
                         "popup_non_visible",
@@ -823,7 +879,10 @@ class FormController extends Controller
                         "popup_visible",
                         // "popup_non_visible",
                         // "popup_non_visible"
-                        "popup_non_visible"
+                        "popup_non_visible",
+                        "popup_non_visible",
+                        "popup_non_visible",
+                        "popup_non_visible",
                     ];
                 $data['label_name'] = array_merge($data['label_name'], $additionalLabelArray);
                 $data['input_type'] = array_merge($data['input_type_val'], $additionalInputTypeArray);
