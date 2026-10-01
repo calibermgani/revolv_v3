@@ -414,7 +414,7 @@ use Carbon\Carbon;
                                                         'CE_status_code',
                                                         'CE_sub_status_code',
                                                         'CE_followup_date',
-                                                        'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                                                        'cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                                                         'created_at',
                                                         'updated_at',
                                                         'deleted_at',
@@ -976,131 +976,30 @@ use Carbon\Carbon;
                                       
                                      <hr>
                                      <h6 class="title-h6">QA</h6>&nbsp;&nbsp;
-                                            @if (count($popupQAEditableFields) > 0)
+                                            @php
+                                                $arViewQaFields = collect($popupQAEditableFields)->filter(function ($field) {
+                                                    return in_array((int) $field->user_type, [2, 3]);
+                                                })->values();
+                                            @endphp
+                                            @if ($arViewQaFields->count() > 0)
                                                 @php $count = 0; @endphp
-                                                @foreach ($popupQAEditableFields as $key => $data)
-                                                        @php
-                                                            $labelName = $data->label_name;
-                                                            $columnName = Str::lower(str_replace([' ', '/'], ['_', '_else_'], $data->label_name));
-                                                            $inputType = $data->input_type;
-                                                            $options = $data->options_name != null ? explode(',', $data->options_name) : null;
-                                                            $associativeOptions = [];
-                                                            if ($options !== null) {
-                                                                foreach ($options as $option) {
-                                                                    $associativeOptions[$option] = $option;
-                                                                }
-                                                            }
-                                                        @endphp
-                                                        @if ($count % 2 == 0)
-                                                            <div class="row" id={{ $columnName }}>
-                                                        @endif
-                                                        <div class="col-md-6">
-                                                            <div class="form-group row row_mar_bm">
-                                                                <label class="col-md-12 {{ $data->field_type_2 == 'mandatory' ? 'required' : '' }}">
-                                                                    {{ $labelName }}
-                                                                </label>
-                                                                <div class="col-md-10">
-                                                                    @if ($options == null)
-                                                                        @if ($inputType != 'date_range')
-                                                                            {!! Form::$inputType($columnName . '[]', null, [
-                                                                                'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val',
-                                                                                'autocomplete' => 'none',
-                                                                                'style' => 'cursor:pointer',
-                                                                                'rows' => 3,
-                                                                                'id' => $columnName,
-                                                                                $data->field_type_2 == 'mandatory' ? 'required' : '',
-                                                                            ]) !!}
-                                                                        @else
-                                                                            {!! Form::text($columnName . '[]', null, [
-                                                                                'class' => 'form-control date_range daterange_' . $columnName . ' white-smoke pop-non-edt-val',
-                                                                                'autocomplete' => 'none',
-                                                                                'style' => 'cursor:pointer',
-                                                                                'id' => 'date_range',
-                                                                                $data->field_type_2 == 'mandatory' ? 'required' : '',
-                                                                            ]) !!}
-                                                                        @endif
-                                                                    @else
-                                                                        @if ($inputType == 'select')
-                                                                            {!! Form::$inputType($columnName . '[]', ['' => '-- Select --'] + $associativeOptions, null, [
-                                                                                'class' => 'form-control ' . $columnName . ' white-smoke pop-non-edt-val',
-                                                                                'autocomplete' => 'none',
-                                                                                'style' => 'cursor:pointer',
-                                                                                'id' => $columnName,
-                                                                                $data->field_type_2 == 'mandatory' ? 'required' : '',
-                                                                            ]) !!}
-                                                                        @elseif ($inputType == 'checkbox')
-                                                                            <p id="check_p1" style="display:none;color:red; margin-left: 3px;">
-                                                                                Checkbox
-                                                                                is mandatory</p>
-                                                                            <div class="form-group row">
-                                                                                @for ($i = 0; $i < count($options); $i++)
-                                                                                    <div class="col-md-6">
-                                                                                        <div class="checkbox-inline mt-2">
-                                                                                            <label class="checkbox pop-non-edt-val"
-                                                                                                style="word-break: break-all;">
-                                                                                                {!! Form::$inputType($columnName . '[]', $options[$i], false, [
-                                                                                                    'class' => $columnName,
-                                                                                                    'id' => $columnName,
-                                                                                                ]) !!}{{ $options[$i] }}
-                                                                                                <span></span>
-                                                                                            </label>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                @endfor
-                                                                            </div>
-                                                                        @elseif ($inputType == 'radio')
-                                                                            <p id="radio_p1" style="display: none; color: red; margin-left: 3px;">
-                                                                                Radio
-                                                                                is mandatory</p>
-                                                                            <div class="form-group row">
-                                                                                @for ($i = 0; $i < count($options); $i++)
-                                                                                    <div class="col-md-6">
-                                                                                        <div class="radio-inline mt-2">
-                                                                                            <label class="radio pop-non-edt-val"
-                                                                                                style="word-break: break-all;">
-                                                                                                {!! Form::$inputType($columnName, $options[$i], false, [
-                                                                                                    'class' => $columnName,
-                                                                                                ]) !!}{{ $options[$i] }}
-                                                                                                <span></span>
-                                                                                            </label>
-                                                                                        </div>
-
-                                                                                    </div>
-                                                                                @endfor
-                                                                            </div>
-                                                                        @endif
-                                                                    @endif
-
-                                                                </div>
-                                                                <div class="col-md-1 col-form-label pt-0 pb-4" style="margin-left: -1.3rem;">
-                                                                    <input type="hidden"
-                                                                        value="{{ $associativeOptions != null ? json_encode($associativeOptions) : null }}"
-                                                                        class="add_options">
-
-                                                                    @if ($data->field_type_1 == 'multiple')
-                                                                        <i class="fa fa-plus add_more" id="add_more_{{ $columnName }}"
-                                                                            style="{{ $data->field_type_1 == 'multiple' ? 'visibility: visible;' : 'visibility: hidden;' }}"></i>
-                                                                        <input type="hidden"
-                                                                            value="{{ $data->field_type_1 == 'multiple' ? $labelName : '' }}"
-                                                                            class="add_labelName">
-                                                                        <input type="hidden"
-                                                                            value="{{ $data->field_type_1 == 'multiple' ? $columnName : '' }}"
-                                                                            class="add_columnName">
-                                                                        <input type="hidden"
-                                                                            value="{{ $data->field_type_1 == 'multiple' ? $inputType : '' }}"
-                                                                            class="add_inputtype">
-                                                                        <input type="hidden"
-                                                                            value="{{ $data->field_type_1 == 'multiple' ? ($data->field_type_2 == 'mandatory' ? 'required' : '') : '' }}"
-                                                                            class="add_mandatory">
-                                                                    @endif
-                                                                </div>
-                                                                <div></div>
-                                                            </div>
+                                                @foreach ($arViewQaFields as $data)
+                                                    @php
+                                                        $columnName = Str::lower(str_replace([' ', '/'], ['_', '_else_'], $data->label_name));
+                                                    @endphp
+                                                    @if ($count % 2 == 0)
+                                                        <div class="row">
+                                                    @endif
+                                                    <div class="col-md-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-md-12">{{ $data->label_name }}</label>
+                                                            <label class="col-md-12 pop-non-edt-val" id="{{ $columnName }}"></label>
                                                         </div>
-                                                            @php $count++; @endphp
-                                                            @if ($count % 2 == 0 || $loop->last)
-                                                            </div>
-                                                            @endif
+                                                    </div>
+                                                    @php $count++; @endphp
+                                                    @if ($count % 2 == 0 || $loop->last)
+                                                        </div>
+                                                    @endif
                                                 @endforeach
                                             @endif
                                             <div class="row mt-4">
@@ -1408,6 +1307,32 @@ use Carbon\Carbon;
                                     </div>
                                     <hr>
                                     <h6 class="title-h6">QA</h6>&nbsp;&nbsp;
+                                    @php
+                                        $arViewQaFields = collect($popupQAEditableFields)->filter(function ($field) {
+                                            return in_array((int) $field->user_type, [2, 3]);
+                                        })->values();
+                                    @endphp
+                                    @if ($arViewQaFields->count() > 0)
+                                        @php $count = 0; @endphp
+                                        @foreach ($arViewQaFields as $data)
+                                            @php
+                                                $columnName = Str::lower(str_replace([' ', '/'], ['_', '_else_'], $data->label_name));
+                                            @endphp
+                                            @if ($count % 2 == 0)
+                                                <div class="row">
+                                            @endif
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-md-12">{{ $data->label_name }}</label>
+                                                    <label class="col-md-12 pop-non-edt-val" id="{{ $columnName }}"></label>
+                                                </div>
+                                            </div>
+                                            @php $count++; @endphp
+                                            @if ($count % 2 == 0 || $loop->last)
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    @endif
                                      <div class="row mt-4">
                                         <div class="col-md-6">
                                             <div class="form-group row">

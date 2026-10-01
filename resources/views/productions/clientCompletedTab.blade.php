@@ -480,7 +480,7 @@ use Carbon\Carbon;
                                                         @foreach ($arrayAttrributes as $columnName => $columnValue)
                                                             @php
                                                                 $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date', 
-                                                                'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                                                                'cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                                                                 'created_at', 'updated_at', 'deleted_at'];
                                                                 if(isset($arrayAttrributes['dos'])) {          
                                                                     $dosDate = Carbon::parse($arrayAttrributes['dos']);

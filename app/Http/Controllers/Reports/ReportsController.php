@@ -81,14 +81,14 @@ class ReportsController extends Controller
                     if ($decodedsubProjectName == 'project' && count($subProject) == 1) {
                         $column_names = DB::select("DESCRIBE $table_name");
                         $columns = array_column($column_names, 'Field');
-                            $columnsToExclude = ['QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends', 'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers', 'CE_status_code', 'CE_sub_status_code', 'CE_followup_date', 'updated_at', 'created_at', 'deleted_at','cpt_trends','icd_trends','modifiers'];
+                            $columnsToExclude = ['QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends', 'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers', 'CE_status_code', 'CE_sub_status_code', 'CE_followup_date', 'updated_at', 'created_at', 'deleted_at','cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers'];
                             $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                             return !in_array($column, $columnsToExclude);
                         });
                     } else if ($decodedsubProjectName !== 'project') {
                         $column_names = DB::select("DESCRIBE $table_name");
                         $columns = array_column($column_names, 'Field');
-                        $columnsToExclude = ['QA_required_sampling','QA_followup_date', 'annex_coder_trends', 'annex_qa_trends','qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers', 'CE_status_code','CE_sub_status_code','CE_followup_date','updated_at','created_at', 'deleted_at','cpt_trends','icd_trends','modifiers'];
+                        $columnsToExclude = ['QA_required_sampling','QA_followup_date', 'annex_coder_trends', 'annex_qa_trends','qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers', 'CE_status_code','CE_sub_status_code','CE_followup_date','updated_at','created_at', 'deleted_at','cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers'];
                         $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                             return !in_array($column, $columnsToExclude);
                         });
@@ -1415,7 +1415,7 @@ class ReportsController extends Controller
                         $column_names = DB::select("DESCRIBE $table_name");
                         $columns = array_column($column_names, 'Field');
                         $columnsToExclude = ['invoke_date','CE_emp_id','QA_emp_id','chart_status','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','QA_status_code','QA_sub_status_code','qa_classification',
-                       'qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date','updated_at','created_at', 'deleted_at','cpt_trends','icd_trends','modifiers','annex_coder_trends', 'annex_qa_trends', 'qa_cpt_trends', 'qa_icd_trends',
+                       'qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date','updated_at','created_at', 'deleted_at','cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends', 'annex_qa_trends', 'qa_cpt_trends', 'qa_icd_trends',
                        'QA_comments_count','coder_work_date','qa_work_date','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','ar_status_code','ar_action_code','ar_manager_rebuttal_status','ar_manager_rebuttal_comments',
                        'qa_manager_rebuttal_status','ar_substatus_codes','ar_denial_codes','qa_manager_rebuttal_comments','ar_notes','ar_at','qa_at','qa_error_comments','activity','sub_activity','qa_rework_comments','notes'];
                         $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
@@ -1425,7 +1425,7 @@ class ReportsController extends Controller
                         $column_names = DB::select("DESCRIBE $table_name");
                         $columns = array_column($column_names, 'Field');
                         $columnsToExclude = ['invoke_date','CE_emp_id','QA_emp_id','chart_status','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','QA_status_code','QA_sub_status_code','qa_classification',
-                             'qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date','updated_at','created_at', 'deleted_at','cpt_trends','icd_trends','modifiers','annex_coder_trends', 'annex_qa_trends', 'qa_cpt_trends', 'qa_icd_trends',
+                             'qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date','updated_at','created_at', 'deleted_at','cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends', 'annex_qa_trends', 'qa_cpt_trends', 'qa_icd_trends',
                              'QA_comments_count','coder_work_date','qa_work_date','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','ar_status_code','ar_action_code','ar_manager_rebuttal_status','ar_manager_rebuttal_comments',
                              'qa_manager_rebuttal_status','ar_substatus_codes','ar_denial_codes','qa_manager_rebuttal_comments','ar_notes','ar_at','qa_at','qa_error_comments','activity','sub_activity','qa_rework_comments','notes'];
                         $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
@@ -2004,7 +2004,7 @@ class ReportsController extends Controller
                         'QA_required_sampling','QA_followup_date','annex_coder_trends','annex_qa_trends',
                         'qa_cpt_trends','qa_icd_trends','qa_modifiers',
                         'CE_status_code','CE_sub_status_code','CE_followup_date',
-                        'updated_at','created_at','deleted_at','cpt_trends','icd_trends','modifiers','parent_id','id'
+                        'updated_at','created_at','deleted_at','cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','parent_id','id'
                     ];
 
                     $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
@@ -2109,7 +2109,7 @@ class ReportsController extends Controller
                         'QA_required_sampling','QA_followup_date','annex_coder_trends','annex_qa_trends',
                         'qa_cpt_trends','qa_icd_trends','qa_modifiers',
                         'CE_status_code','CE_sub_status_code','CE_followup_date',
-                        'updated_at','created_at','deleted_at','cpt_trends','icd_trends','modifiers','parent_id','id'
+                        'updated_at','created_at','deleted_at','cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','parent_id','id'
                     ];
 
                     $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
@@ -2210,7 +2210,7 @@ class ReportsController extends Controller
                             'QA_required_sampling','QA_followup_date','annex_coder_trends','annex_qa_trends',
                             'qa_cpt_trends','qa_icd_trends','qa_modifiers',
                             'CE_status_code','CE_sub_status_code','CE_followup_date',
-                            'updated_at','created_at','deleted_at','cpt_trends','icd_trends','modifiers','parent_id','id'
+                            'updated_at','created_at','deleted_at','cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','parent_id','id'
                         ];
 
                         $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
@@ -2317,7 +2317,7 @@ class ReportsController extends Controller
                         'QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends',
                         'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers',
                         'CE_status_code', 'CE_sub_status_code', 'CE_followup_date',
-                        'updated_at', 'created_at', 'deleted_at', 'cpt_trends', 'icd_trends',
+                        'updated_at', 'created_at', 'deleted_at', 'cpt_trends', 'need_to_call_flag', 'need_to_call_at', 'need_to_call_sub_project_id', 'icd_trends',
                         'modifiers', 'parent_id', 'id'
                     ];
 
@@ -2750,7 +2750,7 @@ class ReportsController extends Controller
                     'QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends',
                     'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers',
                     'CE_status_code', 'CE_sub_status_code', 'CE_followup_date',
-                    'updated_at', 'created_at', 'deleted_at', 'cpt_trends', 'icd_trends', 'modifiers'
+                    'updated_at', 'created_at', 'deleted_at', 'cpt_trends', 'need_to_call_flag', 'need_to_call_at', 'need_to_call_sub_project_id', 'icd_trends', 'modifiers'
                 ];
 
                 $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
@@ -2890,7 +2890,7 @@ public function exportBulkReport(Request $request)
         'QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends',
         'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers',
         'CE_status_code', 'CE_sub_status_code', 'CE_followup_date',
-        'updated_at', 'created_at', 'deleted_at', 'cpt_trends', 'icd_trends', 'modifiers'
+        'updated_at', 'created_at', 'deleted_at', 'cpt_trends', 'need_to_call_flag', 'need_to_call_at', 'need_to_call_sub_project_id', 'icd_trends', 'modifiers'
     ];
 
     $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
@@ -3080,7 +3080,7 @@ public function getBulkColumnsCSV(Request $request)
             'QA_required_sampling', 'QA_followup_date', 'annex_coder_trends', 'annex_qa_trends',
             'qa_cpt_trends', 'qa_icd_trends', 'qa_modifiers',
             'CE_status_code', 'CE_sub_status_code', 'CE_followup_date',
-            'updated_at', 'created_at', 'deleted_at', 'cpt_trends', 'icd_trends', 'modifiers', 'id'
+            'updated_at', 'created_at', 'deleted_at', 'cpt_trends', 'need_to_call_flag', 'need_to_call_at', 'need_to_call_sub_project_id', 'icd_trends', 'modifiers', 'id'
         ];
 
         $columnsHeader = array_values(array_filter($allColumns, fn($col) => !in_array($col, $excludeCols)));
