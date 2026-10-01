@@ -3391,15 +3391,13 @@ function showSubmitPopup() {
                         js_notification('success', response.message || 'Data updated successfully');
                         console.log(response.message);
         
-                        $('#myModal_status').modal('hide');
-                       removeAssignedRowAfterSubmit();
+                        finishAssignedSave();
         
                     return false;
                     }
                         js_notification('error', response.message || 'Something went wrong');
                         if (response.message && response.message.indexOf('Claim saved, but it was not copied') === 0) {
-                            $('#myModal_status').modal('hide');
-                            removeAssignedRowAfterSubmit();
+                            finishAssignedSave();
                         }
                     
                 },
@@ -3450,6 +3448,43 @@ function showSubmitPopup() {
             });
         }
  
+        function finishAssignedSave() {
+            var savedStatus = $('#myModal_status').find('select[name="chart_status"]').val();
+            $('#myModal_status').modal('hide');
+
+            if (savedStatus === 'CE_Inprocess' || savedStatus === 'CE_Assigned') {
+                updateAssignedRowStatus(savedStatus);
+                return;
+            }
+
+            removeAssignedRowAfterSubmit();
+        }
+
+        function updateAssignedRowStatus(savedStatus) {
+            if (!currentAssignedRow || !currentAssignedRow.length) {
+                return;
+            }
+
+            var headerIndex = -1;
+            $('#client_assigned_list thead th').each(function(index) {
+                if ($(this).find('input[type="hidden"]').val() === 'chart_status') {
+                    headerIndex = index;
+                    return false;
+                }
+            });
+
+            if (headerIndex >= 0) {
+                var label = String(savedStatus).replace('CE_', '');
+                if ($.fn.DataTable.isDataTable('#client_assigned_list')) {
+                    $('#client_assigned_list').DataTable().cell(currentAssignedRow, headerIndex).data(label);
+                } else {
+                    currentAssignedRow.find('td').eq(headerIndex).text(label);
+                }
+            }
+
+            currentAssignedRow = null;
+        }
+
         function removeAssignedRowAfterSubmit() {
             if (!currentAssignedRow || !currentAssignedRow.length) {
                 return;

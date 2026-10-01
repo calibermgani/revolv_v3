@@ -4655,8 +4655,7 @@ use Carbon\Carbon;
 
                     if (response.status === 'success' || response.success === true) {
                         js_notification('success', response.message || 'Data updated successfully');
-                        $('#myModal_status').modal('hide');
-                        removeAssignedRowAfterSubmit();
+                        finishAssignedSave();
                         return false;
                     }
                     js_notification('error', response.message || 'Something went wrong');
@@ -4700,6 +4699,43 @@ use Carbon\Carbon;
                     }
                 }
             });
+        }
+
+        function finishAssignedSave() {
+            var savedStatus = $('#myModal_status').find('select[name="chart_status"]').val();
+            $('#myModal_status').modal('hide');
+
+            if (savedStatus === 'QA_Inprocess' || savedStatus === 'CE_Completed') {
+                updateAssignedRowStatus(savedStatus);
+                return;
+            }
+
+            removeAssignedRowAfterSubmit();
+        }
+
+        function updateAssignedRowStatus(savedStatus) {
+            if (!currentAssignedRow || !currentAssignedRow.length) {
+                return;
+            }
+
+            var headerIndex = -1;
+            $('#client_assigned_list thead th').each(function(index) {
+                if ($(this).find('input[type="hidden"]').val() === 'chart_status') {
+                    headerIndex = index;
+                    return false;
+                }
+            });
+
+            if (headerIndex >= 0) {
+                var label = savedStatus === 'QA_Inprocess' ? 'In process' : 'Sampling';
+                if ($.fn.DataTable.isDataTable('#client_assigned_list')) {
+                    $('#client_assigned_list').DataTable().cell(currentAssignedRow, headerIndex).data(label);
+                } else {
+                    currentAssignedRow.find('td').eq(headerIndex).text(label);
+                }
+            }
+
+            currentAssignedRow = null;
         }
 
         function removeAssignedRowAfterSubmit() {
