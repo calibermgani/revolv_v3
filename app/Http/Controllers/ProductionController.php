@@ -233,7 +233,7 @@ class ProductionController extends Controller
                     $column_names = DB::select("DESCRIBE $table_name");
                     $columns = array_column($column_names, 'Field');
                     $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-                    'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers','ar_status_code','ar_action_code',
+                    'cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers','ar_status_code','ar_action_code',
                     'updated_at','created_at', 'deleted_at'];
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
@@ -466,7 +466,7 @@ class ProductionController extends Controller
                     $column_names = DB::select("DESCRIBE $table_name");
                     $columns = array_column($column_names, 'Field');
                     $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-                    'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers','ar_status_code','ar_action_code',
+                    'cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers','ar_status_code','ar_action_code',
                     'updated_at','created_at', 'deleted_at'];
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
@@ -665,7 +665,7 @@ class ProductionController extends Controller
                     $column_names = DB::select("DESCRIBE $table_name");
                     $columns = array_column($column_names, 'Field');
                     $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-                    'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                    'cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                     'updated_at','created_at', 'deleted_at'];
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
@@ -811,7 +811,7 @@ class ProductionController extends Controller
                     $column_names = DB::select("DESCRIBE $table_name");
                     $columns = array_column($column_names, 'Field');
                     $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-                    'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                    'cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                     'updated_at','created_at', 'deleted_at'];
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
@@ -980,7 +980,7 @@ class ProductionController extends Controller
                     $column_names = DB::select("DESCRIBE $table_name");
                     $columns = array_column($column_names, 'Field');
                     $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-                    'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                    'cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                     'updated_at','created_at', 'deleted_at'];
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
@@ -1116,7 +1116,7 @@ class ProductionController extends Controller
                     $column_names = DB::select("DESCRIBE $table_name");
                     $columns = array_column($column_names, 'Field');
                     $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_rework_comments','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-                    'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                    'cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                     'updated_at','created_at', 'deleted_at'];
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
@@ -1221,9 +1221,9 @@ class ProductionController extends Controller
                  ->where('project_id',$decodedProjectName)->where('sub_project_id',$subProjectId)
                  ->select('project_id', 'sub_project_id')
                  ->first();
-                $popupNonEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->where('field_type', 'non_editable')->where('field_type_3', 'popup_visible')->get();
+                $popupNonEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2,10])->where('field_type', 'non_editable')->where('field_type_3', 'popup_visible')->get();
                 $popupEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->whereIn('input_type_editable',[3,1])->whereIn('user_type',[3,2])->where('field_type', 'editable')->where('field_type_3', 'popup_visible')->get();
-                $popupQAEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('user_type',  10)->where('field_type', 'editable')->where('field_type_3', 'popup_visible')->get();
+                $popupQAEditableFields = formConfiguration::where('project_id', $decodedProjectName)->where('sub_project_id', $subProjectId)->where('input_type_editable',2)->whereIn('user_type', [3,10])->where('field_type', 'editable')->where('field_type_3', 'popup_visible')->get();
                 $qaSubStatusListVal = Helpers::qaSubStatusList();
                 $qaStatusList = Helpers::qaStatusList();
                 $arStatusList = Helpers::arStatusList();
@@ -1262,7 +1262,7 @@ class ProductionController extends Controller
                     $column_names = DB::select("DESCRIBE $table_name");
                     $columns = array_column($column_names, 'Field');
                     $columnsToExclude = ['id','QA_emp_id','duplicate_status','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-                    'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                    'cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                     'updated_at','created_at', 'deleted_at'];
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
@@ -1697,6 +1697,28 @@ class ProductionController extends Controller
                             $callChartWorkLog->update( ['record_status' => $data['chart_status'],'end_time' => $currentTime->format('Y-m-d H:i:s'),'work_time' => $work_time] );
                         }
                    }
+                $copyMessage = $this->copyNeedToCallClaimToSourceSubProject(
+                    $record,
+                    $datasRecord,
+                    $modelClass,
+                    $decodedProjectName,
+                    $decodedPracticeName,
+                    $decodedClientName,
+                    $data['ar_action_code'] ?? null
+                );
+                if (is_string($copyMessage)) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => $copyMessage,
+                    ]);
+                }
+                if (is_array($copyMessage) && ($copyMessage['status'] ?? '') === 'copied') {
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => $copyMessage['message'],
+                        'redirect_url' => url('/projects_assigned/'.$clientName.'/'.$subProjectName.'?parent=' . request()->parent . '&child=' . request()->child)
+                    ]);
+                }
                 //    return redirect('/projects_assigned/'.$clientName.'/'.$subProjectName.'?parent=' .request()->parent .'&child=' .request()->child);
                     return response()->json([
                         'status' => 'success',
@@ -1865,6 +1887,182 @@ class ProductionController extends Controller
 
             return redirect('/');
         }      
+    }
+
+    /**
+     * When the submitted action contains "need to call" or "need to call patient",
+     * keep the current claim and copy it onto the existing source sub project parent table.
+     */
+    private function copyNeedToCallClaimToSourceSubProject($record, $datasRecord, $datasModelClass, $projectId, $subProjectId, $clientName, $actionCodeId)
+    {
+        $actionText = ARActionCodes::where('id', $actionCodeId)->value('action_code');
+        $normalizedAction = strtolower(trim((string) $actionText));
+        $isNeedToCall = $normalizedAction !== '' && (
+            strpos($normalizedAction, 'need to call') !== false
+            || strpos($normalizedAction, 'need to call patient') !== false
+        );
+        if (!$isNeedToCall || $clientName === null || $clientName === '') {
+            return null;
+        }
+
+        if (!Schema::hasColumn('form_configurations', 'source_sub_project_id')) {
+            return null;
+        }
+
+        $formConfig = formConfiguration::where('project_id', $projectId)
+            ->where('sub_project_id', $subProjectId)
+            ->whereNotNull('source_sub_project_id')
+            ->where('source_sub_project_id', '!=', '')
+            ->first();
+        if (!$formConfig) {
+            return null;
+        }
+
+        $sourceSubProject = Helpers::subProjectName($projectId, $formConfig->source_sub_project_id);
+        if (!$sourceSubProject || empty($sourceSubProject->sub_project_name)) {
+            return 'Claim saved, but it was not copied. Source sub project was not found.';
+        }
+
+        $sourceTable = Str::slug(Str::lower($clientName . '_' . $sourceSubProject->sub_project_name), '_');
+        $sourceModelClass = 'App\\Models\\' . Str::studly($sourceTable);
+        if (!Schema::hasTable($sourceTable) || !class_exists($sourceModelClass)) {
+            return 'Claim saved, but it was not copied. Source sub project table was not found.';
+        }
+
+        if ($datasRecord == null && $datasModelClass) {
+            $datasRecord = $datasModelClass::where('parent_id', $record->id)->orderBy('id', 'DESC')->first();
+        }
+
+        $tablesToCheck = [$record->getTable(), $sourceTable];
+        if ($datasRecord != null) {
+            $tablesToCheck[] = $datasRecord->getTable();
+        }
+        foreach ($tablesToCheck as $tableToCheck) {
+            if (!empty($this->missingNeedToCallColumns($tableToCheck))) {
+                return 'Claim saved, but it was not copied. Need to call columns are missing.';
+            }
+        }
+
+        $record->refresh();
+        if ((string) $record->need_to_call_flag === '1') {
+            return null;
+        }
+
+        $userColumns = $this->needToCallUserColumns($projectId, $subProjectId);
+        $sourceColumns = Schema::getColumnListing($sourceTable);
+        $missingUserColumns = array_values(array_filter($userColumns, function ($column) use ($sourceColumns) {
+            return !in_array($column, $sourceColumns, true);
+        }));
+        if (!empty($missingUserColumns)) {
+            return 'Claim saved, but it was not copied. User columns do not match the source sub project table: ' . implode(', ', $missingUserColumns) . '.';
+        }
+
+        $valueSource = $datasRecord != null ? $datasRecord : $record;
+        $copiedAt = Carbon::now()->format('Y-m-d H:i:s');
+        $sourceValues = $valueSource->toArray();
+        $payload = [];
+        foreach ($userColumns as $column) {
+            if (array_key_exists($column, $sourceValues)) {
+                $payload[$column] = $sourceValues[$column];
+            }
+        }
+        $payload['chart_status'] = 'CE_Assigned';
+        $payload['CE_emp_id'] = null;
+        foreach ([
+            'need_to_call_flag' => 2,
+            'need_to_call_at' => $copiedAt,
+            'need_to_call_sub_project_id' => $subProjectId,
+        ] as $column => $value) {
+            if (in_array($column, $sourceColumns, true)) {
+                $payload[$column] = $value;
+            }
+        }
+
+        try {
+            $sourceClaim = new $sourceModelClass;
+            $sourceClaim->forceFill($payload);
+            $sourceClaim->save();
+
+            $currentTracking = [
+                'need_to_call_flag' => 1,
+                'need_to_call_at' => $copiedAt,
+                'need_to_call_sub_project_id' => $formConfig->source_sub_project_id,
+            ];
+            $this->fillNeedToCallColumns($record, $currentTracking);
+
+            if ($datasRecord != null) {
+                $this->fillNeedToCallColumns($datasRecord, $currentTracking);
+            }
+        } catch (\Exception $e) {
+            Log::error('Need to call copy failed', [
+                'message' => $e->getMessage(),
+                'project_id' => $projectId,
+                'sub_project_id' => $subProjectId,
+                'source_sub_project_id' => $formConfig->source_sub_project_id,
+                'record_id' => $record->id,
+            ]);
+
+            return 'Claim saved, but it was not copied. The source sub project could not be updated.';
+        }
+
+        return [
+            'status' => 'copied',
+            'message' => 'Claim saved and copied to the source sub project.',
+        ];
+    }
+
+    private function missingNeedToCallColumns($table)
+    {
+        $required = ['need_to_call_flag', 'need_to_call_at', 'need_to_call_sub_project_id'];
+        $missing = [];
+        foreach ($required as $column) {
+            if (!Schema::hasColumn($table, $column)) {
+                $missing[] = $column;
+            }
+        }
+        return $missing;
+    }
+
+    private function needToCallUserColumns($projectId, $subProjectId)
+    {
+        $systemLabels = [
+            'AR Denial Codes',
+            'AR SubStatus Codes',
+            'Production Type',
+            'Rework Reason',
+            'Need To Call Flag',
+            'Need To Call At',
+            'Need To Call Sub Project Id',
+        ];
+        $skipColumns = ['ar_notes', 'ar_at', 'qa_at'];
+
+        return formConfiguration::where('project_id', $projectId)
+            ->where('sub_project_id', $subProjectId)
+            ->whereNotIn('label_name', $systemLabels)
+            ->pluck('label_name')
+            ->map(function ($label) {
+                return Str::lower(str_replace([' ', '/'], ['_', '_else_'], $label));
+            })
+            ->reject(function ($column) use ($skipColumns) {
+                return in_array($column, $skipColumns, true);
+            })
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    private function fillNeedToCallColumns($model, array $values)
+    {
+        $table = $model->getTable();
+        $existing = [];
+        foreach ($values as $column => $value) {
+            if (Schema::hasColumn($table, $column)) {
+                $existing[$column] = $value;
+            }
+        }
+        if (!empty($existing)) {
+            $model->forceFill($existing)->save();
+        }
     }
 
     public function assigneeChange(Request $request) {
@@ -2506,7 +2704,7 @@ class ProductionController extends Controller
                     $column_names = DB::select("DESCRIBE $table_name");
                     $columns = array_column($column_names, 'Field');
                     $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-                    'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                    'cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                     'updated_at','created_at', 'deleted_at'];
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
@@ -2694,7 +2892,7 @@ class ProductionController extends Controller
                     $column_names = DB::select("DESCRIBE $table_name");
                     $columns = array_column($column_names, 'Field');
                     $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-                    'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                    'cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                     'updated_at','created_at', 'deleted_at'];
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
@@ -2823,7 +3021,7 @@ class ProductionController extends Controller
                     $column_names = DB::select("DESCRIBE $table_name");
                     $columns = array_column($column_names, 'Field');
                     $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_rework_comments','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-                    'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                    'cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                     'updated_at','created_at', 'deleted_at'];
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
@@ -3096,7 +3294,7 @@ class ProductionController extends Controller
                     $column_names = DB::select("DESCRIBE $table_name");
                     $columns = array_column($column_names, 'Field');
                     $columnsToExclude = ['id','QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-                    'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers','ar_status_code','ar_action_code','ar_denial_codes','ar_substatus_codes',
+                    'cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers','ar_status_code','ar_action_code','ar_denial_codes','ar_substatus_codes',
                     'updated_at','created_at', 'deleted_at'];
                     $fields = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
@@ -3178,7 +3376,7 @@ class ProductionController extends Controller
                     $column_names = DB::select("DESCRIBE $table_name");
                     $columns = array_column($column_names, 'Field');
                     $columnsToExclude = ['id','QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-                    'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers','ar_status_code','ar_action_code','ar_denial_codes','ar_substatus_codes',
+                    'cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','coder_cpt_trends','coder_icd_trends','coder_modifiers','qa_cpt_trends','qa_icd_trends','qa_modifiers','ar_status_code','ar_action_code','ar_denial_codes','ar_substatus_codes',
                     'updated_at','created_at', 'deleted_at'];
                     $fields = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
@@ -3918,7 +4116,7 @@ class ProductionController extends Controller
                     $column_names = DB::select("DESCRIBE $table_name");
                     $columns = array_column($column_names, 'Field');
                     $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-                    'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                    'cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                     'updated_at','created_at', 'deleted_at'];
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
@@ -4136,7 +4334,7 @@ class ProductionController extends Controller
                     $column_names = DB::select("DESCRIBE $table_name");
                     $columns = array_column($column_names, 'Field');
                     $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-                    'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                    'cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                     'updated_at','created_at', 'deleted_at','parent_id','ar_manager_rebuttal_status','ar_manager_rebuttal_comments','qa_manager_rebuttal_status','qa_manager_rebuttal_comments','QA_comments_count'];
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);
@@ -4737,7 +4935,7 @@ class ProductionController extends Controller
                     $column_names = DB::select("DESCRIBE $table_name");
                     $columns = array_column($column_names, 'Field');
                     $columnsToExclude = ['QA_emp_id','ce_hold_reason','qa_hold_reason','qa_work_status','QA_required_sampling','QA_rework_comments','coder_rework_status','coder_rework_reason','coder_error_count','qa_error_count','tl_error_count','tl_comments','QA_status_code','QA_sub_status_code','qa_classification','qa_category','qa_scope','QA_followup_date','CE_status_code','CE_sub_status_code','CE_followup_date',
-                    'cpt_trends','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
+                    'cpt_trends','need_to_call_flag','need_to_call_at','need_to_call_sub_project_id','icd_trends','modifiers','annex_coder_trends','annex_qa_trends','qa_cpt_trends','qa_icd_trends','qa_modifiers',
                     'updated_at','created_at', 'deleted_at'];
                     $columnsHeader = array_filter($columns, function ($column) use ($columnsToExclude) {
                         return !in_array($column, $columnsToExclude);

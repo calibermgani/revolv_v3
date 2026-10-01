@@ -60,53 +60,6 @@ EXCLUDED_COLUMNS = {
 }
 
 
-CLIENT_EXCLUDED_COLUMNS = {
-    "id",
-    "QA_emp_id",
-    "ce_hold_reason",
-    "qa_hold_reason",
-    "qa_work_status",
-    "QA_required_sampling",
-    "QA_rework_comments",
-    "coder_rework_status",
-    "coder_rework_reason",
-    "coder_error_count",
-    "qa_error_count",
-    "tl_error_count",
-    "tl_comments",
-    "QA_status_code",
-    "QA_sub_status_code",
-    "qa_classification",
-    "qa_category",
-    "qa_scope",
-    "QA_followup_date",
-    "CE_status_code",
-    "CE_sub_status_code",
-    "CE_followup_date",
-    "cpt_trends",
-    "need_to_call_flag",
-    "need_to_call_at",
-    "need_to_call_sub_project_id",
-    "icd_trends",
-    "modifiers",
-    "annex_coder_trends",
-    "annex_qa_trends",
-    "coder_cpt_trends",
-    "coder_icd_trends",
-    "coder_modifiers",
-    "qa_cpt_trends",
-    "qa_icd_trends",
-    "qa_modifiers",
-    "ar_status_code",
-    "ar_action_code",
-    "ar_denial_codes",
-    "ar_substatus_codes",
-    "updated_at",
-    "created_at",
-    "deleted_at",
-}
-
-
 PRIVILEGED_DESIGNATIONS = (
     "Manager",
     "VP",
@@ -506,157 +459,6 @@ def append_business_status_filters(
             ])
 
 
-def append_client_business_status_filters(
-    login_emp_id,
-    designation,
-    chart_status,
-    record_status,
-    resource_name,
-    where_clauses,
-    parameters,
-):
-    privileged = is_privileged_user(
-        login_emp_id,
-        designation,
-    )
-
-    start_date = (
-        datetime.now() - timedelta(days=30)
-    ).replace(
-        hour=0,
-        minute=0,
-        second=0,
-        microsecond=0,
-    )
-
-    end_date = datetime.now().replace(
-        hour=23,
-        minute=59,
-        second=59,
-        microsecond=999999,
-    )
-
-    if privileged:
-        if record_status == "unassigned":
-            where_clauses.append(
-                "`chart_status` IN (%s, %s)"
-            )
-            parameters.extend([
-                chart_status,
-                "CE_Inprocess",
-            ])
-            where_clauses.append(
-                "`CE_emp_id` IS NULL"
-            )
-
-        elif record_status == "assigned":
-            where_clauses.append(
-                "`chart_status` IN (%s, %s)"
-            )
-            parameters.extend([
-                chart_status,
-                "CE_Inprocess",
-            ])
-
-            if resource_name in (None, "", "null"):
-                where_clauses.append(
-                    "`CE_emp_id` IS NOT NULL"
-                )
-            else:
-                where_clauses.append(
-                    "`CE_emp_id` = %s"
-                )
-                parameters.append(resource_name)
-
-        else:
-            where_clauses.append(
-                "`chart_status` = %s"
-            )
-            parameters.append(chart_status)
-
-            if chart_status == "Rebuttal":
-                where_clauses.append(
-                    "(`ar_manager_rebuttal_status` IS NULL "
-                    "OR `ar_manager_rebuttal_status` != %s)"
-                )
-                parameters.append("agree")
-
-            where_clauses.append(
-                "`updated_at` BETWEEN %s AND %s"
-            )
-            parameters.extend([
-                start_date,
-                end_date,
-            ])
-
-    else:
-        if record_status == "assigned":
-            where_clauses.append(
-                "`chart_status` IN (%s, %s)"
-            )
-            parameters.extend([
-                chart_status,
-                "CE_Inprocess",
-            ])
-            where_clauses.append(
-                "`CE_emp_id` = %s"
-            )
-            parameters.append(login_emp_id)
-
-        else:
-            where_clauses.append(
-                "`chart_status` = %s"
-            )
-            parameters.append(chart_status)
-
-            if chart_status == "Rebuttal":
-                where_clauses.append(
-                    "(`ar_manager_rebuttal_status` IS NULL "
-                    "OR `ar_manager_rebuttal_status` != %s)"
-                )
-                parameters.append("agree")
-
-            where_clauses.append(
-                "`CE_emp_id` = %s"
-            )
-            parameters.append(login_emp_id)
-            where_clauses.append(
-                "`updated_at` BETWEEN %s AND %s"
-            )
-            parameters.extend([
-                start_date,
-                end_date,
-            ])
-
-
-def determine_client_export_status(
-    chart_status,
-    record_status,
-):
-    if record_status == "unassigned":
-        return "Un" + str(chart_status or "").replace(
-            "CE_",
-            "",
-        )
-
-    if chart_status and "CE_" in chart_status:
-        return chart_status.replace(
-            "CE_",
-            "",
-        )
-
-    if chart_status and "AR_" in chart_status:
-        return chart_status.replace(
-            "AR_",
-            "",
-        )
-
-    if chart_status == "Revoke":
-        return "Rework"
-
-    return chart_status or "Client"
-
-
 def determine_export_status(
     chart_status,
     record_status,
@@ -826,10 +628,14 @@ def format_date_value(value):
     normalized_date = None
 
     if isinstance(value, datetime):
-        normalized_date = value.strftime("%m/%d/%Y")
+        normalized_date = value.strftime(
+            OUTPUT_DATE_FORMAT
+        )
 
     elif isinstance(value, date):
-        normalized_date = value.strftime("%m/%d/%Y")
+        normalized_date = value.strftime(
+            OUTPUT_DATE_FORMAT
+        )
 
     else:
         value_text = str(value).strip()
@@ -842,25 +648,16 @@ def format_date_value(value):
         ):
             return "--"
 
-        supported_formats = (
-            "%Y-%m-%d",
-            "%Y-%m-%d %H:%M:%S",
-            "%m/%d/%Y",
-            "%m-%d-%Y",
-            "%Y/%m/%d",
-        )
-
-        for input_format in supported_formats:
+        for date_format in DATE_FORMATS:
             try:
                 parsed_date = datetime.strptime(
                     value_text,
-                    input_format
+                    date_format,
                 )
 
                 normalized_date = parsed_date.strftime(
-                    "%m/%d/%Y"
+                    OUTPUT_DATE_FORMAT
                 )
-
                 break
 
             except ValueError:
@@ -869,9 +666,8 @@ def format_date_value(value):
         if normalized_date is None:
             return value_text
 
-  
+    # Force Excel to display the date exactly as MM/DD/YYYY.
     return f'="{normalized_date}"'
-
 def calculate_fast_aging(dos_value, current_date):
     if is_missing_value(dos_value):
         return "--", "--"
@@ -1171,8 +967,33 @@ def write_query_directly_to_csv(
                                 value
                             )
 
-                        elif value is None or value == "":
-                            value = "--"
+                        elif processor_type == "raw":
+                            if value is None or value == "":
+                                value = "--"
+
+                            elif isinstance(value, str):
+                                value_text = value.strip()
+
+                                # Detect date-looking text such as:
+                                # 10-08-2024
+                                # 12/24/2024
+                                # 2024-12-24
+                                if (
+                                    len(value_text) == 10
+                                    and (
+                                        (
+                                            value_text[2] in ("-", "/")
+                                            and value_text[5] in ("-", "/")
+                                        )
+                                        or (
+                                            value_text[4] in ("-", "/")
+                                            and value_text[7] in ("-", "/")
+                                        )
+                                    )
+                                ):
+                                    value = format_date_value(
+                                        value_text
+                                    )
 
                         output_row.append(value)
 
@@ -1235,10 +1056,6 @@ def write_query_directly_to_csv(
 def generate_quality_export(payload):
     total_started_at = perf_counter()
 
-    report_type = payload.get(
-        "report_type",
-        "quality",
-    )
     table_name = payload.get("table_name")
     login_emp_id = payload.get("login_emp_id")
     designation = payload.get(
@@ -1250,13 +1067,6 @@ def generate_quality_export(payload):
     )
     record_status = payload.get(
         "record_status_val"
-    )
-    resource_name = payload.get(
-        "resource_name"
-    )
-    export_file_name = payload.get(
-        "export_file_name",
-        "Resolv",
     )
     search_filters = (
         payload.get("search_filters") or {}
@@ -1311,16 +1121,10 @@ def generate_quality_export(payload):
             )
         }
 
-        excluded_columns = (
-            CLIENT_EXCLUDED_COLUMNS
-            if report_type == "client"
-            else EXCLUDED_COLUMNS
-        )
-
         selected_columns = [
             column
             for column in all_columns
-            if column not in excluded_columns
+            if column not in EXCLUDED_COLUMNS
         ]
 
         patient_exclude_columns = get_popup_non_visible_patient_columns(
@@ -1351,26 +1155,15 @@ def generate_quality_export(payload):
             parameters=parameters,
         )
 
-        if report_type == "client":
-            append_client_business_status_filters(
-                login_emp_id=login_emp_id,
-                designation=designation,
-                chart_status=chart_status,
-                record_status=record_status,
-                resource_name=resource_name,
-                where_clauses=where_clauses,
-                parameters=parameters,
-            )
-        else:
-            append_business_status_filters(
-                login_emp_id=login_emp_id,
-                designation=designation,
-                chart_status=chart_status,
-                record_status=record_status,
-                available_columns=all_columns,
-                where_clauses=where_clauses,
-                parameters=parameters,
-            )
+        append_business_status_filters(
+            login_emp_id=login_emp_id,
+            designation=designation,
+            chart_status=chart_status,
+            record_status=record_status,
+            available_columns=all_columns,
+            where_clauses=where_clauses,
+            parameters=parameters,
+        )
 
         select_sql = ", ".join(
             f"`{column}`"
@@ -1388,16 +1181,10 @@ def generate_quality_export(payload):
                 " AND ".join(where_clauses)
             )
 
-        if report_type == "client":
-            export_status = determine_client_export_status(
-                chart_status,
-                record_status,
-            )
-        else:
-            export_status = determine_export_status(
-                chart_status,
-                record_status,
-            )
+        export_status = determine_export_status(
+            chart_status,
+            record_status,
+        )
 
         safe_status = re.sub(
             r"[^A-Za-z0-9_-]+",
@@ -1405,23 +1192,10 @@ def generate_quality_export(payload):
             export_status,
         )
 
-        safe_export_file_name = re.sub(
-            r"[^A-Za-z0-9 _-]+",
-            "_",
-            str(export_file_name or "Resolv"),
-        ).strip()
-
-        if report_type == "client":
-            file_name = (
-                f"{safe_export_file_name} _ "
-                f"{safe_status}_export_"
-                f"{datetime.now().strftime('%Y%m%d%H%M%S')}.csv"
-            )
-        else:
-            file_name = (
-                f"Resolv_{safe_status}_Export_"
-                f"{datetime.now().strftime('%Y%m%d%H%M%S')}.csv"
-            )
+        file_name = (
+            f"Resolv_{safe_status}_Export_"
+            f"{datetime.now().strftime('%Y%m%d%H%M%S')}.csv"
+        )
 
         output_file = os.path.abspath(
             os.path.join(

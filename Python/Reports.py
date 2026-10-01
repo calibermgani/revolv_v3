@@ -92,6 +92,10 @@ EXCLUDE_EXPORT_COLS = (
     "created_at",
     "deleted_at",
     "cpt_trends",
+    # Remove the next three names to show these columns in this report.
+    "need_to_call_flag",
+    "need_to_call_at",
+    "need_to_call_sub_project_id",
     "icd_trends",
     "modifiers",
     "coder_work_date",

@@ -6,9 +6,8 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 
 import mysql.connector
-import csv
-import math
-from time import perf_counter
+import pandas as pd
+import xlsxwriter
 
 
 os.umask(0o002)
@@ -60,53 +59,6 @@ EXCLUDED_COLUMNS = {
 }
 
 
-CLIENT_EXCLUDED_COLUMNS = {
-    "id",
-    "QA_emp_id",
-    "ce_hold_reason",
-    "qa_hold_reason",
-    "qa_work_status",
-    "QA_required_sampling",
-    "QA_rework_comments",
-    "coder_rework_status",
-    "coder_rework_reason",
-    "coder_error_count",
-    "qa_error_count",
-    "tl_error_count",
-    "tl_comments",
-    "QA_status_code",
-    "QA_sub_status_code",
-    "qa_classification",
-    "qa_category",
-    "qa_scope",
-    "QA_followup_date",
-    "CE_status_code",
-    "CE_sub_status_code",
-    "CE_followup_date",
-    "cpt_trends",
-    "need_to_call_flag",
-    "need_to_call_at",
-    "need_to_call_sub_project_id",
-    "icd_trends",
-    "modifiers",
-    "annex_coder_trends",
-    "annex_qa_trends",
-    "coder_cpt_trends",
-    "coder_icd_trends",
-    "coder_modifiers",
-    "qa_cpt_trends",
-    "qa_icd_trends",
-    "qa_modifiers",
-    "ar_status_code",
-    "ar_action_code",
-    "ar_denial_codes",
-    "ar_substatus_codes",
-    "updated_at",
-    "created_at",
-    "deleted_at",
-}
-
-
 PRIVILEGED_DESIGNATIONS = (
     "Manager",
     "VP",
@@ -131,13 +83,10 @@ HEADER_RENAME_MAPPING = {
 
 DATE_FORMATS = (
     "%Y-%m-%d",
-    "%Y-%m-%d %H:%M:%S",
     "%m/%d/%Y",
     "%m-%d-%Y",
     "%Y/%m/%d",
 )
-
-OUTPUT_DATE_FORMAT = "%m/%d/%Y"
 
 
 NON_WORKABLE_FIELDS = {
@@ -234,7 +183,7 @@ def table_exists(connection, table_name):
         cursor.close()
 
 
-def get_table_column_metadata(connection, table_name):
+def get_table_columns(connection, table_name):
     cursor = connection.cursor(dictionary=True)
 
     try:
@@ -242,7 +191,10 @@ def get_table_column_metadata(connection, table_name):
             f"SHOW COLUMNS FROM `{table_name}`"
         )
 
-        return cursor.fetchall()
+        return [
+            row["Field"]
+            for row in cursor.fetchall()
+        ]
     finally:
         cursor.close()
 
@@ -506,157 +458,6 @@ def append_business_status_filters(
             ])
 
 
-def append_client_business_status_filters(
-    login_emp_id,
-    designation,
-    chart_status,
-    record_status,
-    resource_name,
-    where_clauses,
-    parameters,
-):
-    privileged = is_privileged_user(
-        login_emp_id,
-        designation,
-    )
-
-    start_date = (
-        datetime.now() - timedelta(days=30)
-    ).replace(
-        hour=0,
-        minute=0,
-        second=0,
-        microsecond=0,
-    )
-
-    end_date = datetime.now().replace(
-        hour=23,
-        minute=59,
-        second=59,
-        microsecond=999999,
-    )
-
-    if privileged:
-        if record_status == "unassigned":
-            where_clauses.append(
-                "`chart_status` IN (%s, %s)"
-            )
-            parameters.extend([
-                chart_status,
-                "CE_Inprocess",
-            ])
-            where_clauses.append(
-                "`CE_emp_id` IS NULL"
-            )
-
-        elif record_status == "assigned":
-            where_clauses.append(
-                "`chart_status` IN (%s, %s)"
-            )
-            parameters.extend([
-                chart_status,
-                "CE_Inprocess",
-            ])
-
-            if resource_name in (None, "", "null"):
-                where_clauses.append(
-                    "`CE_emp_id` IS NOT NULL"
-                )
-            else:
-                where_clauses.append(
-                    "`CE_emp_id` = %s"
-                )
-                parameters.append(resource_name)
-
-        else:
-            where_clauses.append(
-                "`chart_status` = %s"
-            )
-            parameters.append(chart_status)
-
-            if chart_status == "Rebuttal":
-                where_clauses.append(
-                    "(`ar_manager_rebuttal_status` IS NULL "
-                    "OR `ar_manager_rebuttal_status` != %s)"
-                )
-                parameters.append("agree")
-
-            where_clauses.append(
-                "`updated_at` BETWEEN %s AND %s"
-            )
-            parameters.extend([
-                start_date,
-                end_date,
-            ])
-
-    else:
-        if record_status == "assigned":
-            where_clauses.append(
-                "`chart_status` IN (%s, %s)"
-            )
-            parameters.extend([
-                chart_status,
-                "CE_Inprocess",
-            ])
-            where_clauses.append(
-                "`CE_emp_id` = %s"
-            )
-            parameters.append(login_emp_id)
-
-        else:
-            where_clauses.append(
-                "`chart_status` = %s"
-            )
-            parameters.append(chart_status)
-
-            if chart_status == "Rebuttal":
-                where_clauses.append(
-                    "(`ar_manager_rebuttal_status` IS NULL "
-                    "OR `ar_manager_rebuttal_status` != %s)"
-                )
-                parameters.append("agree")
-
-            where_clauses.append(
-                "`CE_emp_id` = %s"
-            )
-            parameters.append(login_emp_id)
-            where_clauses.append(
-                "`updated_at` BETWEEN %s AND %s"
-            )
-            parameters.extend([
-                start_date,
-                end_date,
-            ])
-
-
-def determine_client_export_status(
-    chart_status,
-    record_status,
-):
-    if record_status == "unassigned":
-        return "Un" + str(chart_status or "").replace(
-            "CE_",
-            "",
-        )
-
-    if chart_status and "CE_" in chart_status:
-        return chart_status.replace(
-            "CE_",
-            "",
-        )
-
-    if chart_status and "AR_" in chart_status:
-        return chart_status.replace(
-            "AR_",
-            "",
-        )
-
-    if chart_status == "Revoke":
-        return "Rework"
-
-    return chart_status or "Client"
-
-
 def determine_export_status(
     chart_status,
     record_status,
@@ -811,66 +612,48 @@ def is_missing_value(value):
         return True
 
     if isinstance(value, str):
-        return value == ""
+        return value.strip() == ""
 
-    if isinstance(value, float):
-        return math.isnan(value)
+    try:
+        missing = pd.isna(value)
+        return bool(missing)
+    except (TypeError, ValueError):
+        return False
 
-    return False
 
-
-def format_date_value(value):
-    if value is None:
+def format_excel_value(value):
+    if is_missing_value(value):
         return "--"
 
-    normalized_date = None
+    if isinstance(value, pd.Timestamp):
+        return value.strftime("%m/%d/%Y")
 
     if isinstance(value, datetime):
-        normalized_date = value.strftime("%m/%d/%Y")
+        return value.strftime("%m/%d/%Y")
 
-    elif isinstance(value, date):
-        normalized_date = value.strftime("%m/%d/%Y")
+    if isinstance(value, date):
+        return value.strftime("%m/%d/%Y")
 
-    else:
-        value_text = str(value).strip()
+    if isinstance(value, str):
+        stripped_value = value.strip()
 
-        if value_text in (
-            "",
-            "--",
-            "0000-00-00",
-            "0000-00-00 00:00:00",
-        ):
+        if stripped_value in ("", "0000-00-00"):
             return "--"
 
-        supported_formats = (
-            "%Y-%m-%d",
-            "%Y-%m-%d %H:%M:%S",
-            "%m/%d/%Y",
-            "%m-%d-%Y",
-            "%Y/%m/%d",
-        )
-
-        for input_format in supported_formats:
+        if re.fullmatch(
+            r"\d{4}-\d{2}-\d{2}",
+            stripped_value
+        ):
             try:
-                parsed_date = datetime.strptime(
-                    value_text,
-                    input_format
-                )
-
-                normalized_date = parsed_date.strftime(
-                    "%m/%d/%Y"
-                )
-
-                break
-
+                return datetime.strptime(
+                    stripped_value,
+                    "%Y-%m-%d",
+                ).strftime("%m/%d/%Y")
             except ValueError:
-                continue
+                return stripped_value
 
-        if normalized_date is None:
-            return value_text
+    return value
 
-  
-    return f'="{normalized_date}"'
 
 def calculate_fast_aging(dos_value, current_date):
     if is_missing_value(dos_value):
@@ -878,7 +661,10 @@ def calculate_fast_aging(dos_value, current_date):
 
     parsed_date = None
 
-    if isinstance(dos_value, datetime):
+    if isinstance(dos_value, pd.Timestamp):
+        parsed_date = dos_value.date()
+
+    elif isinstance(dos_value, datetime):
         parsed_date = dos_value.date()
 
     elif isinstance(dos_value, date):
@@ -972,273 +758,230 @@ def make_heading(field):
     )
 
 
-def write_query_directly_to_csv(
+def write_query_directly_to_excel(
     connection,
     query,
     parameters,
     selected_columns,
-    date_columns,
     output_file,
     reference_maps,
     non_workable_reason_map,
     emp_name_map,
 ):
-    total_started_at = perf_counter()
-
-    with open(
+    workbook = xlsxwriter.Workbook(
         output_file,
-        "w",
-        newline="",
-        encoding="utf-8-sig",
-        buffering=4 * 1024 * 1024,
-    ) as csv_file:
-        writer = csv.writer(
-            csv_file,
-            delimiter=",",
-            quotechar='"',
-            quoting=csv.QUOTE_MINIMAL,
-            lineterminator="\n",
-        )
+        {
+            "constant_memory": True,
+            "strings_to_urls": False,
+            "nan_inf_to_errors": True,
+        },
+    )
 
-        headings = [
-            make_heading(column)
-            for column in selected_columns
-        ]
+    worksheet = workbook.add_worksheet(
+        "Export"
+    )
 
-        headings.extend([
-            "Aging",
-            "Aging Range",
-        ])
+    header_format = workbook.add_format({
+        "bold": True,
+        "border": 1,
+    })
 
-        writer.writerow(headings)
+    headings = [
+        make_heading(column)
+        for column in selected_columns
+    ]
 
-        cursor = connection.cursor(
-            buffered=False
-        )
+    headings.extend([
+        "Aging",
+        "Aging Range",
+    ])
 
-        current_date = datetime.now().date()
-        total_written = 0
-        fetch_size = 25000
+    worksheet.write_row(
+        0,
+        0,
+        headings,
+        header_format,
+    )
 
-        fetch_total = 0.0
-        transform_total = 0.0
-        write_total = 0.0
+    cursor = connection.cursor(
+        buffered=False
+    )
 
-        column_index = {
-            column: index
-            for index, column in enumerate(
-                selected_columns
-            )
-        }
+    current_date = datetime.now().date()
+    output_row_number = 1
+    total_written = 0
+    fetch_size = 5000
 
-        chart_status_index = column_index.get(
-            "chart_status"
-        )
-
-        ce_emp_id_index = column_index.get(
-            "CE_emp_id"
-        )
-
-        dos_index = column_index.get(
-            "dos"
-        )
-
-        field_processors = []
-
-        for field_index, field in enumerate(
+    column_index = {
+        column: index
+        for index, column in enumerate(
             selected_columns
-        ):
-            if field == "chart_status":
-                processor_type = "chart_status"
+        )
+    }
 
-            elif field in reference_maps:
-                processor_type = "reference"
+    chart_status_index = column_index.get(
+        "chart_status"
+    )
 
-            elif field in ("CE_emp_id", "QA_emp_id"):
-                processor_type = "emp_name"
+    ce_emp_id_index = column_index.get(
+        "CE_emp_id"
+    )
 
-            elif field in NON_WORKABLE_FIELDS:
-                processor_type = "non_workable"
+    dos_index = column_index.get(
+        "dos"
+    )
 
-            elif field in date_columns:
-                processor_type = "date"
+    field_processors = []
 
-            else:
-                processor_type = "raw"
+    for field_index, field in enumerate(
+        selected_columns
+    ):
+        if field == "chart_status":
+            processor_type = "chart_status"
 
-            field_processors.append(
-                (
+        elif field in reference_maps:
+            processor_type = "reference"
+
+        elif field in ("CE_emp_id", "QA_emp_id"):
+            processor_type = "emp_name"
+
+        elif field in NON_WORKABLE_FIELDS:
+            processor_type = "non_workable"
+
+        else:
+            processor_type = "normal"
+
+        field_processors.append(
+            (
+                field_index,
+                field,
+                processor_type,
+            )
+        )
+
+    try:
+        cursor.execute(
+            query,
+            tuple(parameters),
+        )
+
+        while True:
+            rows = cursor.fetchmany(
+                fetch_size
+            )
+
+            if not rows:
+                break
+
+            for record in rows:
+                chart_status = (
+                    record[chart_status_index]
+                    if chart_status_index is not None
+                    else None
+                )
+
+                ce_emp_id = (
+                    record[ce_emp_id_index]
+                    if ce_emp_id_index is not None
+                    else None
+                )
+
+                output_row = []
+
+                for (
                     field_index,
                     field,
                     processor_type,
-                )
-            )
+                ) in field_processors:
+                    value = record[field_index]
 
-        try:
-            execute_started_at = perf_counter()
+                    if processor_type == "chart_status":
+                        value = format_fast_chart_status(
+                            value,
+                            ce_emp_id,
+                        )
 
-            cursor.execute(
-                query,
-                tuple(parameters),
-            )
-
-            log(
-                "Query execute initialization time: "
-                f"{perf_counter() - execute_started_at:.2f} seconds"
-            )
-
-            while True:
-                fetch_started_at = perf_counter()
-
-                rows = cursor.fetchmany(
-                    fetch_size
-                )
-
-                fetch_total += (
-                    perf_counter() - fetch_started_at
-                )
-
-                if not rows:
-                    break
-
-                transform_started_at = perf_counter()
-                output_rows = []
-
-                for record in rows:
-                    chart_status = (
-                        record[chart_status_index]
-                        if chart_status_index is not None
-                        else None
-                    )
-
-                    ce_emp_id = (
-                        record[ce_emp_id_index]
-                        if ce_emp_id_index is not None
-                        else None
-                    )
-
-                    output_row = []
-
-                    for (
-                        field_index,
-                        field,
-                        processor_type,
-                    ) in field_processors:
-                        value = record[field_index]
-
-                        if processor_type == "chart_status":
-                            value = format_fast_chart_status(
-                                value,
-                                ce_emp_id,
-                            )
-
-                        elif processor_type == "reference":
-                            if value is None or value == "":
-                                value = "--"
-                            else:
-                                value = (
-                                    reference_maps[field].get(
-                                        str(value),
-                                        value,
-                                    )
-                                )
-
-                        elif processor_type == "emp_name":
-                            if value is None or value == "":
-                                value = "--"
-                            else:
-                                value = emp_name_map.get(
+                    elif processor_type == "reference":
+                        if is_missing_value(value):
+                            value = "--"
+                        else:
+                            value = (
+                                reference_maps[field].get(
                                     str(value),
                                     value,
                                 )
-
-                        elif (
-                            processor_type == "non_workable"
-                            and chart_status == "AR_non_workable"
-                        ):
-                            if value is None or value == "":
-                                value = ""
-                            else:
-                                value = (
-                                    non_workable_reason_map.get(
-                                        str(value),
-                                        value,
-                                    )
-                                )
-
-                        elif processor_type == "date":
-                            value = format_date_value(
-                                value
                             )
 
-                        elif value is None or value == "":
+                    elif processor_type == "emp_name":
+                        if is_missing_value(value):
                             value = "--"
-
-                        output_row.append(value)
-
-                    if dos_index is not None:
-                        aging_count, aging_range = (
-                            calculate_fast_aging(
-                                record[dos_index],
-                                current_date,
+                        else:
+                            value = emp_name_map.get(
+                                str(value),
+                                value,
                             )
-                        )
+
+                    elif (
+                        processor_type == "non_workable"
+                        and chart_status == "AR_non_workable"
+                    ):
+                        if is_missing_value(value):
+                            value = ""
+                        else:
+                            value = (
+                                non_workable_reason_map.get(
+                                    str(value),
+                                    value,
+                                )
+                            )
+
                     else:
-                        aging_count = "--"
-                        aging_range = "--"
+                        value = format_excel_value(
+                            value
+                        )
 
-                    output_row.extend([
-                        aging_count,
-                        aging_range,
-                    ])
+                    if is_missing_value(value):
+                        value = "--"
 
-                    output_rows.append(output_row)
+                    output_row.append(value)
 
-                transform_total += (
-                    perf_counter() - transform_started_at
+                if dos_index is not None:
+                    aging_count, aging_range = (
+                        calculate_fast_aging(
+                            record[dos_index],
+                            current_date,
+                        )
+                    )
+                else:
+                    aging_count = "--"
+                    aging_range = "--"
+
+                output_row.extend([
+                    aging_count,
+                    aging_range,
+                ])
+
+                worksheet.write_row(
+                    output_row_number,
+                    0,
+                    output_row,
                 )
 
-                write_started_at = perf_counter()
+                output_row_number += 1
+                total_written += 1
 
-                writer.writerows(output_rows)
+            log(
+                f"Written {total_written} rows."
+            )
 
-                write_total += (
-                    perf_counter() - write_started_at
-                )
-
-                total_written += len(output_rows)
-
-                log(
-                    f"Written {total_written} rows."
-                )
-
-        finally:
-            cursor.close()
-
-    log(
-        f"Database fetch time: {fetch_total:.2f} seconds"
-    )
-    log(
-        f"Transformation time: {transform_total:.2f} seconds"
-    )
-    log(
-        f"CSV writing time: {write_total:.2f} seconds"
-    )
-    log(
-        "Direct CSV function total time: "
-        f"{perf_counter() - total_started_at:.2f} seconds"
-    )
+    finally:
+        cursor.close()
+        workbook.close()
 
     return total_written
 
 
 def generate_quality_export(payload):
-    total_started_at = perf_counter()
-
-    report_type = payload.get(
-        "report_type",
-        "quality",
-    )
     table_name = payload.get("table_name")
     login_emp_id = payload.get("login_emp_id")
     designation = payload.get(
@@ -1250,13 +993,6 @@ def generate_quality_export(payload):
     )
     record_status = payload.get(
         "record_status_val"
-    )
-    resource_name = payload.get(
-        "resource_name"
-    )
-    export_file_name = payload.get(
-        "export_file_name",
-        "Resolv",
     )
     search_filters = (
         payload.get("search_filters") or {}
@@ -1289,38 +1025,15 @@ def generate_quality_export(payload):
                 f"{table_name}"
             )
 
-        column_metadata = get_table_column_metadata(
+        all_columns = get_table_columns(
             connection,
             table_name,
-        )
-
-        all_columns = [
-            column["Field"]
-            for column in column_metadata
-        ]
-
-        date_columns = {
-            column["Field"]
-            for column in column_metadata
-            if (
-                str(column["Type"]).lower().startswith(
-                    ("date", "datetime", "timestamp")
-                )
-                or "date" in column["Field"].lower()
-                or column["Field"].lower() == "dos"
-            )
-        }
-
-        excluded_columns = (
-            CLIENT_EXCLUDED_COLUMNS
-            if report_type == "client"
-            else EXCLUDED_COLUMNS
         )
 
         selected_columns = [
             column
             for column in all_columns
-            if column not in excluded_columns
+            if column not in EXCLUDED_COLUMNS
         ]
 
         patient_exclude_columns = get_popup_non_visible_patient_columns(
@@ -1351,26 +1064,15 @@ def generate_quality_export(payload):
             parameters=parameters,
         )
 
-        if report_type == "client":
-            append_client_business_status_filters(
-                login_emp_id=login_emp_id,
-                designation=designation,
-                chart_status=chart_status,
-                record_status=record_status,
-                resource_name=resource_name,
-                where_clauses=where_clauses,
-                parameters=parameters,
-            )
-        else:
-            append_business_status_filters(
-                login_emp_id=login_emp_id,
-                designation=designation,
-                chart_status=chart_status,
-                record_status=record_status,
-                available_columns=all_columns,
-                where_clauses=where_clauses,
-                parameters=parameters,
-            )
+        append_business_status_filters(
+            login_emp_id=login_emp_id,
+            designation=designation,
+            chart_status=chart_status,
+            record_status=record_status,
+            available_columns=all_columns,
+            where_clauses=where_clauses,
+            parameters=parameters,
+        )
 
         select_sql = ", ".join(
             f"`{column}`"
@@ -1388,16 +1090,10 @@ def generate_quality_export(payload):
                 " AND ".join(where_clauses)
             )
 
-        if report_type == "client":
-            export_status = determine_client_export_status(
-                chart_status,
-                record_status,
-            )
-        else:
-            export_status = determine_export_status(
-                chart_status,
-                record_status,
-            )
+        export_status = determine_export_status(
+            chart_status,
+            record_status,
+        )
 
         safe_status = re.sub(
             r"[^A-Za-z0-9_-]+",
@@ -1405,23 +1101,10 @@ def generate_quality_export(payload):
             export_status,
         )
 
-        safe_export_file_name = re.sub(
-            r"[^A-Za-z0-9 _-]+",
-            "_",
-            str(export_file_name or "Resolv"),
-        ).strip()
-
-        if report_type == "client":
-            file_name = (
-                f"{safe_export_file_name} _ "
-                f"{safe_status}_export_"
-                f"{datetime.now().strftime('%Y%m%d%H%M%S')}.csv"
-            )
-        else:
-            file_name = (
-                f"Resolv_{safe_status}_Export_"
-                f"{datetime.now().strftime('%Y%m%d%H%M%S')}.csv"
-            )
+        file_name = (
+            f"Resolv_{safe_status}_Export_"
+            f"{datetime.now().strftime('%Y%m%d%H%M%S')}.xlsx"
+        )
 
         output_file = os.path.abspath(
             os.path.join(
@@ -1429,8 +1112,6 @@ def generate_quality_export(payload):
                 file_name,
             )
         )
-
-        mapping_started_at = perf_counter()
 
         reference_maps = load_qa_reference_maps(
             connection
@@ -1446,20 +1127,12 @@ def generate_quality_export(payload):
             connection
         )
 
-        log(
-            "Reference mapping time: "
-            f"{perf_counter() - mapping_started_at:.2f} seconds"
-        )
-
-        export_started_at = perf_counter()
-
         written_rows = (
-            write_query_directly_to_csv(
+            write_query_directly_to_excel(
                 connection=connection,
                 query=query,
                 parameters=parameters,
                 selected_columns=selected_columns,
-                date_columns=date_columns,
                 output_file=output_file,
                 reference_maps=reference_maps,
                 non_workable_reason_map=(
@@ -1470,18 +1143,8 @@ def generate_quality_export(payload):
         )
 
         log(
-            "Query and CSV writing time: "
-            f"{perf_counter() - export_started_at:.2f} seconds"
-        )
-
-        log(
-            "CSV export completed with "
+            "Excel export completed with "
             f"{written_rows} rows."
-        )
-
-        log(
-            "Total report time: "
-            f"{perf_counter() - total_started_at:.2f} seconds"
         )
 
         os.chmod(output_file, 0o664)
