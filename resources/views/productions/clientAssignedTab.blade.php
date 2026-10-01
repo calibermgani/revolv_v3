@@ -2332,6 +2332,7 @@ function showSubmitPopup() {
                 if ($(this).prop('checked') == true && $('.checkBoxClass:checked').length > 0) {
                     $('#workable_dropdown').prop('disabled', false);
                     $('#assigneeDropdown').prop('disabled', false);
+                    $('#clear_p1').css('display', 'none');
                     $('#select_p1').css('display', 'block');
                     // if (parseInt(<?= json_encode($assignedProjectDetails->lastItem()); ?>) < parseInt(<?= json_encode($assignedProjectDetails->total()); ?>)) {
                     //     $('#select_p1').css('display', 'block');
@@ -2346,6 +2347,7 @@ function showSubmitPopup() {
                   
                 } else {
                     $('#select_p1').css('display','none')
+                    $('#clear_p1').css('display', 'none');
                     $('#assigneeDropdown').prop('disabled', true);
                     $('#workable_dropdown').prop('disabled', true);
                     $('.multiline_click').css('display','none');
@@ -2375,7 +2377,9 @@ function showSubmitPopup() {
                     .length;
                 if (allCheckboxesChecked) {
                     $("#ckbCheckAll").prop('checked', $(this).prop('checked'));
-                    $('#select_p1').css('display','block');
+                    if ($('#clear_p1').css('display') === 'none') {
+                        $('#select_p1').css('display','block');
+                    }
                 } else {
                     $("#ckbCheckAll").prop('checked', false);
                     $('#select_p1').css('display','none');

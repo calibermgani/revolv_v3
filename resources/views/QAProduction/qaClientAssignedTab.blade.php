@@ -31,9 +31,11 @@ use Carbon\Carbon;
                                     @php
                                         $clientId = App\Http\Helper\Admin\Helpers::encodeAndDecodeID($clientName, 'decode');
                                         $prjTotalArList = App\Http\Helper\Admin\Helpers::getArResourceName($clientId);
-                                    @endphp    
-                                    
-                    
+                                    @endphp
+
+                                    <div class="mb-lg-0 mb-6 d-flex align-items-center mr-3" id="flush_div">
+                                        <button type="button" class="btn text-white" id="flushAssignedBtn" style="background-color:#139AB3;" disabled>Auto Close</button>
+                                    </div>
                                     <div class="mb-lg-0 mb-6">
                                         <fieldset class="form-group mb-0 white-smoke-disabled">
                                             {!! Form::select('assignee_ar_name', ['' => 'Work Log'] + $prjTotalArList, null, [
@@ -3020,13 +3022,17 @@ use Carbon\Carbon;
                 }
                 if ($(this).prop('checked') == true && $('.checkBoxClass:checked').length > 0) {
                     $('#assigneeDropdown').prop('disabled', false);
+                    setFlushButtonState(true);
+                    $('#clear_p1').css('display', 'none');
                     if(noOfPages > 1){
                        $('#select_p1').css('display', 'block');
                     }                   
                     assigneeDropdown();
                 } else {
                     $('#select_p1').css('display','none');
+                    $('#clear_p1').css('display', 'none');
                     $('#assigneeDropdown').prop('disabled', true);
+                    setFlushButtonState(false);
 
                 }
             });
@@ -3038,13 +3044,16 @@ use Carbon\Carbon;
                         .length;
                     if (allCheckboxesChecked) {
                         $("#ckbCheckAll").prop('checked', $(this).prop('checked'));
-                         $('#select_p1').css('display','block');
+                        if ($('#clear_p1').css('display') === 'none') {
+                            $('#select_p1').css('display','block');
+                        }
                     } else {
                         $("#ckbCheckAll").prop('checked', false);
                         $('#select_p1').css('display','none');
                         $('#clear_p1').css('display','none');
                     }
                     $('#assigneeDropdown').prop('disabled', !(anyCheckboxChecked || allCheckboxesChecked));
+                    setFlushButtonState(anyCheckboxChecked || allCheckboxesChecked);
                     if ($(this).prop('checked') == true) {
                     assigneeDropdown();
                     }
@@ -3060,9 +3069,13 @@ use Carbon\Carbon;
                 $("#ckbCheckAll").prop('checked', isChecked);
                 $(".checkBoxClass").prop('checked', isChecked);
                 $('#clear_p1').css('display','none');              
-                $('#assigneeDropdown').prop('disabled', true);        
+                $('#assigneeDropdown').prop('disabled', true);
+                setFlushButtonState(false);
                
             });
+            function setFlushButtonState(enabled) {
+                $('#flushAssignedBtn').prop('disabled', !enabled);
+            }
             function attachCheckboxHandlers() {
                 $('.checkBoxClass').off('change').on('change', handleCheckboxChange);
             }
@@ -3169,6 +3182,86 @@ use Carbon\Carbon;
                     }
                 });
             })
+
+            $('#flushAssignedBtn').on('click', function() {
+                var checkedRowValues = [];
+                $('#client_assigned_list').DataTable().$('input[name="check[]"]:checked').each(function() {
+                    checkedRowValues.push({
+                        name: 'check[]',
+                        value: $(this).val()
+                    });
+                });
+                var clearId = $('#clear_p1').css('display');
+                var formData = $('#formSearch').serialize();
+                formData += '&checkedRowValues=' + encodeURIComponent(JSON.stringify(checkedRowValues));
+                formData += '&clientName=' + clientName;
+                formData += '&subProjectName=' + subProjectName;
+                formData += '&selectedRecords=' + clearId;
+
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $('#flushAssignedBtn').prop('disabled', true);
+                $.ajax({
+                    url: "{{ url('qa_production/flush_assigned_sampling') }}",
+                    method: 'POST',
+                    data: formData + '&preview=1',
+                    success: function(preview) {
+                        if (preview.success != true) {
+                            js_notification('error', preview.message || 'Something went wrong');
+                            setFlushButtonState($('.checkBoxClass:checked').length > 0);
+                            return;
+                        }
+                        swal.fire({
+                            html: 'Total selected records: ' + preview.selected +
+                                '<br>Will auto close: ' + preview.flushed + ' (AR work date up to ' + preview.workDateUpto + ')' +
+                                '<br>Will be left: ' + preview.kept,
+                            icon: 'warning',
+                            buttonsStyling: false,
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes',
+                            cancelButtonText: 'No',
+                            customClass: {
+                                confirmButton: 'btn font-weight-bold btn-white-black',
+                                cancelButton: 'btn font-weight-bold btn-light-danger',
+                            }
+                        }).then(function(result) {
+                            if (result.value != true) {
+                                setFlushButtonState($('.checkBoxClass:checked').length > 0);
+                                return;
+                            }
+                            $.ajax({
+                                url: "{{ url('qa_production/flush_assigned_sampling') }}",
+                                method: 'POST',
+                                data: formData,
+                                success: function(response) {
+                                    if (response.success == true) {
+                                        js_notification('success', response.flushed + ' moved to Auto Close. ' + response.kept + ' stayed in Sampling.');
+                                        setTimeout(function() {
+                                            window.location.href = baseUrl + 'qa_production/qa_projects_assigned/' + clientName + '/' + subProjectName +
+                                                "?parent=" + getUrlVars()["parent"] +
+                                                "&child=" + getUrlVars()["child"];
+                                        }, 2000);
+                                    } else {
+                                        js_notification('error', response.message || 'Something went wrong');
+                                        setFlushButtonState($('.checkBoxClass:checked').length > 0);
+                                    }
+                                },
+                                error: function() {
+                                    js_notification('error', 'Something went wrong');
+                                    setFlushButtonState($('.checkBoxClass:checked').length > 0);
+                                }
+                            });
+                        });
+                    },
+                    error: function() {
+                        js_notification('error', 'Something went wrong');
+                        setFlushButtonState($('.checkBoxClass:checked').length > 0);
+                    }
+                });
+            });
 
             $(document).on('click', '.one', function(e) {
                 e.preventDefault();

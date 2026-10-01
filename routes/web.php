@@ -128,6 +128,7 @@ Route::group(['prefix' => 'qa_production'], function () {
     Route::any('qa_class_cat_scope', 'App\Http\Controllers\QA\QAProductionController@qaClassCatScope');
     Route::any('quality_export', 'App\Http\Controllers\QA\QAProductionController@qualityExport');
     Route::any('qa_sampling_assignee', 'App\Http\Controllers\QA\QAProductionController@qaSamplingAssignee');
+    Route::any('flush_assigned_sampling', 'App\Http\Controllers\QA\QAProductionController@flushAssignedSampling');
     Route::any('all_sampling_assignee', 'App\Http\Controllers\QA\QAProductionController@allSamplingAssignee');
     Route::any('quality_export_assigned', 'App\Http\Controllers\QA\QAProductionController@qualityExportAssigned');
     Route::get('quality-export/check-report/{jobId}','App\Http\Controllers\QA\QAProductionController@checkQualityExportReport');
@@ -282,7 +283,9 @@ Route::group(['prefix' => 'qa_production'], function () {
        Route::get('client-export/check-report/{jobId}','App\Http\Controllers\ProductionController@checkclientExportReport');
        Route::get('client-export/download-report/{filename}','App\Http\Controllers\ProductionController@downloadClientExportReport');
        Route::any('projects_ar_rework/{clientName}/{subProjectName}','App\Http\Controllers\ProductionController@arReworkTab')->name('arReworkTab');
-
+       Route::get('/claims-dashboard', 'App\Http\Controllers\ClaimsProductionDashboardController@index')->name('claims-dashboard');
+       Route::get('/claims-dashboard/data', 'App\Http\Controllers\ClaimsProductionDashboardController@data')->name('claims-dashboard.data');
+    
 
 
 

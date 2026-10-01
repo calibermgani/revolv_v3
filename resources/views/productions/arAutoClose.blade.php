@@ -1132,10 +1132,12 @@
                 }
                 if ($(this).prop('checked') == true && $('.checkBoxClass:checked').length > 0) {
                     $('#workable_dropdown').prop('disabled', false);
+                    $('#clear_p1').css('display', 'none');
                     $('#select_p1').css('display', 'block');
 
                 } else {
                     $('#select_p1').css('display', 'none')
+                    $('#clear_p1').css('display', 'none');
                     $('#workable_dropdown').prop('disabled', true);
 
                 }
@@ -1160,7 +1162,9 @@
                     .length;
                 if (allCheckboxesChecked) {
                     $("#ckbCheckAll").prop('checked', $(this).prop('checked'));
-                    $('#select_p1').css('display', 'block');
+                    if ($('#clear_p1').css('display') === 'none') {
+                        $('#select_p1').css('display', 'block');
+                    }
                 } else {
                     $("#ckbCheckAll").prop('checked', false);
                     $('#select_p1').css('display', 'none');

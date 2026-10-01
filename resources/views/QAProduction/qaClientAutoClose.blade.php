@@ -27,11 +27,19 @@ use Carbon\Carbon;
                     </div>
                     <div class="col-md-6">
                         <div class="row" style="justify-content: flex-end;margin-right:1.4rem">
+                            @if (
+                                $loginEmpId == 'Admin' ||
+                                    strpos($empDesignation, 'Manager') !== false ||
+                                    strpos($empDesignation, 'VP') !== false ||
+                                    strpos($empDesignation, 'Leader') !== false ||
+                                    strpos($empDesignation, 'Team Lead') !== false ||
+                                    strpos($empDesignation, 'CEO') !== false ||
+                                    strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)
                                 <div class="col-lg-3 mb-lg-0 mb-6" id="assign_div">
 
                                     <fieldset class="form-group mb-0 white-smoke-disabled">
 
-                                        {!! Form::select('assignee_name', ['' => '--Assignee--'] + $assignedDropDown, null, [
+                                        {!! Form::select('assignee_name', ['' => '--Assignee--'], null, [
                                             'class' => 'form-control kt_select2_assignee',
                                             'id' => 'assigneeDropdown',
                                             'style' => 'width: 100%;',
@@ -39,6 +47,7 @@ use Carbon\Carbon;
                                         ]) !!}
                                     </fieldset>
                                 </div>
+                            @endif
                             &nbsp;&nbsp;
                             <div>
                                 @if ($popUpHeader != null)
@@ -315,6 +324,15 @@ use Carbon\Carbon;
                     </div>
               
                     {!! Form::close() !!}
+                        @php
+                            $pageSelectedRecord = 0;
+                            if (isset($autoCloseProjectDetails) && $autoCloseProjectDetails->firstItem() != null) {
+                                $pageSelectedRecord = ($autoCloseProjectDetails->lastItem() - $autoCloseProjectDetails->firstItem()) + 1;
+                            }
+                            $autoCloseTotal = isset($autoCloseProjectDetails) ? $autoCloseProjectDetails->total() : 0;
+                        @endphp
+                        <p id="select_p1" style="text-align:center;display:none">All {{$pageSelectedRecord}} {{$pageSelectedRecord == 1 ? 'record on this page is selected' : 'records on this page are selected'}} . <a style="color:#6993FF !important;cursor:pointer !important" id="select_all_status">Select all {{$autoCloseTotal}} records</a></p>
+                        <p id="clear_p1" style="text-align:center;display:none">All {{$autoCloseTotal}} records are selected.<a style="color:#6993FF !important;cursor:pointer !important" id="clear_all_status">Clear Selection.</a></p>
                 <div class="card-body py-0 px-7">
                     <input type="hidden" value={{ $clientName }} id="clientName">
                     <input type="hidden" value={{ $subProjectName }} id="subProjectName">
@@ -324,7 +342,16 @@ use Carbon\Carbon;
                             <thead>
                                 @if (!empty($columnsHeader))
                                     <tr>
-                                          
+                                        @if (
+                                            $loginEmpId == 'Admin' ||
+                                                strpos($empDesignation, 'Manager') !== false ||
+                                                strpos($empDesignation, 'VP') !== false ||
+                                                strpos($empDesignation, 'Leader') !== false ||
+                                                strpos($empDesignation, 'Team Lead') !== false ||
+                                                strpos($empDesignation, 'CEO') !== false ||
+                                                strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)
+                                            <th class='notexport'><input type="checkbox" id="ckbCheckAll" class="cursor_hand"></th>
+                                        @endif
                                         <th class='notexport' style="color:white !important">Action</th>
                                         @foreach ($columnsHeader as $columnName => $columnValue)
                                             @if ($columnValue != 'id')
@@ -372,7 +399,16 @@ use Carbon\Carbon;
                                         $arrayAttrributes['aging_range']= null;                                       
                                         @endphp
                                         <tr>
-                                                
+                                            @if (
+                                                $loginEmpId == 'Admin' ||
+                                                    strpos($empDesignation, 'Manager') !== false ||
+                                                    strpos($empDesignation, 'VP') !== false ||
+                                                    strpos($empDesignation, 'Leader') !== false ||
+                                                    strpos($empDesignation, 'Team Lead') !== false ||
+                                                    strpos($empDesignation, 'CEO') !== false ||
+                                                    strpos($empDesignation, 'Vice') !== false || strpos($empDesignation, 'Group Coordinator') !== false || strpos($empDesignation, 'Subject Matter Expert') !== false || strpos($empDesignation, 'Group Co-ordinator - Quality') !== false || strpos($empDesignation, 'Group Co-ordinator - AR') !== false)
+                                                <td><input type="checkbox" class="checkBoxClass cursor_hand" name="check[]" value="{{ $data->id }}"></td>
+                                            @endif
                                             <td>
                                                 <button class="task-start clickable-view" title="View"><i
                                                         class="fa far fa-eye text-eye icon-circle1 mt-0"></i></button>
@@ -2746,34 +2782,52 @@ use Carbon\Carbon;
                 var isChecked = $(this).prop('checked');
                 $(".checkBoxClass").prop('checked', isChecked);
                 var table = $('#client_assigned_list').DataTable();
+                var noOfPages = @json(isset($autoCloseProjectDetails) ? $autoCloseProjectDetails->lastPage() : 1);
                 for (var i = 0; i < table.page.info().pages; i++) {
-                    table.page(i).draw(false); // Switch to page i
-                    $(".checkBoxClass").prop('checked', isChecked); // Select checkboxes on the current page
+                    table.page(i).draw(false);
+                    $(".checkBoxClass").prop('checked', isChecked);
                 }
                 if ($(this).prop('checked') == true && $('.checkBoxClass:checked').length > 0) {
                     $('#assigneeDropdown').prop('disabled', false);
-                    // assigneeDropdown();
+                    $('#clear_p1').css('display', 'none');
+                    if (noOfPages > 1) {
+                        $('#select_p1').css('display', 'block');
+                    }
+                    assigneeDropdown();
                 } else {
+                    $('#select_p1').css('display', 'none');
+                    $('#clear_p1').css('display', 'none');
                     $('#assigneeDropdown').prop('disabled', true);
-
                 }
             });
             function handleCheckboxChange() {
-                // $('.checkBoxClass').change(function() {
                     var anyCheckboxChecked = $('.checkBoxClass:checked').length > 0;
-                    var allCheckboxesChecked = $('.checkBoxClass:checked').length === $('.checkBoxClass')
-                        .length;
+                    var allCheckboxesChecked = $('.checkBoxClass:checked').length === $('.checkBoxClass').length;
                     if (allCheckboxesChecked) {
                         $("#ckbCheckAll").prop('checked', $(this).prop('checked'));
+                        if ($('#clear_p1').css('display') === 'none') {
+                            $('#select_p1').css('display', 'block');
+                        }
                     } else {
                         $("#ckbCheckAll").prop('checked', false);
+                        $('#select_p1').css('display', 'none');
+                        $('#clear_p1').css('display', 'none');
                     }
                     $('#assigneeDropdown').prop('disabled', !(anyCheckboxChecked || allCheckboxesChecked));
-                    // if ($(this).prop('checked') == true) {
-                    //   assigneeDropdown();
-                    // }
-                // });
+                    if ($(this).prop('checked') == true) {
+                        assigneeDropdown();
+                    }
             }
+            $('#select_all_status').click(function() {
+                $('#select_p1').css('display', 'none');
+                $('#clear_p1').css('display', 'block');
+            });
+            $('#clear_all_status').click(function() {
+                $("#ckbCheckAll").prop('checked', false);
+                $(".checkBoxClass").prop('checked', false);
+                $('#clear_p1').css('display', 'none');
+                $('#assigneeDropdown').prop('disabled', true);
+            });
 
             function attachCheckboxHandlers() {
                 $('.checkBoxClass').off('change').on('change', handleCheckboxChange);
@@ -2782,48 +2836,12 @@ use Carbon\Carbon;
                 table.on('draw', function() {
                     attachCheckboxHandlers();
                 });
-            // function assigneeDropdown() {
-            //    KTApp.block('#assign_div', {
-            //         overlayColor: '#000000',
-            //         state: 'danger',
-            //         opacity: 0.1,
-            //         message: 'Fetching...',
-            //     });
-            //     $.ajaxSetup({
-            //         headers: {
-            //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
-            //                 'content')
-            //         }
-            //     });
-                  
-            //     $.ajax({
-            //         url: "{{ url('qa_production/assignee_drop_down') }}",
-            //         method: 'POST',
-            //         data: {
-            //             clientName: clientName,
-            //         },
-            //         success: function(response) {
-            //             console.log(response, 'response');
-            //            var sla_options = '<option value="">-- Select --</option>';
-            //             $.each(response.assignedDropDown, function(key, value) {
-            //                 sla_options += '<option value="' + key + '">' + value +
-            //                     '</option>';
-            //             });
-            //             $('select[name="assignee_name"]').html(sla_options);
-            //             KTApp.unblock('#assign_div');
-            //         },
-            //     });
-            // }
-
-            $('#assigneeDropdown').change(function() {
-                assigneeId = $(this).val();
-                var checkedRowValues = [];
-                $('#client_assigned_list').DataTable().$('input[name="check[]"]:checked').each(function() {
-                    var rowData = {
-                        name: 'check[]',
-                        value: $(this).val()
-                    };
-                    checkedRowValues.push(rowData);
+            function assigneeDropdown() {
+               KTApp.block('#assign_div', {
+                    overlayColor: '#000000',
+                    state: 'danger',
+                    opacity: 0.1,
+                    message: 'Fetching...',
                 });
                 $.ajaxSetup({
                     headers: {
@@ -2831,8 +2849,52 @@ use Carbon\Carbon;
                             'content')
                     }
                 });
+
+                $.ajax({
+                    url: "{{ url('qa_production/assignee_drop_down') }}",
+                    method: 'POST',
+                    data: {
+                        clientName: clientName,
+                    },
+                    success: function(response) {
+                       var sla_options = '<option value="">-- Select --</option>';
+                        $.each(response.assignedDropDown, function(key, value) {
+                            sla_options += '<option value="' + key + '">' + value +
+                                '</option>';
+                        });
+                        $('select[name="assignee_name"]').html(sla_options);
+                        KTApp.unblock('#assign_div');
+                    },
+                });
+            }
+
+            $('#assigneeDropdown').change(function() {
+                assigneeId = $(this).val();
+                if (!assigneeId) {
+                    return;
+                }
+                var checkedRowValues = [];
+                $('#client_assigned_list').DataTable().$('input[name="check[]"]:checked').each(function() {
+                    checkedRowValues.push({
+                        name: 'check[]',
+                        value: $(this).val()
+                    });
+                });
+                var clearId = $('#clear_p1').css('display');
+                var formData = $('#formSearch').serialize();
+                formData += '&checkedRowValues=' + encodeURIComponent(JSON.stringify(checkedRowValues));
+                formData += '&clientName=' + clientName;
+                formData += '&subProjectName=' + subProjectName;
+                formData += '&assigneeId=' + assigneeId;
+                formData += '&selectedRecords=' + clearId;
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                            'content')
+                    }
+                });
                 swal.fire({
-                    text: "Do you want to move the sampling?",
+                    text: "Do you want to assign?",
                     icon: "success",
                     buttonsStyling: false,
                     showCancelButton: true,
@@ -2848,12 +2910,7 @@ use Carbon\Carbon;
                         $.ajax({
                             url: "{{ url('qa_production/sampling_assignee') }}",
                             method: 'POST',
-                            data: {
-                                assigneeId: assigneeId,
-                                checkedRowValues: checkedRowValues,
-                                clientName: clientName,
-                                subProjectName: subProjectName
-                            },
+                            data: formData,
                             success: function(response) {
                                 if (response.success == true) {
                                     js_notification('success',

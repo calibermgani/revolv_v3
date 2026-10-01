@@ -1632,11 +1632,13 @@ use Carbon\Carbon;
                 }
                 if ($(this).prop('checked') == true && $('.checkBoxClass:checked').length > 0) {
                     $('#assigneeDropdown').prop('disabled', false); 
+                    $('#clear_p1').css('display', 'none');
                     $('#select_p1').css('display', 'block');
                     assigneeDropdown();
                 } else {
                     $('#assigneeDropdown').prop('disabled', true);
                     $('#select_p1').css('display','none')
+                    $('#clear_p1').css('display', 'none');
 
                 }
             });
@@ -1660,7 +1662,9 @@ use Carbon\Carbon;
                             .length;
                         if (allCheckboxesChecked) {
                             $("#ckbCheckAll").prop('checked', $(this).prop('checked'));
-                            $('#select_p1').css('display','block');
+                            if ($('#clear_p1').css('display') === 'none') {
+                                $('#select_p1').css('display','block');
+                            }
                         } else {
                             $("#ckbCheckAll").prop('checked', false);
                             $('#select_p1').css('display','none');
