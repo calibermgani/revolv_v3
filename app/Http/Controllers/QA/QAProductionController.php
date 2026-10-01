@@ -1585,33 +1585,81 @@ class QAProductionController extends Controller
         if (Session::get('loginDetails') &&  Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] !=null) {
 
             try {
-
                 $assigneeId = $request['assigneeId'];
+                if ($assigneeId === null || $assigneeId === '') {
+                    return response()->json(['success' => false, 'message' => 'Please select an assignee']);
+                }
                 $decodedProjectName = Helpers::encodeAndDecodeID($request['clientName'], 'decode');
                 $decodedPracticeName = $request['subProjectName'] == '--' ? '--' : Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
                 $paProject = Helpers::projectName($decodedProjectName);
                 $decodedClientName = $paProject ? $paProject->project_name : null;
-                //$decodedClientName = Helpers::projectName($decodedProjectName)->project_name;
                 $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' :Helpers::subProjectName($decodedProjectName,$decodedPracticeName)->sub_project_name;
                 $table_name= Str::slug((Str::lower($decodedClientName).'_'.Str::lower($decodedsubProjectName)),'_');
                 $modelName = Str::studly($table_name);
                 $modelClass = "App\\Models\\" . $modelName;
                 $modelClassDatas = "App\\Models\\" . $modelName.'Datas';
-                $modelHistory = "App\\Models\\" . $modelName.'History';
-                foreach($request['checkedRowValues'] as $data) {
-                    $existingRecord = $modelClass::where('id',$data['value'])->first();
-                    $historyRecord = $existingRecord->toArray();
-                    $historyRecord['parent_id']= $historyRecord['id'];
-                    unset($historyRecord['id']);
-                    $modelHistory::create($historyRecord);
-                    $existingModelClassDatasRecord = $modelClassDatas::where('parent_id',$data['value'])->first();
-                    $existingRecord->update(['QA_emp_id' => $assigneeId,'qa_work_status' => 'Sampling','chart_status' => 'CE_Completed']);
-                    $existingModelClassDatasRecord->update(['QA_emp_id' => $assigneeId,'qa_work_status' => 'Sampling','chart_status' => 'CE_Completed']);
-                    
+
+                if (!class_exists($modelClass)) {
+                    return response()->json(['success' => false, 'message' => 'Something went wrong'], 422);
                 }
+
+                $startDate = Carbon::now()->subDays(30)->startOfDay()->toDateTimeString();
+                $endDate = Carbon::now()->endOfDay()->toDateTimeString();
+                $query = $modelClass::query()
+                    ->where('qa_work_status', 'Auto_Close')
+                    ->whereBetween('updated_at', [$startDate, $endDate]);
+
+                if ($request['selectedRecords'] == 'none') {
+                    $checkedRowValues = $request->checkedRowValues;
+                    if (is_string($checkedRowValues)) {
+                        $checkedRowValues = json_decode(urldecode($checkedRowValues), true) ?: [];
+                    }
+                    $ids = collect($checkedRowValues ?: [])
+                        ->pluck('value')
+                        ->filter(function ($id) {
+                            return is_numeric($id);
+                        })
+                        ->map(function ($id) {
+                            return (int) $id;
+                        })
+                        ->unique()
+                        ->values()
+                        ->all();
+
+                    if (empty($ids)) {
+                        return response()->json(['success' => true]);
+                    }
+                    $query->whereIn('id', $ids);
+                } else {
+                    $this->applyAssignedFlushSearchFilters($query, $request, $table_name);
+                }
+
+                $eligibleIds = $query->pluck('id');
+                DB::transaction(function () use ($eligibleIds, $modelClass, $modelClassDatas, $assigneeId) {
+                    foreach ($eligibleIds->chunk(300) as $chunk) {
+                        $ids = $chunk->all();
+                        $modelClass::whereIn('id', $ids)
+                            ->where('qa_work_status', 'Auto_Close')
+                            ->update([
+                                'QA_emp_id' => $assigneeId,
+                                'qa_work_status' => 'Sampling',
+                            ]);
+
+                        if (class_exists($modelClassDatas)) {
+                            $modelClassDatas::whereIn('parent_id', $ids)
+                                ->where('qa_work_status', 'Auto_Close')
+                                ->update([
+                                    'QA_emp_id' => $assigneeId,
+                                    'qa_work_status' => 'Sampling',
+                                ]);
+                        }
+                    }
+                });
+
                 return response()->json(['success' => true]);
             } catch (\Exception $e) {
                 log::debug($e->getMessage());
+                return response()->json(['success' => false, 'message' => 'Something went wrong'], 500);
             }
         } else {
             return redirect('/');
@@ -2160,6 +2208,157 @@ class QAProductionController extends Controller
             return redirect('/');
         }
     }
+
+    public function flushAssignedSampling(Request $request)
+    {
+        if (
+            !Session::get('loginDetails') ||
+            empty(Session::get('loginDetails')['userDetail']) ||
+            empty(Session::get('loginDetails')['userDetail']['emp_id'])
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Session expired. Please log in again.',
+            ], 401);
+        }
+
+        try {
+            $decodedProjectName = Helpers::encodeAndDecodeID($request['clientName'], 'decode');
+            $decodedPracticeName = $request['subProjectName'] == '--' ? '--' : Helpers::encodeAndDecodeID($request['subProjectName'], 'decode');
+            $paProject = Helpers::projectName($decodedProjectName);
+            $decodedClientName = $paProject ? $paProject->project_name : null;
+            $decodedsubProjectName = $decodedPracticeName == '--' ? 'project' : Helpers::subProjectName($decodedProjectName, $decodedPracticeName)->sub_project_name;
+            $table_name = Str::slug((Str::lower($decodedClientName) . '_' . Str::lower($decodedsubProjectName)), '_');
+            $modelName = Str::studly($table_name);
+            $modelClass = "App\\Models\\" . $modelName;
+            $modelClassDatas = "App\\Models\\" . $modelName . 'Datas';
+
+            if (!class_exists($modelClass)) {
+                return response()->json(['success' => false, 'message' => 'Something went wrong'], 422);
+            }
+
+            $cutoff = $this->flushBusinessDayCutoff();
+            $workDateUpto = $cutoff->copy()->subSecond()->format('m/d/Y H:i:s');
+            $isPreview = (string) $request->input('preview') === '1';
+            $query = $modelClass::query()
+                ->whereIn('chart_status', ['CE_Completed', 'QA_Inprocess'])
+                ->whereNotNull('QA_emp_id')
+                ->where('qa_work_status', 'Sampling');
+
+            if ($request['selectedRecords'] == 'none') {
+                $checkedRowValues = json_decode(urldecode($request->checkedRowValues), true) ?: [];
+                $ids = collect($checkedRowValues)
+                    ->pluck('value')
+                    ->filter(function ($id) {
+                        return is_numeric($id);
+                    })
+                    ->map(function ($id) {
+                        return (int) $id;
+                    })
+                    ->unique()
+                    ->values()
+                    ->all();
+
+                if (empty($ids)) {
+                    return response()->json([
+                        'success' => true,
+                        'selected' => 0,
+                        'flushed' => 0,
+                        'kept' => 0,
+                        'workDateUpto' => $workDateUpto,
+                    ]);
+                }
+
+                $query->whereIn('id', $ids);
+            } else {
+                $this->applyAssignedFlushSearchFilters($query, $request, $table_name);
+            }
+
+            $selectedCount = (clone $query)->count();
+            $eligibleIds = (clone $query)
+                ->whereNotNull('ar_at')
+                ->where('ar_at', '<', $cutoff->format('Y-m-d H:i:s'))
+                ->pluck('id');
+
+            $summary = [
+                'success' => true,
+                'selected' => $selectedCount,
+                'flushed' => $eligibleIds->count(),
+                'kept' => $selectedCount - $eligibleIds->count(),
+                'workDateUpto' => $workDateUpto,
+            ];
+
+            if ($isPreview) {
+                return response()->json($summary);
+            }
+
+            DB::transaction(function () use ($eligibleIds, $modelClass, $modelClassDatas) {
+                foreach ($eligibleIds->chunk(300) as $chunk) {
+                    $ids = $chunk->all();
+                    $modelClass::whereIn('id', $ids)
+                        ->where('qa_work_status', 'Sampling')
+                        ->update(['qa_work_status' => 'Auto_Close']);
+
+                    if (class_exists($modelClassDatas)) {
+                        $modelClassDatas::whereIn('parent_id', $ids)
+                            ->where('qa_work_status', 'Sampling')
+                            ->update(['qa_work_status' => 'Auto_Close']);
+                    }
+                }
+            });
+
+            return response()->json($summary);
+        } catch (\Exception $e) {
+            Log::debug($e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Something went wrong'], 500);
+        }
+    }
+
+    protected function flushBusinessDayCutoff(?Carbon $now = null): Carbon
+    {
+        $now = $now ? $now->copy() : Carbon::now();
+        $businessDate = $now->copy();
+        if ($businessDate->format('H:i:s') < '08:00:00') {
+            $businessDate->subDay();
+        }
+
+        $cursor = $businessDate->copy()->startOfDay();
+        $remaining = 7;
+        while ($remaining > 0) {
+            $cursor->subDay();
+            if (!$cursor->isWeekend()) {
+                $remaining--;
+            }
+        }
+
+        return $cursor->setTime(8, 0, 0);
+    }
+
+    protected function applyAssignedFlushSearchFilters($query, Request $request, $tableName)
+    {
+        $columns = Schema::getColumnListing($tableName);
+        $skip = ['_token', 'parent', 'child', 'page', 'clientName', 'subProjectName', 'checkedRowValues', 'selectedRecords'];
+
+        foreach ($request->except($skip) as $key => $value) {
+            if (!in_array($key, $columns, true) || $value === null || $value === '') {
+                continue;
+            }
+            if (is_array($value)) {
+                $value = implode('_el_', $value);
+            }
+            if (is_numeric($value) || is_bool($value)) {
+                $query->where($key, $value);
+            } elseif ($this->isDate($value)) {
+                $query->whereDate($key, '=', $value);
+            } elseif (Helpers::applyNumericRangeFilter($query, $key, $value)) {
+            } elseif (strpos((string) $value, '$') !== false || strpos((string) $value, '.') !== false) {
+                $query->where($key, $value);
+            } elseif ($value != null) {
+                $query->where($key, 'like', '%' . $value . '%');
+            }
+        }
+    }
+
    public function allSamplingAssignee(Request $request){
     if (Session::get('loginDetails') && Session::get('loginDetails')['userDetail'] && Session::get('loginDetails')['userDetail']['emp_id'] != null) {
         try {
