@@ -31,7 +31,7 @@ class ClaimsProductionDashboardController extends Controller
         return view('claims-dashboard.index', [
             'role' => $role,
             'pageTitle' => $titles[$role],
-            'employeeName' => $user['user_name'] ?? $user['emp_id'],
+            // 'employeeName' => $user['user_name'] ?? $user['emp_id'],
             'startDate' => $this->previousWorkingDay()->toDateString(),
             'endDate' => $this->previousWorkingDay()->toDateString(),
         ]);

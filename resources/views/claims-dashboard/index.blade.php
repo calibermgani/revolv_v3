@@ -8,8 +8,7 @@
                         <div class="dash_filter mt-4">
                             <div>
                                 <p class="mb-0"><b id="pageTitle">{{ $pageTitle }}</b></p>
-                                <span class="text-muted" id="pageSubtitle" style="font-size:12px">{{ $employeeName }}</span>
-                            </div>
+                              </div>
                             <div class="d-flex align-items-center flex-wrap" style="gap:8px">
                                 <input type="text" id="claimsRange" class="form-control claims-range" placeholder="mm/dd/yyyy - mm/dd/yyyy" autocomplete="off" readonly>
                                 <button type="button" class="btn btn-light-green" id="refreshClaims">Refresh</button>
@@ -153,13 +152,19 @@
     <style>
         #claimsDashboard .dash_card {
             height: auto;
-            min-height: 132px;
+            min-height: 108px;
+            padding: 14px 14px 12px 16px;
+            gap: 0;
             font-size: 12px;
             line-height: 1.3;
         }
+        #claimsDashboard .dash_icon {
+            width: 36px;
+            height: 36px;
+        }
         #claimsDashboard .dash_card_font {
             display: block;
-            margin: 10px 0 6px;
+            margin: 8px 0 4px;
             font-size: 20px;
             line-height: 1.2;
         }
