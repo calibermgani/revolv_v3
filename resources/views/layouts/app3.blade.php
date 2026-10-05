@@ -252,6 +252,10 @@
     }
 
     function hideGlobalLoader() {
+        if (window.claimsDashboardLoading) {
+            return;
+        }
+
         const loader = document.getElementById("global-loader");
         const loaderText = document.getElementById("global-loader-text");
         const loaderTimer = document.getElementById("global-loader-timer");
