@@ -946,7 +946,7 @@ use Carbon\Carbon;
                                                                     $arSubStatusList,
                                                                     null,
                                                                     [
-                                                                        'class' => 'form-control white-smoke  kt_select2_substatus_1_modal pop-non-edt-val ',
+                                                                        'class' => 'form-control white-smoke  kt_select2_substatus_modal pop-non-edt-val ',
                                                                         'autocomplete' => 'none',
                                                                         'id' => 'ar_substatus_codes',
                                                                         'style' => 'cursor:pointer',
