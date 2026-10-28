@@ -3681,6 +3681,7 @@ public function getBulkColumnsCSV(Request $request)
         $configurationExists = DB::table('inventory_upload_configuration')
                 ->where('project_id', $projectId)
                 ->where('sub_project_id', $subProjectId)
+                ->where('deleted_at', null)
                 ->exists();
 
         if (!$configurationExists) {
@@ -3691,6 +3692,7 @@ public function getBulkColumnsCSV(Request $request)
         }
         $project = DB::table('projects')
             ->where('project_id', $projectId)
+            ->where('deleted_at', null)
             ->first();
 
         if (!$project) {
@@ -3703,6 +3705,7 @@ public function getBulkColumnsCSV(Request $request)
         $subProject = DB::table('subprojects')
             ->where('sub_project_id', $subProjectId)
             ->where('project_id', $projectId)
+            ->where('deleted_at', null)
             ->first();
 
         if (!$subProject) {

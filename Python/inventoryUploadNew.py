@@ -496,6 +496,7 @@ def fetch_upload_configuration(
             from inventory_upload_configuration
             where project_id = %s
             and sub_project_id = %s
+            and deleted_at is null
             limit 1
             """,
             (
